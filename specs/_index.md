@@ -13,24 +13,34 @@
 | [get-h3/sdk-python](https://github.com/get-h3/sdk-python) | Python SDK for harness developers | Python |
 | [get-h3/sdk-typescript](https://github.com/get-h3/sdk-typescript) | TypeScript SDK for harness developers | TypeScript |
 
-## Phase 1 — Specs Complete ✅
+---
+
+## Specs — All 11 Complete ✅
 
 | # | Spec | Status | Pages |
 |---|---|---|---|
-| 01 | [Overview & Architecture](01-Overview-Architecture.md) | ✅ Spec | ~8 pages |
-| 02 | [Protocol Specification](02-Protocol-Specification.md) | ✅ Spec | ~12 pages |
-| 03 | [Installer & Version Compatibility](03-Installer-Version-Compat.md) | ✅ Spec | ~8 pages |
-| 04 | [SDK Libraries](04-SDK-Libraries.md) | ✅ Spec | ~10 pages |
-| 05 | [Shim Test Battery](05-Test-Battery.md) | ✅ Spec | ~10 pages |
-| 06 | [Hermes Core Integration](06-Hermes-Core-Integration.md) | ✅ Spec | ~12 pages |
+| 01 | [Overview & Architecture](01-Overview-Architecture.md) | ✅ | ~8 |
+| 02 | [Protocol Specification](02-Protocol-Specification.md) | ✅ | ~12 |
+| 03 | [Installer & Version Compatibility](03-Installer-Version-Compat.md) | ✅ | ~8 |
+| 04 | [SDK Libraries](04-SDK-Libraries.md) | ✅ | ~10 |
+| 05 | [Shim Test Battery](05-Test-Battery.md) | ✅ | ~10 |
+| 06 | [Hermes Core Integration](06-Hermes-Core-Integration.md) | ✅ | ~12 |
+| 07 | [OpenAPI & JSON Schema Design](07-OpenAPI-JSON-Schema.md) | ✅ | ~8 |
+| 08 | [Cross-Repo Release Pipeline](08-Cross-Repo-Release-Pipeline.md) | ✅ | ~6 |
+| 09 | [Testing Framework Architecture](09-Testing-Framework-Architecture.md) | ✅ | ~10 |
+| 10 | [h3.sh Website & Developer Docs](10-Website-Docs.md) | ✅ | ~5 |
+| 11 | [Hermes Upgrade Survival](11-Hermes-Upgrade-Survival.md) | ✅ | ~8 |
 
-**Total: 6 specs, ~60 pages, ~30K words.**
+**Total: 11 specs, ~97 pages.**
 
 ---
 
-## Phase 2 — Implementation (pending)
+## Foreman
 
-Build order defined in `.coding-hermes/tasks.md`.
+| Job ID | Name | Schedule | Status |
+|---|---|---|---|
+| `291a17144cf2` | h3-coding-hermes-foreman | every 30m | ✅ Running |
+| `05b5a3276fdc` | h3-duckbrain-sync | every 1h | ✅ Running |
 
 ---
 
@@ -42,9 +52,9 @@ Build order defined in `.coding-hermes/tasks.md`.
 | `/spec/h3/protocol` | Endpoint contracts, decision types, error codes |
 | `/spec/h3/installer` | Install flow, version matrix, compatibility |
 | `/spec/h3/sdks` | Go/Python/TS SDKs, code generation |
-| `/spec/h3/test-battery` | 43 compliance tests, CI integration |
+| `/spec/h3/test-battery` | 43 compliance tests, CI integration, region-style |
 | `/spec/h3/shim` | Hermes-side code structure, integration points |
 
 ---
 
-*Generated July 12, 2026 — architecture from h3.html design doc.*
+*Generated July 12, 2026. Architecture from h3.html design doc.*
