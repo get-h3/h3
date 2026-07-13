@@ -1,5 +1,18 @@
 # H3 Specification Index
 
+> **Org:** [get-h3](https://github.com/get-h3) — 6 repos, spec-driven
+
+## Repo Collection
+
+| Repo | Purpose | Language |
+|---|---|---|
+| [get-h3/h3](https://github.com/get-h3/h3) | Spec hub, task board, docs, integration tests | Markdown |
+| [get-h3/protocol](https://github.com/get-h3/protocol) | OpenAPI 3.1 spec — single source of truth | YAML/JSON |
+| [get-h3/shim](https://github.com/get-h3/shim) | Hermes plugin — shim loop, test battery, CLI | Python |
+| [get-h3/sdk-go](https://github.com/get-h3/sdk-go) | Go SDK for harness developers | Go |
+| [get-h3/sdk-python](https://github.com/get-h3/sdk-python) | Python SDK for harness developers | Python |
+| [get-h3/sdk-typescript](https://github.com/get-h3/sdk-typescript) | TypeScript SDK for harness developers | TypeScript |
+
 ## Phase 1 — Specs Complete ✅
 
 | # | Spec | Status | Pages |
