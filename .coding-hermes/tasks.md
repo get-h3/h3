@@ -30,10 +30,10 @@
 | P0-02 | protocol | Write all 13 JSON Schema files under schemas/v1/ | ✅ Done (`9d28e48`) |
 | P0-03 | protocol | Write 8 example payloads under examples/decisions/ | ✅ Done (`4090dc2`) |
 | P0-04 | protocol | Validation script + round-trip tests | ✅ Done (`8a0451f`) |
-| P0-05 | protocol | CI: validate on PR, release on tag | pending |
-| P0-06 | protocol | Tag v1.0.0 | pending |
+| P0-05 | protocol | CI: validate on PR, release on tag | ✅ Done (`a89be0d`) |
+| P0-06 | protocol | Tag v1.0.0 | ✅ Done (`a89be0d` → `v1.0.0`) |
 
-**Gate:** `ajv validate` passes all schemas. `redocly lint` passes. Tagged.
+**Gate:** `ajv validate` passes all schemas. `redocly lint` passes. Tagged. ✅ ALL GATES MET — PHASE 0 COMPLETE ✅
 
 ## PHASE 1: SDKs (Generated from Protocol)
 
