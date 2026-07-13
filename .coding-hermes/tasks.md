@@ -9,10 +9,10 @@
 
 | ID | Task | Status | Worker |
 |---|---|---|---|
-| P0-01 | Initialize Go module, directory structure, Makefile | pending | — |
-| P0-02 | Add GitReins config (.gitreins/config.yaml) | pending | — |
-| P0-03 | Write AGENTS.md for repo | pending | — |
-| P0-04 | Initialize DuckBrain /spec/h3/* seeds from specs | pending | — |
+| P0-01 | Initialize Go module, directory structure, Makefile | [x] done | — |
+| P0-02 | Add GitReins config (.gitreins/config.yaml) | [x] done | — |
+| P0-03 | Write AGENTS.md for repo | [x] done | — |
+| P0-04 | Initialize DuckBrain /spec/h3/* seeds from specs | [x] done | — |
 
 **Gate:** `gitreins guard` passes, repo is pushable.
 
