@@ -1,62 +1,55 @@
-# AGENTS.md — H3
+# AGENTS.md — get-h3 (Umbrella)
 
-H3 (Hermes Harness Hooks) is the two-endpoint protocol that decouples Hermes Core from agent harnesses.
+H3 (Hermes Harness Hooks) — two-endpoint protocol decoupling Hermes Core from agent harnesses.
 
-**Org:** [get-h3](https://github.com/get-h3) — 6 repos
+**Org:** [get-h3](https://github.com/get-h3)
 
-## Repo Collection
+## Repos Under This Umbrella
 
-| Repo | Purpose | Language |
+| Directory | Repo | Purpose | Language |
+|---|---|---|---|
+| `h3/` | get-h3/h3 | Spec hub, cross-repo task board, integration tests | Markdown |
+| `protocol/` | get-h3/protocol | OpenAPI 3.1 spec + JSON Schema — single source of truth | YAML/JSON |
+| `shim/` | get-h3/shim | Hermes plugin: shim loop, test battery, CLI | Python |
+| `sdk-go/` | get-h3/sdk-go | Go SDK for harness developers | Go |
+| `sdk-python/` | get-h3/sdk-python | Python SDK for harness developers | Python |
+| `sdk-typescript/` | get-h3/sdk-typescript | TypeScript SDK for harness developers | TypeScript |
+
+## Dependency Chain
+
+```
+protocol/  (OpenAPI spec)
+    │
+    ├──► shim/          (Python plugin — generated types from OpenAPI)
+    │       └── test_battery.py (43 compliance tests — E2E region-style)
+    │
+    ├──► sdk-go/        (generated types from OpenAPI)
+    ├──► sdk-python/    (generated types from OpenAPI)
+    └──► sdk-typescript (generated types from OpenAPI)
+```
+
+## Foreman Topology
+
+| Foreman | Watches | Does |
 |---|---|---|
-| [h3](https://github.com/get-h3/h3) | Spec hub, task board, docs, integration tests | Markdown |
-| [protocol](https://github.com/get-h3/protocol) | OpenAPI 3.1 spec — single source of truth | YAML/JSON |
-| [shim](https://github.com/get-h3/shim) | Hermes plugin — shim loop, test battery, CLI | Python |
-| [sdk-go](https://github.com/get-h3/sdk-go) | Go SDK for harness developers | Go |
-| [sdk-python](https://github.com/get-h3/sdk-python) | Python SDK for harness developers | Python |
-| [sdk-typescript](https://github.com/get-h3/sdk-typescript) | TypeScript SDK for harness developers | TypeScript |
+| h3-foreman | `h3/` | Coordinates cross-repo task board, integration tests |
+| protocol-foreman | `protocol/` | Maintains OpenAPI spec, publishes changes |
+| shim-foreman | `shim/` | Builds Python plugin, runs test battery |
+| sdk-go-foreman | `sdk-go/` | Builds Go SDK |
+| sdk-python-foreman | `sdk-python/` | Builds Python SDK |
+| sdk-typescript-foreman | `sdk-typescript/` | Builds TypeScript SDK |
 
-## Architecture
+## The Tester
 
-- H3 Shim: `hermes_cli/agent/shims/h3/` — Python plugin inside Hermes Core
-- SDKs: Go (`h3-sdk-go`), Python (`h3-harness-sdk`), TypeScript (`@get-h3/h3-harness-sdk`)
-- Test Battery: 43 compliance tests, runs against any harness endpoint
-- Protocol: REST (default) or gRPC. Two main endpoints: `/v1/process`, `/v1/result`
+The test battery (`shim/test_battery.py`) is the gate. It runs against ANY harness endpoint — no code changes needed:
 
-See `specs/` for full specification files (S01–S06).
-
-## Key Decisions
-
-- **REST first, gRPC optional** — REST is debuggable with curl, works everywhere
-- **Two endpoints, not a framework** — minimize the contract surface
-- **Harness owns the loop** — Hermes asks "what should I do?", harness decides
-- **Test battery is the gate** — 43 tests, if they pass, your harness works
-- **SDKs in 3 languages** — Go, Python, TypeScript cover the ecosystem
-
-## Repo Layout
-
+```bash
+pip install hermes-h3-shim
+h3-test --endpoint http://localhost:9191
 ```
-h3/
-├── specs/               # S01-S06 specification files
-├── sdks/                # Go, Python, TypeScript SDKs
-├── tests/               # Test battery implementation
-├── .coding-hermes/      # Task board for coding-hermes foreman
-├── .gitreins/           # GitReins quality guard config
-└── AGENTS.md            # This file
-```
+
+43 tests across 6 categories. E2E region-style: each category tests a complete functional region (health, process flows, decision types, result handling, edge cases, stress). Exit code 0 = harness is H3-compliant.
 
 ## Development
 
-This project uses coding-hermes for spec-driven development. Foreman loads `coding-hermes-foreman`, `coding-hermes-cron`, `hilo-usage`, `gitreins`.
-
-All agents read `specs/_index.md`, `AGENTS.md`, and `.coding-hermes/tasks.md` at task start.
-
-## GitReins Quality Harness (MANDATORY)
-
-```bash
-PATH="$HOME/go/bin:$HOME/gitreins-poc/.venv/bin:$PATH" gitreins guard
-```
-
-- **secrets** — BLOCKS on fail
-- **build** — BLOCKS on fail (when code exists)
-- **lint** — WARNS on fail
-- **tests** — BLOCKS on fail
+All repos use coding-hermes foremen for spec-driven development. GitReins quality gate on every repo. Specs in `h3/specs/`, task boards in each repo's `.coding-hermes/tasks.md`.
