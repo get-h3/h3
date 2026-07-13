@@ -1,0 +1,29 @@
+# GitReins quality harness configuration for H3
+# https://github.com/totalwindupflightsystems/gitreins
+
+project: h3
+language: python  # Shim is Python (Hermes Core plugin). SDKs are polyglot.
+
+guards:
+  secrets:
+    enabled: true
+    severity: block    # BLOCK on fail — no exceptions
+
+  build:
+    enabled: false     # Enable when Python package exists
+
+  lint:
+    enabled: false     # Enable when Python code exists
+    severity: warn
+
+  tests:
+    enabled: false     # Enable when tests exist
+
+  dead_code:
+    enabled: false
+
+test:
+  mode: full           # Full test suite due to small surface area
+
+commit:
+  require_guard_pass: true
