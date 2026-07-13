@@ -2,10 +2,23 @@
 
 H3 (Hermes Harness Hooks) is the two-endpoint protocol that decouples Hermes Core from agent harnesses.
 
+**Org:** [get-h3](https://github.com/get-h3) — 6 repos
+
+## Repo Collection
+
+| Repo | Purpose | Language |
+|---|---|---|
+| [h3](https://github.com/get-h3/h3) | Spec hub, task board, docs, integration tests | Markdown |
+| [protocol](https://github.com/get-h3/protocol) | OpenAPI 3.1 spec — single source of truth | YAML/JSON |
+| [shim](https://github.com/get-h3/shim) | Hermes plugin — shim loop, test battery, CLI | Python |
+| [sdk-go](https://github.com/get-h3/sdk-go) | Go SDK for harness developers | Go |
+| [sdk-python](https://github.com/get-h3/sdk-python) | Python SDK for harness developers | Python |
+| [sdk-typescript](https://github.com/get-h3/sdk-typescript) | TypeScript SDK for harness developers | TypeScript |
+
 ## Architecture
 
 - H3 Shim: `hermes_cli/agent/shims/h3/` — Python plugin inside Hermes Core
-- SDKs: Go (`h3-sdk-go`), Python (`h3-harness-sdk`), TypeScript (`@coding-herms/h3-harness-sdk`)
+- SDKs: Go (`h3-sdk-go`), Python (`h3-harness-sdk`), TypeScript (`@get-h3/h3-harness-sdk`)
 - Test Battery: 43 compliance tests, runs against any harness endpoint
 - Protocol: REST (default) or gRPC. Two main endpoints: `/v1/process`, `/v1/result`
 
