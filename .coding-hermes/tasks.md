@@ -27,7 +27,7 @@
 | ID | Repo | Task | Status |
 |---|---|---|---|
 | P0-01 | protocol | Write `h3-protocol.yaml` — OpenAPI 3.1 from S02 + S07 | ✅ Done (`043e5be`) |
-| P0-02 | protocol | Write all 13 JSON Schema files under schemas/v1/ | pending |
+| P0-02 | protocol | Write all 13 JSON Schema files under schemas/v1/ | ✅ Done (`9d28e48`) |
 | P0-03 | protocol | Write 8 example payloads under examples/decisions/ | pending |
 | P0-04 | protocol | Validation script + round-trip tests | pending |
 | P0-05 | protocol | CI: validate on PR, release on tag | pending |
