@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="TotalStack — Universal AI Agent Protocol: PRD & Technical Specification">
+<title>TotalStack — Product Requirements Document</title>
+<style>
+:root {
+  --bg: #050507;
+  --surface: #101010;
+  --surface-2: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #f2f2f2;
+  --text-secondary: #b8b3b0;
+  --text-tertiary: #8b949e;
+  --accent: #00d992;
+  --accent-glow: rgba(0,217,146,0.15);
+  --blue: #60a5fa;
+  --purple: #a78bfa;
+  --amber: #fbbf24;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  font-size: 16px;
+}
+
+.container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+/* ── Hero ────────────────────────────── */
+.hero {
+  padding: 80px 0 56px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.hero .eyebrow {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  background: var(--accent-glow);
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  margin-bottom: 16px;
+}
+.hero h1 span { color: var(--accent); }
+.hero .deck {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 640px;
+  margin: 0 auto 28px;
+  line-height: 1.6;
+}
+.hero .meta {
+  display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+}
+.hero .meta .badge {
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: 0.72rem;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  color: var(--text-tertiary);
+  background: var(--surface);
+}
+
+/* ── Stat Row ─────────────────────────── */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 40px 0;
+}
+.stat-card {
+  background: var(--surface);
+  padding: 28px 20px;
+  text-align: center;
+}
+.stat-card .num {
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.1;
+}
+.stat-card .label {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  margin-top: 6px;
+}
+
+/* ── Sections ─────────────────────────── */
+section { padding: 56px 0; border-bottom: 1px solid var(--border); }
+section:last-of-type { border-bottom: none; }
+
+h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+.section-subtitle { color: var(--text-tertiary); font-size: 0.95rem; margin-bottom: 32px; }
+
+/* ── Cards ────────────────────────────── */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 14px; }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+.card.accent { border-left: 3px solid var(--accent); }
+.card.blue   { border-left: 3px solid var(--blue); }
+.card.purple { border-left: 3px solid var(--purple); }
+.card.amber  { border-left: 3px solid var(--amber); }
+.card h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 8px; }
+.card p, .card li { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; }
+.card ul { padding-left: 1.2rem; margin-top: 6px; }
+.card ul li { margin-bottom: 3px; }
+
+/* ── Architecture ─────────────────────── */
+.arch { margin: 24px 0; }
+.arch-row {
+  display: flex; align-items: stretch; margin-bottom: 6px;
+  border-radius: var(--radius-sm); overflow: hidden;
+}
+.arch-label {
+  background: var(--surface); color: var(--text-tertiary);
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: 0.72rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.7px;
+  padding: 12px 16px; min-width: 130px;
+  display: flex; align-items: center;
+  border: 1px solid var(--border); border-right: none;
+}
+.arch-content {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 12px 16px; flex: 1;
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+}
+.chip {
+  display: inline-block; padding: 4px 12px; border-radius: 4px;
+  font-size: 0.75rem; font-weight: 500;
+  font-family: 'SF Mono','Fira Code',monospace; white-space: nowrap;
+}
+.chip-green  { background: rgba(0,217,146,0.12); color: var(--accent); border: 1px solid rgba(0,217,146,0.25); }
+.chip-blue   { background: rgba(96,165,250,0.12); color: var(--blue); border: 1px solid rgba(96,165,250,0.25); }
+.chip-purple { background: rgba(167,139,250,0.12); color: var(--purple); border: 1px solid rgba(167,139,250,0.25); }
+.chip-amber  { background: rgba(251,191,36,0.12); color: var(--amber); border: 1px solid rgba(251,191,36,0.25); }
+.chip-gray   { background: rgba(139,148,158,0.08); color: var(--text-tertiary); border: 1px solid rgba(139,148,158,0.15); }
+
+/* ── Decision Grid ────────────────────── */
+.dgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 10px; margin: 20px 0; }
+.dcard {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 20px;
+  border-left: 3px solid var(--accent);
+}
+.dcard .dtype { font-family: 'SF Mono','Fira Code',monospace; font-size: 0.88rem; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+.dcard .ddesc { font-size: 0.84rem; color: var(--text-secondary); }
+.dcard .dexample { font-size: 0.76rem; color: var(--text-tertiary); font-family: 'SF Mono','Fira Code',monospace; margin-top: 5px; }
+
+/* ── Tables ───────────────────────────── */
+.table-wrap { overflow-x: auto; margin: 18px 0; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 500px; }
+th, td { padding: 10px 14px; text-align: left; }
+th {
+  font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.6px; color: var(--text-tertiary);
+  border-bottom: 2px solid var(--border);
+  background: var(--surface);
+}
+td { border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+tr:hover td { background: rgba(255,255,255,0.015); }
+code {
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: 0.84rem;
+  background: rgba(0,217,146,0.08);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* ── Blockquote ───────────────────────── */
+blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 12px 18px;
+  margin: 16px 0;
+  background: var(--surface);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--accent);
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+/* ── Phases ───────────────────────────── */
+.phase-grid { display: grid; gap: 12px; margin: 20px 0; }
+.phase {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+}
+.phase-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.phase-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--accent-glow); border: 2px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'SF Mono',monospace; font-weight: 700;
+  font-size: 0.82rem; color: var(--accent);
+  flex-shrink: 0;
+}
+.phase-title { font-weight: 600; font-size: 1rem; }
+.phase-gate { font-size: 0.82rem; color: var(--text-tertiary); margin-bottom: 8px; }
+.phase-items { display: flex; flex-wrap: wrap; gap: 6px; }
+.phase-tag {
+  font-size: 0.75rem; padding: 3px 10px;
+  border-radius: 9999px; color: var(--text-secondary);
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+
+/* ── Code Block ───────────────────────── */
+pre {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  font-family: 'SF Mono','Fira Code',monospace;
+  margin: 14px 0;
+}
+
+/* ── Feature List ─────────────────────── */
+.feature-list { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 8px; margin: 14px 0; }
+.feature-list li {
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  display: flex; align-items: center; gap: 10px;
+  color: var(--text-secondary);
+}
+.feature-list li::before { content: "▸"; color: var(--accent); font-size: 0.8rem; flex-shrink: 0; }
+
+/* ── CTA ──────────────────────────────── */
+.cta {
+  text-align: center; padding: 48px 0 64px;
+  border-top: 1px solid var(--border);
+}
+.cta h2 { margin-bottom: 10px; }
+.cta p { color: var(--text-secondary); margin-bottom: 20px; }
+
+/* ── Footer ───────────────────────────── */
+footer {
+  padding: 40px 0; text-align: center;
+  border-top: 1px solid var(--border);
+  color: var(--text-tertiary); font-size: 0.82rem;
+}
+footer a { color: var(--accent); text-decoration: none; }
+
+/* ── Responsive ───────────────────────── */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 2rem; }
+  .hero { padding: 56px 0 40px; }
+  .stat-row { grid-template-columns: repeat(2, 1fr); }
+  .arch-label { min-width: 90px; font-size: 0.66rem; padding: 10px 12px; }
+  section { padding: 40px 0; }
+}
+@media (max-width: 480px) {
+  .stat-row { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 1.7rem; }
+  .card-grid, .dgrid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- HERO -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<header class="hero">
+  <div class="container">
+    <div class="eyebrow">Product Requirements Document · v1.0</div>
+    <h1><span>TotalStack</span></h1>
+    <p class="deck">
+      A universal, two-endpoint protocol that decouples AI agent platforms from
+      agent harnesses. Build your agent brain once, in any language. Run it on
+      any platform. TotalStack handles the infrastructure — you focus on intelligence.
+    </p>
+    <div class="meta">
+      <span class="badge">Protocol v1.0.0</span>
+      <span class="badge">OpenAPI 3.1</span>
+      <span class="badge">MIT License</span>
+      <span class="badge">REST + gRPC</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- STAT ROW -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="container">
+  <div class="stat-row">
+    <div class="stat-card"><div class="num">6</div><div class="label">Repositories</div></div>
+    <div class="stat-card"><div class="num">2</div><div class="label">Core Endpoints</div></div>
+    <div class="stat-card"><div class="num">43</div><div class="label">Compliance Tests</div></div>
+    <div class="stat-card"><div class="num">3</div><div class="label">Language SDKs</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 1. EXECUTIVE SUMMARY -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <h2>1. Executive Summary</h2>
+    <p class="section-subtitle">One protocol. Every platform. Any language.</p>
+
+    <p style="color: var(--text-secondary); max-width: 800px; line-height: 1.7; margin-bottom: 20px;">
+      <strong style="color: var(--text);">TotalStack</strong> is the universal interface between
+      AI agent platforms and the agent harnesses that think. It replaces tightly-coupled,
+      vendor-locked architectures with a clean, <strong style="color: var(--accent);">two-endpoint
+      contract</strong>. The platform handles infrastructure — messaging, tools, models, credentials,
+      scheduling, plugins. The harness handles intelligence — reasoning, planning, memory,
+      decision-making. Any harness that implements TotalStack instantly gains everything the
+      platform offers, without writing a single line of platform code.
+    </p>
+
+    <blockquote>
+      "The platform asks: 'What should I do?' The harness answers. The platform executes. The platform reports back. Loop."
+    </blockquote>
+
+    <p style="color: var(--text-secondary); margin-top: 14px;">
+      The harness <em>thinks</em>. The platform <em>does</em>. That's the split.
+    </p>
+
+    <div class="card-grid" style="margin-top: 28px;">
+      <div class="card accent">
+        <h3>🔒 The Problem</h3>
+        <p>Agent harnesses are <strong>tightly coupled</strong> to platforms. Switching platforms means rewriting the harness. Every new project re-implements the same integration layer. Harness developers spend 70% of their time on infrastructure plumbing instead of agent logic.</p>
+      </div>
+      <div class="card accent">
+        <h3>🔑 The Solution</h3>
+        <p>A <strong>thin, two-endpoint contract</strong>. Implement it once. Polyglot SDKs for Go, Python, and TypeScript — with code generation for any language. A 43-test compliance battery gates every harness. The platform evolves independently from the brain.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 2. ARCHITECTURE -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <h2>2. System Architecture</h2>
+    <p class="section-subtitle">The platform owns infrastructure. The harness owns intelligence.</p>
+
+    <div class="arch">
+      <div class="arch-row">
+        <div class="arch-label">Messaging</div>
+        <div class="arch-content">
+          <span class="chip chip-green">Telegram</span>
+          <span class="chip chip-green">Discord</span>
+          <span class="chip chip-green">Slack</span>
+          <span class="chip chip-green">Web</span>
+          <span class="chip chip-green">Signal</span>
+        </div>
+      </div>
+      <div class="arch-row">
+        <div class="arch-label">Platform</div>
+        <div class="arch-content">
+          <span class="chip chip-gray">Tool Registry</span>
+          <span class="chip chip-gray">Model Routing</span>
+          <span class="chip chip-gray">Credential Vault</span>
+          <span class="chip chip-gray">Cron Scheduler</span>
+          <span class="chip chip-gray">MCP Servers</span>
+          <span class="chip chip-gray">Plugin System</span>
+        </div>
+      </div>
+      <div class="arch-row">
+        <div class="arch-label">Shim Layer</div>
+        <div class="arch-content">
+          <span class="chip chip-blue">Protocol Parser</span>
+          <span class="chip chip-blue">REST Client</span>
+          <span class="chip chip-blue">Health Monitor</span>
+          <span class="chip chip-blue">Decision Router</span>
+          <span class="chip chip-blue">Test Battery</span>
+        </div>
+      </div>
+      <div class="arch-row">
+        <div class="arch-label">Transport</div>
+        <div class="arch-content">
+          <span class="chip chip-gray">REST / JSON</span>
+          <span class="chip chip-gray">gRPC (streaming)</span>
+        </div>
+      </div>
+      <div class="arch-row">
+        <div class="arch-label">Harnesses</div>
+        <div class="arch-content">
+          <span class="chip chip-green">Consensus (Go)</span>
+          <span class="chip chip-green">LangChain (Python)</span>
+          <span class="chip chip-green">CrewAI (Python)</span>
+          <span class="chip chip-amber">Custom (Any Language)</span>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 36px; margin-bottom: 16px;">Ownership Split</h3>
+    <div class="card-grid">
+      <div class="card">
+        <h3>🖥️ Platform Owns</h3>
+        <ul>
+          <li>Gateway routing (Telegram, Discord, Slack, Web, Signal)</li>
+          <li>Tool registry &amp; sandboxed execution</li>
+          <li>Model provider selection &amp; fallback</li>
+          <li>Credential vault (API keys, rotation, scoping)</li>
+          <li>Cron scheduling &amp; skill management</li>
+          <li>MCP server/client lifecycle</li>
+          <li>Plugin system &amp; multi-platform I/O</li>
+        </ul>
+      </div>
+      <div class="card accent">
+        <h3>🧠 Harness Owns</h3>
+        <ul>
+          <li>Agent loop — reasoning, planning, iteration strategy</li>
+          <li>Context window management</li>
+          <li>Memory architecture &amp; persistence</li>
+          <li>Decision strategy — when to tool-call vs respond</li>
+          <li>Failure recovery — retry, fallback, escalation</li>
+          <li>Prompt engineering &amp; template system</li>
+          <li>Sub-task delegation logic</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 3. PROTOCOL -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <h2>3. Protocol Specification</h2>
+    <p class="section-subtitle">OpenAPI 3.1 single source of truth — 6 endpoints, 6 decision types</p>
+
+    <h3>Endpoints</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Method</th><th>Endpoint</th><th>Purpose</th><th>Required</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>GET</code></td>
+            <td><code>/v1/health</code></td>
+            <td>Health check — status, version, capabilities, latency</td>
+            <td><span class="chip chip-green" style="font-size:0.68rem">YES</span></td>
+          </tr>
+          <tr>
+            <td><code>POST</code></td>
+            <td><code>/v1/process</code></td>
+            <td><strong>Core:</strong> New message → harness returns a Decision</td>
+            <td><span class="chip chip-green" style="font-size:0.68rem">YES</span></td>
+          </tr>
+          <tr>
+            <td><code>POST</code></td>
+            <td><code>/v1/result</code></td>
+            <td><strong>Core:</strong> Execution outcome → harness returns next Decision</td>
+            <td><span class="chip chip-green" style="font-size:0.68rem">YES</span></td>
+          </tr>
+          <tr>
+            <td><code>POST</code></td>
+            <td><code>/v1/cancel</code></td>
+            <td>Cancel in-flight operation (user interrupt)</td>
+            <td>Recommended</td>
+          </tr>
+          <tr>
+            <td><code>GET</code></td>
+            <td><code>/v1/sessions/:id</code></td>
+            <td>Session metadata — turn count, status, active decision</td>
+            <td>Optional</td>
+          </tr>
+          <tr>
+            <td><code>DELETE</code></td>
+            <td><code>/v1/sessions/:id</code></td>
+            <td>Force session termination</td>
+            <td>Optional</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top: 36px;">What the Platform Sends to Every Harness</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Field</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>session_id</code></td><td>Stable session identifier across turns</td></tr>
+          <tr><td><code>message</code></td><td>User message — content, attachments, timestamp</td></tr>
+          <tr><td><code>identity</code></td><td>Who sent it — platform, user ID, chat ID, thread ID</td></tr>
+          <tr><td><code>context.history</code></td><td>Last N messages (configurable, default 20)</td></tr>
+          <tr><td><code>context.tools</code></td><td>Available tools with full JSON Schema params</td></tr>
+          <tr><td><code>context.models</code></td><td>Available LLMs with pricing, context window, capabilities</td></tr>
+          <tr><td><code>context.memory</code></td><td>Persistent memory relevant to this session</td></tr>
+          <tr><td><code>context.config</code></td><td>Session config — max iterations, timeout, temperature</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top: 36px;">Decision Types</h3>
+    <p style="color: var(--text-tertiary); margin-bottom: 16px;">
+      The harness returns exactly <strong>one Decision</strong> per response. The platform executes it and reports back.
+    </p>
+
+    <div class="dgrid">
+      <div class="dcard">
+        <div class="dtype">tool_call</div>
+        <div class="ddesc">Execute a platform tool — terminal, web search, file I/O. Harness picks the tool and params. Platform sandboxes execution.</div>
+        <div class="dexample">→ Platform executes → POST /v1/result</div>
+      </div>
+      <div class="dcard">
+        <div class="dtype">llm_call</div>
+        <div class="ddesc">Route a prompt to an LLM. Harness selects from available models. Platform handles provider routing and cost tracking.</div>
+        <div class="dexample">→ Platform routes to model → POST /v1/result</div>
+      </div>
+      <div class="dcard">
+        <div class="dtype">text</div>
+        <div class="ddesc">Send Markdown-formatted text to the user. Set finished: false to continue the loop. finished: true to end the exchange.</div>
+        <div class="dexample">finished: false → continue loop</div>
+      </div>
+      <div class="dcard">
+        <div class="dtype">wait</div>
+        <div class="ddesc">Pause for an external signal — CI completion, human approval, API callback. Optional polling endpoint.</div>
+        <div class="dexample">→ timeout / signal → POST /v1/result</div>
+      </div>
+      <div class="dcard">
+        <div class="dtype">delegate</div>
+        <div class="ddesc">Spawn a sub-agent for parallel work. Platform manages the sub-agent lifecycle. Harness gets the summary.</div>
+        <div class="dexample">→ sub-agent complete → POST /v1/result</div>
+      </div>
+      <div class="dcard">
+        <div class="dtype">end</div>
+        <div class="ddesc">Terminate the session. Six reasons: task_complete, user_requested, error, timeout, rate_limited, cancelled.</div>
+        <div class="dexample">→ session terminates cleanly</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 36px;">Session Lifecycle</h3>
+    <pre style="line-height: 1.8;">
+1. User message arrives (Telegram / Discord / Slack / Web)
+2. Platform authenticates, rate-limits, resolves session
+3. Shim → <strong style="color:var(--accent);">POST /v1/process</strong> (session, message, tools, models, history, memory)
+4. Harness <em>thinks</em> → returns <strong style="color:var(--accent);">Decision</strong>
+5. Platform executes the Decision
+6. Platform → <strong style="color:var(--accent);">POST /v1/result</strong> (execution outcome)
+7. Harness thinks → returns next Decision
+8. Loop until harness returns <strong style="color:var(--accent);">end</strong>
+9. Response delivered to user</pre>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 4. SDKs -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <h2>4. Multi-Language SDKs</h2>
+    <p class="section-subtitle">Three first-party SDKs generated from a single OpenAPI 3.1 spec — idiomatic bindings, not mechanical format translation.</p>
+
+    <div class="card-grid">
+      <div class="card accent">
+        <h3>Go SDK</h3>
+        <p>Strict types with JSON tags. <code>Harness</code> interface. Built-in <code>http.Handler</code> server with middleware (logging, recovery, timeout). Mock platform for testing. One line to serve: <code>NewHTTPServer(harness)</code>.</p>
+      </div>
+      <div class="card blue">
+        <h3>Python SDK</h3>
+        <p>Pydantic v2 models. <code>BaseHarness</code> ABC with async methods. FastAPI router for one-line integration. Mock platform + pytest fixtures. Published on PyPI.</p>
+      </div>
+      <div class="card purple">
+        <h3>TypeScript SDK</h3>
+        <p>Zod schemas for runtime validation. <code>Harness</code> interface. Hono router for quick-start server. Mock platform + vitest helpers. Published on npm.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 36px;">Minimal Harness Example (Go — ~25 lines)</h3>
+    <pre><span style="color:#6b7280;">// Echo harness — the simplest possible TotalStack harness</span>
+type EchoHarness struct{}
+
+func (e *EchoHarness) OnProcess(req *protocol.ProcessRequest) (*protocol.Decision, error) {
+    return &amp;protocol.Decision{
+        Decision:  protocol.DecisionText,
+        Text: &amp;protocol.TextResp{
+            Content:  fmt.Sprintf("You said: %s", req.Message.Content),
+            Finished: true,
+        },
+    }, nil
+}
+
+func (e *EchoHarness) OnResult(req *protocol.ResultRequest) (*protocol.Decision, error) {
+    return &amp;protocol.Decision{Decision: protocol.DecisionEnd, End: &amp;protocol.End{Reason: "task_complete"}}, nil
+}
+
+func (e *EchoHarness) Health() *protocol.HealthResponse {
+    return &amp;protocol.HealthResponse{Status: "ok", Version: "1.0.0", Transport: "rest"}
+}
+
+<span style="color:#6b7280;">// One line to serve:</span>
+http.ListenAndServe(":9191", harness.NewHTTPServer(&amp;EchoHarness{}))</pre>
+
+    <p style="color: var(--text-secondary); margin-top: 14px;">
+      <strong>Zero → working harness in under 5 minutes.</strong> Implement three methods. Run the compliance test. Done. The SDK handles JSON marshaling, validation, middleware, error recovery, and session management.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 5. COMPLIANCE TESTING -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <h2>5. Compliance Test Battery</h2>
+    <p class="section-subtitle">The test battery IS the gate. Pass it, you're compliant. No code changes needed.</p>
+
+    <div class="stat-row" style="margin-bottom: 24px;">
+      <div class="stat-card"><div class="num">43</div><div class="label">Tests</div></div>
+      <div class="stat-card"><div class="num">6</div><div class="label">Categories</div></div>
+      <div class="stat-card"><div class="num">&lt;30s</div><div class="label">Full Suite</div></div>
+      <div class="stat-card"><div class="num">0</div><div class="label">Code Changes</div></div>
+    </div>
+
+    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+      Runs against <strong>any harness endpoint</strong>. Installed with a single pip command.
+      Exit code 0 = TotalStack-compliant. Runs in CI. Pre-commit hooks available.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Category</th><th>Tests</th><th>What It Verifies</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Health &amp; Protocol</strong></td><td>7</td><td>Health endpoint, version negotiation, capabilities advertisement, latency</td></tr>
+          <tr><td><strong>Process — Basic Flows</strong></td><td>8</td><td>Valid Decision structure, multi-turn conversation, session isolation</td></tr>
+          <tr><td><strong>Process — Decision Types</strong></td><td>6</td><td>Every decision type (tool_call, llm_call, text, wait, delegate, end) returnable</td></tr>
+          <tr><td><strong>Result Handling</strong></td><td>7</td><td>Handles tool results, LLM responses, errors, delegate summaries correctly</td></tr>
+          <tr><td><strong>Error &amp; Edge Cases</strong></td><td>10</td><td>Malformed JSON, missing fields, empty messages, 100KB payloads, Unicode, cancel</td></tr>
+          <tr><td><strong>Stress &amp; Performance</strong></td><td>5</td><td>10 concurrent sessions, 50 rapid calls, loop convergence, memory stability</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <pre>
+$ pip install totalstack-shim
+$ totalstack-test --endpoint http://localhost:9191
+
+TotalStack Compliance Test Battery v1.0.0
+Target: http://localhost:9191    Transport: REST
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Health &amp; Protocol             7/7  ✅
+  Process - Basic Flows         8/8  ✅
+  Process - Decision Types      6/6  ✅
+  Result Handling               7/7  ✅
+  Error &amp; Edge Cases           10/10 ✅
+  Stress &amp; Performance          5/5  ✅
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  TOTAL                        43/43 ✅  PASSED</pre>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 6. SECURITY -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <h2>6. Security Model</h2>
+    <p class="section-subtitle">Security by architecture, not by configuration.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Property</th><th>Guarantee</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Network boundary</strong></td><td>Harnesses bind to <code>localhost</code> only — no network exposure by default</td></tr>
+          <tr><td><strong>Authentication</strong></td><td>Platform authenticates the user; harness trusts the platform</td></tr>
+          <tr><td><strong>Credential isolation</strong></td><td>Harness <strong>cannot</strong> access the platform credential vault directly</td></tr>
+          <tr><td><strong>Tool sandboxing</strong></td><td>Harness <strong>cannot</strong> bypass tool execution sandboxing</td></tr>
+          <tr><td><strong>Audit trail</strong></td><td>All tool execution is logged and attributed to the harness session</td></tr>
+          <tr><td><strong>Authorization</strong></td><td>User identity passed in <code>context.identity</code> — harness decides policy</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 7. RESILIENCE -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <h2>7. Error Handling &amp; Resilience</h2>
+    <p class="section-subtitle">Graceful degradation at every failure point.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Failure Mode</th><th>Behavior</th></tr></thead>
+        <tbody>
+          <tr><td>Harness unreachable at startup</td><td>Log warning, route all sessions to platform native fallback</td></tr>
+          <tr><td>Harness timeout mid-session</td><td>Retry 3× with exponential backoff (1s, 2s, 4s)</td></tr>
+          <tr><td>Malformed Decision returned</td><td>Log error, return error to user, end session</td></tr>
+          <tr><td>Harness hangs (no response)</td><td>Timeout at configured <code>timeout_ms</code>, terminate session</td></tr>
+          <tr><td>Health check fails (3× consecutive)</td><td>Remove from pool, poll every 30s, restore on success</td></tr>
+          <tr><td>Harness returns <code>end</code> with error</td><td>Relay error to user, terminate cleanly</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 8. PROJECT STRUCTURE -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <h2>8. Project Structure</h2>
+    <p class="section-subtitle">Six repositories. One dependency chain. The protocol is the single source of truth.</p>
+
+    <pre style="line-height: 1.7; white-space: pre; overflow-x: auto;">
+protocol/      ── OpenAPI 3.1 Spec + JSON Schema (single source of truth)
+    │
+    ├── shim/             ── Platform plugin: shim loop, test battery, CLI
+    ├── sdk-go/           ── Go SDK for harness developers
+    ├── sdk-python/       ── Python SDK for harness developers
+    └── sdk-typescript/   ── TypeScript SDK for harness developers</pre>
+
+    <div class="table-wrap" style="margin-top: 16px;">
+      <table>
+        <thead><tr><th>Repository</th><th>Purpose</th><th>Language</th></tr></thead>
+        <tbody>
+          <tr><td><code>protocol</code></td><td><strong>OpenAPI 3.1 spec + JSON Schema</strong> — single source of truth</td><td>YAML / JSON</td></tr>
+          <tr><td><code>shim</code></td><td>Platform plugin — shim loop, test battery, CLI</td><td>Python</td></tr>
+          <tr><td><code>sdk-go</code></td><td>Go SDK for harness developers</td><td>Go</td></tr>
+          <tr><td><code>sdk-python</code></td><td>Python SDK for harness developers</td><td>Python</td></tr>
+          <tr><td><code>sdk-typescript</code></td><td>TypeScript SDK for harness developers</td><td>TypeScript</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 9. ROADMAP -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <h2>9. Implementation Roadmap</h2>
+    <p class="section-subtitle">Five-phase delivery plan. Each phase has a clear, testable gate.</p>
+
+    <div class="phase-grid">
+      <div class="phase">
+        <div class="phase-header">
+          <div class="phase-num">0</div>
+          <div class="phase-title">Protocol — Single Source of Truth</div>
+        </div>
+        <div class="phase-gate">Gate: OpenAPI spec + JSON Schema pass validation. Tagged v1.0.0.</div>
+        <div class="phase-items">
+          <span class="phase-tag">OpenAPI 3.1 Spec</span>
+          <span class="phase-tag">JSON Schemas</span>
+          <span class="phase-tag">Example Payloads</span>
+          <span class="phase-tag">Validation Tests</span>
+          <span class="phase-tag">v1.0.0 Tag</span>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <div class="phase-num">1</div>
+          <div class="phase-title">SDKs — Generated from Protocol</div>
+        </div>
+        <div class="phase-gate">Gate: All 3 SDK echo examples pass the compliance test battery.</div>
+        <div class="phase-items">
+          <span class="phase-tag">Go: types + Harness interface + HTTP handler</span>
+          <span class="phase-tag">Python: Pydantic + BaseHarness + FastAPI</span>
+          <span class="phase-tag">TypeScript: Zod + Hono + vitest</span>
+          <span class="phase-tag">All 3: minimal + echo examples</span>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <div class="phase-num">2</div>
+          <div class="phase-title">Shim — Platform Plugin</div>
+        </div>
+        <div class="phase-gate">Gate: Shim completes 3-turn conversation with echo harness.</div>
+        <div class="phase-items">
+          <span class="phase-tag">Protocol parser</span>
+          <span class="phase-tag">REST + gRPC client</span>
+          <span class="phase-tag">Loader (discovery)</span>
+          <span class="phase-tag">Shim loop</span>
+          <span class="phase-tag">Decision executors (all 6)</span>
+          <span class="phase-tag">CLI</span>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <div class="phase-num">3</div>
+          <div class="phase-title">Test Battery — THE GATE</div>
+        </div>
+        <div class="phase-gate">Gate: Test battery passes against all 3 SDK echo examples.</div>
+        <div class="phase-items">
+          <span class="phase-tag">43 compliance tests</span>
+          <span class="phase-tag">6 test categories</span>
+          <span class="phase-tag">CLI tool</span>
+          <span class="phase-tag">CI integration</span>
+          <span class="phase-tag">Pre-commit hook</span>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <div class="phase-num">4</div>
+          <div class="phase-title">Docs &amp; Release</div>
+        </div>
+        <div class="phase-gate">Gate: External developer goes zero → working harness in &lt; 30 minutes.</div>
+        <div class="phase-items">
+          <span class="phase-tag">Landing page + Quickstart</span>
+          <span class="phase-tag">"Build Your First Harness" guide</span>
+          <span class="phase-tag">Migration guide</span>
+          <span class="phase-tag">Compliance badge system</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 10. DESIGN PRINCIPLES -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <h2>10. Design Principles</h2>
+    <div class="card-grid">
+      <div class="card accent">
+        <h3>🧠 Harness Thinks, Platform Does</h3>
+        <p>Clean separation of concerns. The harness never touches files, manages API keys, or configures gateways. It <strong>thinks</strong>. The platform <strong>does</strong>.</p>
+      </div>
+      <div class="card accent">
+        <h3>🔌 Language-Agnostic</h3>
+        <p>REST + JSON means any language works. gRPC for high-frequency loops. A curl script is a valid harness if it speaks the protocol.</p>
+      </div>
+      <div class="card accent">
+        <h3>🛡️ Secure by Architecture</h3>
+        <p>Harnesses run on localhost. No network exposure. Cannot access credential vaults. All tool execution is sandboxed and attributed.</p>
+      </div>
+      <div class="card accent">
+        <h3>🧪 Compliance-Driven</h3>
+        <p>The test battery IS the spec. 43 tests. Region-style E2E coverage. Any developer can run <code>totalstack-test</code> against their endpoint.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- CTA -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="cta">
+  <div class="container">
+    <h2>Build Your First TotalStack Harness</h2>
+    <p>Three endpoints. Any language. Full platform power.</p>
+    <pre style="display: inline-block; text-align: left;">
+# Install the test battery
+pip install totalstack-shim
+
+# Run compliance tests against your harness
+totalstack-test --endpoint http://localhost:9191</pre>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- FOOTER -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <p><strong>TotalStack</strong> — Universal AI Agent Protocol</p>
+    <p style="margin-top: 4px;">Protocol v1.0.0 · OpenAPI 3.1 · MIT License · github.com/get-h3</p>
+    <p style="margin-top: 12px; font-size: 0.75rem; color: #555;">
+      Product Requirements Document · Prepared for client review · July 2026
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

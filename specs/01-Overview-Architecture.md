@@ -1,14 +1,32 @@
 # S01 — H3 Overview & Architecture
 
 **Status:** Spec  
-**Version:** 1.0.0  
-**Last Updated:** 2026-07-12
+**Version:** 1.1.0  
+**Last Updated:** 2026-07-14
 
 ---
 
-## 1. What Is H3
+## 1. What Is H3 — The Brain Swap
 
-H3 (Hermes Harness Hooks) is the two-endpoint protocol that decouples Hermes Core (the platform) from agent harnesses (the brain). Any harness implementing the H3 contract can use every Hermes capability — Telegram, Discord, Slack, tools, models, credentials, skills, cron, MCP, delegation — without touching platform code.
+**Core goal:** Any external agent system becomes the thinking brain of Hermes.
+
+| Role | Who | What |
+|---|---|---|
+| **Body** | Hermes Core | Gateway (Telegram/Discord/Slack/Web), tool execution (sandboxed), model routing, credential vault, cron, MCP, skills, delegation, plugin system |
+| **Brain** | Any harness | Reasoning, planning, tool selection, context management, memory architecture, failure recovery, prompt engineering |
+| **Neural link** | H3 Protocol | Two-endpoint REST/gRPC contract: `POST /v1/process` + `POST /v1/result` |
+
+### The Promise
+
+> Use OpenCode CLI as your brain today. Swap to Consensus tomorrow. Run CrewAI on Wednesdays. Same Hermes body. Same Telegram gateway. Same tools. Same credentials. Different brains.
+
+Concrete examples of brains that plug in via H3:
+- **OpenCode CLI** — Go-based coding agent (AnomalyCo/opencode)
+- **Consensus** — ACID-session Go harness with persistent memory
+- **CrewAI** — Python multi-agent orchestration
+- **LangChain** — Python chains + prompt templates
+- **LangGraph** — Stateful agent graphs
+- **Custom** — Any language, any framework, 3 endpoints
 
 ### The Split
 

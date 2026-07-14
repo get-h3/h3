@@ -1,6 +1,6 @@
 # AGENTS.md — get-h3 (Umbrella)
 
-H3 (Hermes Harness Hooks) — two-endpoint protocol decoupling Hermes Core from agent harnesses.
+H3 (Hermes Harness Hooks) — **brain-swap protocol**. External agent systems (OpenCode, Consensus, CrewAI, LangChain) become the thinking brain of Hermes. Hermes is the body. H3 is the neural link.
 
 **Org:** [get-h3](https://github.com/get-h3)
 

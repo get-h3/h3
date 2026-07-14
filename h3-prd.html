@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H3 — Hermes Harness Hooks</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0a14; color: #c8c8d4;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6; padding: 12px;
+  }
+  @media (min-width: 700px) { body { padding: 24px; } }
+  .container { max-width: 960px; margin: 0 auto; }
+  .hero {
+    text-align: center; padding: 36px 16px 28px;
+    background: linear-gradient(180deg, #0f0f1e 0%, #0a0a14 100%);
+    border: 1px solid #1e1e38; border-radius: 16px; margin-bottom: 20px;
+  }
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 2.4rem); font-weight: 800;
+    background: linear-gradient(135deg, #8b5cf6, #d946ef);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+  .tagline { font-size: clamp(0.9rem, 3vw, 1.1rem); color: #8888a0; }
+  .pitch { font-size: 0.85rem; color: #66a0cc; font-style: italic; margin-top: 12px; max-width: 600px; margin-left: auto; margin-right: auto; }
+  .grid-2 { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  @media (min-width: 700px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+  .card {
+    background: #0f0f1e; border: 1px solid #1e1e38; border-radius: 12px;
+    padding: 18px; margin-bottom: 16px;
+  }
+  .card h2 { font-size: 1.1rem; font-weight: 700; color: #e0e0f0; margin-bottom: 14px; }
+  .card h3 { font-size: 0.95rem; font-weight: 700; color: #d0d0e0; margin: 16px 0 8px; }
+  .card p, .card li { font-size: 0.8rem; color: #9090a8; }
+  pre {
+    background: #060612; border: 1px solid #1a1a30; border-radius: 8px;
+    padding: 12px; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.72rem; line-height: 1.5; margin: 8px 0;
+  }
+  .arch-box.primary { border-color: #8b5cf6; background: #15102a; box-shadow: 0 0 16px rgba(139, 92, 246, 0.10); }
+  .arch-box.harness { border-color: #d946ef; background: #1a1020; box-shadow: 0 0 16px rgba(217, 70, 239, 0.08); }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+  .tbl th { text-align: left; color: #808090; font-weight: 600; padding: 6px 8px; border-bottom: 1px solid #1e1e38; }
+  .tbl td { padding: 6px 8px; border-bottom: 1px solid #14142a; }
+  .badge-go { background: #1a3a5c; color: #60a5fa; }
+  .badge-py { background: #1a2a1a; color: #4ade80; }
+  .badge-ts { background: #1a1a3c; color: #a78bfa; }
+  .footer { text-align: center; padding: 20px; font-size: 0.7rem; color: #505068; }
+</style>
+</head>
+<body>
+<div class="container">
+<section class="hero">
+  <h1>H3</h1>
+  <p class="tagline">Hermes Harness Hooks</p>
+  <p class="pitch">Your harness. Your agent logic. Hermes provides the platform — tools, models, gateways, Telegram, Discord, cron, skills, credentials. H3 is the two-endpoint contract that connects them.</p>
+</section>
+</div>
+</body>
+</html>

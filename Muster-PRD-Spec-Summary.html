@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muster — PRD &amp; Architecture Spec Summary</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --accent2: #7ee787;
+    --accent3: #d2a8ff;
+    --accent4: #f778ba;
+    --accent5: #ffa657;
+    --warn: #d29922;
+    --danger: #f85149;
+    --code-bg: #1c2128;
+    --radius: 8px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+
+  header {
+    padding: 32px 0 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+
+  .tag {
+    display: inline-block;
+    background: var(--accent5);
+    color: #000;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  h1 { font-size: 2.2em; font-weight: 800; margin-bottom: 8px; }
+  h1 span { color: var(--accent5); }
+  .subtitle { font-size: 1.15em; color: var(--muted); margin-bottom: 16px; }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .meta-item { font-size: 0.9em; color: var(--muted); }
+  .meta-item strong { color: var(--text); display: block; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  h2 {
+    font-size: 1.4em;
+    font-weight: 700;
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  h2 .num { color: var(--accent5); margin-right: 8px; }
+  h3 { font-size: 1.1em; font-weight: 600; margin: 24px 0 12px; color: var(--accent2); }
+
+  p { margin-bottom: 14px; }
+
+  .callout {
+    background: var(--surface);
+    border-left: 3px solid var(--accent5);
+    padding: 16px 20px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 20px 0;
+  }
+  .callout.green { border-left-color: var(--accent2); }
+  .callout.purple { border-left-color: var(--accent3); }
+  .callout.blue { border-left-color: var(--accent); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.92em;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    font-weight: 600;
+    color: var(--accent5);
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--surface);
+  }
+  tr:hover td { background: rgba(255,166,87,0.04); }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    overflow-x: auto;
+    font-size: 0.82em;
+    line-height: 1.5;
+    margin: 12px 0;
+  }
+  code { font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace; font-size: 0.9em; }
+  pre code { font-size: 0.9em; }
+
+  ul { margin: 10px 0 16px 24px; }
+  li { margin-bottom: 6px; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+  }
+  .stat .num { font-size: 2em; font-weight: 800; color: var(--accent5); display: block; }
+  .stat .label { font-size: 0.78em; color: var(--muted); margin-top: 4px; }
+
+  .surface-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 8px 0;
+  }
+  .surface-card .icon { font-size: 1.3em; margin-right: 6px; }
+  .surface-card h4 { display: inline; }
+  .surface-card p { margin: 6px 0 0; font-size: 0.9em; color: var(--muted); }
+
+  .arch-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    font-family: monospace;
+    font-size: 0.76em;
+    line-height: 1.4;
+    white-space: pre;
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+
+  .phase {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 12px 0;
+  }
+  .phase .phase-num {
+    background: var(--accent5);
+    color: #000;
+    font-size: 0.75em;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+  .phase h4 { margin: 0 0 4px; }
+  .phase .status { font-size: 0.85em; color: var(--accent2); }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 600;
+    margin: 2px 4px 2px 0;
+  }
+  .badge.go     { background: #00ADD8; color: #000; }
+  .badge.python { background: #3776AB; color: #fff; }
+  .badge.oss   { background: var(--accent2); color: #000; }
+  .badge.wip   { background: var(--warn); color: #000; }
+
+  .coverage-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--border);
+    margin: 4px 0 12px;
+    overflow: hidden;
+  }
+  .coverage-bar .fill {
+    height: 100%;
+    border-radius: 4px;
+  }
+  .fill.green  { background: var(--accent2); }
+  .fill.yellow { background: var(--warn); }
+  .fill.red    { background: var(--danger); }
+
+  .footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.85em;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tag">Product Requirements Document</div>
+  <h1>Muster <span>— Dynamic API Client &amp; MCP Server</span></h1>
+  <p class="subtitle">Turn any OpenAPI spec into a CLI, an MCP server, a daemon, and a Go library. Instantly. No codegen. No boilerplate. No SDK install.</p>
+
+  <div class="meta-grid">
+    <div class="meta-item"><strong>Repository</strong> github.com/anomalyco/muster</div>
+    <div class="meta-item"><strong>Language</strong> Go 1.26.1</div>
+    <div class="meta-item"><strong>Module</strong> github.com/wojons/muster</div>
+    <div class="meta-item"><strong>License</strong> MIT</div>
+    <div class="meta-item"><strong>Status</strong> Functional (Level 2/5) — Active</div>
+    <div class="meta-item"><strong>Packages</strong> 26+ public · 63 agent skills</div>
+  </div>
+
+  <div style="margin-top:12px;">
+    <span class="badge go">Go</span>
+    <span class="badge python">Python (demo)</span>
+    <span class="badge oss">Open Source</span>
+  </div>
+</header>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§1</span> Executive Summary</h2>
+
+<div class="callout">
+  <strong>Muster is a dynamic API client that configures itself from remote inventory.</strong> Instead of installing stale SDKs or manually updating MCP packages, Muster downloads configuration from your API's <code>_inventory.json</code>, caches it locally, and generates commands automatically from your OpenAPI spec. It works offline, respects versioning, and integrates seamlessly with AI assistants via the Model Context Protocol (MCP).
+</div>
+
+<p>The world of API tooling is stuck in a codegen loop. Every new API means a new SDK. Every SDK update means waiting on maintainers. Every AI agent integration means hand-writing MCP tools. <strong>Muster breaks this cycle.</strong> Point it at an OpenAPI spec and it generates everything dynamically — CLI commands, MCP tools, daemon proxies, WASM transforms, and Starlark workflow scripts. One binary. Seven surfaces. Zero codegen.</p>
+
+<div class="two-col">
+  <div>
+    <h3>🎯 The Problem</h3>
+    <ul>
+      <li>API SDKs are <strong>stale the moment they're published</strong></li>
+      <li>AI agents need <strong>hand-crafted MCP tools</strong> for every API</li>
+      <li>Multi-step API workflows require <strong>custom scripting</strong></li>
+      <li>No standard way to <strong>proxy, transform, and rate-limit</strong> API traffic</li>
+      <li>Every API integration is a <strong>bespoke project</strong></li>
+    </ul>
+  </div>
+  <div>
+    <h3>✅ The Solution</h3>
+    <ul>
+      <li><strong>CLI</strong> — <code>openapi-cli request GET /users</code> with auto-completion</li>
+      <li><strong>MCP Server</strong> — every OpenAPI operation becomes an MCP tool automatically</li>
+      <li><strong>Daemon</strong> — Unix socket proxy with shared state, auth, and rate limiting</li>
+      <li><strong>Go Library</strong> — 26 importable packages for programmatic use</li>
+      <li><strong>WASM Plugins</strong> — sandboxed response transformation (wazero runtime)</li>
+      <li><strong>Starlark DSL</strong> — multi-step API workflows with <code>http_get/post/put/delete</code> builtins</li>
+      <li><strong>Docker</strong> — containerized deployment with distroless base images</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§2</span> The Seven Surfaces</h2>
+
+<div class="surface-card">
+  <h4>🖥️ CLI — <code>openapi-cli</code></h4>
+  <p>For humans. Auto-discovers operations, generates shell completions, supports auth headers, WASM transforms, and DSL execution. <code>openapi-cli discover https://api.example.com/openapi.json</code></p>
+</div>
+
+<div class="surface-card">
+  <h4>🤖 MCP Server — <code>openapi-mcp</code></h4>
+  <p>For AI agents. Every OpenAPI operation becomes an MCP tool. Drop it into Claude Desktop, Cursor, or any MCP client. The AI never knows it's talking to a REST API.</p>
+</div>
+
+<div class="surface-card">
+  <h4>🔌 Daemon — <code>openapi-daemon</code></h4>
+  <p>For infrastructure. Unix socket proxy with multi-client support, shared state, authentication, rate limiting, and caching. <code>curl --unix-socket /tmp/muster.sock http://localhost/users</code></p>
+</div>
+
+<div class="surface-card">
+  <h4>📦 Go Library — <code>pkg/</code></h4>
+  <p>For other Go programs. 26+ importable packages — parser, generator, client, auth, cache, rate limiting, WASM runtime, Starlark interpreter, MCP protocol. The same packages the CLI uses.</p>
+</div>
+
+<div class="surface-card">
+  <h4>🧩 WASM Plugins — <code>--wasm-plugin</code></h4>
+  <p>Sandboxed response transformation via wazero runtime. Write transforms in any language that compiles to WASM. Secure by default — each plugin runs in its own isolated sandbox.</p>
+</div>
+
+<div class="surface-card">
+  <h4>⭐ Starlark DSL — <code>dsl run</code></h4>
+  <p>Multi-step API workflows in a safe, deterministic scripting language. Built-in <code>http_get</code>, <code>http_post</code>, <code>http_put</code>, <code>http_delete</code>. Chain operations, transform responses, handle errors.</p>
+</div>
+
+<div class="surface-card">
+  <h4>🐳 Docker</h4>
+  <p>Multi-stage Dockerfile with security scanning and distroless base. Docker Compose with 8 services. Kubernetes manifests, Helm charts, Debian packaging, Homebrew tap.</p>
+</div>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§3</span> Architecture</h2>
+
+<div class="arch-diagram">
+                        ┌─────────────────────────────────┐
+                        │        OPENAPI SPEC              │
+                        │  (remote URL or local file)      │
+                        └──────────────┬──────────────────┘
+                                       │
+                        ┌──────────────▼──────────────────┐
+                        │         INVENTORY LAYER          │
+                        │  _inventory.json → cache → index │
+                        └──────────────┬──────────────────┘
+                                       │
+           ┌───────────────────────────┼───────────────────────────┐
+           │                           │                           │
+    ┌──────▼──────┐            ┌──────▼──────┐            ┌──────▼──────┐
+    │   PARSER    │            │  GENERATOR  │            │   CLIENT    │
+    │ pkg/openapi │───────────►│ pkg/generator│◄──────────│ pkg/client  │
+    │             │  spec tree │              │  commands  │             │
+    └─────────────┘            └──────┬───────┘            └─────────────┘
+                                      │
+        ┌─────────────┬───────────────┼───────────────┬─────────────┐
+        │             │               │               │             │
+   ┌────▼────┐  ┌─────▼─────┐  ┌──────▼──────┐  ┌─────▼─────┐ ┌────▼────┐
+   │   CLI   │  │MCP Server │  │   Daemon    │  │   WASM    │  │   DSL   │
+   │ :stdio  │  │ :stdio    │  │ :unix sock  │  │:sandbox   │  │ :interp │
+   └─────────┘  └───────────┘  └─────────────┘  └───────────┘  └─────────┘
+        │             │               │               │             │
+        └─────────────┴───────────────┴───────────────┴─────────────┘
+                                      │
+                        ┌──────────────▼──────────────────┐
+                        │        CROSS-CUTTING LAYER       │
+                        │  auth │ cache │ rate │ config    │
+                        │  telemetry │ metrics │ logging   │
+                        │  seccomp │ keychain │ platform   │
+                        └─────────────────────────────────┘
+</div>
+
+<h3>Core Pipeline</h3>
+
+<table>
+  <thead><tr><th>Stage</th><th>Package</th><th>What It Does</th></tr></thead>
+  <tbody>
+    <tr><td><strong>1. Discover</strong></td><td><code>pkg/inventory</code></td><td>Fetches <code>_inventory.json</code> from remote, caches locally, manages versions</td></tr>
+    <tr><td><strong>2. Parse</strong></td><td><code>pkg/openapi</code></td><td>Parses OpenAPI 3.x spec using kin-openapi, extracts operations, parameters, schemas</td></tr>
+    <tr><td><strong>3. Generate</strong></td><td><code>pkg/generator</code></td><td>Converts parsed operations into CLI commands and MCP tools with typed parameters</td></tr>
+    <tr><td><strong>4. Execute</strong></td><td><code>pkg/client</code></td><td>HTTP client with auth (OAuth2, mTLS, bearer), retry, rate limiting, caching</td></tr>
+    <tr><td><strong>5. Transform</strong></td><td><code>pkg/wasm</code></td><td>WASM sandbox (wazero) for response transformation plugins</td></tr>
+    <tr><td><strong>6. Orchestrate</strong></td><td><code>pkg/dsl</code></td><td>Starlark interpreter for multi-step workflows with built-in HTTP functions</td></tr>
+    <tr><td><strong>7. Expose</strong></td><td><code>pkg/mcp</code></td><td>Full MCP protocol implementation — tools/list, tools/call, resources, prompts</td></tr>
+    <tr><td><strong>8. Proxy</strong></td><td><code>pkg/daemon</code></td><td>Unix socket proxy server with multi-client support and shared state</td></tr>
+  </tbody>
+</table>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§4</span> The Demo — 5 Mock Services, 10 Scripts</h2>
+
+<p>The self-contained demo proves every surface works end-to-end:</p>
+
+<table>
+  <thead><tr><th>Service</th><th>Port</th><th>What It Provides</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Task Forge</strong></td><td>9801</td><td>Project management — CRUD, nested resources, tags, search</td></tr>
+    <tr><td><strong>ByteStash</strong></td><td>9802</td><td>File storage — upload, download, folders, trash/recover</td></tr>
+    <tr><td><strong>Inkwell</strong></td><td>9803</td><td>Blog/CMS — 4 auth roles, draft→publish workflow</td></tr>
+    <tr><td><strong>Pulse</strong></td><td>9804</td><td>Metrics engine — bulk insert, range queries, aggregations</td></tr>
+    <tr><td><strong>ChainLink</strong></td><td>9805</td><td>Workflow automation — multi-step chains, webhooks, polling</td></tr>
+  </tbody>
+</table>
+
+<div class="stat-grid">
+  <div class="stat"><span class="num">5</span><span class="label">Mock Services</span></div>
+  <div class="stat"><span class="num">10</span><span class="label">Demo Scripts</span></div>
+  <div class="stat"><span class="num">23</span><span class="label">Pass/Fail Checks</span></div>
+  <div class="stat"><span class="num">7</span><span class="label">Surfaces Tested</span></div>
+</div>
+
+<pre><code>cd demo && ./run-all.sh
+# Builds binaries → starts 5 services → runs 10 demos → prints 23 pass/fail → cleans up
+
+Demo scripts:
+  01-discover        → inventory fetch &amp; spec parsing
+  02-crud-lifecycle  → full CRUD: create, read, update, delete
+  03-file-workflow   → upload, download, trash, recover
+  04-auth-spectrum   → 4 auth roles tested
+  05-analytics       → bulk insert, range queries, aggregations
+  06-workflow-chain  → multi-step chain with webhooks
+  07-daemon-proxy    → Unix socket proxy round-trip
+  08-wasm-transform  → WASM plugin response transform
+  09-dsl-chaining    → Starlark script chaining
+  10-mcp-discovery   → MCP tools/list + tools/call</code></pre>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§5</span> Technology Stack</h2>
+
+<table>
+  <thead><tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Language</strong></td><td>Go 1.26.1</td><td>Static binaries, cross-platform, no runtime dependency</td></tr>
+    <tr><td><strong>CLI Framework</strong></td><td>Cobra + Viper</td><td>Command structure, configuration management</td></tr>
+    <tr><td><strong>OpenAPI Parsing</strong></td><td>Kin-OpenAPI</td><td>OpenAPI 3.x spec parsing and validation</td></tr>
+    <tr><td><strong>WASM Runtime</strong></td><td>Wazero (Wasmtime)</td><td>Zero-dependency WASM sandbox for plugins</td></tr>
+    <tr><td><strong>DSL Interpreter</strong></td><td>Starlark (Go)</td><td>Safe, deterministic scripting language</td></tr>
+    <tr><td><strong>Storage</strong></td><td>SQLite3</td><td>Local cache, command store, audit trail</td></tr>
+    <tr><td><strong>Logging</strong></td><td>Zerolog</td><td>Structured, zero-allocation JSON logging</td></tr>
+    <tr><td><strong>Metrics</strong></td><td>Prometheus</td><td>Client-side metrics and instrumentation</td></tr>
+    <tr><td><strong>Tracing</strong></td><td>OpenTelemetry</td><td>Distributed tracing across surfaces</td></tr>
+    <tr><td><strong>Security</strong></td><td>libseccomp + SELinux</td><td>Linux sandboxing and mandatory access control</td></tr>
+    <tr><td><strong>Validation</strong></td><td>gojsonschema</td><td>JSON Schema validation for request/response</td></tr>
+    <tr><td><strong>Cryptography</strong></td><td>x/crypto</td><td>Keychain integration, secure token storage</td></tr>
+  </tbody>
+</table>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§6</span> Test Coverage &amp; Quality</h2>
+
+<div class="stat-grid">
+  <div class="stat"><span class="num">217</span><span class="label">New Unit Tests (Jun 2026)</span></div>
+  <div class="stat"><span class="num">11</span><span class="label">Integration Tests Fixed</span></div>
+  <div class="stat"><span class="num">44</span><span class="label">Total Test Files</span></div>
+  <div class="stat"><span class="num">0</span><span class="label">Current Failures</span></div>
+</div>
+
+<h3>Per-Package Coverage</h3>
+
+<table>
+  <thead><tr><th>Package</th><th>Coverage</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td><code>pkg/retry</code></td><td>100%</td><td>
+      <div class="coverage-bar"><div class="fill green" style="width:100%"></div></div></td></tr>
+    <tr><td><code>pkg/telemetry</code></td><td>100%</td><td>
+      <div class="coverage-bar"><div class="fill green" style="width:100%"></div></div></td></tr>
+    <tr><td><code>pkg/repository</code></td><td>94.4%</td><td>
+      <div class="coverage-bar"><div class="fill green" style="width:94.4%"></div></div></td></tr>
+    <tr><td><code>pkg/dsl</code></td><td>94.1%</td><td>
+      <div class="coverage-bar"><div class="fill green" style="width:94.1%"></div></div></td></tr>
+    <tr><td><code>pkg/openapi</code></td><td>86.1%</td><td>
+      <div class="coverage-bar"><div class="fill green" style="width:86.1%"></div></div></td></tr>
+    <tr><td><code>pkg/sql</code></td><td>60.7%</td><td>
+      <div class="coverage-bar"><div class="fill yellow" style="width:60.7%"></div></div></td></tr>
+    <tr><td><code>pkg/auth</code></td><td>24.6%</td><td>
+      <div class="coverage-bar"><div class="fill red" style="width:24.6%"></div></div></td></tr>
+  </tbody>
+</table>
+
+<h3>Quality Gates</h3>
+
+<table>
+  <thead><tr><th>Gate</th><th>Tool</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Unit Tests</strong></td><td><code>go test -v ./...</code></td><td>✅ Passing</td></tr>
+    <tr><td><strong>Integration Tests</strong></td><td><code>make test-integration</code></td><td>✅ Passing</td></tr>
+    <tr><td><strong>End-to-End Tests</strong></td><td><code>make test-e2e</code></td><td>✅ Passing</td></tr>
+    <tr><td><strong>Race Detection</strong></td><td><code>make test-race</code></td><td>✅ Passing</td></tr>
+    <tr><td><strong>Lint</strong></td><td><code>golangci-lint run ./...</code></td><td>✅ Passing</td></tr>
+    <tr><td><strong>Vet</strong></td><td><code>go vet ./...</code></td><td>✅ Passing</td></tr>
+    <tr><td><strong>Full Validation</strong></td><td><code>make validate</code></td><td>✅ Passing</td></tr>
+    <tr><td><strong>Demo</strong></td><td><code>make demo</code></td><td>✅ 23/23 Pass</td></tr>
+    <tr><td><strong>External Validation</strong></td><td>5-component suite</td><td>✅ Passing</td></tr>
+    <tr><td><strong>Security Scan</strong></td><td>Gitleaks + seccomp audit</td><td>✅ Passing</td></tr>
+  </tbody>
+</table>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§7</span> Deployment &amp; Packaging</h2>
+
+<table>
+  <thead><tr><th>Target</th><th>Method</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Docker</strong></td><td>Multi-stage build → distroless base</td><td>✅ Ready</td></tr>
+    <tr><td><strong>Docker Compose</strong></td><td>8 services (API, CLI, daemon, MCP, PostgreSQL, Redis, Prometheus, Grafana, Nginx)</td><td>✅ Ready</td></tr>
+    <tr><td><strong>Kubernetes</strong></td><td>K8s manifests + Helm chart</td><td>✅ Ready</td></tr>
+    <tr><td><strong>Debian/Ubuntu</strong></td><td>Debian packaging</td><td>✅ Ready</td></tr>
+    <tr><td><strong>RPM</strong></td><td>RPM spec (<code>packaging/rpm/muster.spec</code>)</td><td>✅ Ready</td></tr>
+    <tr><td><strong>macOS</strong></td><td>LaunchAgents + LaunchDaemons plists</td><td>✅ Ready</td></tr>
+    <tr><td><strong>Homebrew</strong></td><td><code>brew tap anomalyco/muster</code></td><td>✅ Ready</td></tr>
+    <tr><td><strong>Linux Security</strong></td><td>AppArmor profile, seccomp, SELinux, systemd</td><td>✅ Ready</td></tr>
+    <tr><td><strong>Desktop</strong></td><td><code>.desktop</code> file + MIME type registration</td><td>✅ Ready</td></tr>
+  </tbody>
+</table>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§8</span> Specification &amp; Documentation</h2>
+
+<div class="stat-grid">
+  <div class="stat"><span class="num">276</span><span class="label">Spec Files</span></div>
+  <div class="stat"><span class="num">63</span><span class="label">Agent Skills</span></div>
+  <div class="stat"><span class="num">26+</span><span class="label">Public Packages</span></div>
+  <div class="stat"><span class="num">5</span><span class="label">Memory Bank Files</span></div>
+</div>
+
+<p>Every feature is specified, every package is documented, and 63 agent skills encode proven workflows for integration testing, security scanning, gap analysis, adversarial review, and more. The memory bank tracks project context, active work, progress, and architectural decisions.</p>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§9</span> Integration &amp; Ecosystem</h2>
+
+<div class="two-col">
+  <div>
+    <h3>🔗 Direct Integrations</h3>
+    <ul>
+      <li><strong>Helix</strong> — agent-first code platform integration (<code>pkg/integration/muster_client.go</code>)</li>
+      <li><strong>Off-by-One</strong> — pre-solve lab compute orchestration</li>
+      <li><strong>Claude Desktop</strong> — drop-in MCP server config</li>
+      <li><strong>Cursor / Any MCP Client</strong> — standard MCP protocol</li>
+    </ul>
+  </div>
+  <div>
+    <h3>🧩 Extensibility Points</h3>
+    <ul>
+      <li><strong>WASM Plugins</strong> — any language → WASM → sandboxed transform</li>
+      <li><strong>Starlark DSL</strong> — safe scripting with built-in HTTP functions</li>
+      <li><strong>Auth Plugins</strong> — OAuth2, mTLS, bearer, keychain</li>
+      <li><strong>Cache Backends</strong> — memory, Redis, custom</li>
+      <li><strong>Platform Abstractions</strong> — Linux, macOS, Windows</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§10</span> Security Model</h2>
+
+<table>
+  <thead><tr><th>Property</th><th>Guarantee</th></tr></thead>
+  <tbody>
+    <tr><td><strong>WASM Sandboxing</strong></td><td>wazero runtime — each plugin in isolated sandbox, no host access by default</td></tr>
+    <tr><td><strong>seccomp</strong></td><td>Linux syscall filtering — daemon and WASM restricted to safe syscalls</td></tr>
+    <tr><td><strong>SELinux</strong></td><td>Mandatory access control policies for daemon mode</td></tr>
+    <tr><td><strong>AppArmor</strong></td><td>Profile at <code>packaging/apparmor/usr.bin.muster</code></td></tr>
+    <tr><td><strong>Keychain Integration</strong></td><td>Native OS keychain for credential storage (Linux keychain, macOS Keychain)</td></tr>
+    <tr><td><strong>OAuth2 / mTLS</strong></td><td>Full OAuth2 flow + mutual TLS for service-to-service auth</td></tr>
+    <tr><td><strong>Rate Limiting</strong></td><td>Token bucket rate limiter — per-client, per-endpoint</td></tr>
+    <tr><td><strong>Audit Trail</strong></td><td>All requests logged via structured Zerolog → audit storage</td></tr>
+    <tr><td><strong>Supply Chain</strong></td><td>Multi-stage Docker with security scanning, distroless base, CGO disabled for static linking</td></tr>
+  </tbody>
+</table>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§11</span> Development Velocity</h2>
+
+<div class="stat-grid">
+  <div class="stat"><span class="num">10</span><span class="label">Commits (Jun 19 Sprint)</span></div>
+  <div class="stat"><span class="num">40+</span><span class="label">Artifacts Cleaned</span></div>
+  <div class="stat"><span class="num">9</span><span class="label">Commits (DSL Sprint)</span></div>
+  <div class="stat"><span class="num">Active</span><span class="label">Development Status</span></div>
+</div>
+
+<p>Recent sprints delivered OSS readiness (LICENSE, CONTRIBUTING, SECURITY, CHANGELOG, CODE_OF_CONDUCT, issue templates), DSL chaining with 5 dummy products + 10 demo scripts, production readiness (audit storage, keychain, consumer goroutines), and Linux security hardening (seccomp, SELinux, keychain integration).</p>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§12</span> Roadmap &amp; Current Focus</h2>
+
+<div class="phase">
+  <div class="phase-num">Phase 1</div>
+  <h4>Core Surfaces — Complete ✅</h4>
+  <p>CLI, MCP Server, Daemon, Go Library, WASM plugins, Starlark DSL, Docker. All 7 surfaces built and demoed with 23/23 checks passing.</p>
+  <span class="status">✅ Done</span>
+</div>
+
+<div class="phase">
+  <div class="phase-num">Phase 2</div>
+  <h4>Security &amp; Production Hardening</h4>
+  <p>seccomp syscall filtering, SELinux policies, Linux keychain integration, AppArmor profiles, audit logging, consumer goroutines.</p>
+  <span class="status">✅ Done</span>
+</div>
+
+<div class="phase">
+  <div class="phase-num">Phase 3</div>
+  <h4>Test Coverage Sprint</h4>
+  <p>217 new unit tests, 11 integration tests fixed. auth (24.6%) and sql (60.7%) need more coverage. Daemon tests were 100% skipped — needs implementation.</p>
+  <span class="status">🔄 In Progress</span>
+</div>
+
+<div class="phase">
+  <div class="phase-num">Phase 4</div>
+  <h4>OSS Readiness</h4>
+  <p>LICENSE, CONTRIBUTING, SECURITY, CHANGELOG, CODE_OF_CONDUCT, issue templates. CI workflow. Documentation polish.</p>
+  <span class="status">✅ Done</span>
+</div>
+
+<div class="phase">
+  <div class="phase-num">Phase 5</div>
+  <h4>Daemon Completeness</h4>
+  <p>Daemon tests are currently 100% skipped. Internal directories need population. Full daemon test suite + integration with all surfaces.</p>
+  <span class="status">⏳ Pending</span>
+</div>
+
+<div class="phase">
+  <div class="phase-num">Phase 6</div>
+  <h4>Production Release (v1.0)</h4>
+  <p>100% test coverage on all packages. Full CI/CD pipeline. Published to Homebrew, Debian repos, Docker Hub. External validation suite hardened.</p>
+  <span class="status">⏳ Pending</span>
+</div>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§13</span> Key Differentiators</h2>
+
+<div class="two-col">
+  <div>
+    <h3>🆚 vs. Traditional API SDKs</h3>
+    <ul>
+      <li>SDKs are <strong>static</strong> — Muster is <strong>dynamic</strong>, configures from remote inventory</li>
+      <li>SDKs require <strong>per-API installs</strong> — Muster is <strong>one binary for any API</strong></li>
+      <li>SDKs have <strong>no MCP/AI integration</strong> — Muster generates MCP tools automatically</li>
+      <li>SDKs have <strong>no DSL</strong> — Muster has Starlark for multi-step workflows</li>
+    </ul>
+  </div>
+  <div>
+    <h3>🆚 vs. Hand-Crafted MCP Tools</h3>
+    <ul>
+      <li>Manual MCP tools take <strong>hours per API</strong> — Muster does it <strong>instantly</strong></li>
+      <li>Manual tools go <strong>stale</strong> — Muster re-discovers on every spec change</li>
+      <li>Manual tools are <strong>one-off</strong> — Muster is <strong>systematic</strong> (every operation → tool)</li>
+      <li>Manual tools lack <strong>rate limiting, auth, caching</strong> — Muster bundles them all</li>
+    </ul>
+  </div>
+</div>
+
+<div style="margin-top:16px;">
+  <h3>🆚 vs. Postman / Insomnia / curl</h3>
+  <ul>
+    <li>Those are <strong>manual tools</strong> for humans — Muster is <strong>automation infrastructure</strong></li>
+    <li>Muster generates commands, not collections — <strong>programmatic by design</strong></li>
+    <li>MCP server means AI agents can use APIs <strong>without human intervention</strong></li>
+    <li>Daemon mode provides a <strong>persistent proxy layer</strong> — not a one-off request tool</li>
+  </ul>
+</div>
+
+<hr>
+
+<div class="callout green">
+  <strong>Bottom line:</strong> Muster is the API client that configures itself. Point it at an OpenAPI spec and you get a CLI, an MCP server for AI agents, a daemon proxy for infrastructure, a Go library for developers, WASM plugins for extensibility, and a Starlark DSL for workflows — all from a single static binary. No codegen. No boilerplate. No SDK hell.
+</div>
+
+<div class="footer">
+  <p><strong>Muster</strong> · github.com/anomalyco/muster · MIT License</p>
+  <p>Go 1.26.1 · 26+ packages · 276 specs · 63 agent skills · 7 surfaces · 23/23 demo checks passing</p>
+</div>
+
+</body>
+</html>
