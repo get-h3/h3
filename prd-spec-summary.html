@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H3 — PRD &amp; Architecture Spec Summary</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --accent2: #7ee787;
+    --accent3: #d2a8ff;
+    --accent4: #f778ba;
+    --warn: #d29922;
+    --danger: #f85149;
+    --code-bg: #1c2128;
+    --radius: 8px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+
+  header {
+    padding: 32px 0 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+
+  .tag {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  h1 { font-size: 2.2em; font-weight: 800; margin-bottom: 8px; }
+  h1 span { color: var(--accent); }
+  .subtitle { font-size: 1.15em; color: var(--muted); margin-bottom: 16px; }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .meta-item { font-size: 0.9em; color: var(--muted); }
+  .meta-item strong { color: var(--text); display: block; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  h2 {
+    font-size: 1.4em;
+    font-weight: 700;
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  h2 .num { color: var(--accent); margin-right: 8px; }
+  h3 { font-size: 1.1em; font-weight: 600; margin: 24px 0 12px; color: var(--accent2); }
+
+  p { margin-bottom: 14px; }
+
+  .callout {
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    padding: 16px 20px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 20px 0;
+  }
+  .callout.green { border-left-color: var(--accent2); }
+  .callout.purple { border-left-color: var(--accent3); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.92em;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--surface);
+  }
+  tr:hover td { background: rgba(88,166,255,0.04); }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    overflow-x: auto;
+    font-size: 0.82em;
+    line-height: 1.5;
+    margin: 12px 0;
+  }
+  code { font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace; font-size: 0.9em; }
+  pre code { font-size: 0.9em; }
+
+  .emoji-bullet { margin-right: 6px; }
+  ul { margin: 10px 0 16px 24px; }
+  li { margin-bottom: 6px; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+  }
+  .stat .num { font-size: 2em; font-weight: 800; color: var(--accent); display: block; }
+  .stat .label { font-size: 0.78em; color: var(--muted); margin-top: 4px; }
+
+  .phase {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 12px 0;
+  }
+  .phase .phase-num {
+    background: var(--accent);
+    color: #000;
+    font-size: 0.75em;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+  .phase h4 { margin: 0 0 4px; }
+  .phase .status { font-size: 0.85em; color: var(--warn); }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  .arch-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    font-family: monospace;
+    font-size: 0.78em;
+    line-height: 1.4;
+    white-space: pre;
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+
+  .footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.85em;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tag">Product Requirements Document</div>
+  <h1>H3 <span>— Hermes Harness Hooks</span></h1>
+  <p class="subtitle">A universal, two-endpoint protocol that decouples AI agent platforms from agent harnesses. Build once. Run anywhere.</p>
+
+  <div class="meta-grid">
+    <div class="meta-item"><strong>Repository</strong> github.com/get-h3</div>
+    <div class="meta-item"><strong>Protocol Version</strong> v1.0.0</div>
+    <div class="meta-item"><strong>Spec Status</strong> Complete (11 specs)</div>
+    <div class="meta-item"><strong>License</strong> MIT</div>
+    <div class="meta-item"><strong>Transport</strong> REST + gRPC</div>
+    <div class="meta-item"><strong>SDKs</strong> Go · Python · TypeScript</div>
+  </div>
+</header>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§1</span> Executive Summary</h2>
+
+<div class="callout">
+  <strong>H3 is the universal interface between AI agent platforms and the agent harnesses that think.</strong> It replaces tightly-coupled, vendor-locked agent architectures with a clean, two-endpoint contract: the platform handles infrastructure (tools, models, credentials, scheduling, gateways), and the harness handles intelligence (reasoning, planning, memory, decision-making). Any harness implementing H3 instantly gains access to the full Hermes platform — Telegram, Discord, Slack, 100+ tools, cron, MCP, multi-model routing — without writing a single line of platform code.
+</div>
+
+<p>The AI agent ecosystem today is fragmented. Every platform invents its own agent API. Every harness is locked to one platform. Agent developers spend 70% of their time on infrastructure plumbing instead of the agent itself. <strong>H3 fixes this.</strong></p>
+
+<div class="two-col">
+  <div>
+    <h3>🎯 The Problem</h3>
+    <ul>
+      <li>Agent harnesses are <strong>tightly coupled</strong> to platforms</li>
+      <li>Switching platforms means <strong>rewriting the harness</strong></li>
+      <li>Every new agent project re-implements <strong>the same integration layer</strong></li>
+      <li>No standard way to <strong>test harness compliance</strong></li>
+      <li>Platform upgrades <strong>break harness integrations</strong></li>
+    </ul>
+  </div>
+  <div>
+    <h3>✅ The Solution</h3>
+    <ul>
+      <li>A <strong>two-endpoint contract</strong> — think "CGI for AI agents"</li>
+      <li><strong>Polyglot SDKs</strong> — Go, Python, TypeScript, with code generation for any language</li>
+      <li>A <strong>43-test compliance battery</strong> — pass it, you're compliant</li>
+      <li><strong>Hermes handles infrastructure</strong>; the harness handles <em>intelligence only</em></li>
+      <li><strong>Zero platform code</strong> required in harnesses</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§2</span> Architecture</h2>
+
+<div class="arch-diagram">
+┌──────────────────────────────────────────────────────────┐
+│                    HERMES CORE (Platform)                  │
+│  Gateway │ Tools │ Models │ Credentials │ Cron │ MCP      │
+│                                                            │
+│              ┌──────────────────────────┐                  │
+│              │      H3 SHIM LOOP        │  ← Python plugin │
+│              │   protocol.py / client   │                  │
+│              │   loader.py / native.py  │                  │
+│              └────────────┬─────────────┘                  │
+│                           │                                │
+│               REST / gRPC (localhost)                      │
+│                           │                                │
+└───────────────────────────┼────────────────────────────────┘
+                            │
+        ┌───────────────────┼───────────────────┐
+        │                   │                   │
+   ┌────▼─────┐      ┌──────▼──────┐     ┌──────▼──────┐
+   │ Consensus │      │  LangChain   │     │   Custom    │
+   │   (Go)    │      │   (Python)   │     │ (any lang)  │
+   │ :9191     │      │   :9192      │     │   :9193     │
+   └──────────┘      └─────────────┘     └─────────────┘
+        ▲                   ▲                   ▲
+        └───────────────────┴───────────────────┘
+            All implement the same 2-endpoint interface
+</div>
+
+<h3>The Core Contract</h3>
+
+<p>Three endpoints. That's the entire spec:</p>
+
+<table>
+  <thead><tr><th>Endpoint</th><th>Method</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td><code>/v1/health</code></td><td>GET</td><td>Health check + capabilities advertisement</td></tr>
+    <tr><td><code>/v1/process</code></td><td>POST</td><td>New user message → agent returns a <strong>Decision</strong></td></tr>
+    <tr><td><code>/v1/result</code></td><td>POST</td><td>Hermes executed the decision → what next?</td></tr>
+  </tbody>
+</table>
+
+<h3>Six Decision Types</h3>
+
+<p>The harness returns exactly ONE decision per response. Hermes executes and reports back.</p>
+
+<table>
+  <thead><tr><th>Decision</th><th>Purpose</th><th>Example</th></tr></thead>
+  <tbody>
+    <tr><td><code>tool_call</code></td><td>Execute a platform tool</td><td>Run a shell command, search the web, read a file</td></tr>
+    <tr><td><code>llm_call</code></td><td>Call an LLM</td><td>"Review this Go code for security issues"</td></tr>
+    <tr><td><code>text</code></td><td>Send text to user</td><td>"Found the bug — missing JWT expiry check"</td></tr>
+    <tr><td><code>wait</code></td><td>Pause for external signal</td><td>Wait for CI pipeline to finish</td></tr>
+    <tr><td><code>delegate</code></td><td>Spawn a sub-agent</td><td>"Review auth.go for vulnerabilities"</td></tr>
+    <tr><td><code>end</code></td><td>Terminate session</td><td>Task complete, user requested stop, or error</td></tr>
+  </tbody>
+</table>
+
+<div class="callout green">
+  <strong>Design Principle:</strong> <em>"Hermes asks: 'What should I do?' The harness answers. Hermes executes. Hermes reports back. Loop."</em> — The harness never touches files, never manages API keys, never configures gateways. It <strong>thinks</strong>. Hermes <strong>does</strong>.
+</div>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§3</span> The Split: Who Owns What</h2>
+
+<table>
+  <thead><tr><th>Hermes Core Owns</th><th>Harness Owns</th></tr></thead>
+  <tbody>
+    <tr><td>Gateway (Telegram, Discord, Slack, Web)</td><td>Agent loop — reasoning, planning, iteration</td></tr>
+    <tr><td>Tool registry &amp; execution (sandboxing, auditing)</td><td>Context management — what goes in the window</td></tr>
+    <tr><td>Model routing (provider selection, fallback, rate limits)</td><td>Memory architecture — how state persists</td></tr>
+    <tr><td>Credential vault (API keys, rotation, scoping)</td><td>Decision strategy — when to tool-call vs respond</td></tr>
+    <tr><td>Scheduling (cron, skills, persistence)</td><td>Failure recovery — retry, fallback, escalation</td></tr>
+    <tr><td>MCP server/client management</td><td>Prompt engineering — system prompts, templates</td></tr>
+    <tr><td>Plugin system</td><td>Delegation logic — sub-task orchestration</td></tr>
+    <tr><td>Multi-platform I/O</td><td>Response formatting</td></tr>
+  </tbody>
+</table>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§4</span> Session Lifecycle</h2>
+
+<div class="arch-diagram">
+USER MESSAGE (Telegram/Discord/Slack/Web)
+  │
+  ▼
+Hermes Gateway ── auth, rate-limit, session resolution
+  │
+  ▼
+H3 Shim Loader ── lookup session→harness mapping
+  │
+  ▼
+┌────────────────── H3 SHIM LOOP ──────────────────┐
+│                                                    │
+│  POST /v1/process (session, message, tools, models) │
+│         │                                           │
+│         ▼                                           │
+│    Harness thinks → returns Decision                │
+│         │                                           │
+│         ├── tool_call  → Hermes executes tool       │
+│         ├── llm_call   → Hermes routes to LLM       │
+│         ├── text       → Hermes sends to user       │
+│         ├── wait       → Hermes pauses, resumes     │
+│         ├── delegate   → Hermes spawns sub-agent    │
+│         └── end        → Session terminates         │
+│         │                                           │
+│    POST /v1/result ← Hermes reports execution      │
+│         │                                           │
+│    Loop until "end"                                 │
+└────────────────────────────────────────────────────┘
+  │
+  ▼
+USER RECEIVES RESPONSE
+</div>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§5</span> Multi-Language SDKs</h2>
+
+<p>Three first-party SDKs with idiomatic bindings. All generated from a single OpenAPI 3.1 spec — the protocol is the single source of truth.</p>
+
+<div class="stat-grid">
+  <div class="stat"><span class="num">Go</span><span class="label">sdk-go — structs + http.Handler</span></div>
+  <div class="stat"><span class="num">Python</span><span class="label">sdk-python — Pydantic + FastAPI</span></div>
+  <div class="stat"><span class="num">TypeScript</span><span class="label">sdk-typescript — Zod + Hono</span></div>
+</div>
+
+<h3>Minimal Echo Harness (Go — 30 lines)</h3>
+
+<pre><code>type EchoHarness struct{}
+
+func (e *EchoHarness) OnProcess(req *protocol.ProcessRequest) (*protocol.Decision, error) {
+    return &amp;protocol.Decision{
+        Decision:   protocol.DecisionText,
+        DecisionID: uuid.New().String(),
+        Text: &amp;protocol.TextResp{
+            Content:  fmt.Sprintf("You said: %s", req.Message.Content),
+            Finished: true,
+        },
+    }, nil
+}
+
+func (e *EchoHarness) OnResult(req *protocol.ResultRequest) (*protocol.Decision, error) {
+    return &amp;protocol.Decision{
+        Decision: protocol.DecisionEnd,
+        DecisionID: uuid.New().String(),
+        End: &amp;protocol.End{Reason: "task_complete"},
+    }, nil
+}
+
+func (e *EchoHarness) Health() *protocol.HealthResponse {
+    return &amp;protocol.HealthResponse{
+        Status: "ok", Version: "1.0.0", Transport: "rest",
+        ProtocolVersion: "1.0", Capabilities: []string{"text", "end"},
+    }
+}
+
+// One line to serve:
+// http.ListenAndServe(":9191", harness.NewHTTPServer(&amp;EchoHarness{}))</code></pre>
+
+<div class="callout purple">
+  <strong>Zero → working harness in under 5 minutes.</strong> Implement three methods, run <code>h3-test</code>, done. The SDK handles JSON marshaling, validation, middleware, error recovery, and session management.
+</div>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§6</span> Compliance Test Battery</h2>
+
+<div class="stat-grid">
+  <div class="stat"><span class="num">43</span><span class="label">Compliance Tests</span></div>
+  <div class="stat"><span class="num">6</span><span class="label">Test Categories</span></div>
+  <div class="stat"><span class="num">&lt;30s</span><span class="label">Full Suite Runtime</span></div>
+  <div class="stat"><span class="num">0</span><span class="label">Code Changes Required</span></div>
+</div>
+
+<p>The test battery runs against <strong>any harness endpoint</strong> — no harness code changes needed. It's the gate: pass all 43 tests, you're H3-compliant. Exit code 0.</p>
+
+<table>
+  <thead><tr><th>Category</th><th>Tests</th><th>What It Verifies</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Health &amp; Protocol</strong></td><td>7</td><td>Health endpoint, version negotiation, capabilities, latency</td></tr>
+    <tr><td><strong>Process — Basic Flows</strong></td><td>8</td><td>Decision structure, multi-turn conversation, session isolation</td></tr>
+    <tr><td><strong>Process — Decision Types</strong></td><td>6</td><td>Every decision type (tool_call, llm_call, text, wait, delegate, end)</td></tr>
+    <tr><td><strong>Result Handling</strong></td><td>7</td><td>Handles tool results, LLM responses, errors, delegate results</td></tr>
+    <tr><td><strong>Error &amp; Edge Cases</strong></td><td>10</td><td>Malformed JSON, missing fields, empty messages, 100KB payloads, unicode, cancel</td></tr>
+    <tr><td><strong>Stress &amp; Performance</strong></td><td>5</td><td>10 concurrent sessions, 50 rapid calls, loop convergence, memory stability</td></tr>
+  </tbody>
+</table>
+
+<pre><code>$ h3-test --endpoint http://localhost:9191
+
+H3 Compliance Test Battery v1.0.0
+Target: http://localhost:9191
+Transport: REST
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Health &amp; Protocol             7/7  ✅
+  Process - Basic Flows         8/8  ✅
+  Process - Decision Types      6/6  ✅
+  Result Handling               7/7  ✅
+  Error &amp; Edge Cases           10/10 ✅
+  Stress &amp; Performance          5/5  ✅
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  TOTAL                        43/43 ✅  PASSED</code></pre>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§7</span> Security Model</h2>
+
+<table>
+  <thead><tr><th>Property</th><th>Guarantee</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Network boundary</strong></td><td>Harnesses bind to localhost only — no network exposure by default</td></tr>
+    <tr><td><strong>Authentication</strong></td><td>Hermes authenticates the user; harness trusts Hermes</td></tr>
+    <tr><td><strong>Credential isolation</strong></td><td>Harness CANNOT access Hermes credential vault directly</td></tr>
+    <tr><td><strong>Tool sandboxing</strong></td><td>Harness CANNOT bypass tool execution sandboxing</td></tr>
+    <tr><td><strong>Audit trail</strong></td><td>All tool execution is logged and attributed to the harness session</td></tr>
+    <tr><td><strong>Authorization</strong></td><td>User identity passed in <code>context.identity</code> — harness decides policy</td></tr>
+  </tbody>
+</table>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§8</span> Error Modes &amp; Resilience</h2>
+
+<table>
+  <thead><tr><th>Failure</th><th>Behavior</th></tr></thead>
+  <tbody>
+    <tr><td>Harness unreachable at startup</td><td>Log warning, route to native fallback</td></tr>
+    <tr><td>Harness timeout mid-session</td><td>Retry 3× with exponential backoff (1s, 2s, 4s)</td></tr>
+    <tr><td>Malformed Decision</td><td>Log error, return error to user, end session</td></tr>
+    <tr><td>Harness hangs (no response)</td><td>Timeout at <code>timeout_ms</code>, terminate session</td></tr>
+    <tr><td>Health check fails (3× consecutive)</td><td>Remove from pool, re-add on next success (30s polling)</td></tr>
+    <tr><td><code>end</code> with error</td><td>Relay error to user, terminate</td></tr>
+  </tbody>
+</table>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§9</span> Project Structure (6 Repositories)</h2>
+
+<table>
+  <thead><tr><th>Repository</th><th>Purpose</th><th>Language</th></tr></thead>
+  <tbody>
+    <tr><td><code>get-h3/h3</code></td><td>Spec hub, cross-repo task board, integration tests</td><td>Markdown</td></tr>
+    <tr><td><code>get-h3/protocol</code></td><td><strong>OpenAPI 3.1 spec + JSON Schema</strong> — single source of truth</td><td>YAML/JSON</td></tr>
+    <tr><td><code>get-h3/shim</code></td><td>Hermes plugin: shim loop, test battery, CLI</td><td>Python</td></tr>
+    <tr><td><code>get-h3/sdk-go</code></td><td>Go SDK for harness developers</td><td>Go</td></tr>
+    <tr><td><code>get-h3/sdk-python</code></td><td>Python SDK for harness developers</td><td>Python</td></tr>
+    <tr><td><code>get-h3/sdk-typescript</code></td><td>TypeScript SDK for harness developers</td><td>TypeScript</td></tr>
+  </tbody>
+</table>
+
+<div class="arch-diagram">
+        protocol/  (OpenAPI spec — single source of truth)
+            │
+    ┌───────┼───────┬──────────────┐
+    │       │       │              │
+    ▼       ▼       ▼              ▼
+  shim/  sdk-go/ sdk-python/  sdk-typescript/
+ (Python) (Go)   (Python)     (TypeScript)
+    │
+    └── test_battery.py (43 compliance tests)
+</div>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§10</span> Implementation Phases &amp; Roadmap</h2>
+
+<div class="phase">
+  <div class="phase-num">Phase 0</div>
+  <h4>Protocol — Single Source of Truth</h4>
+  <p>Write OpenAPI 3.1 spec + JSON Schema for all types. Validation tests. Gate: spec passes validation, tagged v1.0.0.</p>
+  <span class="status">⏳ Finalizing</span>
+</div>
+
+<div class="phase">
+  <div class="phase-num">Phase 1</div>
+  <h4>SDKs — Go, Python, TypeScript</h4>
+  <p>Types generated from protocol JSON Schema. Harness interface + HTTP handler. Test bed (MockHermes). Examples: minimal, echo. Gate: All 3 SDK examples pass the test battery.</p>
+  <span class="status">⏳ Pending</span>
+</div>
+
+<div class="phase">
+  <div class="phase-num">Phase 2</div>
+  <h4>Shim — Hermes Plugin</h4>
+  <p>Pydantic models, REST client, harness discovery, shim loop, decision executors, CLI (<code>hermes h3</code>). Gate: shim completes 3-turn conversation with echo harness.</p>
+  <span class="status">⏳ Pending</span>
+</div>
+
+<div class="phase">
+  <div class="phase-num">Phase 3</div>
+  <h4>Test Battery — THE GATE</h4>
+  <p>Full 43-test compliance suite. E2E region-style runner. CI integration. Gate: test battery passes against all 3 SDK echo examples.</p>
+  <span class="status">⏳ Pending</span>
+</div>
+
+<div class="phase">
+  <div class="phase-num">Phase 4</div>
+  <h4>Installer &amp; Scaffold</h4>
+  <p><code>hermes h3 install</code>, <code>hermes h3 scaffold --lang go/python/ts</code>, version compatibility matrix. Gate: scaffold → test passes on generated harness.</p>
+  <span class="status">⏳ Pending</span>
+</div>
+
+<div class="phase">
+  <div class="phase-num">Phase 5</div>
+  <h4>Docs &amp; Release</h4>
+  <p>h3.sh landing page, "Build Your First H3 Harness" guide, migration guide, compliance badge system. Gate: external dev goes zero → working harness in &lt;30 min.</p>
+  <span class="status">⏳ Pending</span>
+</div>
+
+<!-- ──────────────────────────────────────────────── -->
+<h2><span class="num">§11</span> Key Differentiators</h2>
+
+<div class="two-col">
+  <div>
+    <h3>🆚 vs. LangChain/LlamaIndex</h3>
+    <ul>
+      <li>Those are <strong>frameworks</strong>. H3 is a <strong>protocol</strong>.</li>
+      <li>No vendor lock-in — harnesses work with any platform</li>
+      <li>H3 harnesses don't include platform code — pure intelligence</li>
+    </ul>
+  </div>
+  <div>
+    <h3>🆚 vs. Custom Agent APIs</h3>
+    <ul>
+      <li>Every platform invents its own agent API. H3 is <strong>one standard</strong></li>
+      <li>43-test compliance suite — no guessing if it works</li>
+      <li>SDKs handle transport; harness devs write <code>OnProcess()</code> and <code>OnResult()</code></li>
+    </ul>
+  </div>
+</div>
+
+<hr>
+
+<div class="callout green">
+  <strong>Bottom line:</strong> H3 is the missing standard for AI agent interoperability. It's thin enough to implement in an afternoon, rigorous enough to validate with a 43-test compliance suite, and open enough to work with any platform, any language, and any agent architecture.
+</div>
+
+<div class="footer">
+  <p><strong>H3 — Hermes Harness Hooks</strong> · github.com/get-h3 · MIT License</p>
+  <p>Spec version 1.0.0 · 11 technical specifications · 6 repositories</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MusterFlow — Open Protocol for AI Agent Harness Interoperability: Product Requirements Document &amp; Technical Specification">
+<title>MusterFlow — PRD &amp; Spec Summary | get-h3</title>
+<style>
+  /* ── VoltAgent-inspired Dark Theme ───── */
+  :root {
+    --bg: #050507;
+    --surface: #101010;
+    --surface-2: #18181a;
+    --border: #2a2a30;
+    --text: #e4e4e8;
+    --text-muted: #8a8a9a;
+    --accent: #00d992;
+    --accent-dim: #00b37a;
+    --accent-bright: #33ffaa;
+    --blue: #60a5fa;
+    --amber: #f59e0b;
+    --pink: #f472b6;
+    --cyan: #22d3ee;
+    --red: #f87171;
+    --purple: #a78bfa;
+    --green: #4ade80;
+    --gradient: linear-gradient(135deg, #00d992, #00cc88, #33ffaa);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.7;
+    -webkit-text-size-adjust: 100%;
+    padding: 12px;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  @media (min-width: 768px) {
+    body { padding: 24px 32px; }
+    .container { max-width: 960px; margin: 0 auto; }
+  }
+
+  /* ── Hero ────────────────────────────── */
+  .hero {
+    text-align: center;
+    padding: 48px 16px 36px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .hero .logo {
+    font-size: clamp(2.6rem, 7vw, 4.4rem);
+    font-weight: 900;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.04em;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .hero .tagline {
+    font-size: clamp(0.95rem, 2.2vw, 1.2rem);
+    color: var(--text-muted);
+    margin-top: 10px;
+    max-width: 640px;
+    margin-inline: auto;
+    line-height: 1.6;
+  }
+  .hero .meta {
+    margin-top: 22px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .hero .meta .badge {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 14px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .hero .meta .badge strong { color: var(--accent); }
+
+  /* ── Sections ────────────────────────── */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 16px;
+    margin-bottom: 18px;
+  }
+  @media (min-width: 600px) {
+    .section { padding: 28px 24px; }
+  }
+
+  .section h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #f0f0f5;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: -0.01em;
+  }
+  .section h2 .num {
+    font-size: 0.72rem;
+    font-weight: 800;
+    background: var(--accent);
+    color: #000;
+    border-radius: 5px;
+    padding: 2px 9px;
+    letter-spacing: 0.05em;
+  }
+  .section h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #d4d4e0;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .section p, .section li {
+    color: var(--text-muted);
+    font-size: 0.93rem;
+    line-height: 1.7;
+  }
+  .section li { margin-bottom: 4px; }
+  .section ul, .section ol { padding-left: 22px; }
+
+  .section blockquote {
+    border-left: 3px solid var(--accent);
+    padding-left: 16px;
+    margin: 14px 0;
+    color: var(--accent-bright);
+    font-style: italic;
+    font-size: 0.95rem;
+  }
+
+  .section hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  /* ── Tables ──────────────────────────── */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 16px 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    min-width: 520px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th {
+    color: var(--text);
+    font-weight: 700;
+    font-size: 0.73rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    background: var(--surface-2);
+  }
+  td { color: var(--text-muted); }
+  td code, th code {
+    background: var(--surface);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    color: var(--cyan);
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+  td strong, td b { color: var(--text); }
+
+  /* ── Badges ──────────────────────────── */
+  .badge-green  { background: #064e3b; color: var(--green); padding: 2px 10px; border-radius: 6px; font-size: 0.74rem; font-weight: 700; white-space: nowrap; }
+  .badge-blue   { background: #1e3a5f; color: var(--blue); padding: 2px 10px; border-radius: 6px; font-size: 0.74rem; font-weight: 700; white-space: nowrap; }
+  .badge-amber  { background: #451a03; color: var(--amber); padding: 2px 10px; border-radius: 6px; font-size: 0.74rem; font-weight: 700; white-space: nowrap; }
+  .badge-pink   { background: #4a0e2e; color: var(--pink); padding: 2px 10px; border-radius: 6px; font-size: 0.74rem; font-weight: 700; white-space: nowrap; }
+  .badge-purple { background: #2e1065; color: var(--purple); padding: 2px 10px; border-radius: 6px; font-size: 0.74rem; font-weight: 700; white-space: nowrap; }
+  .badge-cyan   { background: #0e3a3f; color: var(--cyan); padding: 2px 10px; border-radius: 6px; font-size: 0.74rem; font-weight: 700; white-space: nowrap; }
+  .badge-accent { background: #064e3b; color: var(--accent); padding: 2px 10px; border-radius: 6px; font-size: 0.74rem; font-weight: 700; white-space: nowrap; }
+
+  /* ── Code blocks ─────────────────────── */
+  pre {
+    background: #08080c;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    margin: 14px 0;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+    color: #c4c4d4;
+  }
+  .hl-accent   { color: var(--accent-bright); }
+  .hl-blue     { color: var(--blue); }
+  .hl-amber    { color: var(--amber); }
+  .hl-pink     { color: var(--pink); }
+  .hl-cyan     { color: var(--cyan); }
+  .hl-purple   { color: var(--purple); }
+  .hl-dim      { color: #5a5a6e; }
+  .hl-comment  { color: #5e5e72; font-style: italic; }
+
+  /* ── Decision type cards ─────────────── */
+  .decisions-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 16px 0;
+  }
+  @media (min-width: 600px) {
+    .decisions-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 900px) {
+    .decisions-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .decision-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+  .decision-card:hover { border-color: var(--accent-dim); }
+  .decision-card .dc-type {
+    font-weight: 800;
+    font-size: 0.92rem;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .decision-card .dc-desc {
+    font-size: 0.81rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+
+  /* ── Summary cards row ───────────────── */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 16px 0;
+  }
+  @media (min-width: 600px) {
+    .summary-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  .sum-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .sum-card .sum-value {
+    font-size: 1.9rem;
+    font-weight: 900;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.03em;
+  }
+  .sum-card .sum-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 5px;
+    font-weight: 600;
+  }
+
+  /* ── Architecture diagram ────────────── */
+  .arch-diagram {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 16px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.73rem;
+    line-height: 1.55;
+    overflow-x: auto;
+    white-space: pre;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ── Footer ──────────────────────────── */
+  .footer {
+    text-align: center;
+    padding: 30px 12px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    line-height: 1.8;
+  }
+  .footer a { color: var(--accent); text-decoration: none; }
+
+  /* ── TOC ─────────────────────────────── */
+  .toc {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+  }
+  .toc strong { color: var(--text); display: block; margin-bottom: 10px; font-size: 0.9rem; }
+  .toc ol { padding-left: 22px; }
+  .toc li { margin-bottom: 5px; }
+  .toc a { color: var(--accent); text-decoration: none; font-size: 0.88rem; }
+  .toc a:hover { color: var(--accent-bright); }
+
+  /* ── Phase bar ───────────────────────── */
+  .phase-bar {
+    display: flex;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 8px 0 4px;
+    background: var(--border);
+  }
+  .phase-bar .fill { background: var(--accent); }
+  .phase-bar .fill-amber { background: var(--amber); }
+
+  /* ── Feature grid ────────────────────── */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 16px 0;
+  }
+  @media (min-width: 600px) {
+    .feature-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .feature-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .feature-card .fc-icon {
+    font-size: 1.3rem;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .feature-card .fc-title {
+    font-weight: 700;
+    color: var(--text);
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+  }
+  .feature-card .fc-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+
+  /* ── Progress track ──────────────────── */
+  .progress-track { margin: 12px 0; }
+  .progress-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .progress-item:last-child { border-bottom: none; }
+  .progress-item .pi-dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  }
+  .pi-dot.done    { background: var(--green); }
+  .pi-dot.active  { background: var(--accent); }
+  .pi-dot.pending { background: var(--amber); }
+  .progress-item .pi-label { color: var(--text); flex: 1; }
+  .progress-item .pi-status { color: var(--text-muted); font-size: 0.78rem; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- ══════════ HERO ════════════════════════════════════════ -->
+<div class="hero">
+  <div class="logo">MusterFlow</div>
+  <div class="tagline">
+    An open protocol &amp; SDK suite decoupling AI platforms from agent brains.<br>
+    Build your agent once, in any language. Run it on Hermes. Pass compliance in one command.
+  </div>
+  <div class="meta">
+    <div class="badge">Version <strong>1.0.0</strong></div>
+    <div class="badge">Org <strong>get-h3</strong></div>
+    <div class="badge">Specs <strong>11 docs · ~97 pages</strong></div>
+    <div class="badge">Stage <strong>Specification Complete</strong></div>
+  </div>
+</div>
+
+<!-- ══════════ QUICK STATS ═════════════════════════════════ -->
+<div class="summary-grid">
+  <div class="sum-card"><div class="sum-value">2</div><div class="sum-label">Core Endpoints</div></div>
+  <div class="sum-card"><div class="sum-value">6</div><div class="sum-label">Decision Types</div></div>
+  <div class="sum-card"><div class="sum-value">3</div><div class="sum-label">Language SDKs</div></div>
+  <div class="sum-card"><div class="sum-value">43</div><div class="sum-label">Compliance Tests</div></div>
+</div>
+
+<!-- ══════════ TABLE OF CONTENTS ═══════════════════════════ -->
+<div class="toc">
+  <strong>Contents</strong>
+  <ol>
+    <li><a href="#s1">Executive Summary</a></li>
+    <li><a href="#s2">The Problem &amp; Solution</a></li>
+    <li><a href="#s3">Architecture &amp; Session Lifecycle</a></li>
+    <li><a href="#s4">Protocol Design — The Wire Contract</a></li>
+    <li><a href="#s5">Decision Types — The Agent's Vocabulary</a></li>
+    <li><a href="#s6">SDK Libraries — Build in Your Language</a></li>
+    <li><a href="#s7">Compliance Test Battery — The Gate</a></li>
+    <li><a href="#s8">Security Model</a></li>
+    <li><a href="#s9">Development Roadmap &amp; Current Status</a></li>
+    <li><a href="#s10">Repository Map &amp; Dependency Chain</a></li>
+    <li><a href="#s11">Technical Stack &amp; Deliverables</a></li>
+  </ol>
+</div>
+
+<!-- ══════════ 1. EXECUTIVE SUMMARY ════════════════════════ -->
+<div class="section" id="s1">
+  <h2><span class="num">1</span> Executive Summary</h2>
+  <p>
+    <strong>MusterFlow</strong> is the open protocol layer between AI platforms and autonomous agent harnesses.
+    It defines a <strong>stable, language-agnostic contract</strong> that lets teams build custom AI agent
+    brains in any programming language, wire them into the Hermes ecosystem, and immediately gain access to:
+    multi-platform messaging gateways (Telegram, Discord, Slack, Signal, Web), a full tool registry with sandboxed
+    execution, model routing across 8+ LLM providers, credential vaults, cron scheduling, MCP server management,
+    a plugin system, and persistent memory — without writing a single line of platform infrastructure code.
+  </p>
+  <p style="margin-top:12px;">
+    The project is built around one design principle:
+  </p>
+  <blockquote>
+    "The platform asks: 'What should I do?' The harness answers. The platform executes. The platform reports back. Loop."
+  </blockquote>
+  <p>
+    The harness <em>thinks</em> — reasoning, planning, memory strategy, iteration logic, failure recovery,
+    prompt engineering. The platform <em>does</em> — all infrastructure, I/O, and external integration.
+    They evolve independently. They scale separately. They can be built by different teams.
+  </p>
+</div>
+
+<!-- ══════════ 2. PROBLEM & SOLUTION ═══════════════════════ -->
+<div class="section" id="s2">
+  <h2><span class="num">2</span> The Problem &amp; Solution</h2>
+
+  <h3>The Problem</h3>
+  <p>
+    Every AI agent platform today couples its reasoning loop to its infrastructure. If you need Telegram
+    + tool sandboxing + model routing + persistent memory + cron + multi-provider fallback, you have two
+    bad choices: (1) use the platform's built-in agent — one-size-fits-all, slow to evolve, can't customize
+    the reasoning loop; or (2) build everything yourself — months of infrastructure work before you write
+    your first line of actual agent logic. Neither scales. Both trap you.
+  </p>
+
+  <h3>The Solution</h3>
+  <p>
+    MusterFlow is <strong>three REST endpoints</strong>. Implement them, and your custom agent brain
+    immediately inherits the full Hermes platform. The protocol is the contract. The platform is the
+    platform. They are decoupled by design.
+  </p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Platform Owns (Hermes)</th><th>Harness Owns (Your Code)</th></tr></thead>
+    <tbody>
+      <tr><td>Messaging gateways — Telegram, Discord, Slack, Signal, Web</td><td>Agent reasoning loop — when to think, what to call</td></tr>
+      <tr><td>Tool registry &amp; sandboxed execution</td><td>Context window management strategy</td></tr>
+      <tr><td>Model routing — 8+ providers, fallback, rate limits, caching</td><td>Memory architecture &amp; persistence design</td></tr>
+      <tr><td>Credential vault — API key storage, rotation, scoping</td><td>Decision strategy — tool selection, delegation logic</td></tr>
+      <tr><td>Cron scheduling, skills, persistence</td><td>Failure recovery — retry, fallback, escalation paths</td></tr>
+      <tr><td>MCP server/client lifecycle management</td><td>Prompt engineering — system prompts, templates, chaining</td></tr>
+      <tr><td>Plugin system &amp; extension framework</td><td>Sub-agent orchestration &amp; delegation trees</td></tr>
+      <tr><td>Multi-platform I/O &amp; format adaptation</td><td>Response formatting, tone, audience adaptation</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- ══════════ 3. ARCHITECTURE ═════════════════════════════ -->
+<div class="section" id="s3">
+  <h2><span class="num">3</span> Architecture &amp; Session Lifecycle</h2>
+
+  <pre class="arch-diagram">
+┌──────────────────────────────────────────────────────────────┐
+│                    <span class="hl-accent">HERMES CORE</span> (Platform)                     │
+│  Gateway · Tools · Models · Creds · Cron · MCP · Plugins    │
+│                           │                                  │
+│                    <span class="hl-blue">MusterFlow Shim</span>                              │
+│              (Python plugin — protocol bridge)               │
+│                           │                                  │
+│                    REST / gRPC                               │
+│                           │                                  │
+│     ┌─────────────────────┼─────────────────────┐           │
+│     ▼                     ▼                     ▼           │
+│  <span class="hl-dim">┌──────────┐</span>    <span class="hl-dim">┌──────────┐</span>    <span class="hl-dim">┌──────────┐</span>         │
+│  <span class="hl-dim">│ Consensus│</span>    <span class="hl-dim">│ LangChain│</span>    <span class="hl-dim">│  Custom  │</span>         │
+│  <span class="hl-dim">│   (Go)   │</span>    <span class="hl-dim">│  (Python)│</span>    <span class="hl-dim">│(any lang)│</span>         │
+│  <span class="hl-dim">└──────────┘</span>    <span class="hl-dim">└──────────┘</span>    <span class="hl-dim">└──────────┘</span>         │
+│                                                              │
+│  <span class="hl-amber">Your Harness</span> ← Any language with an HTTP server          │
+└──────────────────────────────────────────────────────────────┘</pre>
+
+  <h3>Session Lifecycle — End to End</h3>
+  <p>Here is what happens when a user sends a message on any connected platform:</p>
+
+  <pre>
+<span class="hl-comment">1.</span> User message → Hermes Gateway (Telegram/Discord/Slack/Signal/Web)
+<span class="hl-comment">2.</span> Gateway authenticates user, resolves session → MusterFlow Shim Loader
+<span class="hl-comment">3.</span> Shim assembles full context → <span class="hl-blue">POST /v1/process</span>
+       → {session_id, message, identity, context {history, tools, models, memory, skills, config}}
+<span class="hl-comment">4.</span> Your harness receives context, reasons, returns a <span class="hl-accent">Decision</span>
+       → tool_call | llm_call | text | wait | delegate | end
+<span class="hl-comment">5.</span> Shim executes the Decision (runs tool, calls LLM, sends text, spawns sub-agent)
+<span class="hl-comment">6.</span> Execution result → <span class="hl-blue">POST /v1/result</span>
+       → {decision_id, result_type, outcome, data}
+<span class="hl-comment">7.</span> Your harness processes the result, returns next Decision
+<span class="hl-comment">8.</span> Loop continues until harness returns <span class="hl-accent">end</span></pre>
+
+  <p style="margin-top:12px;">
+    <strong>Key insight:</strong> The harness is stateless between turns. Every <code>/v1/process</code> and
+    <code>/v1/result</code> call includes the full conversation history, tools, models, and session state.
+    The harness can be a simple function — no database required unless you want one.
+  </p>
+</div>
+
+<!-- ══════════ 4. PROTOCOL DESIGN ═══════════════════════════ -->
+<div class="section" id="s4">
+  <h2><span class="num">4</span> Protocol Design — The Wire Contract</h2>
+
+  <p>
+    MusterFlow defines <strong>six REST endpoints</strong> (with gRPC available for high-throughput use cases).
+    The protocol is specified as <strong>OpenAPI 3.1 YAML</strong> with <strong>JSON Schema</strong> for every
+    type — 14 schema files in total, fully validated.
+  </p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Purpose</th><th>Critical?</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/v1/health</code></td>
+        <td>Health check — status, version, capabilities. Polled every 30s.</td>
+        <td><span class="badge-green">Yes</span></td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/v1/process</code></td>
+        <td><strong>New message → first Decision.</strong> Full context included.</td>
+        <td><span class="badge-green">Yes</span></td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/v1/result</code></td>
+        <td><strong>Execution result → next Decision.</strong> Loop backbone.</td>
+        <td><span class="badge-green">Yes</span></td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/v1/cancel</code></td>
+        <td>Cancel in-flight operation — user interrupt or <code>/stop</code>.</td>
+        <td><span class="badge-blue">Recommended</span></td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/v1/sessions/:id</code></td>
+        <td>Session metadata — turn count, cost, uptime.</td>
+        <td><span class="badge-amber">Optional</span></td>
+      </tr>
+      <tr>
+        <td><code>DELETE</code></td>
+        <td><code>/v1/sessions/:id</code></td>
+        <td>Force session termination — cleanup, <code>/new</code> handling.</td>
+        <td><span class="badge-amber">Optional</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>What the Platform Sends to Your Harness</h3>
+  <p>Every <code>POST /v1/process</code> request carries everything your harness needs to reason:</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>session_id</code></td><td><code>string</code></td><td>Stable session identifier across all turns</td></tr>
+      <tr><td><code>message</code></td><td><code>Message</code></td><td>User message — content, attachments (image/file/audio/video), timestamp</td></tr>
+      <tr><td><code>identity</code></td><td><code>Identity</code></td><td>Who sent it — platform, chat ID, thread ID, user name, user ID</td></tr>
+      <tr><td><code>context.history</code></td><td><code>HistoryEntry[]</code></td><td>Last N messages (user + assistant + system, configurable, default 20)</td></tr>
+      <tr><td><code>context.tools</code></td><td><code>Tool[]</code></td><td>Available Hermes tools with full JSON Schema parameter definitions</td></tr>
+      <tr><td><code>context.models</code></td><td><code>Model[]</code></td><td>Available LLMs — name, provider, pricing, context window, capabilities</td></tr>
+      <tr><td><code>context.memory</code></td><td><code>string</code></td><td>DuckBrain persistent memory relevant to this session</td></tr>
+      <tr><td><code>context.skills</code></td><td><code>string[]</code></td><td>Loaded skill names available to the agent</td></tr>
+      <tr><td><code>context.config</code></td><td><code>Config</code></td><td>Session parameters — max iterations, timeout, temperature, tool limits</td></tr>
+      <tr><td><code>context.session_state</code></td><td><code>SessionState</code></td><td>Running counters — turn count, tool calls, LLM calls, cost so far, uptime</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Error Handling — Graceful Degradation</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Failure Mode</th><th>Platform Behavior</th></tr></thead>
+    <tbody>
+      <tr><td>Harness unreachable at startup</td><td>Log warning, route all sessions to native Hermes agent (zero-downtime fallback)</td></tr>
+      <tr><td>Harness timeout mid-session</td><td>Retry 3× with exponential backoff (1s → 2s → 4s)</td></tr>
+      <tr><td>Malformed Decision returned</td><td>Return standardized error to user, terminate session</td></tr>
+      <tr><td>Hang — no response within <code>timeout_ms</code></td><td>Timeout, terminate session, log incident</td></tr>
+      <tr><td>Health check fails 3× consecutive</td><td>Remove harness from pool, poll every 30s for recovery</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>
+    All errors use a <strong>standardized error shape</strong> with machine-readable error codes:
+    <code>INVALID_REQUEST</code>, <code>INVALID_DECISION</code>, <code>UNKNOWN_TOOL</code>,
+    <code>UNKNOWN_MODEL</code>, <code>SESSION_NOT_FOUND</code>, <code>SESSION_EXPIRED</code>,
+    <code>HARNESS_TIMEOUT</code>, <code>INTERNAL_ERROR</code>.
+  </p>
+</div>
+
+<!-- ══════════ 5. DECISION TYPES ════════════════════════════ -->
+<div class="section" id="s5">
+  <h2><span class="num">5</span> Decision Types — The Agent's Vocabulary</h2>
+  <p>
+    Every harness response is exactly one <strong>Decision</strong> — a discriminated union with a
+    <code>decision</code> discriminator field and a unique <code>decision_id</code> for tracing.
+    The platform routes it, executes it, and reports the result back. Here are all six types:
+  </p>
+
+  <div class="decisions-grid">
+    <div class="decision-card">
+      <div class="dc-type"><span class="badge-green">tool_call</span></div>
+      <div class="dc-desc">
+        Execute a Hermes tool — terminal, web search, file read/write, browser automation,
+        image generation, email, and 30+ more. Harness specifies <code>name</code> + <code>params</code>.
+        Hermes executes in sandbox. Optional <code>reasoning</code> field for audit trail.
+      </div>
+    </div>
+    <div class="decision-card">
+      <div class="dc-type"><span class="badge-blue">llm_call</span></div>
+      <div class="dc-desc">
+        Route a prompt to an LLM. Harness picks <code>model</code> from the available list,
+        sets <code>system_prompt</code>, <code>messages</code>, and <code>temperature</code>.
+        Platform handles provider routing, fallback, caching, and cost tracking.
+      </div>
+    </div>
+    <div class="decision-card">
+      <div class="dc-type"><span class="badge-purple">text</span></div>
+      <div class="dc-desc">
+        Send markdown-formatted text to the user. <code>finished: true</code> = final message
+        (session ends after delivery). <code>finished: false</code> = intermediate message
+        (platform calls <code>/v1/result</code> for next Decision).
+      </div>
+    </div>
+    <div class="decision-card">
+      <div class="dc-type"><span class="badge-amber">wait</span></div>
+      <div class="dc-desc">
+        Pause for an external signal. Optional <code>poll_endpoint</code> — Hermes polls
+        every 15 seconds, resumes on success. Capped at <code>timeout_seconds</code> from
+        session config. Enables human-in-the-loop workflows.
+      </div>
+    </div>
+    <div class="decision-card">
+      <div class="dc-type"><span class="badge-pink">delegate</span></div>
+      <div class="dc-desc">
+        Spawn a sub-agent. Harness defines <code>task</code>, <code>context</code>,
+        optional <code>model</code>, and <code>toolsets</code>. Platform manages the
+        complete sub-agent lifecycle — spawn, run, collect result, return to harness.
+      </div>
+    </div>
+    <div class="decision-card">
+      <div class="dc-type"><span class="badge-accent">end</span></div>
+      <div class="dc-desc">
+        Terminate the session. Specifies <code>reason</code> — one of:
+        <code>task_complete</code>, <code>user_requested</code>, <code>error</code>,
+        <code>timeout</code>, <code>rate_limited</code>, <code>cancelled</code>.
+        Optional <code>summary</code> of what was accomplished.
+      </div>
+    </div>
+  </div>
+
+  <h3>The Loop in Practice</h3>
+  <pre>
+<span class="hl-comment"># A typical harness turn (pseudocode)</span>
+
+<span class="hl-amber">OnProcess</span>(req):
+    decision = <span class="hl-accent">tool_call</span>(name="web_search", params={"query": req.message.content})
+    return decision
+
+<span class="hl-comment"># Platform executes web_search, returns result to:</span>
+
+<span class="hl-amber">OnResult</span>(req):   <span class="hl-comment"># req.result = web search results</span>
+    decision = <span class="hl-accent">llm_call</span>(model="deepseek-v4-pro", messages=[...search results...])
+    return decision
+
+<span class="hl-comment"># Platform runs LLM, returns response to:</span>
+
+<span class="hl-amber">OnResult</span>(req):   <span class="hl-comment"># req.result = LLM response text</span>
+    decision = <span class="hl-accent">text</span>(content=req.result.text, finished=true)
+    return decision
+
+<span class="hl-comment"># Platform delivers text to user. Session complete.</span></pre>
+</div>
+
+<!-- ══════════ 6. SDK LIBRARIES ═════════════════════════════ -->
+<div class="section" id="s6">
+  <h2><span class="num">6</span> SDK Libraries — Build in Your Language</h2>
+  <p>
+    Three first-class SDKs, all generated from a <strong>single OpenAPI 3.1 specification</strong>
+    in the protocol repository. Each provides protocol types, an HTTP server, a base harness
+    interface, request validation, and a mock platform test bed so you can test without a real
+    Hermes instance.
+  </p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>SDK</th><th>Language</th><th>Key Libraries</th><th>Install</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>sdk-go</strong></td>
+        <td>Go 1.22+</td>
+        <td><code>net/http</code>, struct tags, <code>encoding/json</code></td>
+        <td><code>go get github.com/get-h3/sdk-go</code></td>
+        <td><span class="badge-amber">In Progress</span></td>
+      </tr>
+      <tr>
+        <td><strong>sdk-python</strong></td>
+        <td>Python 3.11+</td>
+        <td>Pydantic v2, FastAPI, pytest</td>
+        <td><code>pip install h3-harness-sdk</code></td>
+        <td><span class="badge-amber">Pending</span></td>
+      </tr>
+      <tr>
+        <td><strong>sdk-typescript</strong></td>
+        <td>TypeScript 5.x</td>
+        <td>Zod, Hono, vitest</td>
+        <td><code>npm install @get-h3/h3-harness-sdk</code></td>
+        <td><span class="badge-amber">Pending</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>What Every SDK Gives You</h3>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <span class="fc-icon">📦</span>
+      <div class="fc-title">Protocol Types</div>
+      <div class="fc-desc">Structs, dataclasses, or interfaces for every request/response type in the protocol — generated from the OpenAPI spec, never hand-written.</div>
+    </div>
+    <div class="feature-card">
+      <span class="fc-icon">🌐</span>
+      <div class="fc-title">HTTP Server</div>
+      <div class="fc-desc">Quick-start server that handles marshalling/unmarshalling, Content-Type negotiation, CORS — just register your handler functions.</div>
+    </div>
+    <div class="feature-card">
+      <span class="fc-icon">🧠</span>
+      <div class="fc-title">Base Harness Interface</div>
+      <div class="fc-desc">Abstract class or interface with <code>OnProcess()</code>, <code>OnResult()</code>, <code>OnCancel()</code>, and <code>Health()</code> — implement these four, you're done.</div>
+    </div>
+    <div class="feature-card">
+      <span class="fc-icon">✅</span>
+      <div class="fc-title">Input Validation</div>
+      <div class="fc-desc">Request + Decision validation against the JSON Schema before anything hits the wire — catch protocol violations at build time, not in production.</div>
+    </div>
+    <div class="feature-card">
+      <span class="fc-icon">🧪</span>
+      <div class="fc-title">Mock Test Bed</div>
+      <div class="fc-desc">Full MockHermes client for unit testing your harness logic — simulate process calls, result returns, cancellations, and error conditions without a real platform.</div>
+    </div>
+    <div class="feature-card">
+      <span class="fc-icon">📝</span>
+      <div class="fc-title">Examples</div>
+      <div class="fc-desc">Two working examples per SDK — minimal (echos back) and echo (full conversation loop) — both pass the compliance test battery. Use as starting templates.</div>
+    </div>
+  </div>
+
+  <h3>Harness Interface — Four Methods</h3>
+  <pre><span class="hl-comment">// Implement these four methods. The SDK handles HTTP, marshalling, and validation.</span>
+<span class="hl-accent">type</span> <span class="hl-blue">Harness</span> <span class="hl-accent">interface</span> {
+    <span class="hl-purple">OnProcess</span>(req *ProcessRequest) (*Decision, error)
+    <span class="hl-purple">OnResult</span>(req *ResultRequest) (*Decision, error)
+    <span class="hl-purple">OnCancel</span>(req *CancelRequest) error
+    <span class="hl-purple">Health</span>() *HealthResponse
+}
+
+<span class="hl-comment">// Start the server:</span>
+server := harness.<span class="hl-blue">NewServer</span>(myHarness, <span class="hl-amber">":9191"</span>)
+server.<span class="hl-blue">ListenAndServe</span>()</pre>
+</div>
+
+<!-- ══════════ 7. COMPLIANCE TEST BATTERY ═══════════════════ -->
+<div class="section" id="s7">
+  <h2><span class="num">7</span> Compliance Test Battery — The Gate</h2>
+  <p>
+    The test battery is the single source of truth for protocol compliance. It runs against
+    <strong>any</strong> harness endpoint — no code changes needed, no special configuration.
+    Harness developers run it locally during development. CI runs it on every PR.
+    <strong>Exit code 0 = MusterFlow-compliant.</strong>
+  </p>
+
+  <pre><span class="hl-comment"># One command. Any harness. Instant compliance report.</span>
+$ pip install hermes-h3-shim
+$ h3-test --endpoint http://localhost:9191
+
+<span class="hl-accent">MusterFlow Compliance Test Battery v1.0.0</span>
+Target: http://localhost:9191      Transport: REST
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Health &amp; Protocol                <span class="hl-accent">7/7  ✅</span>
+  Process — Basic Flows            <span class="hl-accent">8/8  ✅</span>
+  Process — Decision Types         <span class="hl-accent">6/6  ✅</span>
+  Result Handling                  <span class="hl-accent">7/7  ✅</span>
+  Error &amp; Edge Cases               <span class="hl-accent">10/10 ✅</span>
+  Stress &amp; Performance             <span class="hl-accent">5/5  ✅</span>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  TOTAL                            <span class="hl-accent">43/43 ✅  PASSED</span></pre>
+
+  <h3>Test Categories — E2E Region-Style</h3>
+  <p>
+    Each category tests a complete functional region. The battery doesn't test individual functions
+    — it verifies that the harness handles the <em>entire user experience</em> correctly, from health
+    check through full multi-turn conversation to graceful termination.
+  </p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Category</th><th>Tests</th><th>What It Verifies</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge-green">Health &amp; Protocol</span></td><td>7</td><td>Health endpoint, version reporting, Content-Type headers, transport correctness, latency budget, idempotency, capability declaration</td></tr>
+      <tr><td><span class="badge-blue">Process — Basic Flows</span></td><td>8</td><td>Valid Decision shape, unique decision IDs across turns, text with finished:true/false, session isolation, history preservation, identity passthrough</td></tr>
+      <tr><td><span class="badge-purple">Process — Decision Types</span></td><td>6</td><td>Every decision type returned and validated: tool_call, llm_call, text, wait, delegate, end — each with correct required fields</td></tr>
+      <tr><td><span class="badge-amber">Result Handling</span></td><td>7</td><td>All result types processed correctly: tool success, tool failure, LLM response, text sent, delegate completed, error result, wait timeout</td></tr>
+      <tr><td><span class="badge-pink">Error &amp; Edge Cases</span></td><td>10</td><td>Malformed JSON, missing required fields, unknown decision types, empty/100KB/unicode messages, zero tools, zero models, cancel mid-processing, 404 handling</td></tr>
+      <tr><td><span class="badge-cyan">Stress &amp; Performance</span></td><td>5</td><td>Concurrent sessions, rapid successive turns, sustained load over time, memory stability under pressure</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Compliance Badge</h3>
+  <p style="margin-top:10px;">
+    After passing, harness developers can display the official compliance badge in their README:
+  </p>
+  <pre><span class="hl-comment">&lt;!-- Add to your harness README after passing --&gt;</span>
+[![MusterFlow Compliant](https://h3.sh/badge/v1.0/43-43.svg)](https://h3.sh/compliance)</pre>
+  <p>
+    The badge is served from the <code>h3.sh</code> compliance endpoint and updates automatically
+    if the test battery version changes.
+  </p>
+</div>
+
+<!-- ══════════ 8. SECURITY MODEL ════════════════════════════ -->
+<div class="section" id="s8">
+  <h2><span class="num">8</span> Security Model</h2>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <span class="fc-icon">🔒</span>
+      <div class="fc-title">Localhost-Only Binding</div>
+      <div class="fc-desc">Harnesses bind to <code>127.0.0.1</code> by default. No network exposure unless explicitly configured. The harness and platform run on the same host.</div>
+    </div>
+    <div class="feature-card">
+      <span class="fc-icon">🛡️</span>
+      <div class="fc-title">Platform Authenticates Users</div>
+      <div class="fc-desc">Hermes authenticates the user at the gateway level. The harness receives <code>identity</code> (platform, user ID, chat ID) and decides authorization — no credential handling needed.</div>
+    </div>
+    <div class="feature-card">
+      <span class="fc-icon">🔐</span>
+      <div class="fc-title">Credential Isolation</div>
+      <div class="fc-desc">Harnesses <strong>cannot</strong> access the Hermes credential vault directly. All API calls go through the tool sandbox. Secrets never leave the platform.</div>
+    </div>
+    <div class="feature-card">
+      <span class="fc-icon">📋</span>
+      <div class="fc-title">Full Audit Trail</div>
+      <div class="fc-desc">Every tool execution, LLM call, and decision is logged with the harness session ID. All errors use standardized machine-readable codes. Complete traceability from user message to response.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 9. ROADMAP ══════════════════════════════════ -->
+<div class="section" id="s9">
+  <h2><span class="num">9</span> Development Roadmap &amp; Current Status</h2>
+
+  <p>
+    The project follows a strict <strong>specs-first</strong> development model with phase gates.
+    Each phase must pass its quality gate before the next phase begins. Progress is tracked on a
+    cross-repo task board with GitReins quality enforcement.
+  </p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Phase</th><th>Deliverable</th><th>Gate</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>P-1 — Specifications</strong></td>
+        <td>11 specification documents (~97 pages) covering architecture, protocol, SDKs, shim, test battery, installer, release pipeline, docs, and migration</td>
+        <td>All specs written and reviewed</td>
+        <td><span class="badge-green">Complete</span></td>
+      </tr>
+      <tr>
+        <td><strong>P0 — Protocol</strong></td>
+        <td>OpenAPI 3.1 spec, 14 JSON Schema files, 8 example payloads, validation scripts, CI pipeline. Tagged <code>v1.0.0</code>.</td>
+        <td>Spec validates. <code>redocly lint</code> passes.</td>
+        <td><span class="badge-green">Complete</span></td>
+      </tr>
+      <tr>
+        <td><strong>P0.5 — Scaffolding</strong></td>
+        <td>Go module scaffolded with <code>go.mod</code>, Makefile, directory layout, GitReins config. Python and TypeScript scaffolds pending.</td>
+        <td>All 4 repos build</td>
+        <td><span class="badge-accent">In Progress</span></td>
+      </tr>
+      <tr>
+        <td><strong>P1 — SDKs</strong></td>
+        <td>Go, Python, TypeScript SDKs: generated types, HTTP handlers, harness base classes, mock test beds, working examples</td>
+        <td>All 3 SDK echo examples pass test battery</td>
+        <td><span class="badge-amber">Pending</span></td>
+      </tr>
+      <tr>
+        <td><strong>P2 — Shim</strong></td>
+        <td>Hermes plugin: protocol models, REST client, harness loader, shim loop, Decision executors, native fallback wrapper, CLI</td>
+        <td>Shim completes 3-turn conversation</td>
+        <td><span class="badge-amber">Pending</span></td>
+      </tr>
+      <tr>
+        <td><strong>P3 — Test Battery</strong></td>
+        <td>43-test compliance suite across 6 regions, CI integration, <code>h3-test</code> CLI, HTML/JSON report output</td>
+        <td>Battery passes against all 3 SDK examples</td>
+        <td><span class="badge-amber">Pending</span></td>
+      </tr>
+      <tr>
+        <td><strong>P4 — Installer &amp; Scaffold</strong></td>
+        <td><code>hermes h3 install</code>, <code>hermes h3 scaffold</code>, version compatibility matrix, pre-flight hooks, verify command</td>
+        <td>Scaffold → test → pass in &lt; 5 min</td>
+        <td><span class="badge-amber">Pending</span></td>
+      </tr>
+      <tr>
+        <td><strong>P5 — Release Pipeline</strong></td>
+        <td>One tag on protocol triggers cascade: regenerate SDKs → test → release → PyPI/npm publish</td>
+        <td>Full cascade release from one tag</td>
+        <td><span class="badge-amber">Pending</span></td>
+      </tr>
+      <tr>
+        <td><strong>P6 — Docs &amp; Website</strong></td>
+        <td>h3.sh landing page, Quickstart guide, language picker, auto-generated API reference, compliance badges, migration guide</td>
+        <td>External dev goes zero → working harness in &lt; 30 min</td>
+        <td><span class="badge-amber">Pending</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Current Progress</h3>
+  <div class="progress-track">
+    <div class="progress-item">
+      <span class="pi-dot done"></span>
+      <span class="pi-label">Specifications (11/11 docs written)</span>
+      <span class="pi-status">Phase -1 complete</span>
+    </div>
+    <div class="progress-item">
+      <span class="pi-dot done"></span>
+      <span class="pi-label">Protocol (OpenAPI + JSON Schema + CI, tagged v1.0.0)</span>
+      <span class="pi-status">Phase 0 complete</span>
+    </div>
+    <div class="progress-item">
+      <span class="pi-dot active"></span>
+      <span class="pi-label">SDK Scaffolding (Go done, Python + TypeScript pending)</span>
+      <span class="pi-status">Phase 0.5 active</span>
+    </div>
+    <div class="progress-item">
+      <span class="pi-dot pending"></span>
+      <span class="pi-label">SDK Implementation (Go → Python → TypeScript)</span>
+      <span class="pi-status">Phase 1 pending</span>
+    </div>
+    <div class="progress-item">
+      <span class="pi-dot pending"></span>
+      <span class="pi-label">Shim + Test Battery + Installer + Release + Docs</span>
+      <span class="pi-status">Phases 2–6 pending</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 10. REPOSITORY MAP ═══════════════════════════ -->
+<div class="section" id="s10">
+  <h2><span class="num">10</span> Repository Map &amp; Dependency Chain</h2>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Repository</th><th>Language</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>get-h3/h3</code></td><td>Markdown</td><td><strong>Spec hub</strong> — cross-repo task board, integration tests, AGENTS.md</td></tr>
+      <tr><td><code>get-h3/protocol</code></td><td>YAML / JSON</td><td><strong>Single source of truth</strong> — OpenAPI 3.1 spec + JSON Schema</td></tr>
+      <tr><td><code>get-h3/shim</code></td><td>Python</td><td><strong>Hermes plugin</strong> — shim loop, test battery (43 tests), CLI</td></tr>
+      <tr><td><code>get-h3/sdk-go</code></td><td>Go</td><td>Go SDK — protocol types, HTTP server, harness interface, mock test bed</td></tr>
+      <tr><td><code>get-h3/sdk-python</code></td><td>Python</td><td>Python SDK — Pydantic models, FastAPI router, pytest fixtures</td></tr>
+      <tr><td><code>get-h3/sdk-typescript</code></td><td>TypeScript</td><td>TypeScript SDK — Zod schemas, Hono router, vitest helpers</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Dependency Chain</h3>
+  <pre>
+<span class="hl-accent">protocol/</span>  (OpenAPI spec — single source of truth, tagged v1.0.0)
+    │
+    ├──► <span class="hl-blue">shim/</span>          (Python plugin — generated types from OpenAPI)
+    │       └── test_battery.py    (43 compliance tests — E2E region-style)
+    │
+    ├──► <span class="hl-purple">sdk-go/</span>        (Go — generated types from OpenAPI)
+    ├──► <span class="hl-purple">sdk-python/</span>    (Python — generated types from OpenAPI)
+    └──► <span class="hl-purple">sdk-typescript/</span> (TypeScript — generated types from OpenAPI)
+
+<span class="hl-dim">All SDKs + shim regenerate from protocol on every tagged release.</span></pre>
+</div>
+
+<!-- ══════════ 11. TECHNICAL STACK ══════════════════════════ -->
+<div class="section" id="s11">
+  <h2><span class="num">11</span> Technical Stack &amp; Deliverables</h2>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Component</th><th>Technology</th></tr></thead>
+    <tbody>
+      <tr><td>Protocol specification</td><td>OpenAPI 3.1 (YAML) + JSON Schema (Draft 2020-12)</td></tr>
+      <tr><td>Schema validation</td><td>AJV (JSON Schema), Redocly (OpenAPI lint)</td></tr>
+      <tr><td>Hermes plugin (shim)</td><td>Python 3.11+, Pydantic v2, httpx</td></tr>
+      <tr><td>Go SDK</td><td>Go 1.22+, <code>net/http</code>, struct tags, <code>encoding/json</code></td></tr>
+      <tr><td>Python SDK</td><td>Python 3.11+, Pydantic v2, FastAPI, pytest</td></tr>
+      <tr><td>TypeScript SDK</td><td>TypeScript 5.x, Zod, Hono, vitest</td></tr>
+      <tr><td>Test battery</td><td>Python, pytest, 43 tests across 6 categories</td></tr>
+      <tr><td>Website &amp; docs</td><td>Next.js/Astro (SSG), Redocly/Scalar (API reference), Vercel/Cloudflare</td></tr>
+      <tr><td>Transport</td><td>REST (primary) + gRPC (opt-in for high-throughput harnesses)</td></tr>
+      <tr><td>Versioning</td><td>Semantic versioning, protocol version negotiation via header</td></tr>
+      <tr><td>Quality gate</td><td>GitReins — secrets, lint, tests, dead-code detection on every repo</td></tr>
+      <tr><td>Development model</td><td>Spec-driven, AI foremen per repo, cross-repo task board, Kanban workflow</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <hr>
+
+  <h3>Project Metrics</h3>
+  <div class="summary-grid">
+    <div class="sum-card"><div class="sum-value" style="font-size:1.4rem;">6</div><div class="sum-label">Repositories</div></div>
+    <div class="sum-card"><div class="sum-value" style="font-size:1.4rem;">11</div><div class="sum-label">Spec Documents</div></div>
+    <div class="sum-card"><div class="sum-value" style="font-size:1.4rem;">~97</div><div class="sum-label">Pages of Specs</div></div>
+    <div class="sum-card"><div class="sum-value" style="font-size:1.4rem;">43</div><div class="sum-label">Compliance Tests</div></div>
+  </div>
+
+  <h3>What Gets Delivered</h3>
+  <ol style="padding-left:22px; line-height:1.9;">
+    <li><strong>Open protocol specification</strong> — OpenAPI 3.1 YAML + 14 JSON Schema files, versioned, validated, CI-enforced</li>
+    <li><strong>Three language SDKs</strong> — Go, Python, TypeScript — each with types, HTTP server, harness interface, mock test bed, and working examples</li>
+    <li><strong>Hermes plugin (shim)</strong> — Python plugin that bridges Hermes Core to any MusterFlow-compliant harness</li>
+    <li><strong>Compliance test battery</strong> — 43 tests, one command, works against any harness endpoint, CI-ready</li>
+    <li><strong>Developer tooling</strong> — <code>h3-test</code>, <code>hermes h3 scaffold</code>, <code>hermes h3 install</code>, <code>hermes h3 verify</code></li>
+    <li><strong>Documentation site</strong> — h3.sh with Quickstart, language picker, API reference, compliance badges</li>
+    <li><strong>Release pipeline</strong> — one tag on protocol triggers full cascade: regenerate all SDKs, run tests, publish packages</li>
+  </ol>
+</div>
+
+<!-- ══════════ FOOTER ══════════════════════════════════════ -->
+<div class="footer">
+  <p><strong>MusterFlow</strong> &nbsp;·&nbsp; Open Protocol for AI Agent Harness Interoperability</p>
+  <p>v1.0.0 &nbsp;·&nbsp; Specification Complete &nbsp;·&nbsp; Phase 0.5 Active</p>
+  <p><a href="https://github.com/get-h3">github.com/get-h3</a> &nbsp;·&nbsp; <a href="https://h3.sh">h3.sh</a></p>
+  <p style="color:#4b4b5a;margin-top:8px;">Generated for client review — July 2026</p>
+</div>
+
+</div><!-- .container -->
+</body>
+</html>
