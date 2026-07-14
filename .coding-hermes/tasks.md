@@ -35,6 +35,20 @@
 
 **Gate:** `ajv validate` passes all schemas. `redocly lint` passes. Tagged. ✅ ALL GATES MET — PHASE 0 COMPLETE ✅
 
+## PHASE 0.5: SDK Repo Scaffolding
+
+> BLOCKING Phase 1. All 4 implementation repos are empty shells — need project scaffolding before SDK code.
+
+| ID | Repo | Task | Status |
+|---|---|---|---|
+| PS-01 | sdk-go | Scaffold Go module: go.mod, Makefile, directory layout (protocol/, harness/, testbed/, examples/) | ✅ Done (`fcffd52`) |
+| PS-02 | sdk-python | Scaffold Python package: pyproject.toml, Makefile, directory layout (src/h3_harness/) | pending |
+| PS-03 | sdk-typescript | Scaffold TypeScript package: package.json, tsconfig.json, directory layout (src/protocol/, src/harness/) | pending |
+| PS-04 | shim | Scaffold Python package: pyproject.toml, directory layout (hermes_cli/agent/shims/h3/) | pending |
+| PS-05 | all | Set up foreman crons: sdk-go-foreman, sdk-python-foreman, sdk-typescript-foreman, shim-foreman | pending |
+
+**Gate:** All 4 repos have working module files (`go build ./...` / `pip install -e .` / `npm install`). Each repo has a foreman cron.
+
 ## PHASE 1: SDKs (Generated from Protocol)
 
 | ID | Repo | Task | Status |
