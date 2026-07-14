@@ -42,12 +42,12 @@
 | ID | Repo | Task | Status |
 |---|---|---|---|
 | PS-01 | sdk-go | Scaffold Go module: go.mod, Makefile, directory layout (protocol/, harness/, testbed/, examples/) | ✅ Done (`fcffd52`) |
-| PS-02 | sdk-python | Scaffold Python package: pyproject.toml, Makefile, directory layout (src/h3_harness/) | pending |
-| PS-03 | sdk-typescript | Scaffold TypeScript package: package.json, tsconfig.json, directory layout (src/protocol/, src/harness/) | pending |
-| PS-04 | shim | Scaffold Python package: pyproject.toml, directory layout (hermes_cli/agent/shims/h3/) | pending |
-| PS-05 | all | Set up foreman crons: sdk-go-foreman, sdk-python-foreman, sdk-typescript-foreman, shim-foreman | pending |
+| PS-02 | sdk-python | Scaffold Python package: pyproject.toml, Makefile, directory layout (src/h3_harness/) | ✅ Done (`87b5a7d`) |
+| PS-03 | sdk-typescript | Scaffold TypeScript package: package.json, tsconfig.json, directory layout (src/protocol/, src/harness/) | ✅ Done (`bb6eff6`) |
+| PS-04 | shim | Scaffold Python package: pyproject.toml, directory layout (hermes_cli/agent/shims/h3/) | ✅ Done (`7e01c69`) |
+| PS-05 | all | Set up foreman crons: sdk-go-foreman, sdk-python-foreman, sdk-typescript-foreman, shim-foreman | ✅ Done (`8ba1ead`, `64055ef`, `bbcca8a`, `e54f821`) |
 
-**Gate:** All 4 repos have working module files (`go build ./...` / `pip install -e .` / `npm install`). Each repo has a foreman cron.
+**Gate:** All 4 repos have working module files (`go build ./...` / `pip install -e .` / `npm install`). Each repo has a foreman cron. ✅ ALL GATES MET — PHASE 0.5 COMPLETE ✅
 
 ## PHASE 1: SDKs (Generated from Protocol)
 
