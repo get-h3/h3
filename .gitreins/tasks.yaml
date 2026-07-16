@@ -1,0 +1,24 @@
+tasks:
+- id: qv-e2e-go-echo
+  title: 'QV-E2E-01: Go echo harness full protocol loop'
+  criteria:
+  - Start Go echo harness on :9191
+  - POST /v1/process returns text Decision with content matching input
+  - POST /v1/result returns text Decision acknowledging decision_id
+  - Second POST /v1/result returns end Decision with reason task_complete
+  - Harness logs show METHOD /path STATUS DURATION for all 3 requests
+  - Server process is killed after verification
+  status: pending
+  created_at: '2026-07-16T15:38:35.567252+00:00'
+- id: qv-sdk-cross-lang
+  title: 'QV-SDK-05: Cross-language wire format consistency'
+  criteria:
+  - All 3 SDKs (Go, Python, TS) Decision types produce identical JSON for the same
+    logical Decision
+  - Same invalid payload rejected with same error code across all 3 SDKs
+  - "Round-trip: serialize in Go \u2192 deserialize in Python \u2192 re-serialize\
+    \ \u2192 matches original"
+  - "Round-trip: serialize in TS \u2192 deserialize in Go \u2192 re-serialize \u2192\
+    \ matches original"
+  status: pending
+  created_at: '2026-07-16T15:38:37.589745+00:00'
