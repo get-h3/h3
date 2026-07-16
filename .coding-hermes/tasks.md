@@ -26,28 +26,14 @@
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P0-01 | protocol | Write `h3-protocol.yaml` — OpenAPI 3.1 from S02 + S07 | ✅ Done (`043e5be`) |
-| P0-02 | protocol | Write all 13 JSON Schema files under schemas/v1/ | ✅ Done (`9d28e48`) |
-| P0-03 | protocol | Write 8 example payloads under examples/decisions/ | ✅ Done (`4090dc2`) |
-| P0-04 | protocol | Validation script + round-trip tests | ✅ Done (`8a0451f`) |
-| P0-05 | protocol | CI: validate on PR, release on tag | ✅ Done (`a89be0d`) |
-| P0-06 | protocol | Tag v1.0.0 | ✅ Done (`a89be0d` → `v1.0.0`) |
+| P0-01 | protocol | Write `h3-protocol.yaml` — OpenAPI 3.1 from S02 + S07 | pending |
+| P0-02 | protocol | Write all 13 JSON Schema files under schemas/v1/ | pending |
+| P0-03 | protocol | Write 8 example payloads under examples/decisions/ | pending |
+| P0-04 | protocol | Validation script + round-trip tests | pending |
+| P0-05 | protocol | CI: validate on PR, release on tag | pending |
+| P0-06 | protocol | Tag v1.0.0 | pending |
 
-**Gate:** `ajv validate` passes all schemas. `redocly lint` passes. Tagged. ✅ ALL GATES MET — PHASE 0 COMPLETE ✅
-
-## PHASE 0.5: SDK Repo Scaffolding
-
-> BLOCKING Phase 1. All 4 implementation repos are empty shells — need project scaffolding before SDK code.
-
-| ID | Repo | Task | Status |
-|---|---|---|---|
-| PS-01 | sdk-go | Scaffold Go module: go.mod, Makefile, directory layout (protocol/, harness/, testbed/, examples/) | ✅ Done (`fcffd52`) |
-| PS-02 | sdk-python | Scaffold Python package: pyproject.toml, Makefile, directory layout (src/h3_harness/) | ✅ Done (`87b5a7d`) |
-| PS-03 | sdk-typescript | Scaffold TypeScript package: package.json, tsconfig.json, directory layout (src/protocol/, src/harness/) | ✅ Done (`bb6eff6`) |
-| PS-04 | shim | Scaffold Python package: pyproject.toml, directory layout (hermes_cli/agent/shims/h3/) | ✅ Done (`7e01c69`) |
-| PS-05 | all | Set up foreman crons: sdk-go-foreman, sdk-python-foreman, sdk-typescript-foreman, shim-foreman | ✅ Done (`8ba1ead`, `64055ef`, `bbcca8a`, `e54f821`) |
-
-**Gate:** All 4 repos have working module files (`go build ./...` / `pip install -e .` / `npm install`). Each repo has a foreman cron. ✅ ALL GATES MET — PHASE 0.5 COMPLETE ✅
+**Gate:** `ajv validate` passes all schemas. `redocly lint` passes. Tagged.
 
 ## PHASE 1: SDKs (Generated from Protocol)
 
@@ -137,6 +123,59 @@
 | P6-07 | h3 | Migration guide: native → H3 | pending |
 
 **Gate:** External dev goes zero → working harness < 30 min using docs alone.
+
+---
+
+## PHASE QV: Quality Verification — Real Hard Verification
+
+> These run via `gitreins judge <task-id>`. Each verifies behavior, not just code.
+> Every QV task MUST: start real processes, hit real endpoints, check real output.
+
+### QV-E2E: Full Protocol Loop
+
+| ID | What It Verifies | Method |
+|---|---|---|
+| QV-E2E-01 | Go echo harness: process→text→result→text→result→end loop | Start server, curl 3 requests, verify each Decision, kill server |
+| QV-E2E-02 | Python minimal harness: same full loop | Start Python harness, curl verification |
+| QV-E2E-03 | TypeScript minimal harness: same full loop | Start TS harness, curl verification |
+| QV-E2E-04 | Cross-harness: same test battery passes against all 3 | Run `h3-test` sequentially against all 3 language harnesses |
+| QV-E2E-05 | Harness logs: every request timestamped with duration | Verify log output format: `DATE harness: METHOD /path STATUS DURATION` |
+
+### QV-Protocol: Schema Integrity
+
+| ID | What It Verifies | Method |
+|---|---|---|
+| QV-PROTO-01 | All 14 JSON schemas validate against their examples | `ajv validate` every schema/example pair |
+| QV-PROTO-02 | OpenAPI spec is valid and complete | `redocly lint h3-protocol.yaml` |
+| QV-PROTO-03 | Round-trip: Python → JSON → Go unmarshal → re-marshal → match | Cross-language serialization test |
+| QV-PROTO-04 | Round-trip: Go → JSON → TS unmarshal → re-marshal → match | Cross-language serialization test |
+
+### QV-SDK: Implementation Correctness
+
+| ID | What It Verifies | Method |
+|---|---|---|
+| QV-SDK-01 | Go SDK Decision validation rejects missing fields | Send malformed request, verify structured error |
+| QV-SDK-02 | Go SDK auto-generates decision_id when empty | OnProcess returns Decision without ID, verify middleware fills it |
+| QV-SDK-03 | Python SDK Pydantic validation matches JSON Schema | Same invalid payload → same error across Go + Python |
+| QV-SDK-04 | TS SDK Zod validation matches JSON Schema | Same invalid payload → same error across all 3 SDKs |
+| QV-SDK-05 | All 3 SDKs produce identical wire format for same Decision | Serialize same Decision in Go/Python/TS → diff JSON |
+
+### QV-Shim: Hermes Integration
+
+| ID | What It Verifies | Method |
+|---|---|---|
+| QV-SHIM-01 | Test battery runs against live Go harness, 43/43 pass | `h3-test --endpoint http://localhost:9191` |
+| QV-SHIM-02 | Test battery output matches expected JSON schema | Verify report.json matches TestReport schema |
+| QV-SHIM-03 | Shim loop handles harness timeout gracefully | Start harness that sleeps 30s, verify timeout error |
+| QV-SHIM-04 | Shim loader health check detects dead harness, falls back to native | Kill harness, verify loader marks unhealthy, routes to native |
+
+### QV-Cross: End-to-End Integration
+
+| ID | What It Verifies | Method |
+|---|---|---|
+| QV-CROSS-01 | Scaffold → run → test: full developer flow in < 5 min | `hermes h3 scaffold --lang go` → `go run .` → `h3-test` |
+| QV-CROSS-02 | Install → configure → verify: full Hermes flow | `hermes h3 install` → configure harness → `hermes h3 verify` |
+| QV-CROSS-03 | Protocol change → SDK regenerate → tests pass cascade | Modify schema, verify all 3 SDKs regenerate and pass |
 
 ---
 
