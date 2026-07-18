@@ -120,12 +120,12 @@
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P5-01 | protocol | Release workflow: validate → tag → dispatch to downstream | **→ BOARD CREATED** |
-| P5-02 | sdk-go | Sync-protocol workflow: regenerate → test → release | **→ PROPAGATED** |
-| P5-03 | sdk-python | Sync-protocol workflow: regenerate → test → release | **→ PROPAGATED** |
-| P5-04 | sdk-typescript | Sync-protocol workflow: regenerate → test → release | **→ PROPAGATED** |
-| P5-05 | shim | Sync-protocol workflow + PyPI publish | **→ PROPAGATED** |
-| P5-06 | h3 | Cross-repo integration test: protocol change → all SDKs update → test battery passes | **PENDING** |
+| P5-01 | protocol | Release workflow: validate → tag → dispatch to downstream | **UNBLOCKED** — P5-02–P5-05 done, protocol foreman can proceed |
+| P5-02 | sdk-go | Sync-protocol workflow: regenerate → test → release | ✅ Done (f1b0349) |
+| P5-03 | sdk-python | Sync-protocol workflow: regenerate → test → release | ✅ Done |
+| P5-04 | sdk-typescript | Sync-protocol workflow: regenerate → test → release | ✅ Done (a50a433) |
+| P5-05 | shim | Sync-protocol workflow + PyPI publish | ✅ Done (372b32b) |
+| P5-06 | h3 | Cross-repo integration test: protocol change → all SDKs update → test battery passes | **BLOCKED by P5-01** |
 
 **Gate:** One tag on protocol triggers full cascade. All repos release in sync.
 
@@ -281,18 +281,20 @@
 | P1 | All 3 SDKs pass test battery | P2, P3 | ✅ |
 | P2 | Shim completes 3-turn conversation | P3, P4 | ✅ |
 | P3 | Test battery passes against all examples | P4, P5 | ✅ |
-| P4 | Scaffold → test passes end-to-end | P6 | ⚠️ Partial |
-| P5 | One tag → full cascade release | P6 | ❌ |
+| P4 | Scaffold → test passes end-to-end | P6 | ✅ (all 5 tasks complete) |
+| P5 | One tag → full cascade release | P6 | ⚠️ 4/5 workflows done, P5-01 unblocked |
 | P6 | External dev zero→harness < 30 min | Launch | ❌ |
 
 ---
 
 ## Remaining Work Summary
 
-**Release Pipeline — Phase 5 (5/6 propagated):**
-- P5-01: Protocol release workflow (board created in protocol repo)
-- P5-02–P5-05: SDK sync-protocol workflows (propagated to sdk-go/sdk-python/sdk-typescript/shim)
-- P5-06: Cross-repo integration test (pending in h3)
+**Release Pipeline — Phase 5 (4/5 done, 1 unblocked):**
+- P5-01: Protocol release workflow (UNBLOCKED — SDK workflows done, protocol foreman can proceed)
+- P5-02–P5-05: SDK sync-protocol workflows ✅ Done (sdk-go f1b0349, sdk-python, sdk-typescript a50a433, shim 372b32b)
+- P5-06: Cross-repo integration test (BLOCKED by P5-01)
+
+**⚠️ Shim CI Failing:** 2 consecutive failures (40/43). Shim foreman investigating. Root: compliance test regression.
 
 **Docs & Website — Phase 6:**
 - P6-01–P6-07: h3.sh developer portal
