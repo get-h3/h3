@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="H3 Protocol Reference — OpenAPI 3.1.0 endpoints, decision types, JSON Schema, and error codes.">
+  <meta name="theme-color" content="#0a0a14">
+  <title>Protocol Reference — H3</title>
+  <style>
+    :root {
+      --bg: #0a0a14;
+      --bg-deep: #060612;
+      --card: #0f0f1e;
+      --card-raised: #131329;
+      --border: #1e1e38;
+      --border-bright: #302957;
+      --text: #c8c8d4;
+      --text-strong: #f2f0ff;
+      --muted: #8888a0;
+      --dim: #5e5e78;
+      --purple: #8b5cf6;
+      --pink: #d946ef;
+      --blue: #60a5fa;
+      --green: #4ade80;
+      --amber: #fbbf24;
+      --gradient: linear-gradient(135deg, var(--purple), var(--pink));
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --max: 1120px;
+      --radius: 14px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-width: 320px;
+      margin: 0;
+      background:
+        radial-gradient(circle at 80% -10%, rgba(139, 92, 246, 0.14), transparent 30rem),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.6;
+      -webkit-text-size-adjust: 100%;
+    }
+    a { color: inherit; }
+    button { font: inherit; }
+    .shell { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(30, 30, 56, 0.82);
+      background: rgba(10, 10, 20, 0.86);
+      backdrop-filter: blur(16px);
+    }
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 32px));
+      min-height: 64px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-strong);
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--gradient);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      box-shadow: 0 0 24px rgba(139, 92, 246, 0.28);
+    }
+    .nav { display: flex; align-items: center; gap: 22px; }
+    .nav a {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-decoration: none;
+      transition: color 160ms ease;
+    }
+    .nav a:hover, .nav a:focus-visible { color: var(--text-strong); }
+    .nav .nav-cta {
+      padding: 8px 13px;
+      border: 1px solid var(--border-bright);
+      border-radius: 8px;
+      color: var(--text-strong);
+      background: rgba(139, 92, 246, 0.08);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(56px, 8vw, 80px) 0 54px;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 20px;
+      width: min(700px, 100%);
+      height: 300px;
+      transform: translateX(-50%);
+      background-image: linear-gradient(rgba(139, 92, 246, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(139, 92, 246, 0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse, black 15%, transparent 72%);
+      pointer-events: none;
+    }
+    .hero .shell {
+      position: relative;
+      text-align: center;
+    }
+    .eyebrow {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 999px;
+      background: rgba(139, 92, 246, 0.08);
+      color: #b9a5ff;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+    h1 {
+      position: relative;
+      max-width: 880px;
+      margin: 24px auto 10px;
+      color: transparent;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      font-size: clamp(2.15rem, 5vw, 3.8rem);
+      font-weight: 850;
+      letter-spacing: -0.07em;
+      line-height: 1.0;
+      text-wrap: balance;
+    }
+    .hero p {
+      position: relative;
+      max-width: 620px;
+      margin: 14px auto 0;
+      color: var(--muted);
+      font-size: clamp(0.9rem, 2vw, 1.05rem);
+      text-wrap: balance;
+    }
+    .hero-meta {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+    .hero-meta span {
+      padding: 5px 9px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      background: rgba(15, 15, 30, 0.72);
+      font-family: var(--mono);
+      font-size: 0.66rem;
+    }
+
+    .section { padding: 16px 0 54px; }
+    .section-heading { max-width: 680px; margin-bottom: 20px; }
+    .section-kicker {
+      margin: 0 0 6px;
+      color: #a993ff;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin: 0;
+      color: var(--text-strong);
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      letter-spacing: -0.045em;
+      line-height: 1.05;
+    }
+    .section-heading p { margin: 10px 0 0; color: var(--muted); font-size: 0.88rem; }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+    }
+
+    /* ENDPOINT TABLE */
+    .ep-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.83rem;
+    }
+    .ep-table thead th {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-strong);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-align: left;
+    }
+    .ep-table tbody td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(30, 30, 56, 0.5);
+      vertical-align: top;
+    }
+    .ep-table tbody tr:last-child td { border-bottom: 0; }
+    .ep-table tbody tr:hover { background: rgba(139, 92, 246, 0.04); }
+    .ep-method {
+      display: inline-block;
+      min-width: 54px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-align: center;
+    }
+    .ep-method.get { color: var(--green); background: rgba(74, 222, 128, 0.08); }
+    .ep-method.post { color: var(--blue); background: rgba(96, 165, 250, 0.08); }
+    .ep-method.delete { color: #ef4444; background: rgba(239, 68, 68, 0.08); }
+    .ep-path { display: block; margin-top: 4px; color: var(--text-strong); font-family: var(--mono); font-size: 0.78rem; }
+    .ep-desc { margin: 2px 0 0; color: var(--dim); font-size: 0.72rem; }
+    .ep-code { margin-top: 4px; color: var(--muted); font-family: var(--mono); font-size: 0.66rem; }
+
+    /* DECISION GRID */
+    .dec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .dec-card { padding: 20px; transition: border-color 160ms ease; }
+    .dec-card:hover { border-color: var(--border-bright); }
+    .dec-icon {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: rgba(139, 92, 246, 0.12);
+      color: #b9a5ff;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      margin-bottom: 10px;
+    }
+    .dec-card h4 { margin: 0 0 5px; color: var(--text-strong); font-family: var(--mono); font-size: 0.84rem; font-weight: 700; }
+    .dec-card p { margin: 0; color: var(--muted); font-size: 0.76rem; line-height: 1.5; }
+
+    /* SCHEMA / CODE */
+    pre {
+      margin: 0;
+      padding: clamp(14px, 3vw, 20px);
+      overflow-x: auto;
+      border: 1px solid #1a1a30;
+      border-radius: 10px;
+      background: #060612;
+      color: #d8d5ef;
+      font-family: var(--mono);
+      font-size: clamp(0.66rem, 1.3vw, 0.75rem);
+      line-height: 1.6;
+      tab-size: 2;
+    }
+    .code-shell { position: relative; margin-top: 14px; }
+    .copy-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 1px solid #2b2b49;
+      border-radius: 7px;
+      color: var(--muted);
+      background: rgba(15, 15, 30, 0.94);
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.67rem;
+      transition: color 160ms ease, border-color 160ms ease;
+    }
+    .copy-button:hover, .copy-button:focus-visible { color: #fff; border-color: var(--purple); }
+    .copy-button.copied { color: var(--green); border-color: rgba(74, 222, 128, 0.55); }
+
+    /* ERROR TABLE */
+    .err-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.81rem;
+    }
+    .err-table thead th {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-strong);
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-align: left;
+    }
+    .err-table tbody td {
+      padding: 9px 14px;
+      border-bottom: 1px solid rgba(30, 30, 56, 0.5);
+      vertical-align: top;
+    }
+    .err-table tbody tr:last-child td { border-bottom: 0; }
+    .err-table tbody tr:hover { background: rgba(139, 92, 246, 0.04); }
+    .err-code { color: var(--text-strong); font-family: var(--mono); font-size: 0.72rem; }
+    .err-http { display: inline-block; min-width: 40px; padding: 2px 6px; border-radius: 4px; color: var(--amber); background: rgba(251, 191, 36, 0.08); font-family: var(--mono); font-size: 0.67rem; }
+
+    footer { padding: 28px 0 38px; border-top: 1px solid var(--border); }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .footer-brand { color: var(--dim); font-family: var(--mono); font-size: 0.72rem; }
+    .footer-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 17px; }
+    .footer-links a { color: var(--muted); font-size: 0.74rem; text-decoration: none; }
+    .footer-links a:hover, .footer-links a:focus-visible { color: var(--text-strong); }
+    .footer-note { margin: 18px 0 0; color: #48485f; font-family: var(--mono); font-size: 0.65rem; text-align: center; }
+
+    :focus-visible { outline: 2px solid #c084fc; outline-offset: 3px; }
+    @media (max-width: 740px) {
+      .shell, .topbar-inner { width: min(100% - 24px, var(--max)); }
+      .topbar-inner { min-height: 58px; }
+      .nav { gap: 13px; }
+      .nav a:not(.nav-cta) { display: none; }
+      .dec-grid { grid-template-columns: 1fr; }
+      .footer-inner { align-items: flex-start; flex-direction: column; }
+      .footer-links { justify-content: flex-start; }
+    }
+    @media (max-width: 480px) {
+      pre { padding: 14px 12px; font-size: 0.62rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html" aria-label="H3 home"><span class="brand-mark">H3</span><span>h3.sh</span></a>
+      <nav class="nav" aria-label="Page navigation">
+        <a href="index.html">Home</a>
+        <a href="#endpoints">Endpoints</a>
+        <a href="#decisions">Decisions</a>
+        <a href="#schemas">Schemas</a>
+        <a href="#errors">Errors</a>
+        <a class="nav-cta" href="https://github.com/get-h3/protocol" target="_blank" rel="noreferrer">OpenAPI Spec ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="shell">
+        <span class="eyebrow">OpenAPI 3.1.0 · v1.0.0</span>
+        <h1>H3 Protocol Reference</h1>
+        <p>A narrow two-endpoint REST contract between Hermes and any agent harness. One JSON wire format across Go, Python, and TypeScript.</p>
+        <div class="hero-meta">
+          <span>6 endpoints</span>
+          <span>14 JSON schemas</span>
+          <span>6 decision types</span>
+          <span>8 error codes</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Endpoints -->
+    <section class="section" id="endpoints">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">01 / API Surface</p>
+          <h2>Endpoints</h2>
+          <p>All endpoints live under <code style="color:var(--purple);font-family:var(--mono)">http://localhost:9191/v1/</code>. The harness exposes them; Hermes calls them.</p>
+        </div>
+
+        <div class="card" style="overflow-x:auto">
+          <table class="ep-table">
+            <thead>
+              <tr>
+                <th style="width:10%">Method</th>
+                <th style="width:23%">Path</th>
+                <th style="width:32%">Description</th>
+                <th style="width:35%">Request / Response</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="ep-method get">GET</span></td>
+                <td>
+                  <span class="ep-path">/v1/health</span>
+                  <span class="ep-desc">Health check</span>
+                </td>
+                <td>
+                  Hermes polls this every 30 seconds. Three consecutive failures mark the harness unreachable and sessions route to native fallback.
+                </td>
+                <td>
+                  <div class="ep-code">→ 200: <code>HealthResponse</code> (status: "ok")</div>
+                  <div class="ep-code">→ 503: <code>HealthResponse</code> (status: "degraded"/"down")</div>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="ep-method post">POST</span></td>
+                <td>
+                  <span class="ep-path">/v1/process</span>
+                  <span class="ep-desc">New message → Decision</span>
+                </td>
+                <td>
+                  Hermes calls this when a new user message arrives. Harness receives full context (history, tools, models, memory, config) and must return exactly one Decision.
+                </td>
+                <td>
+                  <div class="ep-code">← Body: <code>ProcessRequest</code></div>
+                  <div class="ep-code">→ 200: <code>Decision</code></div>
+                  <div class="ep-code">→ 400 | 500 | 504</div>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="ep-method post">POST</span></td>
+                <td>
+                  <span class="ep-path">/v1/result</span>
+                  <span class="ep-desc">Execution result → Decision</span>
+                </td>
+                <td>
+                  Hermes calls this after executing a prior Decision. Loop continues until the harness returns decision type "end".
+                </td>
+                <td>
+                  <div class="ep-code">← Body: <code>ResultRequest</code></div>
+                  <div class="ep-code">→ 200: <code>Decision</code></div>
+                  <div class="ep-code">→ 400 | 404 | 410 | 500</div>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="ep-method post">POST</span></td>
+                <td>
+                  <span class="ep-path">/v1/cancel</span>
+                  <span class="ep-desc">Cancel in-flight</span>
+                </td>
+                <td>
+                  Hermes calls this to cancel an in-flight decision. Used when user sends a new message mid-processing or types /stop. Harness should abort current operation ASAP.
+                </td>
+                <td>
+                  <div class="ep-code">← Body: <code>CancelRequest</code></div>
+                  <div class="ep-code">→ 200: <code>{cancelled, cancelled_decision_id}</code></div>
+                  <div class="ep-code">→ 404 | 500</div>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="ep-method get">GET</span></td>
+                <td>
+                  <span class="ep-path">/v1/sessions/{session_id}</span>
+                  <span class="ep-desc">Session metadata</span>
+                </td>
+                <td>
+                  Returns metadata for an active or completed session.
+                </td>
+                <td>
+                  <div class="ep-code">→ 200: <code>SessionResponse</code></div>
+                  <div class="ep-code">→ 404 | 500</div>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="ep-method delete">DELETE</span></td>
+                <td>
+                  <span class="ep-path">/v1/sessions/{session_id}</span>
+                  <span class="ep-desc">Terminate session</span>
+                </td>
+                <td>
+                  Forces session termination. Used for cleanup and /new command handling. Harness should release all resources for this session.
+                </td>
+                <td>
+                  <div class="ep-code">→ 200: <code>{terminated, session_id}</code></div>
+                  <div class="ep-code">→ 404 | 500</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Decision Types -->
+    <section class="section" id="decisions">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">02 / Decision Types</p>
+          <h2>Decisions</h2>
+          <p>Every <code>/v1/process</code> or <code>/v1/result</code> call must return exactly one Decision. The <code style="color:var(--purple);font-family:var(--mono)">decision</code> field is a discriminator — six possible values.</p>
+        </div>
+
+        <div class="dec-grid">
+          <div class="card dec-card">
+            <div class="dec-icon">⚙</div>
+            <h4>tool_call</h4>
+            <p>Execute a Hermes tool. Provide the tool name and JSON Schema-conforming params. Hermes runs the tool and calls <code>/v1/result</code> with the output.</p>
+          </div>
+          <div class="card dec-card">
+            <div class="dec-icon">🧠</div>
+            <h4>llm_call</h4>
+            <p>Run an LLM prompt through Hermes. Specify model, messages, temperature, and optional tools. Hermes handles tokenisation and returns the response.</p>
+          </div>
+          <div class="card dec-card">
+            <div class="dec-icon">💬</div>
+            <h4>text</h4>
+            <p>Send text to the user. The message appears in their chat. Mark <code>finished: true</code> to show the response as complete; <code>false</code> for streaming indicators.</p>
+          </div>
+          <div class="card dec-card">
+            <div class="dec-icon">⏳</div>
+            <h4>wait</h4>
+            <p>Pause for an external signal. Hermes hangs until the timeout or an external trigger arrives, then calls <code>/v1/result</code>.</p>
+          </div>
+          <div class="card dec-card">
+            <div class="dec-icon">🔀</div>
+            <h4>delegate</h4>
+            <p>Spawn a sub-agent. Provide a goal, role, and optional context. Hermes runs the sub-agent in a separate session and returns the result.</p>
+          </div>
+          <div class="card dec-card">
+            <div class="dec-icon">🏁</div>
+            <h4>end</h4>
+            <p>Terminate the session. Provide a reason (<code>task_complete</code>, <code>user_requested</code>, <code>error</code>, <code>timeout</code>, <code>rate_limited</code>, <code>cancelled</code>) and optional summary.</p>
+          </div>
+        </div>
+
+        <!-- Decision JSON Schema example -->
+        <div class="card" style="margin-top:18px;padding:clamp(14px,3vw,24px)">
+          <h4 style="margin:0 0 10px;color:var(--text-strong);font-family:var(--mono);font-size:0.78rem;letter-spacing:0.04em;text-transform:uppercase">Example: tool_call Decision</h4>
+          <div class="code-shell">
+            <pre><code>{
+  "decision": "tool_call",
+  "decision_id": "d_a1b2c3d4",
+  "tool_call": {
+    "name": "web_search",
+    "params": {
+      "query": "H3 brain-swap protocol",
+      "limit": 5
+    },
+    "reasoning": "Search for H3 documentation to answer user question"
+  }
+}</code></pre>
+            <button class="copy-button" type="button" onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent);this.textContent='copied';this.classList.add('copied');setTimeout(()=>{this.textContent='copy';this.classList.remove('copied')},1800)">copy</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px;padding:clamp(14px,3vw,24px)">
+          <h4 style="margin:0 0 10px;color:var(--text-strong);font-family:var(--mono);font-size:0.78rem;letter-spacing:0.04em;text-transform:uppercase">Example: end Decision</h4>
+          <div class="code-shell">
+            <pre><code>{
+  "decision": "end",
+  "decision_id": "d_z9y8x7w6",
+  "end": {
+    "reason": "task_complete",
+    "summary": "Found 3 results for H3 protocol. Delivered to user."
+  }
+}</code></pre>
+            <button class="copy-button" type="button" onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent);this.textContent='copied';this.classList.add('copied');setTimeout(()=>{this.textContent='copy';this.classList.remove('copied')},1800)">copy</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- JSON Schemas (inline examples) -->
+    <section class="section" id="schemas">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">03 / Wire Format</p>
+          <h2>JSON Schema Examples</h2>
+          <p>All 14 schemas live under <a href="https://github.com/get-h3/protocol/tree/main/schemas/v1" style="color:var(--purple);font-family:var(--mono)">schemas/v1/</a>. These are the core types you'll work with in every harness.</p>
+        </div>
+
+        <!-- Decision schema -->
+        <div class="card" style="padding:clamp(14px,3vw,24px);margin-bottom:14px">
+          <h4 style="margin:0 0 10px;color:var(--text-strong);font-family:var(--mono);font-size:0.78rem;letter-spacing:0.04em;text-transform:uppercase">Decision <span style="color:var(--dim);font-weight:400;text-transform:none;letter-spacing:0">— Discriminated union</span></h4>
+          <p style="margin:0 0 12px;color:var(--muted);font-size:0.78rem">The <code style="color:var(--purple);font-family:var(--mono)">decision</code> field determines which sub-schema applies. Required fields: <code style="color:#86efac;font-family:var(--mono)">decision</code>, <code style="color:#86efac;font-family:var(--mono)">decision_id</code>.</p>
+          <div class="code-shell">
+            <pre><code>{
+  "$id": "schemas/v1/decision.json",
+  "title": "Decision",
+  "type": "object",
+  "required": ["decision", "decision_id"],
+  "properties": {
+    "decision": {
+      "type": "string",
+      "enum": ["tool_call", "llm_call", "text", "wait", "delegate", "end"]
+    },
+    "decision_id": { "type": "string" }
+  },
+  "oneOf": [
+    { "description": "tool_call", "properties": {"decision":{"const":"tool_call"},"tool_call":{"$ref":"tool-call.json"}}, "required":["tool_call"] },
+    { "description": "llm_call",  "properties": {"decision":{"const":"llm_call"},"llm_call":{"$ref":"llm-call.json"}},    "required":["llm_call"] },
+    { "description": "text",      "properties": {"decision":{"const":"text"},"text":{"$ref":"text-response.json"}},        "required":["text"] },
+    { "description": "wait",      "properties": {"decision":{"const":"wait"},"wait":{"$ref":"wait.json"}},                  "required":["wait"] },
+    { "description": "delegate",  "properties": {"decision":{"const":"delegate"},"delegate":{"$ref":"delegate.json"}},      "required":["delegate"] },
+    { "description": "end",       "properties": {"decision":{"const":"end"},"end":{"$ref":"end.json"}},                     "required":["end"] }
+  ]
+}</code></pre>
+            <button class="copy-button" type="button" onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent);this.textContent='copied';this.classList.add('copied');setTimeout(()=>{this.textContent='copy';this.classList.remove('copied')},1800)">copy</button>
+          </div>
+        </div>
+
+        <!-- ToolCall schema -->
+        <div class="card" style="padding:clamp(14px,3vw,24px);margin-bottom:14px">
+          <h4 style="margin:0 0 10px;color:var(--text-strong);font-family:var(--mono);font-size:0.78rem;letter-spacing:0.04em;text-transform:uppercase">ToolCall <span style="color:var(--dim);font-weight:400;text-transform:none;letter-spacing:0">— Execute a Hermes tool</span></h4>
+          <p style="margin:0 0 12px;color:var(--muted);font-size:0.78rem">Required fields: <code style="color:#86efac;font-family:var(--mono)">name</code>, <code style="color:#86efac;font-family:var(--mono)">params</code>. Optional: <code style="font-family:var(--mono)">reasoning</code> (audit trail).</p>
+          <div class="code-shell">
+            <pre><code>{
+  "$id": "schemas/v1/tool-call.json",
+  "title": "ToolCall",
+  "type": "object",
+  "required": ["name", "params"],
+  "properties": {
+    "name": { "type": "string", "description": "Tool name matching one from context.tools." },
+    "params": { "type": "object", "description": "Parameters matching the tool's JSON Schema." },
+    "reasoning": { "type": "string", "description": "Why this tool call — logged for auditing." }
+  }
+}</code></pre>
+            <button class="copy-button" type="button" onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent);this.textContent='copied';this.classList.add('copied');setTimeout(()=>{this.textContent='copy';this.classList.remove('copied')},1800)">copy</button>
+          </div>
+        </div>
+
+        <!-- ProcessRequest schema -->
+        <div class="card" style="padding:clamp(14px,3vw,24px);margin-bottom:14px">
+          <h4 style="margin:0 0 10px;color:var(--text-strong);font-family:var(--mono);font-size:0.78rem;letter-spacing:0.04em;text-transform:uppercase">ProcessRequest <span style="color:var(--dim);font-weight:400;text-transform:none;letter-spacing:0">— POST /v1/process body</span></h4>
+          <p style="margin:0 0 12px;color:var(--muted);font-size:0.78rem">Hermes sends the full world state: session, message, identity, and context (history, tools, models, config, memory). Required: <code style="color:#86efac;font-family:var(--mono)">session_id</code>, <code style="color:#86efac;font-family:var(--mono)">message</code>, <code style="color:#86efac;font-family:var(--mono)">identity</code>, <code style="color:#86efac;font-family:var(--mono)">context</code>.</p>
+          <div class="code-shell">
+            <pre><code>{
+  "$id": "schemas/v1/process-request.json",
+  "title": "ProcessRequest",
+  "type": "object",
+  "required": ["session_id", "message", "identity", "context"],
+  "properties": {
+    "session_id": { "type": "string" },
+    "message":    { "$ref": "common.json#/definitions/Message" },
+    "identity":   { "$ref": "common.json#/definitions/Identity" },
+    "context":    { "$ref": "common.json#/definitions/Context" }
+  }
+}</code></pre>
+            <button class="copy-button" type="button" onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent);this.textContent='copied';this.classList.add('copied');setTimeout(()=>{this.textContent='copy';this.classList.remove('copied')},1800)">copy</button>
+          </div>
+          <!-- Context detail -->
+          <details style="margin-top:12px">
+            <summary style="cursor:pointer;color:var(--purple);font-family:var(--mono);font-size:0.72rem">Context structure (common.json)</summary>
+            <div style="margin-top:8px">
+              <pre><code>Context {
+  history: HistoryEntry[]         // Last N messages
+  tools: Tool[]                   // Available Hermes tools
+  models: Model[]                 // Available LLMs with pricing
+  memory?: string                 // DuckBrain memory
+  skills?: string[]               // Loaded skill names
+  config: Config                  // max_iterations, timeout_seconds, project_dir, etc.
+  session_state: SessionState     // turn_count, cost_so_far, started_at, etc.
+}
+
+Tool {
+  name: string
+  description: string
+  parameters: object              // JSON Schema for tool parameters
+}
+
+Model {
+  name: string
+  provider: string
+  context_window: integer
+  supports_vision?: boolean
+  supports_tool_calling?: boolean
+  cost_per_1k_input?: number
+  cost_per_1k_output?: number
+}</code></pre>
+            </div>
+          </details>
+        </div>
+
+        <!-- HealthResponse schema -->
+        <div class="card" style="padding:clamp(14px,3vw,24px);margin-bottom:14px">
+          <h4 style="margin:0 0 10px;color:var(--text-strong);font-family:var(--mono);font-size:0.78rem;letter-spacing:0.04em;text-transform:uppercase">HealthResponse <span style="color:var(--dim);font-weight:400;text-transform:none;letter-spacing:0">— GET /v1/health response</span></h4>
+          <p style="margin:0 0 12px;color:var(--muted);font-size:0.78rem">Required: <code style="color:#86efac;font-family:var(--mono)">status</code> ("ok"|"degraded"|"down"), <code style="color:#86efac;font-family:var(--mono)">version</code>. Optional: uptime_seconds, active_sessions, capabilities, degraded_reason, error.</p>
+          <div class="code-shell">
+            <pre><code>{
+  "$id": "schemas/v1/health-response.json",
+  "title": "HealthResponse",
+  "type": "object",
+  "required": ["status", "version"],
+  "properties": {
+    "status":           { "type": "string", "enum": ["ok", "degraded", "down"] },
+    "version":          { "type": "string" },
+    "transport":        { "type": "string", "enum": ["rest"] },
+    "protocol_version": { "type": "string" },
+    "uptime_seconds":   { "type": "integer", "minimum": 0 },
+    "active_sessions":  { "type": "integer", "minimum": 0 },
+    "capabilities":     { "type": "array", "items": {"type":"string","enum":["tool_call","llm_call","text","wait","delegate","end"]} },
+    "degraded_reason":  { "type": "string" },
+    "error":            { "type": "string" }
+  }
+}</code></pre>
+            <button class="copy-button" type="button" onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent);this.textContent='copied';this.classList.add('copied');setTimeout(()=>{this.textContent='copy';this.classList.remove('copied')},1800)">copy</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Error Codes -->
+    <section class="section" id="errors">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">04 / Errors</p>
+          <h2>Error Codes</h2>
+          <p>All error responses follow the <code style="color:var(--purple);font-family:var(--mono)">ErrorResponse</code> schema: <code style="font-family:var(--mono)">{ error: { code, message, details? } }</code>.</p>
+        </div>
+
+        <div class="card" style="overflow-x:auto">
+          <table class="err-table">
+            <thead>
+              <tr>
+                <th>HTTP</th>
+                <th>Code</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="err-http">400</span></td>
+                <td class="err-code">INVALID_REQUEST</td>
+                <td>Malformed JSON or missing required fields</td>
+              </tr>
+              <tr>
+                <td><span class="err-http">400</span></td>
+                <td class="err-code">INVALID_DECISION</td>
+                <td>Decision type not recognized</td>
+              </tr>
+              <tr>
+                <td><span class="err-http">400</span></td>
+                <td class="err-code">UNKNOWN_TOOL</td>
+                <td>Tool name not in available tools</td>
+              </tr>
+              <tr>
+                <td><span class="err-http">400</span></td>
+                <td class="err-code">UNKNOWN_MODEL</td>
+                <td>Model not in available models</td>
+              </tr>
+              <tr>
+                <td><span class="err-http">404</span></td>
+                <td class="err-code">SESSION_NOT_FOUND</td>
+                <td>Session ID doesn't exist</td>
+              </tr>
+              <tr>
+                <td><span class="err-http">410</span></td>
+                <td class="err-code">SESSION_EXPIRED</td>
+                <td>Session timed out</td>
+              </tr>
+              <tr>
+                <td><span class="err-http">504</span></td>
+                <td class="err-code">HARNESS_TIMEOUT</td>
+                <td>Harness didn't respond in time</td>
+              </tr>
+              <tr>
+                <td><span class="err-http">500</span></td>
+                <td class="err-code">INTERNAL_ERROR</td>
+                <td>Harness-side crash</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card" style="margin-top:14px;padding:clamp(14px,3vw,24px)">
+          <h4 style="margin:0 0 10px;color:var(--text-strong);font-family:var(--mono);font-size:0.78rem;letter-spacing:0.04em;text-transform:uppercase">Example: 404 SESSION_NOT_FOUND</h4>
+          <div class="code-shell">
+            <pre><code>HTTP/1.1 404 Not Found
+Content-Type: application/json
+
+{
+  "error": {
+    "code": "SESSION_NOT_FOUND",
+    "message": "Session s_abc123 does not exist on this harness."
+  }
+}</code></pre>
+            <button class="copy-button" type="button" onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent);this.textContent='copied';this.classList.add('copied');setTimeout(()=>{this.textContent='copy';this.classList.remove('copied')},1800)">copy</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Process Loop Diagram -->
+    <section class="section">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">05 / Loop</p>
+          <h2>Protocol Flow</h2>
+          <p>The core loop: Hermes sends a message, your harness returns a decision, Hermes executes it, sends the result back. Repeat until "end."</p>
+        </div>
+
+        <div class="card" style="padding:clamp(14px,3vw,24px)">
+          <div style="overflow-x:auto">
+            <svg viewBox="0 0 880 320" style="display:block;width:100%;min-width:700px;height:auto" role="img" aria-labelledby="flow-title">
+              <title id="flow-title">H3 protocol loop</title>
+              <defs>
+                <linearGradient id="fg" x1="0" x2="1">
+                  <stop offset="0" stop-color="#8b5cf6"></stop>
+                  <stop offset="1" stop-color="#d946ef"></stop>
+                </linearGradient>
+                <marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                  <path d="M0,0 L8,4 L0,8 Z" fill="#d946ef"></path>
+                </marker>
+              </defs>
+
+              <!-- Hermes column -->
+              <rect x="15" y="65" width="146" height="210" rx="12" fill="#121226" stroke="#2c2a4c" stroke-width="1.5"></rect>
+              <text x="88" y="95" text-anchor="middle" fill="#f2f0ff" font-size="15" font-weight="700" font-family="sans-serif">Hermes</text>
+              <text x="88" y="113" text-anchor="middle" fill="#8888a0" font-size="10" font-family="monospace">platform</text>
+              <line x1="15" y1="128" x2="161" y2="128" stroke="#2c2a4c" stroke-width="1"></line>
+
+              <!-- Harness column -->
+              <rect x="719" y="65" width="146" height="210" rx="12" fill="#15102a" stroke="#8b5cf6" stroke-width="1.5"></rect>
+              <text x="792" y="95" text-anchor="middle" fill="#f2f0ff" font-size="15" font-weight="700" font-family="sans-serif">Harness</text>
+              <text x="792" y="113" text-anchor="middle" fill="#8888a0" font-size="10" font-family="monospace">your code</text>
+              <line x1="719" y1="128" x2="865" y2="128" stroke="#2c2a4c" stroke-width="1"></line>
+
+              <!-- Arrow 1: POST /v1/process → -->
+              <path d="M161 160 L272 160" fill="none" stroke="url(#fg)" stroke-width="1.8" stroke-linecap="round" marker-end="url(#ah)"></path>
+              <text x="216" y="152" text-anchor="middle" fill="#b9a5ff" font-size="10" font-weight="700" font-family="monospace">POST /v1/process</text>
+              <text x="216" y="172" text-anchor="middle" fill="#8888a0" font-size="9" font-family="monospace">ProcessRequest → Decision</text>
+
+              <!-- Arrow 2: POST /v1/result ← -->
+              <path d="M608 200 L272 200" fill="none" stroke="url(#fg)" stroke-width="1.8" stroke-linecap="round" marker-end="url(#ah)"></path>
+              <text x="440" y="192" text-anchor="middle" fill="#b9a5ff" font-size="10" font-weight="700" font-family="monospace">POST /v1/result</text>
+              <text x="440" y="212" text-anchor="middle" fill="#8888a0" font-size="9" font-family="monospace">ResultRequest → Decision</text>
+
+              <!-- Arrow 3: POST /v1/result → (repeat) -->
+              <path d="M161 240 L272 240" fill="none" stroke="url(#fg)" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="6 4" marker-end="url(#ah)"></path>
+              <text x="216" y="232" text-anchor="middle" fill="#8888a0" font-size="9" font-family="monospace">repeat until</text>
+              <text x="216" y="252" text-anchor="middle" fill="#d946ef" font-size="10" font-weight="700" font-family="monospace">decision: "end"</text>
+
+              <!-- Execution label -->
+              <text x="440" y="162" text-anchor="middle" fill="#62626a" font-size="9" font-family="monospace">Hermes executes the decision</text>
+
+              <!-- Arrow 4: health poll ←→ -->
+              <path d="M161 270 Q440 290 719 270" fill="none" stroke="#302957" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="3 5"></path>
+              <text x="440" y="286" text-anchor="middle" fill="#5e5e78" font-size="9" font-family="monospace">GET /v1/health — every 30s</text>
+            </svg>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px">
+            <div style="padding-top:10px;border-top:1px solid var(--border)"><strong style="color:var(--text-strong);font-size:0.78rem;display:block">1. User sends message</strong><span style="color:var(--muted);font-size:0.72rem">Hermes calls POST /v1/process with full context</span></div>
+            <div style="padding-top:10px;border-top:1px solid var(--border)"><strong style="color:var(--text-strong);font-size:0.78rem;display:block">2. Loop: execute → result</strong><span style="color:var(--muted);font-size:0.72rem">Hermes executes decision, calls /v1/result</span></div>
+            <div style="padding-top:10px;border-top:1px solid var(--border)"><strong style="color:var(--text-strong);font-size:0.78rem;display:block">3. End or cancel</strong><span style="color:var(--muted);font-size:0.72rem">Harness returns "end" or Hermes cancels</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell">
+      <div class="footer-inner">
+        <span class="footer-brand">H3 Protocol · v1.0.0</span>
+        <div class="footer-links">
+          <a href="index.html">h3.sh</a>
+          <a href="https://github.com/get-h3/protocol" target="_blank" rel="noreferrer">OpenAPI Spec</a>
+          <a href="https://github.com/get-h3" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </div>
+      <p class="footer-note">Auto-generated from h3-protocol.yaml (OpenAPI 3.1.0). 14 JSON Schemas, 6 endpoints, 8 error codes.</p>
+    </div>
+  </footer>
+</body>
+</html>
