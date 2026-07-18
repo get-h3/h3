@@ -206,7 +206,7 @@
 | ID | What It Verifies | Status |
 |---|---|---|
 | QV-E2E-01 | Go SDK harness: process→text→result→text→result→end loop | ✅ 42/43 (1 known gap) |
-| QV-E2E-02 | Python minimal harness: same full loop | **→ NEXT (h3-test installed)** |
+| QV-E2E-02 | Python minimal harness: same full loop | ✅ 39/43 (4 echo-harness gaps: streaming, history, unknown-decision, session-not-found) |
 
 ### QV-GAPS: Gaps Found During Verification
 
@@ -218,6 +218,18 @@
 
 **Files:** `sdk-go/protocol/types.go`, `sdk-go/testbed/conformance.go`
 **Spec ref:** S02 §4 (Process Response)
+
+## [x] QV-GAP-02 — Python SDK protocol types too strict for test battery payloads ✅ (06446f5)
+- [x] `Message.timestamp` default '' (test battery omits it)
+- [x] `Identity.platform/chat_id/user_name/user_id` default ''
+- [x] `Config.max_iterations/timeout_seconds` defaults 100/300 (test battery sends empty config)
+- [x] `SessionState.started_at` default '' (test battery sends empty session_state)
+- [x] `Decision.history` added (matching Go SDK, test battery checks for history preservation)
+- [x] Result: 15/43 → 39/43 h3-test pass
+- [~] 4 remaining failures are echo-harness-specific: streaming (finished=false), history tracking in harness, unknown-decision-type handling, session-not-found (404)
+
+**Files:** `sdk-python/src/h3_harness/protocol.py`
+**Spec ref:** S02 §4 (Process Response), S04 §2 (Python SDK)
 | QV-E2E-03 | TypeScript minimal harness: same full loop | **PENDING** |
 | QV-E2E-04 | Cross-harness: same test battery passes against all 3 | **PENDING** |
 | QV-E2E-05 | Harness logs: every request timestamped with duration | **PENDING** |
