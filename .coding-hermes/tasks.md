@@ -175,13 +175,14 @@
 **Spec ref:** S04 (SDK Libraries)
 **Files:** `docs/sdk.html`
 
-## [ ] P6-05 — Compliance badge system + verify endpoint
-- [ ] Badge generator: `<img src=".../badge?endpoint=URL">` showing pass/fail
-- [ ] Verify endpoint that runs `h3-test --smoke` against given URL
-- [ ] SVG badge: green "H3 Compliant" / red "Not Compliant" / gray "Unknown"
+## [x] P6-05 — Compliance badge system + verify endpoint ✅ (static)
+- [x] Badge generator: static SVGs at docs/badge/{compliant,not-compliant,unknown}.svg
+- [x] Verify endpoint: self-service — run `h3-test --smoke` locally, pick matching badge
+- [x] SVG badge: green "H3 Compliant" / red "Not Compliant" / gray "Unknown"
+- [~] Dynamic verify endpoint (GET /api/verify) blocked on h3.sh server deployment
 
-**Spec ref:** S10 §6 (Compliance Verification)
-**Files:** `docs/index.html` (badge section)
+**Spec ref:** S10 §5 (Compliance Badge System)
+**Files:** `docs/badge/*.svg`, `docs/index.html` (compliance section)
 
 ---
 

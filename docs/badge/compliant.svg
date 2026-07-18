@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="204" height="28" viewBox="0 0 204 28">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#2d1b69"/>
+      <stop offset="1" stop-color="#1a1020"/>
+    </linearGradient>
+  </defs>
+  <rect width="204" height="28" rx="6" fill="url(#bg)"/>
+  <rect x="0" y="0" width="204" height="28" rx="6" fill="none" stroke="#302957" stroke-width="1"/>
+  <text x="10" y="19" font-family="system-ui,-apple-system,sans-serif" font-size="10" font-weight="700" fill="#b9a5ff" letter-spacing="0.6">H3</text>
+  <text x="42" y="19" font-family="SFMono-Regular,Consolas,monospace" font-size="10" font-weight="700" fill="#4ade80">43/43 ✓</text>
+  <text x="103" y="19" font-family="system-ui,-apple-system,sans-serif" font-size="10" font-weight="600" fill="#c8c8d4">Compliant v1.0</text>
+</svg>
