@@ -120,11 +120,11 @@
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P5-01 | protocol | Release workflow: validate → tag → dispatch to downstream | **PENDING** |
-| P5-02 | sdk-go | Sync-protocol workflow: regenerate → test → release | **PENDING** |
-| P5-03 | sdk-python | Sync-protocol workflow: regenerate → test → release | **PENDING** |
-| P5-04 | sdk-typescript | Sync-protocol workflow: regenerate → test → release | **PENDING** |
-| P5-05 | shim | Sync-protocol workflow + PyPI publish | **PENDING** |
+| P5-01 | protocol | Release workflow: validate → tag → dispatch to downstream | **→ BOARD CREATED** |
+| P5-02 | sdk-go | Sync-protocol workflow: regenerate → test → release | **→ PROPAGATED** |
+| P5-03 | sdk-python | Sync-protocol workflow: regenerate → test → release | **→ PROPAGATED** |
+| P5-04 | sdk-typescript | Sync-protocol workflow: regenerate → test → release | **→ PROPAGATED** |
+| P5-05 | shim | Sync-protocol workflow + PyPI publish | **→ PROPAGATED** |
 | P5-06 | h3 | Cross-repo integration test: protocol change → all SDKs update → test battery passes | **PENDING** |
 
 **Gate:** One tag on protocol triggers full cascade. All repos release in sync.
@@ -217,13 +217,12 @@
 
 ## Remaining Work Summary
 
-**High Priority:**
-- P4-05: Hermes update pre-flight hook (S11 §3)
+**Release Pipeline — Phase 5 (5/6 propagated):**
+- P5-01: Protocol release workflow (board created in protocol repo)
+- P5-02–P5-05: SDK sync-protocol workflows (propagated to sdk-go/sdk-python/sdk-typescript/shim)
+- P5-06: Cross-repo integration test (pending in h3)
 
-**Release Pipeline:**
-- P5-01–P5-06: Cross-repo release cascade
-
-**Docs & Website:**
+**Docs & Website — Phase 6:**
 - P6-01–P6-07: h3.sh developer portal
 
 **Quality Verification:**
