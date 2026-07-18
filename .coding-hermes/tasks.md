@@ -166,14 +166,14 @@
 **Spec ref:** S07 (OpenAPI & JSON Schema Design), S02 (Protocol Specification)
 **Files:** `docs/protocol.html` (or section in index.html)
 
-## [ ] P6-04 — SDK docs (auto-generated)
-- [ ] Go SDK: install, API reference, example
-- [ ] Python SDK: install, API reference, example
-- [ ] TypeScript SDK: install, API reference, example
-- [ ] Links to pkg.go.dev / PyPI / npm
+## [x] P6-04 — SDK docs (auto-generated) ✅
+- [x] Go SDK: install, API reference, example
+- [x] Python SDK: install, API reference, example
+- [x] TypeScript SDK: install, API reference, example
+- [x] Links to pkg.go.dev / PyPI / npm
 
 **Spec ref:** S04 (SDK Libraries)
-**Files:** `docs/sdk.html` (or section in index.html)
+**Files:** `docs/sdk.html`
 
 ## [ ] P6-05 — Compliance badge system + verify endpoint
 - [ ] Badge generator: `<img src=".../badge?endpoint=URL">` showing pass/fail

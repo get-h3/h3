@@ -1,0 +1,950 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="H3 SDK Reference — Go, Python, and TypeScript SDKs for building H3-compliant agent harnesses.">
+  <meta name="theme-color" content="#0a0a14">
+  <title>SDK Reference — H3 Protocol</title>
+  <style>
+    :root {
+      --bg: #0a0a14;
+      --bg-deep: #060612;
+      --card: #0f0f1e;
+      --card-raised: #131329;
+      --border: #1e1e38;
+      --border-bright: #302957;
+      --text: #c8c8d4;
+      --text-strong: #f2f0ff;
+      --muted: #8888a0;
+      --dim: #5e5e78;
+      --purple: #8b5cf6;
+      --pink: #d946ef;
+      --blue: #60a5fa;
+      --green: #4ade80;
+      --amber: #fbbf24;
+      --gradient: linear-gradient(135deg, var(--purple), var(--pink));
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --max: 1120px;
+      --radius: 14px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-width: 320px;
+      margin: 0;
+      background:
+        radial-gradient(circle at 80% -10%, rgba(139, 92, 246, 0.14), transparent 30rem),
+        radial-gradient(circle at -10% 35%, rgba(217, 70, 239, 0.06), transparent 28rem),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.6;
+      -webkit-text-size-adjust: 100%;
+    }
+    a { color: inherit; }
+    button { font: inherit; }
+    .shell { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(30, 30, 56, 0.82);
+      background: rgba(10, 10, 20, 0.86);
+      backdrop-filter: blur(16px);
+    }
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 32px));
+      min-height: 64px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-strong);
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+    .brand-mark {
+      width: 28px; height: 28px;
+      display: grid; place-items: center;
+      border-radius: 8px;
+      background: var(--gradient);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      box-shadow: 0 0 24px rgba(139, 92, 246, 0.28);
+    }
+    .nav { display: flex; align-items: center; gap: 22px; }
+    .nav a {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-decoration: none;
+      transition: color 160ms ease;
+    }
+    .nav a:hover, .nav a:focus-visible { color: var(--text-strong); }
+    .nav .nav-cta {
+      padding: 8px 13px;
+      border: 1px solid var(--border-bright);
+      border-radius: 8px;
+      color: var(--text-strong);
+      background: rgba(139, 92, 246, 0.08);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(48px, 8vw, 90px) 0 60px;
+      text-align: center;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      left: 50%; top: 20px;
+      width: min(700px, 100%);
+      height: 360px;
+      transform: translateX(-50%);
+      background-image: linear-gradient(rgba(139, 92, 246, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(139, 92, 246, 0.08) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse, black 15%, transparent 72%);
+      pointer-events: none;
+    }
+    .eyebrow {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 999px;
+      background: rgba(139, 92, 246, 0.08);
+      color: #b9a5ff;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+    h1 {
+      position: relative;
+      max-width: 880px;
+      margin: 24px auto 18px;
+      color: transparent;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 850;
+      letter-spacing: -0.075em;
+      line-height: 0.98;
+      text-wrap: balance;
+    }
+    .tagline {
+      position: relative;
+      margin: 0;
+      color: var(--text-strong);
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      font-weight: 650;
+      letter-spacing: -0.03em;
+    }
+    .hero-copy {
+      position: relative;
+      max-width: 620px;
+      margin: 14px auto 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+      text-wrap: balance;
+    }
+
+    .section { padding: 10px 0 60px; }
+    .section-heading { max-width: 680px; margin-bottom: 24px; }
+    .section-kicker {
+      margin: 0 0 8px;
+      color: #a993ff;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin: 0;
+      color: var(--text-strong);
+      font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+      letter-spacing: -0.055em;
+      line-height: 1.08;
+    }
+    .section-heading p { margin: 10px 0 0; color: var(--muted); font-size: 0.92rem; }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+    }
+
+    /* Language tabs */
+    .tabs-bar {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      margin-bottom: 18px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg-deep);
+      width: fit-content;
+    }
+    .tab-lang {
+      min-height: 40px;
+      padding: 8px 20px;
+      border: 0;
+      border-radius: 7px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      transition: color 160ms ease, background 160ms ease;
+    }
+    .tab-lang:hover, .tab-lang:focus-visible { color: var(--text-strong); }
+    .tab-lang[aria-selected="true"] { color: #fff; background: var(--gradient); }
+    .tab-panel[hidden] { display: none; }
+
+    /* SDK content */
+    .sdk-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sdk-title-group { display: flex; align-items: center; gap: 12px; }
+    .sdk-badge {
+      padding: 4px 9px;
+      border-radius: 5px;
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+    }
+    .sdk-badge.go { color: #7dd3fc; background: rgba(56, 189, 248, 0.1); }
+    .sdk-badge.py { color: #86efac; background: rgba(74, 222, 128, 0.1); }
+    .sdk-badge.ts { color: #a5b4fc; background: rgba(129, 140, 248, 0.1); }
+    .sdk-title { color: var(--text-strong); font-family: var(--mono); font-size: 1.1rem; font-weight: 700; }
+    .sdk-links { display: flex; gap: 10px; flex-wrap: wrap; }
+    .sdk-link-btn {
+      padding: 6px 11px;
+      border: 1px solid var(--border-bright);
+      border-radius: 7px;
+      color: #b9a5ff;
+      background: rgba(139, 92, 246, 0.06);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 160ms ease, border-color 160ms ease;
+    }
+    .sdk-link-btn:hover, .sdk-link-btn:focus-visible {
+      color: #fff;
+      border-color: var(--purple);
+    }
+
+    .install-block {
+      margin-bottom: 24px;
+      padding: clamp(14px, 3vw, 20px);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg-deep);
+    }
+    .install-block h4 {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .install-block code {
+      display: block;
+      padding: 12px 16px;
+      border-radius: 7px;
+      color: var(--green);
+      background: rgba(74, 222, 128, 0.06);
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      word-break: break-all;
+    }
+    .install-note {
+      margin-top: 10px;
+      color: var(--dim);
+      font-size: 0.74rem;
+    }
+    .install-note code {
+      display: inline;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #d5caff;
+      background: rgba(139, 92, 246, 0.1);
+      font-size: 0.7rem;
+    }
+
+    .api-block { margin-bottom: 24px; }
+    .api-block h4 {
+      margin: 0 0 10px;
+      color: var(--text-strong);
+      font-size: 0.95rem;
+      letter-spacing: -0.02em;
+    }
+    .api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    .api-table th {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: left;
+    }
+    .api-table td {
+      padding: 9px 14px;
+      border-bottom: 1px solid rgba(30, 30, 56, 0.5);
+      vertical-align: top;
+    }
+    .api-table td:first-child { font-family: var(--mono); font-size: 0.78rem; color: #d5caff; }
+    .api-table td:nth-child(2) { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+    .api-table td:last-child { color: var(--text); font-size: 0.8rem; }
+    .api-table .sig { font-family: var(--mono); font-size: 0.71rem; color: var(--dim); }
+
+    pre {
+      margin: 0;
+      padding: 20px;
+      overflow-x: auto;
+      border: 1px solid #1a1a30;
+      border-radius: 10px;
+      background: #060612;
+      color: #d8d5ef;
+      font-family: var(--mono);
+      font-size: clamp(0.68rem, 1.4vw, 0.76rem);
+      line-height: 1.65;
+      tab-size: 2;
+    }
+    code .kw { color: #c084fc; }
+    code .fn { color: #67e8f9; }
+    code .str { color: #86efac; }
+    code .cm { color: #62627a; }
+    code .type { color: #f0abfc; }
+    code .op { color: #fbbf24; }
+    code .num { color: #fbbf24; }
+
+    .code-shell { position: relative; }
+    .copy-button {
+      position: absolute;
+      top: 10px; right: 10px;
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 1px solid #2b2b49;
+      border-radius: 7px;
+      color: var(--muted);
+      background: rgba(15, 15, 30, 0.94);
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.67rem;
+      transition: color 160ms ease, border-color 160ms ease;
+    }
+    .copy-button:hover, .copy-button:focus-visible { color: #fff; border-color: var(--purple); }
+    .copy-button.copied { color: var(--green); border-color: rgba(74, 222, 128, 0.55); }
+
+    .content-card { padding: clamp(18px, 4vw, 32px); }
+
+    .pkg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 18px; }
+    .pkg-item {
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: rgba(6, 6, 18, 0.55);
+    }
+    .pkg-item strong { display: block; color: var(--text-strong); font-family: var(--mono); font-size: 0.78rem; }
+    .pkg-item span { display: block; margin-top: 4px; color: var(--muted); font-size: 0.74rem; }
+
+    .run-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-top: 15px;
+      color: var(--muted);
+      font-size: 0.76rem;
+    }
+    .run-row code {
+      padding: 4px 7px;
+      border-radius: 5px;
+      color: #d5caff;
+      background: rgba(139, 92, 246, 0.1);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+    }
+
+    footer { padding: 28px 0 38px; border-top: 1px solid var(--border); }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .footer-brand { color: var(--dim); font-family: var(--mono); font-size: 0.72rem; }
+    .footer-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 17px; }
+    .footer-links a { color: var(--muted); font-size: 0.74rem; text-decoration: none; }
+    .footer-links a:hover, .footer-links a:focus-visible { color: var(--text-strong); }
+    .footer-note { margin: 18px 0 0; color: #48485f; font-family: var(--mono); font-size: 0.65rem; text-align: center; }
+
+    :focus-visible { outline: 2px solid #c084fc; outline-offset: 3px; }
+
+    @media (max-width: 740px) {
+      .shell, .topbar-inner { width: min(100% - 24px, var(--max)); }
+      .topbar-inner { min-height: 58px; }
+      .nav { gap: 13px; }
+      .nav a:not(.nav-cta) { display: none; }
+      .hero { padding-top: 52px; padding-bottom: 42px; }
+      .sdk-header { flex-direction: column; align-items: flex-start; }
+      .footer-inner { align-items: flex-start; flex-direction: column; }
+      .footer-links { justify-content: flex-start; }
+    }
+    @media (max-width: 480px) {
+      .tabs-bar { width: 100%; }
+      .tab-lang { flex: 1; padding: 8px 10px; }
+      pre { padding: 16px 14px; font-size: 0.64rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html" aria-label="H3 home"><span class="brand-mark">H3</span><span>h3.sh</span></a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="index.html#how-it-works">How it works</a>
+        <a href="index.html#quickstart">Quickstart</a>
+        <a href="sdk.html">SDK Docs</a>
+        <a class="nav-cta" href="https://github.com/get-h3" target="_blank" rel="noreferrer">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="shell">
+        <span class="eyebrow">SDK Reference · v1.0.0</span>
+        <h1>Build H3 Harnesses in Go, Python, or TypeScript</h1>
+        <p class="tagline">Three SDKs. One wire format. Zero platform changes.</p>
+        <p class="hero-copy">Each SDK wraps the H3 protocol types and HTTP routes so your code focuses on decisions. Install, implement two callbacks, and point the test battery at it.</p>
+      </div>
+    </section>
+
+    <section class="section" id="sdk-content">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">SDK Reference</p>
+          <h2>Install, implement, and test.</h2>
+          <p>Click a language tab for install commands, the full API reference, and a complete example you can copy and run.</p>
+        </div>
+
+        <div class="tabs-bar" role="tablist" aria-label="SDK language tabs">
+          <button class="tab-lang" id="tab-go" role="tab" aria-selected="true" aria-controls="panel-go" data-tab="go">Go</button>
+          <button class="tab-lang" id="tab-python" role="tab" aria-selected="false" aria-controls="panel-python" data-tab="python">Python</button>
+          <button class="tab-lang" id="tab-typescript" role="tab" aria-selected="false" aria-controls="panel-typescript" data-tab="typescript">TypeScript</button>
+        </div>
+
+        <!-- ========== GO ========== -->
+        <div class="tab-panel" id="panel-go" role="tabpanel" aria-labelledby="tab-go" data-panel="go">
+          <div class="card content-card">
+            <div class="sdk-header">
+              <div class="sdk-title-group">
+                <span class="sdk-badge go">Go</span>
+                <span class="sdk-title">github.com/get-h3/sdk-go</span>
+              </div>
+              <div class="sdk-links">
+                <a class="sdk-link-btn" href="https://github.com/get-h3/sdk-go" target="_blank" rel="noreferrer">GitHub ↗</a>
+                <a class="sdk-link-btn" href="https://pkg.go.dev/github.com/get-h3/sdk-go" target="_blank" rel="noreferrer">pkg.go.dev ↗</a>
+              </div>
+            </div>
+
+            <div class="install-block">
+              <h4>Install</h4>
+              <code>go get github.com/get-h3/sdk-go</code>
+              <div class="install-note">Requires <code>Go 1.22+</code>. Modular — import only the packages you need.</div>
+            </div>
+
+            <div class="api-block">
+              <h4>API Reference</h4>
+              <table class="api-table">
+                <thead><tr><th>Package</th><th>Import</th><th>What it provides</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td>protocol</td>
+                    <td>github.com/get-h3/sdk-go/protocol</td>
+                    <td>All H3 v1 protocol types: <code>ProcessRequest</code>, <code>Decision</code> (6 decision types: tool_call, llm_call, text, wait, delegate, end), <code>ResultRequest</code>, <code>CancelRequest</code>, <code>HealthResponse</code>, and supporting types (enums, messages, attachments, config). Generated from the protocol JSON Schema.</td>
+                  </tr>
+                  <tr>
+                    <td>harness</td>
+                    <td>github.com/get-h3/sdk-go/harness</td>
+                    <td>Harness interface (5 methods) + <code>NewHTTPServer</code> — returns an <code>http.Handler</code> wired to all 6 H3 endpoints. Middleware: request logging, panic recovery, per-request timeout.</td>
+                  </tr>
+                  <tr>
+                    <td>testbed</td>
+                    <td>github.com/get-h3/sdk-go/testbed</td>
+                    <td><code>MockHermes</code> for unit testing — send messages, results, and cancel requests; assert decisions with helper methods. No real Hermes needed.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="api-block">
+              <h4>Harness Interface</h4>
+              <table class="api-table">
+                <thead><tr><th>Method</th><th>Signature</th><th>When called</th></tr></thead>
+                <tbody>
+                  <tr><td>OnProcess</td><td class="sig">func(*protocol.ProcessRequest) (*protocol.Decision, error)</td><td>New user message arrives</td></tr>
+                  <tr><td>OnResult</td><td class="sig">func(*protocol.ResultRequest) (*protocol.Decision, error)</td><td>Hermes returns tool/LLM result</td></tr>
+                  <tr><td>OnCancel</td><td class="sig">func(*protocol.CancelRequest) error</td><td>User cancels the turn</td></tr>
+                  <tr><td>OnSessionTerminate</td><td class="sig">func(string) error</td><td>Session deleted</td></tr>
+                  <tr><td>Health</td><td class="sig">func() *protocol.HealthResponse</td><td>GET /v1/health</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="api-block">
+              <h4>Example — Echo Harness</h4>
+              <div class="code-shell">
+                <pre><code><span class="kw">package</span> main
+
+<span class="kw">import</span> (
+    <span class="str">"fmt"</span>
+    <span class="str">"net/http"</span>
+    <span class="str">"github.com/get-h3/sdk-go/harness"</span>
+    <span class="str">"github.com/get-h3/sdk-go/protocol"</span>
+)
+
+<span class="kw">type</span> <span class="type">EchoHarness</span> <span class="kw">struct</span>{}
+
+<span class="kw">func</span> (h *<span class="type">EchoHarness</span>) <span class="fn">OnProcess</span>(req *<span class="type">protocol.ProcessRequest</span>) (*<span class="type">protocol.Decision</span>, <span class="type">error</span>) {
+    <span class="kw">return</span> &amp;<span class="type">protocol.Decision</span>{
+        <span class="fn">Decision</span>:   <span class="type">protocol.DecisionText</span>,
+        <span class="fn">DecisionID</span>: <span class="str">"echo-1"</span>,
+        <span class="fn">Text</span>:       &amp;<span class="type">protocol.TextResp</span>{<span class="fn">Content</span>: fmt.<span class="fn">Sprintf</span>(<span class="str">"Echo: %s"</span>, req.<span class="fn">Message</span>.<span class="fn">Content</span>), <span class="fn">Finished</span>: <span class="kw">true</span>},
+    }, <span class="kw">nil</span>
+}
+
+<span class="kw">func</span> (h *<span class="type">EchoHarness</span>) <span class="fn">OnResult</span>(req *<span class="type">protocol.ResultRequest</span>) (*<span class="type">protocol.Decision</span>, <span class="type">error</span>) {
+    <span class="kw">return</span> &amp;<span class="type">protocol.Decision</span>{
+        <span class="fn">Decision</span>:   <span class="type">protocol.DecisionEnd</span>,
+        <span class="fn">DecisionID</span>: <span class="str">"done"</span>,
+        <span class="fn">End</span>:        &amp;<span class="type">protocol.End</span>{<span class="fn">Reason</span>: <span class="type">protocol.EndTaskComplete</span>, <span class="fn">Summary</span>: <span class="str">"Done"</span>},
+    }, <span class="kw">nil</span>
+}
+
+<span class="kw">func</span> (h *<span class="type">EchoHarness</span>) <span class="fn">OnCancel</span>(req *<span class="type">protocol.CancelRequest</span>) <span class="type">error</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+<span class="kw">func</span> (h *<span class="type">EchoHarness</span>) <span class="fn">OnSessionTerminate</span>(sessionID <span class="type">string</span>) <span class="type">error</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+<span class="kw">func</span> (h *<span class="type">EchoHarness</span>) <span class="fn">Health</span>() *<span class="type">protocol.HealthResponse</span> {
+    <span class="kw">return</span> &amp;<span class="type">protocol.HealthResponse</span>{
+        <span class="fn">Status</span>:          <span class="type">protocol.HealthOK</span>,
+        <span class="fn">Version</span>:         <span class="str">"1.0.0"</span>,
+        <span class="fn">Transport</span>:       <span class="str">"rest"</span>,
+        <span class="fn">ProtocolVersion</span>: <span class="str">"1.0"</span>,
+    }
+}
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    h := <span class="type">harness</span>.<span class="fn">NewHTTPServer</span>(&amp;<span class="type">EchoHarness</span>{})
+    <span class="type">http</span>.<span class="fn">ListenAndServe</span>(<span class="str">":9191"</span>, h)
+}</code></pre>
+                <button class="copy-button" type="button" data-copy="go-full" aria-label="Copy Go example">copy</button>
+                <textarea id="go-full" hidden>package main
+
+import (
+    "fmt"
+    "net/http"
+    "github.com/get-h3/sdk-go/harness"
+    "github.com/get-h3/sdk-go/protocol"
+)
+
+type EchoHarness struct{}
+
+func (h *EchoHarness) OnProcess(req *protocol.ProcessRequest) (*protocol.Decision, error) {
+    return &protocol.Decision{
+        Decision:   protocol.DecisionText,
+        DecisionID: "echo-1",
+        Text:       &protocol.TextResp{Content: fmt.Sprintf("Echo: %s", req.Message.Content), Finished: true},
+    }, nil
+}
+
+func (h *EchoHarness) OnResult(req *protocol.ResultRequest) (*protocol.Decision, error) {
+    return &protocol.Decision{
+        Decision:   protocol.DecisionEnd,
+        DecisionID: "done",
+        End:        &protocol.End{Reason: protocol.EndTaskComplete, Summary: "Done"},
+    }, nil
+}
+
+func (h *EchoHarness) OnCancel(req *protocol.CancelRequest) error { return nil }
+func (h *EchoHarness) OnSessionTerminate(sessionID string) error { return nil }
+
+func (h *EchoHarness) Health() *protocol.HealthResponse {
+    return &protocol.HealthResponse{
+        Status:          protocol.HealthOK,
+        Version:         "1.0.0",
+        Transport:       "rest",
+        ProtocolVersion: "1.0",
+    }
+}
+
+func main() {
+    h := harness.NewHTTPServer(&EchoHarness{})
+    http.ListenAndServe(":9191", h)
+}</textarea>
+              </div>
+              <div class="run-row"><span>Run:</span><code>go mod init my-harness &amp;&amp; go get github.com/get-h3/sdk-go &amp;&amp; go run .</code></div>
+            </div>
+
+            <div class="pkg-grid">
+              <div class="pkg-item"><strong>examples/minimal/</strong><span>Minimal harness: responds with a greeting on every message.</span></div>
+              <div class="pkg-item"><strong>examples/echo/</strong><span>Echo harness: mirrors user message content back.</span></div>
+              <div class="pkg-item"><strong>examples/conformance/</strong><span>Full agent loop (tool_call → result → text → end) for h3-test.</span></div>
+              <div class="pkg-item"><strong>examples/consensus/</strong><span>Consensus reference integration: multi-model deliberation.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== PYTHON ========== -->
+        <div class="tab-panel" id="panel-python" role="tabpanel" aria-labelledby="tab-python" data-panel="python" hidden>
+          <div class="card content-card">
+            <div class="sdk-header">
+              <div class="sdk-title-group">
+                <span class="sdk-badge py">Python</span>
+                <span class="sdk-title">h3-harness-sdk</span>
+              </div>
+              <div class="sdk-links">
+                <a class="sdk-link-btn" href="https://github.com/get-h3/sdk-python" target="_blank" rel="noreferrer">GitHub ↗</a>
+                <a class="sdk-link-btn" href="https://pypi.org/project/h3-harness-sdk/" target="_blank" rel="noreferrer">PyPI ↗</a>
+              </div>
+            </div>
+
+            <div class="install-block">
+              <h4>Install</h4>
+              <code>pip install h3-harness-sdk</code>
+              <div class="install-note">Requires <code>Python 3.10+</code>. Depends on Pydantic v2 and FastAPI.</div>
+            </div>
+
+            <div class="api-block">
+              <h4>API Reference</h4>
+              <table class="api-table">
+                <thead><tr><th>Module</th><th>What it provides</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td>h3_harness</td>
+                    <td>Core exports: <code>BaseHarness</code> (ABC with async on_process/on_result/on_cancel/on_session_terminate/health), <code>Decision</code> &amp; <code>DecisionType</code>, <code>End</code>, <code>TextResponse</code>, <code>create_router</code> (FastAPI APIRouter with all 6 H3 endpoints), plus all protocol Pydantic models.</td>
+                  </tr>
+                  <tr>
+                    <td>h3_harness.testbed</td>
+                    <td><code>MockHermes</code> — send messages, results, and cancel requests against your harness; assert decisions in pytest. Fully async.</td>
+                  </tr>
+                  <tr>
+                    <td>h3_harness.examples</td>
+                    <td>Reference implementations: <code>echo.py</code> (mirrors messages), <code>minimal.py</code> (health endpoint + uvicorn runner), <code>langchain_agent.py</code> (LangChain integration).</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="api-block">
+              <h4>Harness Interface</h4>
+              <table class="api-table">
+                <thead><tr><th>Method</th><th>Signature</th><th>When called</th></tr></thead>
+                <tbody>
+                  <tr><td>on_process</td><td class="sig">async def on_process(self, req: ProcessRequest) -> Decision</td><td>New user message arrives</td></tr>
+                  <tr><td>on_result</td><td class="sig">async def on_result(self, req: ResultRequest) -> Decision</td><td>Hermes returns tool/LLM result</td></tr>
+                  <tr><td>on_cancel</td><td class="sig">async def on_cancel(self, req: CancelRequest) -> bool</td><td>User cancels the turn</td></tr>
+                  <tr><td>on_session_terminate</td><td class="sig">async def on_session_terminate(self, session_id: str) -> None</td><td>Session deleted</td></tr>
+                  <tr><td>health</td><td class="sig">def health(self) -> HealthResponse</td><td>GET /v1/health</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="api-block">
+              <h4>Example — Echo Harness</h4>
+              <div class="code-shell">
+                <pre><code><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+<span class="kw">from</span> h3_harness <span class="kw">import</span> BaseHarness, Decision, DecisionType, End, TextResponse, create_router
+
+
+<span class="kw">class</span> <span class="type">Echo</span>(BaseHarness):
+    <span class="kw">async def</span> <span class="fn">on_process</span>(self, req):
+        <span class="kw">return</span> Decision(
+            decision=DecisionType.TEXT,
+            text=TextResponse(content=f<span class="str">"Echo: {req.message.content}"</span>, finished=<span class="kw">True</span>),
+        )
+
+    <span class="kw">async def</span> <span class="fn">on_result</span>(self, req):
+        <span class="kw">return</span> Decision(
+            decision=DecisionType.END,
+            end=End(reason=<span class="str">"task_complete"</span>),
+        )
+
+
+app = FastAPI()
+app.include_router(create_router(Echo()))</code></pre>
+                <button class="copy-button" type="button" data-copy="python-full" aria-label="Copy Python example">copy</button>
+                <textarea id="python-full" hidden>from fastapi import FastAPI
+from h3_harness import BaseHarness, Decision, DecisionType, End, TextResponse, create_router
+
+
+class Echo(BaseHarness):
+    async def on_process(self, req):
+        return Decision(
+            decision=DecisionType.TEXT,
+            text=TextResponse(content=f"Echo: {req.message.content}", finished=True),
+        )
+
+    async def on_result(self, req):
+        return Decision(
+            decision=DecisionType.END,
+            end=End(reason="task_complete"),
+        )
+
+
+app = FastAPI()
+app.include_router(create_router(Echo()))</textarea>
+              </div>
+              <div class="run-row"><span>Run:</span><code>pip install h3-harness-sdk fastapi uvicorn &amp;&amp; uvicorn harness:app --host 0.0.0.0 --port 9191</code></div>
+            </div>
+
+            <div class="pkg-grid">
+              <div class="pkg-item"><strong>examples/echo.py</strong><span>Echo harness that mirrors user messages.</span></div>
+              <div class="pkg-item"><strong>examples/minimal.py</strong><span>Minimal harness with health endpoint + uvicorn runner.</span></div>
+              <div class="pkg-item"><strong>examples/langchain_agent.py</strong><span>LangChain integration: LLM call with text response.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== TYPESCRIPT ========== -->
+        <div class="tab-panel" id="panel-typescript" role="tabpanel" aria-labelledby="tab-typescript" data-panel="typescript" hidden>
+          <div class="card content-card">
+            <div class="sdk-header">
+              <div class="sdk-title-group">
+                <span class="sdk-badge ts">TypeScript</span>
+                <span class="sdk-title">@get-h3/h3-harness-sdk</span>
+              </div>
+              <div class="sdk-links">
+                <a class="sdk-link-btn" href="https://github.com/get-h3/sdk-typescript" target="_blank" rel="noreferrer">GitHub ↗</a>
+                <a class="sdk-link-btn" href="https://www.npmjs.com/package/@get-h3/h3-harness-sdk" target="_blank" rel="noreferrer">npm ↗</a>
+              </div>
+            </div>
+
+            <div class="install-block">
+              <h4>Install</h4>
+              <code>npm install @get-h3/h3-harness-sdk</code>
+              <div class="install-note">Also available via <code>bun add @get-h3/h3-harness-sdk</code>. Works with Node, Bun, and Deno. Depends on Hono and Zod.</div>
+            </div>
+
+            <div class="api-block">
+              <h4>API Reference</h4>
+              <table class="api-table">
+                <thead><tr><th>Export</th><th>What it provides</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td>Harness (interface)</td>
+                    <td>Core contract: <code>onProcess</code>, <code>onResult</code>, <code>health</code> (required); <code>onCancel</code>, <code>onSessionTerminate</code> (optional). Full TypeScript types for all parameters and return values.</td>
+                  </tr>
+                  <tr>
+                    <td>createH3Router(harness)</td>
+                    <td>Returns a Hono router wired to all 6 H3 endpoints. Zod validates every request body. Structured error responses on validation failure.</td>
+                  </tr>
+                  <tr>
+                    <td>MockHermes (testbed)</td>
+                    <td>Send messages, results, and cancel requests; assert decisions. Works with vitest, jest, or any test runner.</td>
+                  </tr>
+                  <tr>
+                    <td>Protocol types + Zod schemas</td>
+                    <td>All H3 v1 types: 10 enums (DecisionType, EndReason, CancelReason, ResultType, SessionStatus, ErrorCode, HealthStatus, AttachmentType, MessageRole, Capability), all request/response/decision structs, plus companion Zod schemas for runtime validation (e.g., <code>ProcessRequestSchema</code>, <code>DecisionSchema</code>).</td>
+                  </tr>
+                  <tr>
+                    <td>Middleware</td>
+                    <td><code>addMiddleware(app)</code> — request logging (method, path, status, duration) + error handling. Catches exceptions and returns H3 <code>ErrorResponse</code> format.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="api-block">
+              <h4>Harness Interface</h4>
+              <table class="api-table">
+                <thead><tr><th>Method</th><th>Signature</th><th>When called</th></tr></thead>
+                <tbody>
+                  <tr><td>onProcess</td><td class="sig">(req: ProcessRequest) => Promise&lt;Decision&gt;</td><td>New user message arrives</td></tr>
+                  <tr><td>onResult</td><td class="sig">(req: ResultRequest) => Promise&lt;Decision&gt;</td><td>Hermes returns tool/LLM result</td></tr>
+                  <tr><td>onCancel (opt)</td><td class="sig">(req: CancelRequest) => Promise&lt;boolean&gt;</td><td>User cancels the turn</td></tr>
+                  <tr><td>onSessionTerminate (opt)</td><td class="sig">(sessionId: string) => Promise&lt;void&gt;</td><td>Session deleted</td></tr>
+                  <tr><td>health</td><td class="sig">() => HealthResponse</td><td>GET /v1/health</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="api-block">
+              <h4>Example — Echo Harness</h4>
+              <div class="code-shell">
+                <pre><code><span class="kw">import</span> { Hono } <span class="kw">from</span> <span class="str">"hono"</span>;
+<span class="kw">import</span> { createH3Router } <span class="kw">from</span> <span class="str">"@get-h3/h3-harness-sdk"</span>;
+<span class="kw">import type</span> { Harness, Decision, ProcessRequest } <span class="kw">from</span> <span class="str">"@get-h3/h3-harness-sdk"</span>;
+
+
+<span class="kw">const</span> echo: Harness = {
+  <span class="kw">async</span> <span class="fn">onProcess</span>(req: ProcessRequest): Promise&lt;Decision&gt; {
+    <span class="kw">return</span> {
+      decision: <span class="str">"text"</span>,
+      decision_id: crypto.randomUUID(),
+      text: { content: <span class="str">`Echo: ${req.message.content}`</span>, finished: <span class="kw">true</span> },
+    };
+  },
+
+  <span class="kw">async</span> <span class="fn">onResult</span>(_req): Promise&lt;Decision&gt; {
+    <span class="kw">return</span> {
+      decision: <span class="str">"end"</span>,
+      decision_id: crypto.randomUUID(),
+      end: { reason: <span class="str">"task_complete"</span> },
+    };
+  },
+
+  health() {
+    <span class="kw">return</span> {
+      status: <span class="str">"ok"</span>,
+      version: <span class="str">"1.0.0"</span>,
+      transport: <span class="str">"rest"</span>,
+      protocol_version: <span class="str">"1.0"</span>,
+      capabilities: [<span class="str">"text"</span>, <span class="str">"end"</span>],
+    };
+  },
+};
+
+
+<span class="kw">const</span> app = <span class="kw">new</span> Hono();
+app.route(<span class="str">"/"</span>, createH3Router(echo));
+<span class="kw">export default</span> app;</code></pre>
+                <button class="copy-button" type="button" data-copy="typescript-full" aria-label="Copy TypeScript example">copy</button>
+                <textarea id="typescript-full" hidden>import { Hono } from "hono";
+import { createH3Router } from "@get-h3/h3-harness-sdk";
+import type { Harness, Decision, ProcessRequest } from "@get-h3/h3-harness-sdk";
+
+
+const echo: Harness = {
+  async onProcess(req: ProcessRequest): Promise<Decision> {
+    return {
+      decision: "text",
+      decision_id: crypto.randomUUID(),
+      text: { content: `Echo: ${req.message.content}`, finished: true },
+    };
+  },
+
+  async onResult(_req): Promise<Decision> {
+    return {
+      decision: "end",
+      decision_id: crypto.randomUUID(),
+      end: { reason: "task_complete" },
+    };
+  },
+
+  health() {
+    return {
+      status: "ok",
+      version: "1.0.0",
+      transport: "rest",
+      protocol_version: "1.0",
+      capabilities: ["text", "end"],
+    };
+  },
+};
+
+
+const app = new Hono();
+app.route("/", createH3Router(echo));
+export default app;</textarea>
+              </div>
+              <div class="run-row"><span>Run:</span><code>npm install @get-h3/h3-harness-sdk hono &amp;&amp; npx tsx harness.ts</code></div>
+            </div>
+
+            <div class="pkg-grid">
+              <div class="pkg-item"><strong>src/examples/minimal.ts</strong><span>Bare minimum harness example.</span></div>
+              <div class="pkg-item"><strong>src/examples/echo.ts</strong><span>Echo harness example.</span></div>
+              <div class="pkg-item"><strong>Testbed</strong><span>MockHermes for unit testing — send messages, results, cancel.</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell">
+      <div class="footer-inner">
+        <div class="footer-brand">H3 · Brain-swap protocol for AI agents</div>
+        <div class="footer-links">
+          <a href="https://github.com/get-h3" target="_blank" rel="noreferrer">GitHub org ↗</a>
+          <a href="https://github.com/get-h3/protocol" target="_blank" rel="noreferrer">Protocol ↗</a>
+          <a href="sdk.html">SDK Docs</a>
+          <a href="https://github.com/get-h3/shim" target="_blank" rel="noreferrer">Shim ↗</a>
+        </div>
+      </div>
+      <p class="footer-note">Open protocol · bring your own harness · keep your platform</p>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const tabs = document.querySelectorAll("[data-tab]");
+      const panels = document.querySelectorAll("[data-panel]");
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const selected = tab.dataset.tab;
+          tabs.forEach((item) => item.setAttribute("aria-selected", String(item === tab)));
+          panels.forEach((panel) => { panel.hidden = panel.dataset.panel !== selected; });
+        });
+      });
+
+      document.querySelectorAll("[data-copy]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const source = document.getElementById(button.dataset.copy);
+          const original = button.textContent;
+          try {
+            await navigator.clipboard.writeText(source.value);
+            button.textContent = "copied";
+            button.classList.add("copied");
+          } catch (error) {
+            source.hidden = false;
+            source.select();
+            document.execCommand("copy");
+            source.hidden = true;
+            button.textContent = "copied";
+            button.classList.add("copied");
+          }
+          setTimeout(() => { button.textContent = original; button.classList.remove("copied"); }, 1600);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
