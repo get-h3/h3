@@ -193,10 +193,31 @@
 
 ### QV-E2E: Full Protocol Loop
 
+## [x] QV-E2E-01 — Go SDK harness: 42/43 pass, 1 known gap ✅
+- [x] Start Go SDK conformance harness on port 9191 — health ✅ (capabilities present)
+- [x] Run `h3-test --endpoint http://localhost:9191` — 42/43 pass
+- [x] Decision Types: 6/6 ✅, Result Handling: 7/7 ✅, Edge Cases: 10/10 ✅, Stress: 5/5 ✅
+- [x] Full loop: process→text→result→text→result→end all exercised
+- [~] 1 gap: `process_preserves_history` — Decision struct lacks History field (see QV-GAP-01)
+
+**Files:** `sdk-go/testbed/conformance.go`
+**Spec ref:** S02 (Protocol Specification), S04 (SDK Libraries) §2.5
+
 | ID | What It Verifies | Status |
 |---|---|---|
-| QV-E2E-01 | Go echo harness: process→text→result→text→result→end loop | **PENDING** |
-| QV-E2E-02 | Python minimal harness: same full loop | **PENDING** |
+| QV-E2E-01 | Go SDK harness: process→text→result→text→result→end loop | ✅ 42/43 (1 known gap) |
+| QV-E2E-02 | Python minimal harness: same full loop | **→ NEXT (h3-test installed)** |
+
+### QV-GAPS: Gaps Found During Verification
+
+## [ ] QV-GAP-01 — Add History field to Go SDK Decision struct
+- [ ] `process_preserves_history` test fails: history shrank 4→0
+- [ ] Decision struct (`sdk-go/protocol/types.go`) needs `History []HistoryEntry \`json:"history,omitempty"\``
+- [ ] Conformance harness must populate History in OnProcess responses
+- [ ] Re-run `h3-test` — expect 43/43 pass
+
+**Files:** `sdk-go/protocol/types.go`, `sdk-go/testbed/conformance.go`
+**Spec ref:** S02 §4 (Process Response)
 | QV-E2E-03 | TypeScript minimal harness: same full loop | **PENDING** |
 | QV-E2E-04 | Cross-harness: same test battery passes against all 3 | **PENDING** |
 | QV-E2E-05 | Harness logs: every request timestamped with duration | **PENDING** |
