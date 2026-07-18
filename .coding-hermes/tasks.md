@@ -94,7 +94,7 @@
 |---|---|---|
 | sdk-go echo | 42/43 | 1 fail: history preservation (echo harness always returns `Finished: true`) |
 | sdk-python echo | 39/43 | 4 fails: shim-side payload gaps (fixtures need spec-compliant payloads) |
-| sdk-typescript echo | 43/43 | ✅ Full pass |
+| sdk-typescript echo | 41/43 | 2 fails: streaming (finished=false), history preservation. Echo example created (sdk-typescript/examples/echo/). QV-GAP-03 filed for history. |
 
 **Gate: 43/43 against ALL 3 examples. ⚠️ NOT MET — sdk-go echo needs 3 fixes.**
 
@@ -166,6 +166,19 @@ Modified files in workdir (`scripts/generate-schemas.ts`, `src/protocol.ts`) + u
 
 ---
 
+### [ ] CROSS-003 — sdk-typescript: history preservation in harness router (QV-GAP-03)
+
+h3-test `process_preserves_history` fails: history entries not echoed in `/v1/result` responses. Fix: store session history in `createH3Router`, include at top-level `history` and `context.history` in result JSON. Same pattern as sdk-go QV-GAP-01.
+
+**h3-test before fix:** 41/43 (history + streaming failures)
+**Expected after fix:** 42/43 (streaming failure only, known echo-harness gap)
+
+**Blocks:** PHASE 3 gate (needs 43/43 from all 3 echo harnesses)
+**Assignee:** sdk-typescript-foreman
+**Priority:** P2 (gate-blocking but streaming gap remains)
+
+---
+
 ## Phase Gates Summary
 
 | Phase | Gate | Status |
@@ -183,4 +196,5 @@ Modified files in workdir (`scripts/generate-schemas.ts`, `src/protocol.ts`) + u
 
 1. **protocol-foreman**: Execute P5-01 (release workflow) — now unblocked
 2. **sdk-go-foreman**: Fix CROSS-001 (3 echo harness fixes) — gate-blocking
-3. **sdk-typescript-foreman**: Clean dirty workdir + resolve P5-05 generator gap
+3. **sdk-typescript-foreman**: Fix CROSS-003 (history preservation in router) — QV-GAP-03
+4. **sdk-typescript-foreman**: Clean dirty workdir + resolve P5-05 generator gap (CROSS-002)
