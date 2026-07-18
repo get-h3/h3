@@ -81,7 +81,7 @@
 
 ---
 
-## PHASE 3: Test Battery (THE GATE) ✅ (partial)
+## PHASE 3: Test Battery (THE GATE) ✅
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
@@ -93,10 +93,10 @@
 | P3-06 | shim | Region 5: Edge Cases (10 tests) | ✅ Done |
 | P3-07 | shim | Region 6: Stress (5 tests) | ✅ Done |
 | P3-08 | shim | CLI: `h3-test --endpoint URL [--json|--html|--smoke]` | ✅ Done |
-| P3-09 | shim | CI: GitHub Actions compliance workflow | **PENDING** |
+| P3-09 | shim | CI: GitHub Actions compliance workflow | ✅ Done (94e82cd) |
 | P3-10 | shim | Publish `hermes-h3-shim` to PyPI | ✅ Done |
 
-**Verification:** 43 test functions, 132 tests pass, CLI wired. P3-09 needs a CI job that runs `h3-test` against the echo harness.
+**Verification:** 43 test functions, 132 tests pass, CLI wired, CI compliance job added. ✅
 
 **Gate:** `h3-test --endpoint http://localhost:9191` passes against all 3 SDK echo examples. ✅
 
