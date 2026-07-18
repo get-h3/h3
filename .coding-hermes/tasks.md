@@ -93,7 +93,7 @@
 | P3-06 | shim | Region 5: Edge Cases (10 tests) | ✅ Done |
 | P3-07 | shim | Region 6: Stress (5 tests) | ✅ Done |
 | P3-08 | shim | CLI: `h3-test --endpoint URL [--json|--html|--smoke]` | ✅ Done |
-| P3-09 | shim | CI: GitHub Actions compliance workflow | ✅ Done (94e82cd) |
+| P3-09 | shim | CI: GitHub Actions compliance workflow | ✅ Done | 94e82cd |
 | P3-10 | shim | Publish `hermes-h3-shim` to PyPI | ✅ Done |
 
 **Verification:** 43 test functions, 132 tests pass, CLI wired, CI compliance job added. ✅
@@ -110,7 +110,7 @@
 | P4-02 | shim | `hermes h3 scaffold --lang go/python/ts` — harness template generator | ✅ Done |
 | P4-03 | shim | `hermes h3 verify` — post-install/post-upgrade verification | ✅ Done |
 | P4-04 | protocol | `versions.yaml` — Hermes↔H3 compatibility matrix | ✅ Done (df1dca6a) |
-| P4-05 | shim | Hermes update pre-flight hook (S11 §3) | **PENDING** |
+| P4-05 | shim | Hermes update pre-flight hook (S11 §3) | ✅ Done | d5c0048 |
 
 **Gate:** `scaffold --lang go` → `go run .` → `h3-test` passes. Full loop < 5 min.
 
