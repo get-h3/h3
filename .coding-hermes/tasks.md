@@ -133,17 +133,54 @@
 
 ## PHASE 6: Docs & Website
 
-| ID | Repo | Task | Status |
-|---|---|---|---|
-| P6-01 | h3 | h3.sh landing page with Quickstart | **PENDING** |
-| P6-02 | h3 | Language picker (Go/Python/TS) with copy-paste code | **PENDING** |
-| P6-03 | h3 | Protocol reference (auto-generated from OpenAPI) | **PENDING** |
-| P6-04 | h3 | SDK docs (auto-generated) | **PENDING** |
-| P6-05 | h3 | Compliance badge system + verify endpoint | **PENDING** |
-| P6-06 | h3 | "Build Your First H3 Harness" guide | **PENDING** |
-| P6-07 | h3 | Migration guide: native → H3 | **PENDING** |
-
 **Gate:** External dev goes zero → working harness < 30 min using docs alone.
+
+## [x] P6-01 — h3.sh landing page with Quickstart ✅ (1420546)
+- [x] Create `docs/index.html` — dark-themed landing page for h3.sh
+- [x] Hero section: "H3 — Brain-Swap Protocol for AI Agents" with tagline
+- [x] Quickstart code blocks: 3-line install for Go, Python, TypeScript
+- [x] Architecture diagram showing Hermes → H3 Shim → Harness → Agent flow
+- [x] Status badges showing: protocol v1.0.0, test battery 43/43, 3 SDKs
+- [x] Mobile-responsive, single-file, no external dependencies (inline CSS)
+- [x] Link to GitHub org (get-h3) and protocol docs
+
+**Spec ref:** S10 (Website & Developer Docs)
+**Files:** `docs/index.html`
+
+## [ ] P6-02 — Language picker (Go/Python/TS) with copy-paste code
+- [ ] Tabbed interface: Go | Python | TypeScript
+- [ ] Each tab: install command + minimal harness code (5-10 lines)
+- [ ] Run command + expected output
+- [ ] Copy-to-clipboard buttons on all code blocks
+
+**Spec ref:** S10 §4 (Multi-Language Examples)
+**Files:** `docs/index.html` (extend)
+
+## [ ] P6-03 — Protocol reference (auto-generated from OpenAPI)
+- [ ] Embed or link protocol OpenAPI spec (h3-protocol.yaml)
+- [ ] Endpoint reference: POST /v1/process, POST /v1/result, POST /v1/cancel, GET /v1/health, GET/DELETE /v1/sessions/:id
+- [ ] Decision type reference (tool_call, llm_call, text, wait, delegate, end)
+- [ ] JSON Schema examples inline
+
+**Spec ref:** S07 (OpenAPI & JSON Schema Design), S02 (Protocol Specification)
+**Files:** `docs/protocol.html` (or section in index.html)
+
+## [ ] P6-04 — SDK docs (auto-generated)
+- [ ] Go SDK: install, API reference, example
+- [ ] Python SDK: install, API reference, example
+- [ ] TypeScript SDK: install, API reference, example
+- [ ] Links to pkg.go.dev / PyPI / npm
+
+**Spec ref:** S04 (SDK Libraries)
+**Files:** `docs/sdk.html` (or section in index.html)
+
+## [ ] P6-05 — Compliance badge system + verify endpoint
+- [ ] Badge generator: `<img src=".../badge?endpoint=URL">` showing pass/fail
+- [ ] Verify endpoint that runs `h3-test --smoke` against given URL
+- [ ] SVG badge: green "H3 Compliant" / red "Not Compliant" / gray "Unknown"
+
+**Spec ref:** S10 §6 (Compliance Verification)
+**Files:** `docs/index.html` (badge section)
 
 ---
 
