@@ -157,7 +157,7 @@
 **Spec ref:** S10 §4 (Multi-Language Examples)
 **Files:** `docs/index.html` (extend)
 
-## [x] P6-03 — Protocol reference (auto-generated from OpenAPI) ✅ (TBD)
+## [x] P6-03 — Protocol reference (auto-generated from OpenAPI) ✅ (c653e2a)
 - [x] Embed or link protocol OpenAPI spec (h3-protocol.yaml)
 - [x] Endpoint reference: POST /v1/process, POST /v1/result, POST /v1/cancel, GET /v1/health, GET/DELETE /v1/sessions/:id
 - [x] Decision type reference (tool_call, llm_call, text, wait, delegate, end)
