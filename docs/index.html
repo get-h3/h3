@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="H3 is the brain-swap protocol for AI agents. Bring your own harness and keep the Hermes platform.">
+  <meta name="theme-color" content="#0a0a14">
+  <title>H3 — Brain-Swap Protocol for AI Agents</title>
+  <style>
+    :root {
+      --bg: #0a0a14;
+      --bg-deep: #060612;
+      --card: #0f0f1e;
+      --card-raised: #131329;
+      --border: #1e1e38;
+      --border-bright: #302957;
+      --text: #c8c8d4;
+      --text-strong: #f2f0ff;
+      --muted: #8888a0;
+      --dim: #5e5e78;
+      --purple: #8b5cf6;
+      --pink: #d946ef;
+      --blue: #60a5fa;
+      --green: #4ade80;
+      --amber: #fbbf24;
+      --gradient: linear-gradient(135deg, var(--purple), var(--pink));
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --max: 1120px;
+      --radius: 14px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-width: 320px;
+      margin: 0;
+      background:
+        radial-gradient(circle at 80% -10%, rgba(139, 92, 246, 0.14), transparent 30rem),
+        radial-gradient(circle at -10% 35%, rgba(217, 70, 239, 0.06), transparent 28rem),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.6;
+      -webkit-text-size-adjust: 100%;
+    }
+    a { color: inherit; }
+    button { font: inherit; }
+    .shell { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(30, 30, 56, 0.82);
+      background: rgba(10, 10, 20, 0.86);
+      backdrop-filter: blur(16px);
+    }
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 32px));
+      min-height: 64px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-strong);
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--gradient);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      box-shadow: 0 0 24px rgba(139, 92, 246, 0.28);
+    }
+    .nav { display: flex; align-items: center; gap: 22px; }
+    .nav a {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-decoration: none;
+      transition: color 160ms ease;
+    }
+    .nav a:hover, .nav a:focus-visible { color: var(--text-strong); }
+    .nav .nav-cta {
+      padding: 8px 13px;
+      border: 1px solid var(--border-bright);
+      border-radius: 8px;
+      color: var(--text-strong);
+      background: rgba(139, 92, 246, 0.08);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(72px, 12vw, 138px) 0 94px;
+      text-align: center;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 20px;
+      width: min(700px, 100%);
+      height: 360px;
+      transform: translateX(-50%);
+      background-image: linear-gradient(rgba(139, 92, 246, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(139, 92, 246, 0.08) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse, black 15%, transparent 72%);
+      pointer-events: none;
+    }
+    .eyebrow {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 999px;
+      background: rgba(139, 92, 246, 0.08);
+      color: #b9a5ff;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 10px rgba(74, 222, 128, 0.7);
+    }
+    h1 {
+      position: relative;
+      max-width: 880px;
+      margin: 24px auto 18px;
+      color: transparent;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      font-size: clamp(2.45rem, 7vw, 5.6rem);
+      font-weight: 850;
+      letter-spacing: -0.075em;
+      line-height: 0.98;
+      text-wrap: balance;
+    }
+    .tagline {
+      position: relative;
+      margin: 0;
+      color: var(--text-strong);
+      font-size: clamp(1.16rem, 3vw, 1.55rem);
+      font-weight: 650;
+      letter-spacing: -0.03em;
+    }
+    .hero-copy {
+      position: relative;
+      max-width: 670px;
+      margin: 18px auto 0;
+      color: var(--muted);
+      font-size: clamp(0.96rem, 2vw, 1.08rem);
+      text-wrap: balance;
+    }
+    .hero-actions { position: relative; display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .button {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 17px;
+      border: 1px solid var(--border-bright);
+      border-radius: 9px;
+      color: var(--text-strong);
+      background: var(--card);
+      font-size: 0.88rem;
+      font-weight: 650;
+      text-decoration: none;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+    .button:hover, .button:focus-visible { transform: translateY(-2px); border-color: var(--purple); background: var(--card-raised); }
+    .button.primary { border-color: transparent; background: var(--gradient); box-shadow: 0 8px 28px rgba(139, 92, 246, 0.2); }
+    .button.primary:hover, .button.primary:focus-visible { border-color: transparent; background: linear-gradient(135deg, #9d78fb, #e468f3); }
+    .hero-note { position: relative; margin: 22px 0 0; color: var(--dim); font-family: var(--mono); font-size: 0.72rem; }
+    .status-badges { position: relative; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .status-badge { padding: 6px 9px; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); background: rgba(15, 15, 30, 0.72); font-family: var(--mono); font-size: 0.66rem; }
+    .status-badge b { color: #b9a5ff; font-weight: 700; }
+
+    .section { padding: 30px 0 74px; }
+    .section-heading { max-width: 680px; margin-bottom: 24px; }
+    .section-kicker {
+      margin: 0 0 8px;
+      color: #a993ff;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin: 0;
+      color: var(--text-strong);
+      font-size: clamp(1.72rem, 4vw, 2.55rem);
+      letter-spacing: -0.055em;
+      line-height: 1.08;
+    }
+    .section-heading p { margin: 12px 0 0; color: var(--muted); font-size: 0.95rem; }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+    }
+    .arch-card { padding: clamp(16px, 4vw, 30px); }
+    .arch-wrap { overflow-x: auto; padding-bottom: 5px; }
+    .arch-svg { display: block; width: 100%; min-width: 780px; height: auto; }
+    .arch-svg text { font-family: var(--sans); }
+    .arch-svg .node { fill: #121226; stroke: #2c2a4c; stroke-width: 1.5; }
+    .arch-svg .node-purple { fill: #15102a; stroke: var(--purple); }
+    .arch-svg .node-pink { fill: #1a1020; stroke: var(--pink); }
+    .arch-svg .label { fill: var(--text-strong); font-size: 15px; font-weight: 700; }
+    .arch-svg .sub { fill: var(--muted); font-size: 11px; }
+    .arch-svg .arrow { fill: none; stroke: url(#flow-gradient); stroke-width: 2; stroke-linecap: round; marker-end: url(#arrowhead); }
+    .arch-svg .step { fill: #a993ff; font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+    .arch-caption { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 22px; }
+    .arch-caption div { padding-top: 13px; border-top: 1px solid var(--border); }
+    .arch-caption strong { display: block; color: var(--text-strong); font-size: 0.81rem; }
+    .arch-caption span { display: block; margin-top: 3px; color: var(--muted); font-size: 0.76rem; }
+
+    .split-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 18px; align-items: stretch; }
+    .copy-card { padding: clamp(20px, 4vw, 34px); }
+    .copy-card h3 { margin: 0 0 13px; color: var(--text-strong); font-size: 1.2rem; letter-spacing: -0.03em; }
+    .copy-card p { margin: 0 0 13px; color: var(--muted); font-size: 0.9rem; }
+    .copy-card p:last-child { margin-bottom: 0; }
+    .principles { display: grid; gap: 11px; }
+    .principle { display: flex; gap: 12px; padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: rgba(6, 6, 18, 0.55); }
+    .principle-icon { flex: 0 0 auto; width: 25px; height: 25px; display: grid; place-items: center; border-radius: 7px; background: rgba(139, 92, 246, 0.14); color: #b9a5ff; font-family: var(--mono); font-size: 0.72rem; }
+    .principle strong { display: block; color: var(--text-strong); font-size: 0.8rem; }
+    .principle span { display: block; margin-top: 2px; color: var(--muted); font-size: 0.76rem; }
+
+    .quickstart-card { padding: clamp(16px, 4vw, 30px); }
+    .quickstart-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+    .quickstart-top p { max-width: 550px; margin: 0; color: var(--muted); font-size: 0.88rem; }
+    .tabs { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-deep); }
+    .tab {
+      min-height: 40px;
+      padding: 8px 16px;
+      border: 0;
+      border-radius: 7px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      transition: color 160ms ease, background 160ms ease;
+    }
+    .tab:hover, .tab:focus-visible { color: var(--text-strong); }
+    .tab[aria-selected="true"] { color: #fff; background: var(--gradient); }
+    .tab-panel[hidden] { display: none; }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
+    .panel-label { color: var(--text-strong); font-size: 0.85rem; font-weight: 700; }
+    .install { color: var(--green); font-family: var(--mono); font-size: 0.71rem; }
+    .code-shell { position: relative; }
+    pre {
+      margin: 0;
+      padding: 20px;
+      overflow-x: auto;
+      border: 1px solid #1a1a30;
+      border-radius: 10px;
+      background: #060612;
+      color: #d8d5ef;
+      font-family: var(--mono);
+      font-size: clamp(0.69rem, 1.5vw, 0.78rem);
+      line-height: 1.65;
+      tab-size: 2;
+    }
+    code .kw { color: #c084fc; }
+    code .fn { color: #67e8f9; }
+    code .str { color: #86efac; }
+    code .cm { color: #62627a; }
+    code .type { color: #f0abfc; }
+    .copy-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 1px solid #2b2b49;
+      border-radius: 7px;
+      color: var(--muted);
+      background: rgba(15, 15, 30, 0.94);
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.67rem;
+      transition: color 160ms ease, border-color 160ms ease;
+    }
+    .copy-button:hover, .copy-button:focus-visible { color: #fff; border-color: var(--purple); }
+    .copy-button.copied { color: var(--green); border-color: rgba(74, 222, 128, 0.55); }
+    .run-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 15px; color: var(--muted); font-size: 0.76rem; }
+    .run-row code { padding: 4px 7px; border-radius: 5px; color: #d5caff; background: rgba(139, 92, 246, 0.1); font-family: var(--mono); font-size: 0.7rem; }
+    .test-callout { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 22px; padding: 18px 20px; border: 1px solid rgba(217, 70, 239, 0.25); border-radius: 10px; background: linear-gradient(100deg, rgba(139, 92, 246, 0.09), rgba(217, 70, 239, 0.06)); }
+    .test-callout strong { display: block; color: var(--text-strong); font-size: 0.91rem; }
+    .test-callout span { display: block; margin-top: 3px; color: var(--muted); font-size: 0.77rem; }
+    .test-callout code { white-space: nowrap; color: #f0abfc; font-family: var(--mono); font-size: 0.72rem; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .stat { padding: 24px; text-align: center; }
+    .stat-value { color: var(--text-strong); font-family: var(--mono); font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 800; letter-spacing: -0.08em; line-height: 1; }
+    .stat-value.gradient { color: transparent; background: var(--gradient); -webkit-background-clip: text; background-clip: text; }
+    .stat-label { margin-top: 9px; color: var(--muted); font-size: 0.78rem; }
+    .stat-detail { margin-top: 3px; color: var(--dim); font-size: 0.68rem; }
+
+    .sdk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .sdk-card { padding: 21px; transition: transform 160ms ease, border-color 160ms ease; }
+    .sdk-card:hover { transform: translateY(-3px); border-color: var(--border-bright); }
+    .sdk-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .sdk-name { color: var(--text-strong); font-family: var(--mono); font-size: 0.9rem; font-weight: 700; }
+    .sdk-badge { padding: 4px 7px; border-radius: 5px; font-family: var(--mono); font-size: 0.64rem; }
+    .sdk-badge.go { color: #7dd3fc; background: rgba(56, 189, 248, 0.1); }
+    .sdk-badge.py { color: #86efac; background: rgba(74, 222, 128, 0.1); }
+    .sdk-badge.ts { color: #a5b4fc; background: rgba(129, 140, 248, 0.1); }
+    .sdk-card p { min-height: 48px; margin: 13px 0 17px; color: var(--muted); font-size: 0.79rem; }
+    .sdk-link { color: #b9a5ff; font-family: var(--mono); font-size: 0.7rem; text-decoration: none; }
+    .sdk-link:hover, .sdk-link:focus-visible { color: #fff; text-decoration: underline; }
+
+    .cta {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(26px, 5vw, 44px);
+      text-align: center;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.13), rgba(217, 70, 239, 0.08) 55%, rgba(15, 15, 30, 0.9));
+    }
+    .cta::after { content: ""; position: absolute; width: 240px; height: 240px; right: -100px; bottom: -140px; border: 1px solid rgba(217, 70, 239, 0.25); border-radius: 50%; box-shadow: 0 0 0 24px rgba(217, 70, 239, 0.04), 0 0 0 48px rgba(217, 70, 239, 0.025); }
+    .cta h2 { position: relative; z-index: 1; font-size: clamp(1.45rem, 4vw, 2.15rem); }
+    .cta p { position: relative; z-index: 1; max-width: 580px; margin: 12px auto 22px; color: var(--muted); font-size: 0.88rem; }
+    .cta .hero-actions { z-index: 1; margin-top: 0; }
+
+    footer { padding: 28px 0 38px; border-top: 1px solid var(--border); }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .footer-brand { color: var(--dim); font-family: var(--mono); font-size: 0.72rem; }
+    .footer-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 17px; }
+    .footer-links a { color: var(--muted); font-size: 0.74rem; text-decoration: none; }
+    .footer-links a:hover, .footer-links a:focus-visible { color: var(--text-strong); }
+    .footer-note { margin: 18px 0 0; color: #48485f; font-family: var(--mono); font-size: 0.65rem; text-align: center; }
+
+    :focus-visible { outline: 2px solid #c084fc; outline-offset: 3px; }
+    @media (max-width: 740px) {
+      .shell, .topbar-inner { width: min(100% - 24px, var(--max)); }
+      .topbar-inner { min-height: 58px; }
+      .nav { gap: 13px; }
+      .nav a:not(.nav-cta) { display: none; }
+      .hero { padding-top: 72px; padding-bottom: 62px; }
+      .split-grid, .sdk-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .stat { padding: 17px 8px; }
+      .stat-value { font-size: 1.45rem; }
+      .stat-label { font-size: 0.68rem; }
+      .stat-detail { font-size: 0.6rem; }
+      .quickstart-top { align-items: stretch; flex-direction: column; }
+      .tabs { width: 100%; }
+      .tab { flex: 1; padding-left: 7px; padding-right: 7px; }
+      .panel-head { align-items: flex-start; flex-direction: column; gap: 4px; }
+      .test-callout { align-items: flex-start; flex-direction: column; gap: 10px; }
+      .footer-inner { align-items: flex-start; flex-direction: column; }
+      .footer-links { justify-content: flex-start; }
+    }
+    @media (max-width: 480px) {
+      .arch-caption { grid-template-columns: 1fr; gap: 9px; }
+      .arch-caption div { padding-top: 10px; }
+      .hero-actions .button { width: 100%; }
+      .stats-grid { gap: 5px; }
+      .stat-value { font-size: 1.2rem; letter-spacing: -0.1em; }
+      pre { padding: 16px 14px; font-size: 0.66rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#top" aria-label="H3 home"><span class="brand-mark">H3</span><span>h3.sh</span></a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="#how-it-works">How it works</a>
+        <a href="#quickstart">Quickstart</a>
+        <a href="#sdks">SDKs</a>
+        <a class="nav-cta" href="https://github.com/get-h3" target="_blank" rel="noreferrer">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="shell">
+        <span class="eyebrow">Open protocol · v1.0.0</span>
+        <h1>H3 — Brain-Swap Protocol for AI Agents</h1>
+        <p class="tagline">BYO harness. Keep the platform.</p>
+        <p class="hero-copy">H3 lets Hermes keep the tools, models, gateways, and messaging while your harness supplies the agent logic through a small, portable HTTP contract.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#quickstart">Build your harness <span aria-hidden="true">↓</span></a>
+          <a class="button" href="https://github.com/get-h3/protocol" target="_blank" rel="noreferrer">Read the protocol <span aria-hidden="true">↗</span></a>
+        </div>
+        <p class="hero-note">one protocol · any harness · every Hermes channel</p>
+        <div class="status-badges" aria-label="H3 status">
+          <span class="status-badge"><b>protocol</b> v1.0.0</span>
+          <span class="status-badge"><b>test battery</b> 43/43</span>
+          <span class="status-badge"><b>SDKs</b> 3 available</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how-it-works">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">01 / Architecture</p>
+          <h2>How It Works</h2>
+          <p>H3 separates the body from the brain. Hermes owns the platform surface; your harness owns the reasoning loop.</p>
+        </div>
+        <div class="card arch-card">
+          <div class="arch-wrap">
+            <svg class="arch-svg" viewBox="0 0 1040 220" role="img" aria-labelledby="arch-title arch-desc">
+              <title id="arch-title">H3 request flow</title>
+              <desc id="arch-desc">Telegram or Discord sends a message through Hermes and the H3 Shim to your harness, which passes it to your agent logic and returns a decision.</desc>
+              <defs>
+                <linearGradient id="flow-gradient" x1="0" x2="1">
+                  <stop offset="0" stop-color="#8b5cf6"></stop>
+                  <stop offset="1" stop-color="#d946ef"></stop>
+                </linearGradient>
+                <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                  <path d="M0,0 L8,4 L0,8 Z" fill="#d946ef"></path>
+                </marker>
+              </defs>
+              <path class="arrow" d="M168 104 H207"></path>
+              <path class="arrow" d="M365 104 H404"></path>
+              <path class="arrow" d="M562 104 H601"></path>
+              <path class="arrow" d="M759 104 H798"></path>
+              <g transform="translate(10 60)">
+                <rect class="node" width="158" height="88" rx="12"></rect>
+                <text class="step" x="18" y="22">01 / INPUT</text>
+                <text class="label" x="18" y="49">Telegram / Discord</text>
+                <text class="sub" x="18" y="69">Where users already are</text>
+              </g>
+              <g transform="translate(207 60)">
+                <rect class="node" width="158" height="88" rx="12"></rect>
+                <text class="step" x="18" y="22">02 / PLATFORM</text>
+                <text class="label" x="18" y="49">Hermes</text>
+                <text class="sub" x="18" y="69">Tools · models · sessions</text>
+              </g>
+              <g transform="translate(404 60)">
+                <rect class="node node-purple" width="158" height="88" rx="12"></rect>
+                <text class="step" x="18" y="22">03 / BRIDGE</text>
+                <text class="label" x="18" y="49">H3 Shim</text>
+                <text class="sub" x="18" y="69">A small, stable contract</text>
+              </g>
+              <g transform="translate(601 60)">
+                <rect class="node node-pink" width="158" height="88" rx="12"></rect>
+                <text class="step" x="18" y="22">04 / YOUR CODE</text>
+                <text class="label" x="18" y="49">Your Harness</text>
+                <text class="sub" x="18" y="69">Go · Python · TypeScript</text>
+              </g>
+              <g transform="translate(798 60)">
+                <rect class="node" width="158" height="88" rx="12"></rect>
+                <text class="step" x="18" y="22">05 / INTELLIGENCE</text>
+                <text class="label" x="18" y="49">Agent Logic</text>
+                <text class="sub" x="18" y="69">Your decisions, your way</text>
+              </g>
+            </svg>
+          </div>
+          <div class="arch-caption">
+            <div><strong>Hermes is the body</strong><span>Channels, credentials, tools, and delivery stay put.</span></div>
+            <div><strong>H3 is the neural link</strong><span>Two core callbacks move decisions across the boundary.</span></div>
+            <div><strong>Your harness is the brain</strong><span>Swap agent frameworks without rebuilding the platform.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="what-is-h3">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">02 / The idea</p>
+          <h2>What is H3?</h2>
+          <p>A narrow interface for a wide ecosystem of agent runtimes.</p>
+        </div>
+        <div class="split-grid">
+          <article class="card copy-card">
+            <h3>Bring the brain you already trust.</h3>
+            <p>H3, short for Hermes Harness Hooks, is a protocol for connecting an external agent harness to Hermes. Hermes receives the user message, executes the decisions your harness returns, and sends each result back for the next step.</p>
+            <p>That means a CrewAI workflow, a LangChain graph, a custom Go loop, or a research agent can become the thinking layer without taking on transport, channel integrations, or platform operations.</p>
+            <p>The wire format stays the same across languages. The implementation stays yours.</p>
+          </article>
+          <div class="principles">
+            <div class="principle"><span class="principle-icon">↔</span><div><strong>Portable by design</strong><span>One REST contract across Go, Python, and TypeScript.</span></div></div>
+            <div class="principle"><span class="principle-icon">◎</span><div><strong>Platform-preserving</strong><span>Keep Hermes sessions, channels, tools, and credentials.</span></div></div>
+            <div class="principle"><span class="principle-icon">✓</span><div><strong>Easy to verify</strong><span>Run the same 43-test battery against any endpoint.</span></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="quickstart">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">03 / Quickstart</p>
+          <h2>From zero to echo in minutes.</h2>
+          <p>Pick a language, install its SDK, and start with a harness that responds to <code>/v1/process</code> and closes on <code>/v1/result</code>.</p>
+        </div>
+        <div class="card quickstart-card">
+          <div class="quickstart-top">
+            <p>Each SDK wraps the protocol types and HTTP routes so your code can focus on decisions. Copy the example, run it on port 9191, then point the test battery at it.</p>
+            <div class="tabs" role="tablist" aria-label="Quickstart languages">
+              <button class="tab" id="tab-go" role="tab" aria-selected="true" aria-controls="panel-go" data-tab="go">Go</button>
+              <button class="tab" id="tab-python" role="tab" aria-selected="false" aria-controls="panel-python" data-tab="python">Python</button>
+              <button class="tab" id="tab-typescript" role="tab" aria-selected="false" aria-controls="panel-typescript" data-tab="typescript">TypeScript</button>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="panel-go" role="tabpanel" aria-labelledby="tab-go" data-panel="go">
+            <div class="panel-head"><span class="panel-label">Go · minimal echo harness</span><span class="install">go get github.com/get-h3/sdk-go</span></div>
+            <div class="code-shell">
+              <pre><code>package main
+
+import (
+  <span class="str">"fmt"</span>
+  <span class="str">"net/http"</span>
+  <span class="str">"github.com/get-h3/sdk-go/harness"</span>
+  <span class="str">"github.com/get-h3/sdk-go/protocol"</span>
+)
+
+type Echo struct{}
+func (Echo) OnProcess(r *protocol.ProcessRequest) (*protocol.Decision, error) {
+  <span class="kw">return</span> &amp;protocol.Decision{Decision: protocol.DecisionText,
+    DecisionID: <span class="str">"echo-1"</span>, Text: &amp;protocol.TextResp{Content: fmt.Sprintf(<span class="str">"Echo: %s"</span>, r.Message.Content), Finished: <span class="kw">true</span>}}, <span class="kw">nil</span>
+}
+func (Echo) OnResult(*protocol.ResultRequest) (*protocol.Decision, error) {
+  <span class="kw">return</span> &amp;protocol.Decision{Decision: protocol.DecisionEnd, DecisionID: <span class="str">"done"</span>, End: &amp;protocol.End{Reason: protocol.EndTaskComplete}}, <span class="kw">nil</span>
+}
+func (Echo) OnCancel(*protocol.CancelRequest) error { <span class="kw">return</span> <span class="kw">nil</span> }
+func (Echo) OnSessionTerminate(string) error { <span class="kw">return</span> <span class="kw">nil</span> }
+func (Echo) Health() *protocol.HealthResponse { <span class="kw">return</span> &amp;protocol.HealthResponse{Status: protocol.HealthOK, Version: <span class="str">"1.0.0"</span>, Transport: <span class="str">"rest"</span>, ProtocolVersion: <span class="str">"1.0"</span>} }
+func main() { fmt.Println(<span class="str">"H3 harness listening on :9191"</span>); http.ListenAndServe(<span class="str">":9191"</span>, harness.NewHTTPServer(Echo{})) }</code></pre>
+              <button class="copy-button" type="button" data-copy="go-code" aria-label="Copy Go example">copy</button>
+              <textarea id="go-code" hidden>package main
+
+import (
+  "fmt"
+  "net/http"
+  "github.com/get-h3/sdk-go/harness"
+  "github.com/get-h3/sdk-go/protocol"
+)
+
+type Echo struct{}
+func (Echo) OnProcess(r *protocol.ProcessRequest) (*protocol.Decision, error) {
+  return &protocol.Decision{Decision: protocol.DecisionText, DecisionID: "echo-1", Text: &protocol.TextResp{Content: fmt.Sprintf("Echo: %s", r.Message.Content), Finished: true}}, nil
+}
+func (Echo) OnResult(*protocol.ResultRequest) (*protocol.Decision, error) {
+  return &protocol.Decision{Decision: protocol.DecisionEnd, DecisionID: "done", End: &protocol.End{Reason: protocol.EndTaskComplete}}, nil
+}
+func (Echo) OnCancel(*protocol.CancelRequest) error { return nil }
+func (Echo) OnSessionTerminate(string) error { return nil }
+func (Echo) Health() *protocol.HealthResponse { return &protocol.HealthResponse{Status: protocol.HealthOK, Version: "1.0.0", Transport: "rest", ProtocolVersion: "1.0"} }
+func main() { fmt.Println("H3 harness listening on :9191"); http.ListenAndServe(":9191", harness.NewHTTPServer(Echo{})) }</textarea>
+            </div>
+            <div class="run-row"><span>Run:</span><code>go run .</code></div>
+          </div>
+
+          <div class="tab-panel" id="panel-python" role="tabpanel" aria-labelledby="tab-python" data-panel="python" hidden>
+            <div class="panel-head"><span class="panel-label">Python · FastAPI echo harness</span><span class="install">pip install h3-harness-sdk fastapi uvicorn</span></div>
+            <div class="code-shell">
+              <pre><code><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+<span class="kw">from</span> h3_harness <span class="kw">import</span> BaseHarness, Decision, DecisionType, End, TextResponse, create_router
+
+<span class="kw">class</span> <span class="type">Echo</span>(BaseHarness):
+    <span class="kw">async def</span> <span class="fn">on_process</span>(self, req):
+        <span class="kw">return</span> Decision(decision=DecisionType.TEXT, text=TextResponse(content=f<span class="str">"Echo: {req.message.content}"</span>, finished=<span class="kw">True</span>))
+
+    <span class="kw">async def</span> <span class="fn">on_result</span>(self, req):
+        <span class="kw">return</span> Decision(decision=DecisionType.END, end=End(reason=<span class="str">"task_complete"</span>))
+
+app = FastAPI()
+app.include_router(create_router(Echo()))</code></pre>
+              <button class="copy-button" type="button" data-copy="python-code" aria-label="Copy Python example">copy</button>
+              <textarea id="python-code" hidden>from fastapi import FastAPI
+from h3_harness import BaseHarness, Decision, DecisionType, End, TextResponse, create_router
+
+class Echo(BaseHarness):
+    async def on_process(self, req):
+        return Decision(decision=DecisionType.TEXT, text=TextResponse(content=f"Echo: {req.message.content}", finished=True))
+
+    async def on_result(self, req):
+        return Decision(decision=DecisionType.END, end=End(reason="task_complete"))
+
+app = FastAPI()
+app.include_router(create_router(Echo()))</textarea>
+            </div>
+            <div class="run-row"><span>Run:</span><code>uvicorn harness:app --host 0.0.0.0 --port 9191</code></div>
+          </div>
+
+          <div class="tab-panel" id="panel-typescript" role="tabpanel" aria-labelledby="tab-typescript" data-panel="typescript" hidden>
+            <div class="panel-head"><span class="panel-label">TypeScript · Hono echo harness</span><span class="install">npm install @get-h3/h3-harness-sdk hono</span></div>
+            <div class="code-shell">
+              <pre><code><span class="kw">import</span> { Hono } <span class="kw">from</span> <span class="str">"hono"</span>;
+<span class="kw">import</span> { createH3Router } <span class="kw">from</span> <span class="str">"@get-h3/h3-harness-sdk"</span>;
+<span class="kw">import type</span> { Harness, Decision } <span class="kw">from</span> <span class="str">"@get-h3/h3-harness-sdk"</span>;
+
+<span class="kw">const</span> echo: Harness = {
+  <span class="kw">async</span> onProcess(req) { <span class="kw">return</span> { decision: <span class="str">"text"</span>, decision_id: crypto.randomUUID(), text: { content: <span class="str">`Echo: ${req.message.content}`</span>, finished: <span class="kw">true</span> } }; },
+  <span class="kw">async</span> onResult(_req) { <span class="kw">return</span> { decision: <span class="str">"end"</span>, decision_id: crypto.randomUUID(), end: { reason: <span class="str">"task_complete"</span> } }; },
+  health() { <span class="kw">return</span> { status: <span class="str">"ok"</span>, version: <span class="str">"1.0.0"</span>, transport: <span class="str">"rest"</span>, protocol_version: <span class="str">"1.0"</span>, capabilities: [<span class="str">"text"</span>, <span class="str">"end"</span>] }; }
+};
+<span class="kw">const</span> app = <span class="kw">new</span> Hono(); app.route(<span class="str">"/"</span>, createH3Router(echo)); <span class="kw">export default</span> app;</code></pre>
+              <button class="copy-button" type="button" data-copy="typescript-code" aria-label="Copy TypeScript example">copy</button>
+              <textarea id="typescript-code" hidden>import { Hono } from "hono";
+import { createH3Router } from "@get-h3/h3-harness-sdk";
+import type { Harness } from "@get-h3/h3-harness-sdk";
+
+const echo: Harness = {
+  async onProcess(req) { return { decision: "text", decision_id: crypto.randomUUID(), text: { content: `Echo: ${req.message.content}`, finished: true } }; },
+  async onResult(_req) { return { decision: "end", decision_id: crypto.randomUUID(), end: { reason: "task_complete" } }; },
+  health() { return { status: "ok", version: "1.0.0", transport: "rest", protocol_version: "1.0", capabilities: ["text", "end"] }; }
+};
+const app = new Hono(); app.route("/", createH3Router(echo)); export default app;</textarea>
+            </div>
+            <div class="run-row"><span>Run:</span><code>npx tsx harness.ts</code></div>
+          </div>
+
+          <div class="test-callout">
+            <div><strong>Run the compliance battery</strong><span>Validate any harness endpoint against the full H3 contract.</span></div>
+            <code>pip install hermes-h3-shim &amp;&amp; h3-test --endpoint http://localhost:9191</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="test-battery">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">04 / Confidence</p>
+          <h2>Small contract. Serious checks.</h2>
+          <p>The H3 test battery exercises the complete functional surface — not just a health endpoint.</p>
+        </div>
+        <div class="stats-grid">
+          <article class="card stat"><div class="stat-value gradient">43/43</div><div class="stat-label">tests passing</div><div class="stat-detail">across 6 functional regions</div></article>
+          <article class="card stat"><div class="stat-value">&lt;5s</div><div class="stat-label">typical runtime</div><div class="stat-detail">from endpoint to verdict</div></article>
+          <article class="card stat"><div class="stat-value">v1.0.0</div><div class="stat-label">protocol version</div><div class="stat-detail">stable wire contract</div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="sdks">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">05 / SDKs</p>
+          <h2>Use the language that fits your harness.</h2>
+          <p>Three SDKs, one JSON wire format. Start idiomatically, then bring any framework or agent loop behind the same boundary.</p>
+        </div>
+        <div class="sdk-grid">
+          <article class="card sdk-card">
+            <div class="sdk-top"><span class="sdk-name">sdk-go</span><span class="sdk-badge go">Go</span></div>
+            <p>Typed protocol structs, HTTP server, validation, middleware, and a mock Hermes testbed for native Go harnesses.</p>
+            <a class="sdk-link" href="https://github.com/get-h3/sdk-go" target="_blank" rel="noreferrer">github.com/get-h3/sdk-go ↗</a>
+          </article>
+          <article class="card sdk-card">
+            <div class="sdk-top"><span class="sdk-name">h3-harness-sdk</span><span class="sdk-badge py">Python</span></div>
+            <p>Pydantic models and a FastAPI router with an async BaseHarness for Python agents, workflows, and RAG loops.</p>
+            <a class="sdk-link" href="https://github.com/get-h3/sdk-python" target="_blank" rel="noreferrer">github.com/get-h3/sdk-python ↗</a>
+          </article>
+          <article class="card sdk-card">
+            <div class="sdk-top"><span class="sdk-name">h3-harness-sdk</span><span class="sdk-badge ts">TypeScript</span></div>
+            <p>Type-safe protocol schemas and a Hono router that runs across Node, Bun, and Deno environments.</p>
+            <a class="sdk-link" href="https://github.com/get-h3/sdk-typescript" target="_blank" rel="noreferrer">github.com/get-h3/sdk-typescript ↗</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <div class="card cta">
+          <h2>Your agent logic should be swappable.</h2>
+          <p>Keep the platform that already works. Change the brain when the job, model, or framework changes.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#quickstart">Start with the echo harness</a>
+            <a class="button" href="https://github.com/get-h3/shim" target="_blank" rel="noreferrer">Explore the shim ↗</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell">
+      <div class="footer-inner">
+        <div class="footer-brand">H3 · Brain-swap protocol for AI agents</div>
+        <div class="footer-links">
+          <a href="https://github.com/get-h3" target="_blank" rel="noreferrer">GitHub org ↗</a>
+          <a href="https://github.com/get-h3/protocol" target="_blank" rel="noreferrer">Protocol ↗</a>
+          <a href="https://h3.sh/docs" target="_blank" rel="noreferrer">Docs ↗</a>
+          <a href="https://github.com/get-h3/shim" target="_blank" rel="noreferrer">Shim ↗</a>
+        </div>
+      </div>
+      <p class="footer-note">Open protocol · bring your own harness · keep your platform</p>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const tabs = document.querySelectorAll("[data-tab]");
+      const panels = document.querySelectorAll("[data-panel]");
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const selected = tab.dataset.tab;
+          tabs.forEach((item) => item.setAttribute("aria-selected", String(item === tab)));
+          panels.forEach((panel) => { panel.hidden = panel.dataset.panel !== selected; });
+        });
+      });
+
+      document.querySelectorAll("[data-copy]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const source = document.getElementById(button.dataset.copy);
+          const original = button.textContent;
+          try {
+            await navigator.clipboard.writeText(source.value);
+            button.textContent = "copied";
+            button.classList.add("copied");
+          } catch (error) {
+            source.hidden = false;
+            source.select();
+            document.execCommand("copy");
+            source.hidden = true;
+            button.textContent = "copied";
+            button.classList.add("copied");
+          }
+          setTimeout(() => { button.textContent = original; button.classList.remove("copied"); }, 1600);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
