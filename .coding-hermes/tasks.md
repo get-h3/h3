@@ -157,11 +157,11 @@
 **Spec ref:** S10 §4 (Multi-Language Examples)
 **Files:** `docs/index.html` (extend)
 
-## [ ] P6-03 — Protocol reference (auto-generated from OpenAPI)
-- [ ] Embed or link protocol OpenAPI spec (h3-protocol.yaml)
-- [ ] Endpoint reference: POST /v1/process, POST /v1/result, POST /v1/cancel, GET /v1/health, GET/DELETE /v1/sessions/:id
-- [ ] Decision type reference (tool_call, llm_call, text, wait, delegate, end)
-- [ ] JSON Schema examples inline
+## [x] P6-03 — Protocol reference (auto-generated from OpenAPI) ✅ (TBD)
+- [x] Embed or link protocol OpenAPI spec (h3-protocol.yaml)
+- [x] Endpoint reference: POST /v1/process, POST /v1/result, POST /v1/cancel, GET /v1/health, GET/DELETE /v1/sessions/:id
+- [x] Decision type reference (tool_call, llm_call, text, wait, delegate, end)
+- [x] JSON Schema examples inline
 
 **Spec ref:** S07 (OpenAPI & JSON Schema Design), S02 (Protocol Specification)
 **Files:** `docs/protocol.html` (or section in index.html)
