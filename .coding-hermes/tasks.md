@@ -147,11 +147,12 @@
 **Spec ref:** S10 (Website & Developer Docs)
 **Files:** `docs/index.html`
 
-## [ ] P6-02 — Language picker (Go/Python/TS) with copy-paste code
-- [ ] Tabbed interface: Go | Python | TypeScript
-- [ ] Each tab: install command + minimal harness code (5-10 lines)
-- [ ] Run command + expected output
-- [ ] Copy-to-clipboard buttons on all code blocks
+## [x] P6-02 — Language picker (Go/Python/TS) with copy-paste code ✅ (1420546)
+- [x] Tabbed interface: Go | Python | TypeScript
+- [x] Each tab: install command + minimal harness code
+- [x] Run command per language
+- [x] Copy-to-clipboard buttons on all code blocks
+- [x] Delivered as part of P6-01 landing page (commit 1420546). All 4 subtasks verified in docs/index.html lines 527-753.
 
 **Spec ref:** S10 §4 (Multi-Language Examples)
 **Files:** `docs/index.html` (extend)
