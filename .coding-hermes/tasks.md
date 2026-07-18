@@ -210,7 +210,6 @@
 
 ### QV-GAPS: Gaps Found During Verification
 
-## [ ] QV-GAP-01 — Add History field to Go SDK Decision struct
 ## [x] QV-GAP-01 — Add History field to Go SDK Decision struct ✅ (5644a44 + 10089de)
 - [x] Decision struct (`sdk-go/protocol/types.go`) now has `History []HistoryEntry \`json:"history,omitempty"\``
 - [x] Conformance harness seeds session history from `req.Context.History` on first call and snapshots it for every Decision
