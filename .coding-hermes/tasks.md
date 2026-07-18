@@ -109,7 +109,7 @@
 | P4-01 | shim | `hermes h3 install` — plugin registration, version check, pip install | ✅ Done |
 | P4-02 | shim | `hermes h3 scaffold --lang go/python/ts` — harness template generator | ✅ Done |
 | P4-03 | shim | `hermes h3 verify` — post-install/post-upgrade verification | ✅ Done |
-| P4-04 | protocol | `versions.yaml` — Hermes↔H3 compatibility matrix | **PENDING** |
+| P4-04 | protocol | `versions.yaml` — Hermes↔H3 compatibility matrix | ✅ Done (df1dca6a) |
 | P4-05 | shim | Hermes update pre-flight hook (S11 §3) | **PENDING** |
 
 **Gate:** `scaffold --lang go` → `go run .` → `h3-test` passes. Full loop < 5 min.
@@ -218,8 +218,7 @@
 ## Remaining Work Summary
 
 **High Priority:**
-- P3-09: CI compliance workflow for test battery
-- P4-04: versions.yaml compatibility matrix
+- P4-05: Hermes update pre-flight hook (S11 §3)
 
 **Release Pipeline:**
 - P5-01–P5-06: Cross-repo release cascade
