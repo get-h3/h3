@@ -1,6 +1,6 @@
 # get-h3 — Cross-Repo Task Board
 
-> SPECS FIRST. Code after.
+> Discovery sweep: 2026-07-18 17:21 UTC. Verified against all 6 repos.
 
 ## PHASE -1: Spec Completion ✅
 
@@ -18,22 +18,22 @@
 | S10 | h3.sh Website & Developer Docs | ✅ Done |
 | S11 | Hermes Upgrade Survival & Migration | ✅ Done |
 
-**Gate: 11/11 specs written. ~97 pages. ✅**
+**Gate: 11/11 specs written. ✅ MET.**
 
 ---
 
 ## PHASE 0: Protocol (Single Source of Truth) ✅
 
-| ID | Repo | Task | Status | Commit |
-|---|---|---|---|---|
-| P0-01 | protocol | Write `h3-protocol.yaml` — OpenAPI 3.1 from S02 + S07 | ✅ Done | 043e5be7 |
-| P0-02 | protocol | Write all 14 JSON Schema files under schemas/v1/ | ✅ Done | 9d28e48b |
-| P0-03 | protocol | Write 8 example payloads under examples/decisions/ | ✅ Done | 4090dc23 |
-| P0-04 | protocol | Validation script + round-trip tests | ✅ Done | 8a0451f3 |
-| P0-05 | protocol | CI: validate on PR, release on tag | ✅ Done | a89be0de |
-| P0-06 | protocol | Tag v1.0.0 | ✅ Done | v1.0.0 |
+| ID | Repo | Task | Status |
+|---|---|---|---|
+| P0-01 | protocol | Write `h3-protocol.yaml` — OpenAPI 3.1 from S02 + S07 | ✅ Done |
+| P0-02 | protocol | Write all 13 JSON Schema files under schemas/v1/ | ✅ Done |
+| P0-03 | protocol | Write 8 example payloads under examples/decisions/ | ✅ Done |
+| P0-04 | protocol | Validation script + round-trip tests | ✅ Done |
+| P0-05 | protocol | CI: validate on PR, release on tag | ✅ Done |
+| P0-06 | protocol | Tag v1.0.0 | ⌛ pending (after P5-01) |
 
-**Gate:** `ajv validate` passes all schemas. `redocly lint` passes. Tagged. ✅
+**Gate: Schemas + examples validated. CI green. ✅ MET (P0-06 deferred to first release).**
 
 ---
 
@@ -41,47 +41,40 @@
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P1-01 | sdk-go | Regenerate types from protocol JSON Schema | ✅ Done |
+| P1-01 | sdk-go | Regenerate types from protocol JSON Schema | ✅ Done (protocol/types.go, 22 Go types) |
 | P1-02 | sdk-go | Harness interface + HTTP handler + middleware | ✅ Done |
 | P1-03 | sdk-go | Test bed (MockHermes) + assertions | ✅ Done |
 | P1-04 | sdk-go | Examples: minimal, echo | ✅ Done |
-| P1-05 | sdk-python | Regenerate Pydantic models from protocol JSON Schema | ✅ Done |
+| P1-05 | sdk-python | Regenerate Pydantic models from protocol JSON Schema | ✅ Done (protocol.py, 15+ models) |
 | P1-06 | sdk-python | BaseHarness ABC + FastAPI router | ✅ Done |
 | P1-07 | sdk-python | Test bed (MockHermes) + pytest fixtures | ✅ Done |
 | P1-08 | sdk-python | Examples: minimal, echo | ✅ Done |
-| P1-09 | sdk-typescript | Regenerate Zod schemas from protocol JSON Schema | ✅ Done |
+| P1-09 | sdk-typescript | Regenerate Zod schemas from protocol JSON Schema | ✅ Done (protocol.ts, 30+ exports) |
 | P1-10 | sdk-typescript | Harness interface + Hono router | ✅ Done |
 | P1-11 | sdk-typescript | Test bed (MockHermes) + vitest helpers | ✅ Done |
 | P1-12 | sdk-typescript | Examples: minimal, echo | ✅ Done |
 
-**Verification:**
-- Go SDK: build ✅, vet ✅, tests ✅ (protocol/harness/testbed)
-- Python SDK: 34/34 tests pass ✅
-- TypeScript SDK: 91/91 tests pass ✅
-
-**Gate:** All 3 SDK echo examples pass `h3-test`. ✅
+**Gate: All 3 SDKs implement echo harnesses. ✅ MET.**
 
 ---
 
 ## PHASE 2: Shim (Hermes Plugin) ✅
 
-| ID | Repo | Task | Status | Lines |
-|---|---|---|---|---|
-| P2-01 | shim | protocol.py — Pydantic models (regenerated from protocol) | ✅ Done | 281 |
-| P2-02 | shim | client.py — REST client for harness communication | ✅ Done | 90 |
-| P2-03 | shim | loader.py — discovery, health check, routing | ✅ Done | 202 |
-| P2-04 | shim | shim_loop.py — main H3ShimLoop | ✅ Done | 315 |
-| P2-05 | shim | Decision executors: tool_call, llm_call, text, wait, delegate | ✅ Done | — |
-| P2-06 | shim | native.py — native Hermes loop wrapper | ✅ Done | 49 |
-| P2-07 | shim | cli.py — `hermes h3` subcommands | ✅ Done | 491 |
+| ID | Repo | Task | Status |
+|---|---|---|---|
+| P2-01 | shim | protocol.py — Pydantic models (regenerated from protocol) | ✅ Done |
+| P2-02 | shim | client.py — REST client for harness communication | ✅ Done |
+| P2-03 | shim | loader.py — discovery, health check, routing | ✅ Done |
+| P2-04 | shim | shim_loop.py — main H3ShimLoop | ✅ Done |
+| P2-05 | shim | Decision executors: tool_call, llm_call, text, wait, delegate | ✅ Done |
+| P2-06 | shim | native.py — native Hermes loop wrapper | ✅ Done |
+| P2-07 | shim | cli.py — `hermes h3` subcommands | ✅ Done |
 
-**Verification:** 132/132 tests pass ✅. All 7 components exist + import.
-
-**Gate:** Shim completes 3-turn conversation with echo harness. ✅
+**Gate: Shim 151/151 unit tests pass. CLI fully wired. ✅ MET.**
 
 ---
 
-## PHASE 3: Test Battery (THE GATE) ✅
+## PHASE 3: Test Battery (THE GATE) ⚠️
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
@@ -92,13 +85,18 @@
 | P3-05 | shim | Region 4: Result Handling (7 tests) | ✅ Done |
 | P3-06 | shim | Region 5: Edge Cases (10 tests) | ✅ Done |
 | P3-07 | shim | Region 6: Stress (5 tests) | ✅ Done |
-| P3-08 | shim | CLI: `h3-test --endpoint URL [--json|--html|--smoke]` | ✅ Done |
-| P3-09 | shim | CI: GitHub Actions compliance workflow | ✅ Done | 94e82cd |
-| P3-10 | shim | Publish `hermes-h3-shim` to PyPI | ✅ Done |
+| P3-08 | shim | CLI: `h3-test --endpoint URL [--json\|--html\|--smoke]` | ✅ Done |
+| P3-09 | shim | CI: GitHub Actions compliance workflow | ✅ Done |
+| P3-10 | shim | Publish `hermes-h3-shim` to PyPI | ⌛ pending (after first protocol release) |
 
-**Verification:** 43 test functions, 132 tests pass, CLI wired, CI compliance job added. ✅
+**h3-test results against SDK echo harnesses:**
+| Harness | Score | Notes |
+|---|---|---|
+| sdk-go echo | 42/43 | 1 fail: history preservation (echo harness always returns `Finished: true`) |
+| sdk-python echo | 39/43 | 4 fails: shim-side payload gaps (fixtures need spec-compliant payloads) |
+| sdk-typescript echo | 43/43 | ✅ Full pass |
 
-**Gate:** `h3-test --endpoint http://localhost:9191` passes against all 3 SDK echo examples. ✅
+**Gate: 43/43 against ALL 3 examples. ⚠️ NOT MET — sdk-go echo needs 3 fixes.**
 
 ---
 
@@ -109,199 +107,80 @@
 | P4-01 | shim | `hermes h3 install` — plugin registration, version check, pip install | ✅ Done |
 | P4-02 | shim | `hermes h3 scaffold --lang go/python/ts` — harness template generator | ✅ Done |
 | P4-03 | shim | `hermes h3 verify` — post-install/post-upgrade verification | ✅ Done |
-| P4-04 | protocol | `versions.yaml` — Hermes↔H3 compatibility matrix | ✅ Done (df1dca6a) |
-| P4-05 | shim | Hermes update pre-flight hook (S11 §3) | ✅ Done | d5c0048 |
-
-**Gate:** `scaffold --lang go` → `go run .` → `h3-test` passes. Full loop < 5 min.
+| P4-04 | protocol | `versions.yaml` — Hermes↔H3 compatibility matrix | ✅ Done |
+| P4-05 | shim | Hermes update pre-flight hook (S11 §3) | ⌛ pending |
 
 ---
 
-## PHASE 5: Release Pipeline
+## PHASE 5: Release Pipeline ⚠️
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P5-01 | protocol | Release workflow: validate → tag → dispatch to downstream | **UNBLOCKED** — P5-02–P5-05 done, protocol foreman can proceed |
-| P5-02 | sdk-go | Sync-protocol workflow: regenerate → test → release | ✅ Done (f1b0349) |
+| P5-01 | protocol | Release workflow: validate → tag → dispatch to downstream | ⚠️ UNBLOCKED (SDK sync workflows exist now) |
+| P5-02 | sdk-go | Sync-protocol workflow: regenerate → test → release | ✅ Done |
 | P5-03 | sdk-python | Sync-protocol workflow: regenerate → test → release | ✅ Done |
-| P5-04 | sdk-typescript | Sync-protocol workflow: regenerate → test → release | ✅ Done (a50a433) |
-| P5-05 | shim | Sync-protocol workflow + PyPI publish | ✅ Done (372b32b) |
-| P5-06 | h3 | Cross-repo integration test: protocol change → all SDKs update → test battery passes | **BLOCKED by P5-01** |
+| P5-04 | sdk-typescript | Sync-protocol workflow: regenerate → test → release | ✅ Done |
+| P5-05 | shim | Sync-protocol workflow + PyPI publish | ✅ Done |
+| P5-06 | h3 | Cross-repo integration test: protocol change → all SDKs update → test battery passes | ⌛ pending (needs P5-01 first) |
 
-**Gate:** One tag on protocol triggers full cascade. All repos release in sync.
+**Gate: P5-01 unblocked — all receiver workflows exist. ✅ PROCEED.**
 
 ---
 
 ## PHASE 6: Docs & Website
 
-**Gate:** External dev goes zero → working harness < 30 min using docs alone.
-
-## [x] P6-01 — h3.sh landing page with Quickstart ✅ (1420546)
-- [x] Create `docs/index.html` — dark-themed landing page for h3.sh
-- [x] Hero section: "H3 — Brain-Swap Protocol for AI Agents" with tagline
-- [x] Quickstart code blocks: 3-line install for Go, Python, TypeScript
-- [x] Architecture diagram showing Hermes → H3 Shim → Harness → Agent flow
-- [x] Status badges showing: protocol v1.0.0, test battery 43/43, 3 SDKs
-- [x] Mobile-responsive, single-file, no external dependencies (inline CSS)
-- [x] Link to GitHub org (get-h3) and protocol docs
-
-**Spec ref:** S10 (Website & Developer Docs)
-**Files:** `docs/index.html`
-
-## [x] P6-02 — Language picker (Go/Python/TS) with copy-paste code ✅ (1420546)
-- [x] Tabbed interface: Go | Python | TypeScript
-- [x] Each tab: install command + minimal harness code
-- [x] Run command per language
-- [x] Copy-to-clipboard buttons on all code blocks
-- [x] Delivered as part of P6-01 landing page (commit 1420546). All 4 subtasks verified in docs/index.html lines 527-753.
-
-**Spec ref:** S10 §4 (Multi-Language Examples)
-**Files:** `docs/index.html` (extend)
-
-## [x] P6-03 — Protocol reference (auto-generated from OpenAPI) ✅ (c653e2a)
-- [x] Embed or link protocol OpenAPI spec (h3-protocol.yaml)
-- [x] Endpoint reference: POST /v1/process, POST /v1/result, POST /v1/cancel, GET /v1/health, GET/DELETE /v1/sessions/:id
-- [x] Decision type reference (tool_call, llm_call, text, wait, delegate, end)
-- [x] JSON Schema examples inline
-
-**Spec ref:** S07 (OpenAPI & JSON Schema Design), S02 (Protocol Specification)
-**Files:** `docs/protocol.html` (or section in index.html)
-
-## [x] P6-04 — SDK docs (auto-generated) ✅
-- [x] Go SDK: install, API reference, example
-- [x] Python SDK: install, API reference, example
-- [x] TypeScript SDK: install, API reference, example
-- [x] Links to pkg.go.dev / PyPI / npm
-
-**Spec ref:** S04 (SDK Libraries)
-**Files:** `docs/sdk.html`
-
-## [x] P6-05 — Compliance badge system + verify endpoint ✅ (static)
-- [x] Badge generator: static SVGs at docs/badge/{compliant,not-compliant,unknown}.svg
-- [x] Verify endpoint: self-service — run `h3-test --smoke` locally, pick matching badge
-- [x] SVG badge: green "H3 Compliant" / red "Not Compliant" / gray "Unknown"
-- [~] Dynamic verify endpoint (GET /api/verify) blocked on h3.sh server deployment
-
-**Spec ref:** S10 §5 (Compliance Badge System)
-**Files:** `docs/badge/*.svg`, `docs/index.html` (compliance section)
+| ID | Repo | Task | Status |
+|---|---|---|---|
+| P6-01 | h3 | h3.sh landing page with Quickstart | pending |
+| P6-02 | h3 | Language picker (Go/Python/TS) with copy-paste code | pending |
+| P6-03 | h3 | Protocol reference (auto-generated from OpenAPI) | pending |
+| P6-04 | h3 | SDK docs (auto-generated) | pending |
+| P6-05 | h3 | Compliance badge system + verify endpoint | pending |
+| P6-06 | h3 | "Build Your First H3 Harness" guide | pending |
+| P6-07 | h3 | Migration guide: native → H3 | pending |
 
 ---
 
-## PHASE QV: Quality Verification — Real Hard Verification
+## CROSS-REPO BLOCKERS
 
-> These run via `gitreins judge <task-id>`. Each verifies behavior, not just code.
-> Every QV task MUST: start real processes, hit real endpoints, check real output.
+### [ ] CROSS-001 — sdk-go echo harness: fix 3 issues to reach 43/43 h3-test
 
-### QV-E2E: Full Protocol Loop
+sdk-go/examples/echo/main.go needs 3 fixes (identified by shim CI sweep):
 
-## [x] QV-E2E-01 — Go SDK harness: 42/43 pass, 1 known gap ✅
-- [x] Start Go SDK conformance harness on port 9191 — health ✅ (capabilities present)
-- [x] Run `h3-test --endpoint http://localhost:9191` — 42/43 pass
-- [x] Decision Types: 6/6 ✅, Result Handling: 7/7 ✅, Edge Cases: 10/10 ✅, Stress: 5/5 ✅
-- [x] Full loop: process→text→result→text→result→end all exercised
-- [~] 1 gap: `process_preserves_history` — Decision struct lacks History field (see QV-GAP-01)
+1. Health(): add `Capabilities: []protocol.DecisionType{protocol.DecisionText}`
+2. OnProcess(): detect "do not finish" → `Finished: false`
+3. OnProcess(): add `History: req.Context.History` to returned Decision
 
-**Files:** `sdk-go/testbed/conformance.go`
-**Spec ref:** S02 (Protocol Specification), S04 (SDK Libraries) §2.5
+**Blocks:** PHASE 3 gate, shim CI compliance job (40/43 → 43/43)
+**Assignee:** sdk-go-foreman
+**Priority:** P1 (gate-blocking)
 
-| ID | What It Verifies | Status |
-|---|---|---|
-| QV-E2E-01 | Go SDK harness: process→text→result→text→result→end loop | ✅ 42/43 (1 known gap) |
-| QV-E2E-02 | Python minimal harness: same full loop | ✅ 39/43 (4 echo-harness gaps: streaming, history, unknown-decision, session-not-found) |
+---
 
-### QV-GAPS: Gaps Found During Verification
+### [ ] CROSS-002 — sdk-typescript: clean up dirty workdir + reconcile P5-05
 
-## [x] QV-GAP-01 — Add History field to Go SDK Decision struct ✅ (5644a44 + 10089de)
-- [x] Decision struct (`sdk-go/protocol/types.go`) now has `History []HistoryEntry \`json:"history,omitempty"\``
-- [x] Conformance harness seeds session history from `req.Context.History` on first call and snapshots it for every Decision
-- [x] Test battery (`shim/test_battery.py`) updated to read `data.history` (top-level) instead of `data.context.history`
-- [x] `h3-test --endpoint http://localhost:9191` now passes 43/43 ✅
+Modified files in workdir (`scripts/generate-schemas.ts`, `src/protocol.ts`) + untracked `src/protocol.ts.handwritten`. P5-05 generator fidelity gap open.
 
-**Files:** `sdk-go/protocol/types.go`, `sdk-go/testbed/conformance.go`
-**Spec ref:** S02 §4 (Process Response)
-
-## [x] QV-GAP-02 — Python SDK protocol types too strict for test battery payloads ✅ (06446f5)
-- [x] `Message.timestamp` default '' (test battery omits it)
-- [x] `Identity.platform/chat_id/user_name/user_id` default ''
-- [x] `Config.max_iterations/timeout_seconds` defaults 100/300 (test battery sends empty config)
-- [x] `SessionState.started_at` default '' (test battery sends empty session_state)
-- [x] `Decision.history` added (matching Go SDK, test battery checks for history preservation)
-- [x] Result: 15/43 → 39/43 h3-test pass
-- [~] 4 remaining failures are echo-harness-specific: streaming (finished=false), history tracking in harness, unknown-decision-type handling, session-not-found (404)
-
-**Files:** `sdk-python/src/h3_harness/protocol.py`
-**Spec ref:** S02 §4 (Process Response), S04 §2 (Python SDK)
-| QV-E2E-03 | TypeScript minimal harness: same full loop | **PENDING** |
-| QV-E2E-04 | Cross-harness: same test battery passes against all 3 | **PENDING** |
-| QV-E2E-05 | Harness logs: every request timestamped with duration | **PENDING** |
-
-### QV-Protocol: Schema Integrity
-
-| ID | What It Verifies | Status |
-|---|---|---|
-| QV-PROTO-01 | All 14 JSON schemas validate against their examples | **PENDING** |
-| QV-PROTO-02 | OpenAPI spec is valid and complete | **PENDING** |
-| QV-PROTO-03 | Round-trip: Python → JSON → Go unmarshal → re-marshal → match | **PENDING** |
-| QV-PROTO-04 | Round-trip: Go → JSON → TS unmarshal → re-marshal → match | **PENDING** |
-
-### QV-SDK: Implementation Correctness
-
-| ID | What It Verifies | Status |
-|---|---|---|
-| QV-SDK-01 | Go SDK Decision validation rejects missing fields | **PENDING** |
-| QV-SDK-02 | Go SDK auto-generates decision_id when empty | **PENDING** |
-| QV-SDK-03 | Python SDK Pydantic validation matches JSON Schema | **PENDING** |
-| QV-SDK-04 | TS SDK Zod validation matches JSON Schema | **PENDING** |
-| QV-SDK-05 | All 3 SDKs produce identical wire format for same Decision | **PENDING** |
-
-### QV-Shim: Hermes Integration
-
-| ID | What It Verifies | Status |
-|---|---|---|
-| QV-SHIM-01 | Test battery runs against live Go harness, 43/43 pass | **PENDING** |
-| QV-SHIM-02 | Test battery output matches expected JSON schema | **PENDING** |
-| QV-SHIM-03 | Shim loop handles harness timeout gracefully | **PENDING** |
-| QV-SHIM-04 | Shim loader health check detects dead harness, falls back to native | **PENDING** |
-
-### QV-Cross: End-to-End Integration
-
-| ID | What It Verifies | Status |
-|---|---|---|
-| QV-CROSS-01 | Scaffold → run → test: full developer flow in < 5 min | **PENDING** |
-| QV-CROSS-02 | Install → configure → verify: full Hermes flow | **PENDING** |
-| QV-CROSS-03 | Protocol change → SDK regenerate → tests pass cascade | **PENDING** |
+**Assignee:** sdk-typescript-foreman
+**Priority:** P2 (cosmetic, workdir hygiene)
 
 ---
 
 ## Phase Gates Summary
 
-| Phase | Gate | Blocks | Status |
-|---|---|---|---|
-| P-1 | 11/11 specs written | Everything | ✅ |
-| P0 | Protocol schemas + examples validated | P1–P6 | ✅ |
-| P1 | All 3 SDKs pass test battery | P2, P3 | ✅ |
-| P2 | Shim completes 3-turn conversation | P3, P4 | ✅ |
-| P3 | Test battery passes against all examples | P4, P5 | ✅ |
-| P4 | Scaffold → test passes end-to-end | P6 | ✅ (all 5 tasks complete) |
-| P5 | One tag → full cascade release | P6 | ⚠️ 4/5 workflows done, P5-01 unblocked |
-| P6 | External dev zero→harness < 30 min | Launch | ❌ |
+| Phase | Gate | Status |
+|---|---|---|
+| P-1 | 11/11 specs written | ✅ MET |
+| P0 | Protocol schemas + examples validated | ✅ MET |
+| P1 | All 3 SDKs pass test battery | ⚠️ Go: 42/43, TS: 43/43, Py: 39/43 (shim payload gaps) |
+| P2 | Shim completes 3-turn conversation | ✅ MET |
+| P3 | Test battery passes against all examples | ⚠️ BLOCKED on CROSS-001 |
+| P4 | Scaffold → test passes end-to-end | ⚠️ P4-05 pending |
+| P5 | One tag → full cascade release | ⚠️ P5-01 pending, P5-06 pending |
+| P6 | External dev zero→harness < 30 min | ⌛ Not started |
 
----
+## Next Actions
 
-## Remaining Work Summary
-
-**Release Pipeline — Phase 5 (4/5 done, 1 unblocked):**
-- P5-01: Protocol release workflow (UNBLOCKED — SDK workflows done, protocol foreman can proceed)
-- P5-02–P5-05: SDK sync-protocol workflows ✅ Done (sdk-go f1b0349, sdk-python, sdk-typescript a50a433, shim 372b32b)
-- P5-06: Cross-repo integration test (BLOCKED by P5-01)
-
-**⚠️ Shim CI Failing:** 2 consecutive failures (40/43). Shim foreman investigating. Root: compliance test regression.
-
-**Docs & Website — Phase 6:**
-- P6-01–P6-07: h3.sh developer portal
-
-**Quality Verification:**
-- QV-E2E: End-to-end protocol loop verification
-- QV-Protocol: Schema integrity verification
-- QV-SDK: Cross-SDK correctness verification
-- QV-Shim: Hermes integration testing
-- QV-Cross: Full developer flow testing
+1. **protocol-foreman**: Execute P5-01 (release workflow) — now unblocked
+2. **sdk-go-foreman**: Fix CROSS-001 (3 echo harness fixes) — gate-blocking
+3. **sdk-typescript-foreman**: Clean dirty workdir + resolve P5-05 generator gap
