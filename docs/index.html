@@ -400,6 +400,7 @@
         <a href="#how-it-works">How it works</a>
         <a href="#quickstart">Quickstart</a>
         <a href="#sdks">SDKs</a>
+        <a href="#compliance">Compliance</a>
         <a class="nav-cta" href="https://github.com/get-h3" target="_blank" rel="noreferrer">GitHub ↗</a>
       </nav>
     </div>
@@ -686,6 +687,60 @@ const app = new Hono(); app.route("/", createH3Router(echo)); export default app
             <p>Type-safe protocol schemas and a Hono router that runs across Node, Bun, and Deno environments.</p>
             <a class="sdk-link" href="https://github.com/get-h3/sdk-typescript" target="_blank" rel="noreferrer">github.com/get-h3/sdk-typescript ↗</a>
           </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="compliance">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">06 / Compliance</p>
+          <h2>Show it. Prove it.</h2>
+          <p>Run the H3 test battery against your harness, then add a badge to your README that links to live results.</p>
+        </div>
+        <div class="card quickstart-card">
+          <div class="panel-head"><span class="panel-label">Step 1 · Verify your harness</span></div>
+          <div class="code-shell">
+            <pre><code>pip install hermes-h3-shim
+h3-test --endpoint http://localhost:9191 --smoke</code></pre>
+            <button class="copy-button" type="button" data-copy="verify-cmd" aria-label="Copy verify command">copy</button>
+            <textarea id="verify-cmd" hidden>pip install hermes-h3-shim
+h3-test --endpoint http://localhost:9191 --smoke</textarea>
+          </div>
+          <p style="margin:14px 0 6px;color:var(--muted);font-size:0.82rem;">✅ 43/43 → compliant &nbsp; ❌ any failure → not compliant &nbsp; — → haven't tested yet</p>
+
+          <div class="panel-head" style="margin-top:30px;"><span class="panel-label">Step 2 · Choose your badge</span></div>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;margin:10px 0 20px;align-items:center;">
+            <div style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:8px;background:var(--card);">
+              <span style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(74,222,128,0.5);"></span>
+              <span style="color:var(--text-strong);font-size:0.8rem;font-weight:650;">Compliant</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:8px;background:var(--card);">
+              <span style="width:8px;height:8px;border-radius:50%;background:#f87171;box-shadow:0 0 6px rgba(248,113,113,0.5);"></span>
+              <span style="color:var(--text-strong);font-size:0.8rem;font-weight:650;">Not Compliant</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:8px;background:var(--card);">
+              <span style="width:8px;height:8px;border-radius:50%;background:var(--dim);"></span>
+              <span style="color:var(--text-strong);font-size:0.8rem;font-weight:650;">Unknown</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;">
+            <img src="badge/compliant.svg" alt="H3 Compliant 43/43" width="204" height="28" style="display:block;border-radius:6px;">
+            <img src="badge/not-compliant.svg" alt="H3 Not Compliant" width="180" height="28" style="display:block;border-radius:6px;">
+            <img src="badge/unknown.svg" alt="H3 Compliance Unknown" width="180" height="28" style="display:block;border-radius:6px;">
+          </div>
+
+          <div class="panel-head" style="margin-top:16px;"><span class="panel-label">Step 3 · Add to your README</span></div>
+          <div class="code-shell">
+            <pre><code><span class="cm">&lt;!-- Copy this into your README.md --&gt;</span>
+[![H3 Compliant](https://h3.sh/badge/compliant.svg)](https://h3.sh)
+<span class="cm">&lt;!-- After running h3-test, swap the badge if needed: --&gt;</span>
+<span class="cm">&lt;!-- https://h3.sh/badge/not-compliant.svg --&gt;</span>
+<span class="cm">&lt;!-- https://h3.sh/badge/unknown.svg --&gt;</span></code></pre>
+            <button class="copy-button" type="button" data-copy="badge-md" aria-label="Copy badge markdown">copy</button>
+            <textarea id="badge-md" hidden>[![H3 Compliant](https://h3.sh/badge/compliant.svg)](https://h3.sh)</textarea>
+          </div>
+          <p style="margin-top:14px;color:var(--dim);font-size:0.72rem;">Badge URLs are static SVGs hosted alongside these docs. The compliance check is self-reported — run <code style="color:#b9a5ff;font-family:var(--mono);">h3-test --endpoint http://localhost:9191</code> and pick the badge that matches.</p>
         </div>
       </div>
     </section>
