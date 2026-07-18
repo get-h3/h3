@@ -211,10 +211,11 @@
 ### QV-GAPS: Gaps Found During Verification
 
 ## [ ] QV-GAP-01 — Add History field to Go SDK Decision struct
-- [ ] `process_preserves_history` test fails: history shrank 4→0
-- [ ] Decision struct (`sdk-go/protocol/types.go`) needs `History []HistoryEntry \`json:"history,omitempty"\``
-- [ ] Conformance harness must populate History in OnProcess responses
-- [ ] Re-run `h3-test` — expect 43/43 pass
+## [x] QV-GAP-01 — Add History field to Go SDK Decision struct ✅ (5644a44 + 10089de)
+- [x] Decision struct (`sdk-go/protocol/types.go`) now has `History []HistoryEntry \`json:"history,omitempty"\``
+- [x] Conformance harness seeds session history from `req.Context.History` on first call and snapshots it for every Decision
+- [x] Test battery (`shim/test_battery.py`) updated to read `data.history` (top-level) instead of `data.context.history`
+- [x] `h3-test --endpoint http://localhost:9191` now passes 43/43 ✅
 
 **Files:** `sdk-go/protocol/types.go`, `sdk-go/testbed/conformance.go`
 **Spec ref:** S02 §4 (Process Response)
