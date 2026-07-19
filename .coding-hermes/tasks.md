@@ -92,7 +92,7 @@
 | P3-09 | shim | CI: GitHub Actions compliance workflow | ✅ Done | 94e82cd |
 | P3-10 | shim | Publish `hermes-h3-shim` to PyPI | 🔴 BLOCKED | Needs PYPI_API_TOKEN |
 
-**Gate:** 43/43 passes against Go echo harness. Go 42/43, Python 39/43, TS 43/43.
+**Gate:** 43/43 passes against Go echo harness. Go 43/43, Python 15/43 (28 gaps — process flows, decisions, results, stress), TS 41/43 (2 process flow gaps).
 
 ---
 
@@ -171,7 +171,7 @@
 | QV-E2E-01 | Go echo: process→text→result→text→result→end | ✅ Done |
 | QV-E2E-02 | Python minimal: same full loop | ✅ Done (f304f76) |
 | QV-E2E-03 | TypeScript minimal: same full loop | ✅ Done (f5f2c23) |
-| QV-E2E-04 | Cross-harness: h3-test against all 3 languages | 🔴 Open |
+| QV-E2E-04 | Cross-harness: h3-test against all 3 languages | ✅ Done (Go 43/43, TS 41/43, Python 15/43) |
 | QV-E2E-05 | Harness logs: timestamped METHOD /path STATUS DURATION | ✅ Done (f6858d7) |
 
 ### QV-Protocol: Schema Integrity
@@ -331,7 +331,7 @@
 | P5 | One tag → full cascade release | ✅ |
 | P6 | External dev zero→harness < 30 min | ✅ |
 | DEPLOY | Bunker E2E: message → H3 → harness → back | 🔴 |
-| QV | All QV verifications pass real endpoints | 🔴 (14/17 done) |
+| QV | All QV verifications pass real endpoints | 🟡 (QV-E2E done, Python echo only 15/43 cross-harness) |
 | SEC | Auth + secrets + rate limiting | 🔴 |
 | OBS | Structured logging + metrics + tracing | 🔴 |
 | RES | Fallback, circuit breaker, backpressure | 🔴 |
