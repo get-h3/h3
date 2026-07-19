@@ -129,13 +129,13 @@
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P6-01 | h3 | h3.sh landing page with Quickstart | 🔴 Open |
-| P6-02 | h3 | Language picker (Go/Python/TS) with copy-paste code | 🔴 Open |
-| P6-03 | h3 | Protocol reference (auto-generated from OpenAPI) | 🔴 Open |
-| P6-04 | h3 | SDK docs (auto-generated) | 🔴 Open |
-| P6-05 | h3 | Compliance badge system + verify endpoint | 🔴 Open |
-| P6-06 | h3 | "Build Your First H3 Harness" guide | 🔴 Open |
-| P6-07 | h3 | Migration guide: native → H3 | 🔴 Open |
+| P6-01 | h3 | h3.sh landing page with Quickstart | ✅ Done (index.html, 813 lines) |
+| P6-02 | h3 | Language picker (Go/Python/TS) with copy-paste code | ✅ Done (tab picker in index.html) |
+| P6-03 | h3 | Protocol reference (auto-generated from OpenAPI) | ✅ Done (protocol.html, 879 lines) |
+| P6-04 | h3 | SDK docs (auto-generated) | ✅ Done (sdk.html, 950 lines) |
+| P6-05 | h3 | Compliance badge system + verify endpoint | ✅ Done (3 SVGs + compliance section) |
+| P6-06 | h3 | "Build Your First H3 Harness" guide | ✅ Done (guide.html, 720 lines) |
+| P6-07 | h3 | Migration guide: native → H3 | ✅ Done (migration.html, 694 lines) |
 
 ---
 
@@ -401,7 +401,7 @@
 | P3 | Test battery passes against all examples | ✅ (~40+/43) |
 | P4 | Scaffold → test passes end-to-end | ✅ |
 | P5 | One tag → full cascade release | ✅ |
-| P6 | External dev zero→harness < 30 min | 🔴 |
+| P6 | External dev zero→harness < 30 min | ✅ |
 | DEPLOY | Bunker E2E: message → H3 → harness → back | 🔴 |
 | QV | All QV verifications pass real endpoints | 🔴 14/17 |
 | ND | Never Done audit: all 11 checks pass | 🔴 22 findings |
