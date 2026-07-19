@@ -168,8 +168,8 @@
 
 | ID | Task | Status |
 |---|---|---|
-| QV-E2E-01 | Go echo: process→text→result→text→result→end | ✅ Done (shim 43/43 PASS includes Go) |
-| QV-E2E-02 | Python minimal: same full loop | 🔴 Open |
+| QV-E2E-01 | Go echo: process→text→result→text→result→end | ✅ Done (re-verified 2026-07-19: 43/43 PASS, 0.20s) |
+| QV-E2E-02 | Python minimal: same full loop | 🔴 Open — 15/43 only. Pydantic models too strict: process requests fail 422 (missing context.config.max_iterations, context.session_state.started_at). Generator needs lenient defaults. |
 | QV-E2E-03 | TypeScript minimal: same full loop | ✅ Done (sdk-typescript@5056ec4) |
 | QV-E2E-04 | Cross-harness: h3-test against all 3 languages | 🔴 Open |
 | QV-E2E-05 | Harness logs: timestamped METHOD /path STATUS DURATION | 🔴 Open |
@@ -192,6 +192,7 @@
 | QV-SDK-03 | Python Pydantic validation matches JSON Schema | 🔴 Open |
 | QV-SDK-04 | TS Zod validation matches JSON Schema | 🔴 Open |
 | QV-SDK-05 | Cross-language wire format consistency | 🔴 Open |
+| QV-SDK-06 | FIX: Python echo harness 15/43 — Pydantic models reject optional fields (context.config.max_iterations, session_state.started_at). Generator must produce lenient defaults matching protocol schema permissive semantics. Repo: sdk-python. | 🔴 Open |
 
 ### QV-Shim: Hermes Integration
 
@@ -403,7 +404,7 @@
 | P5 | One tag → full cascade release | ✅ |
 | P6 | External dev zero→harness < 30 min | ✅ |
 | DEPLOY | Bunker E2E: message → H3 → harness → back | 🔴 |
-| QV | All QV verifications pass real endpoints | 🔴 14/17 |
+| QV | All QV verifications pass real endpoints | 🔴 14/18 |
 | ND | Never Done audit: all 11 checks pass | 🔴 22 findings |
 | SEC | Auth + secrets + rate limiting | 🔴 |
 | OBS | Structured logging + metrics + tracing | 🔴 |
