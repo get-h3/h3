@@ -199,23 +199,23 @@ h3-test `process_preserves_history` fails: history entries not echoed in `/v1/re
 
 ---
 
-## Discovery Sweep — 2026-07-18 19:53 UTC
+## Discovery Sweep — 2026-07-19 10:58 UTC
 
-**Scope:** h3 umbrella repo (docs-only, no build)
+**Scope:** h3 umbrella repo + all 5 sibling repos (cross-repo coordination tick)
 
 | Check | Result |
 |---|---|
-| Build | N/A — markdown/HTML only |
-| Live endpoints | ❌ gh-pages 404 — Pages not configured |
+| Pages | ✅ https://get-h3.github.io/h3/ — HTTP 200, deployed |
+| h3 repo | ⚠️ Dirty: tasks.md (discovery sweep in progress) |
+| protocol | ✅ Clean (6cb142c — P5-01 task board created, release workflow pending) |
+| sdk-go | ✅ Clean (2c9b2b2 — lint + coverage fixes) |
+| sdk-python | ✅ Clean (0a132d1 — protocol regeneration idempotency) |
+| sdk-typescript | ⚠️ Dirty: package-lock.json + package.json (npm drift, staged). CROSS-003 unresolved. |
+| shim | ✅ Clean (3b48554 — 43/43 CI compliance). Untracked .coverage only. |
 | Spec alignment | ✅ No TODOs, 11/11 specs complete |
-| Vuln scan | N/A — no dependencies |
-| CI | No `.github/workflows/` existed before this sweep |
+| Cross-repo blockers | ⚠️ CROSS-003 still open (history preservation, sdk-typescript) |
 
-**Finding:** GitHub Pages not configured. P6 docs exist locally (docs/index.html, docs/protocol.html, docs/sdk.html, 2,640 lines total; docs/badge/ with 3 SVGs) but no deployment mechanism.
-
-**Action:** Created `.github/workflows/pages.yml` — deploys docs/ on push to main via GitHub Pages.
-
-**New tasks created:** 1
+**Finding:** sdk-typescript foreman remains on idle cooldown (tick #4, 4h) without resolving CROSS-003. npm drift in package.json/package-lock.json (staged). History preservation gap in `createH3Router` still gate-blocking PHASE 3 at 41/43 h3-test. No new cross-repo blockers detected this tick.
 
 ### [x] INFRA-PAGES — Verify GitHub Pages deployment succeeds ✅
 
@@ -230,8 +230,7 @@ Pages workflow created (`.github/workflows/pages.yml`), pushed, and deployed.
 
 ## Next Actions
 
-1. **h3-foreman**: Push pages.yml, verify gh-pages deploys (INFRA-PAGES)
-2. **protocol-foreman**: Execute P5-01 (release workflow) — now unblocked
-3. **sdk-go-foreman**: Fix CROSS-001 (3 echo harness fixes) — gate-blocking
-4. **sdk-typescript-foreman**: Fix CROSS-003 (history preservation in router) — QV-GAP-03
-5. **sdk-typescript-foreman**: Fix CROSS-002 (dirty workdir)
+1. **sdk-typescript-foreman**: Fix CROSS-003 (history preservation in `createH3Router`) — gate-blocking, cooldown tick #5 should act
+2. **protocol-foreman**: Execute P5-01 (release workflow: validate → tag → dispatch) — unblocked, all receiver workflows exist
+3. **h3-foreman**: P6 docs enrichment — landing page exists but protocol reference + SDK docs are auto-generated stubs
+4. **shim-foreman**: P4-05 Hermes update pre-flight hook — still pending
