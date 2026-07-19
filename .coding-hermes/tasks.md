@@ -201,23 +201,22 @@ h3-test `process_preserves_history` fails: history entries not echoed in `/v1/re
 
 ---
 
-## Discovery Sweep — 2026-07-19 10:58 UTC
+## Discovery Sweep — 2026-07-19 13:18 UTC
 
-**Scope:** h3 umbrella repo + all 5 sibling repos (cross-repo coordination tick)
+**Scope:** h3 umbrella repo — P6 audit (website verification)
 
 | Check | Result |
 |---|---|
 | Pages | ✅ https://get-h3.github.io/h3/ — HTTP 200, deployed |
-| h3 repo | ⚠️ Dirty: tasks.md (discovery sweep in progress) |
-| protocol | ✅ Clean (6cb142c — P5-01 task board created, release workflow pending) |
-| sdk-go | ✅ Clean (2c9b2b2 — lint + coverage fixes) |
-| sdk-python | ✅ Clean (0a132d1 — protocol regeneration idempotency) |
-| sdk-typescript | ⚠️ Dirty: package-lock.json + package.json (npm drift, staged). CROSS-003 unresolved. |
-| shim | ✅ Clean (3b48554 — 43/43 CI compliance). Untracked .coverage only. |
-| Spec alignment | ✅ No TODOs, 11/11 specs complete |
-| Cross-repo blockers | ⚠️ CROSS-003 still open (history preservation, sdk-typescript) |
-
-**Finding:** sdk-typescript foreman remains on idle cooldown (tick #4, 4h) without resolving CROSS-003. npm drift in package.json/package-lock.json (staged). History preservation gap in `createH3Router` still gate-blocking PHASE 3 at 41/43 h3-test. No new cross-repo blockers detected this tick.
+| P6-01 Landing | ✅ docs/index.html (811 lines, 44KB) — hero, architecture SVG, quickstart |
+| P6-02 Language picker | ✅ Tab-based Go/Python/TS with copy-paste code |
+| P6-03 Protocol ref | ✅ docs/protocol.html (879 lines, 40KB) — OpenAPI endpoints, decision types |
+| P6-04 SDK docs | ✅ docs/sdk.html (950 lines, 40KB) — Go/Python/TS SDK reference |
+| P6-05 Badges | ✅ docs/badge/ (compliant, not-compliant, unknown SVGs) + copy-paste code |
+| P6-06 Harness guide | ⚠️ Quickstart exists; missing: RAG example, code review example, troubleshooting |
+| P6-07 Migration guide | ❌ No migration content in any page — needs docs/migration.html |
+| Cross-repo blockers | CROSS-003 still open (sdk-typescript history preservation, assigned to sdk-typescript-foreman) |
+| h3 repo | ✅ Clean except tasks.md (this board update) |
 
 ### [x] INFRA-PAGES — Verify GitHub Pages deployment succeeds ✅
 
@@ -232,7 +231,8 @@ Pages workflow created (`.github/workflows/pages.yml`), pushed, and deployed.
 
 ## Next Actions
 
-1. **sdk-typescript-foreman**: Fix CROSS-003 (history preservation in `createH3Router`) — gate-blocking, cooldown tick #5 should act
+1. **sdk-typescript-foreman**: Fix CROSS-003 (history preservation in `createH3Router`) — gate-blocking PHASE 3 at 41/43
 2. **protocol-foreman**: Execute P5-01 (release workflow: validate → tag → dispatch) — unblocked, all receiver workflows exist
-3. **h3-foreman**: P6 docs enrichment — landing page exists but protocol reference + SDK docs are auto-generated stubs
-4. **shim-foreman**: P4-05 Hermes update pre-flight hook — still pending
+3. **h3-foreman**: P6-07 migration guide (native → H3) — next pending task; S11 spec provides full content outline
+4. **h3-foreman**: P6-06 expansion (RAG + code review examples, troubleshooting) — after P6-07
+5. **shim-foreman**: P4-05 Hermes update pre-flight hook — still pending
