@@ -26,12 +26,12 @@
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P0-01 | protocol | Write `h3-protocol.yaml` — OpenAPI 3.1 from S02 + S07 | pending |
-| P0-02 | protocol | Write all 13 JSON Schema files under schemas/v1/ | pending |
-| P0-03 | protocol | Write 8 example payloads under examples/decisions/ | pending |
-| P0-04 | protocol | Validation script + round-trip tests | pending |
-| P0-05 | protocol | CI: validate on PR, release on tag | pending |
-| P0-06 | protocol | Tag v1.0.0 | pending |
+| P0-01 | protocol | Write `h3-protocol.yaml` — OpenAPI 3.1 from S02 + S07 | ✅ Done — commit: 4090dc23 |
+| P0-02 | protocol | Write all 13 JSON Schema files under schemas/v1/ | ✅ Done — 14 schema files present |
+| P0-03 | protocol | Write 8 example payloads under examples/decisions/ | ✅ Done — commit: 4090dc23 |
+| P0-04 | protocol | Validation script + round-trip tests | ✅ Done — commit: 8a0451f3 |
+| P0-05 | protocol | CI: validate on PR, release on tag | ✅ Done — commit: a89be0de |
+| P0-06 | protocol | Tag v1.0.0 | ✅ Done — tag exists, pushed |
 
 **Gate:** `ajv validate` passes all schemas. `redocly lint` passes. Tagged.
 
@@ -39,18 +39,18 @@
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P1-01 | sdk-go | Regenerate types from protocol JSON Schema | pending |
-| P1-02 | sdk-go | Harness interface + HTTP handler + middleware | pending |
-| P1-03 | sdk-go | Test bed (MockHermes) + assertions | pending |
-| P1-04 | sdk-go | Examples: minimal, echo | pending |
-| P1-05 | sdk-python | Regenerate Pydantic models from protocol JSON Schema | pending |
-| P1-06 | sdk-python | BaseHarness ABC + FastAPI router | pending |
-| P1-07 | sdk-python | Test bed (MockHermes) + pytest fixtures | pending |
-| P1-08 | sdk-python | Examples: minimal, echo | pending |
-| P1-09 | sdk-typescript | Regenerate Zod schemas from protocol JSON Schema | pending |
-| P1-10 | sdk-typescript | Harness interface + Hono router | pending |
-| P1-11 | sdk-typescript | Test bed (MockHermes) + vitest helpers | pending |
-| P1-12 | sdk-typescript | Examples: minimal, echo | pending |
+| P1-01 | sdk-go | Regenerate types from protocol JSON Schema | ✅ Done — 22 Go types, 100% coverage |
+| P1-02 | sdk-go | Harness interface + HTTP handler + middleware | ✅ Done — 5 methods, 6 endpoints |
+| P1-03 | sdk-go | Test bed (MockHermes) + assertions | ✅ Done — 13 tests |
+| P1-04 | sdk-go | Examples: minimal, echo | ✅ Done — commit: 3bd1702 |
+| P1-05 | sdk-python | Regenerate Pydantic models from protocol JSON Schema | ✅ Done — 343 lines, 14 schemas |
+| P1-06 | sdk-python | BaseHarness ABC + FastAPI router | ✅ Done — 6 endpoints |
+| P1-07 | sdk-python | Test bed (MockHermes) + pytest fixtures | ✅ Done — 34 tests |
+| P1-08 | sdk-python | Examples: minimal, echo | ✅ Done — commit: 825615c |
+| P1-09 | sdk-typescript | Regenerate Zod schemas from protocol JSON Schema | ✅ Done — 310 lines, 30+ exports |
+| P1-10 | sdk-typescript | Harness interface + Hono router | ✅ Done — 183 lines, 6 endpoints |
+| P1-11 | sdk-typescript | Test bed (MockHermes) + vitest helpers | ✅ Done — 90 tests |
+| P1-12 | sdk-typescript | Examples: minimal, echo | ✅ Done — commit: 8048423 |
 
 **Gate:** All 3 SDK echo examples pass `h3-test`.
 
@@ -58,13 +58,13 @@
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P2-01 | shim | protocol.py — Pydantic models (regenerated from protocol) | pending |
-| P2-02 | shim | client.py — REST client for harness communication | pending |
-| P2-03 | shim | loader.py — discovery, health check, routing | pending |
-| P2-04 | shim | shim_loop.py — main H3ShimLoop | pending |
-| P2-05 | shim | Decision executors: tool_call, llm_call, text, wait, delegate | pending |
-| P2-06 | shim | native.py — native Hermes loop wrapper | pending |
-| P2-07 | shim | cli.py — `hermes h3` subcommands | pending |
+| P2-01 | shim | protocol.py — Pydantic models (regenerated from protocol) | ✅ Done — commit: ec134f1 |
+| P2-02 | shim | client.py — REST client for harness communication | ✅ Done — commit: a32ae58 |
+| P2-03 | shim | loader.py — discovery, health check, routing | ✅ Done — commit: 8685996 |
+| P2-04 | shim | shim_loop.py — main H3ShimLoop | ✅ Done — commit: ab8b574 |
+| P2-05 | shim | Decision executors: tool_call, llm_call, text, wait, delegate | ✅ Done — commit: ab8b574 |
+| P2-06 | shim | native.py — native Hermes loop wrapper | ✅ Done — commit (foreman-direct) |
+| P2-07 | shim | cli.py — `hermes h3` subcommands | ✅ Done — commit: a9bfd23 |
 
 **Gate:** Shim completes 3-turn conversation with echo harness.
 
@@ -72,15 +72,15 @@
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P3-01 | shim | test_battery.py — TestRunner, H3Client, AssertionEngine, ReportGenerator | pending |
-| P3-02 | shim | Region 1: Health & Protocol (7 tests) | pending |
-| P3-03 | shim | Region 2: Process Flows (8 tests) | pending |
-| P3-04 | shim | Region 3: Decision Types (6 tests) | pending |
-| P3-05 | shim | Region 4: Result Handling (7 tests) | pending |
-| P3-06 | shim | Region 5: Edge Cases (10 tests) | pending |
-| P3-07 | shim | Region 6: Stress (5 tests) | pending |
-| P3-08 | shim | CLI: `h3-test --endpoint URL [--json|--html|--smoke]` | pending |
-| P3-09 | shim | CI: GitHub Actions compliance workflow | pending |
+| P3-01 | shim | test_battery.py — TestRunner, H3Client, AssertionEngine, ReportGenerator | ✅ Done — commit: 0b02c55 |
+| P3-02 | shim | Region 1: Health & Protocol (7 tests) | ✅ Done — 7/7 pass |
+| P3-03 | shim | Region 2: Process Flows (8 tests) | ✅ Done — 8/8 pass |
+| P3-04 | shim | Region 3: Decision Types (6 tests) | ✅ Done — 6/6 pass |
+| P3-05 | shim | Region 4: Result Handling (7 tests) | ✅ Done — 7/7 pass |
+| P3-06 | shim | Region 5: Edge Cases (10 tests) | ✅ Done — 10/10 pass |
+| P3-07 | shim | Region 6: Stress (5 tests) | ✅ Done — 5/5 pass |
+| P3-08 | shim | CLI: `h3-test --endpoint URL [--json|--html|--smoke]` | ✅ Done — CLI works |
+| P3-09 | shim | CI: GitHub Actions compliance workflow | ✅ Done |
 | P3-10 | shim | Publish `hermes-h3-shim` to PyPI | pending |
 
 **Gate:** `h3-test --endpoint http://localhost:9191` passes against all 3 SDK echo examples. Any dev can run it.
@@ -92,7 +92,7 @@
 | P4-01 | shim | `hermes h3 install` — plugin registration, version check, pip install | pending |
 | P4-02 | shim | `hermes h3 scaffold --lang go/python/ts` — harness template generator | pending |
 | P4-03 | shim | `hermes h3 verify` — post-install/post-upgrade verification | pending |
-| P4-04 | protocol | `versions.yaml` — Hermes↔H3 compatibility matrix | pending |
+| P4-04 | protocol | `versions.yaml` — Hermes↔H3 compatibility matrix | ✅ Done — commit: df1dca6a |
 | P4-05 | shim | Hermes update pre-flight hook (S11 §3) | pending |
 
 **Gate:** `scaffold --lang go` → `go run .` → `h3-test` passes. Full loop < 5 min.
@@ -101,11 +101,11 @@
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P5-01 | protocol | Release workflow: validate → tag → dispatch to downstream | pending |
-| P5-02 | sdk-go | Sync-protocol workflow: regenerate → test → release | pending |
-| P5-03 | sdk-python | Sync-protocol workflow: regenerate → test → release | pending |
-| P5-04 | sdk-typescript | Sync-protocol workflow: regenerate → test → release | pending |
-| P5-05 | shim | Sync-protocol workflow + PyPI publish | pending |
+| P5-01 | protocol | Release workflow: validate → tag → dispatch to downstream | pending — UNBLOCKED (P5-02–P5-05 done) |
+| P5-02 | sdk-go | Sync-protocol workflow: regenerate → test → release | ✅ Done — commit: f1b0349 |
+| P5-03 | sdk-python | Sync-protocol workflow: regenerate → test → release | ✅ Done — commit: da26f48 |
+| P5-04 | sdk-typescript | Sync-protocol workflow: regenerate → test → release | ✅ Done |
+| P5-05 | shim | Sync-protocol workflow + PyPI publish | ✅ Done — commit: 372b32b |
 | P5-06 | h3 | Cross-repo integration test: protocol change → all SDKs update → test battery passes | pending |
 
 **Gate:** One tag on protocol triggers full cascade. All repos release in sync.
