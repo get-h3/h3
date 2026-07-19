@@ -101,7 +101,7 @@
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P5-01 | protocol | Release workflow: validate → tag → dispatch to downstream | pending — UNBLOCKED (P5-02–P5-05 done) |
+| P5-01 | protocol | Release workflow: validate → tag → dispatch to downstream | ✅ Done — commit: 2ff3a7c5 |
 | P5-02 | sdk-go | Sync-protocol workflow: regenerate → test → release | ✅ Done — commit: f1b0349 |
 | P5-03 | sdk-python | Sync-protocol workflow: regenerate → test → release | ✅ Done — commit: da26f48 |
 | P5-04 | sdk-typescript | Sync-protocol workflow: regenerate → test → release | ✅ Done |
