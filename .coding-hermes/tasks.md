@@ -114,13 +114,13 @@
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P6-01 | h3 | h3.sh landing page with Quickstart | pending |
-| P6-02 | h3 | Language picker (Go/Python/TS) with copy-paste code | pending |
-| P6-03 | h3 | Protocol reference (auto-generated from OpenAPI) | pending |
-| P6-04 | h3 | SDK docs (auto-generated) | pending |
-| P6-05 | h3 | Compliance badge system + verify endpoint | pending |
-| P6-06 | h3 | "Build Your First H3 Harness" guide | pending |
-| P6-07 | h3 | Migration guide: native → H3 | pending |
+| P6-01 | h3 | h3.sh landing page with Quickstart | ✅ Done — docs/index.html (44KB) |
+| P6-02 | h3 | Language picker (Go/Python/TS) with copy-paste code | ✅ Done — docs/sdk.html (40KB) |
+| P6-03 | h3 | Protocol reference (auto-generated from OpenAPI) | ✅ Done — docs/protocol.html (40KB) |
+| P6-04 | h3 | SDK docs (auto-generated) | ✅ Done — docs/sdk.html (40KB) |
+| P6-05 | h3 | Compliance badge system + verify endpoint | ✅ Done — 3 SVGs in docs/badge/ |
+| P6-06 | h3 | "Build Your First H3 Harness" guide | ✅ Done — docs/guide.html (34KB) |
+| P6-07 | h3 | Migration guide: native → H3 | ✅ Done — docs/migration.html (25KB) |
 
 **Gate:** External dev goes zero → working harness < 30 min using docs alone.
 
@@ -157,11 +157,11 @@
 
 | ID | What It Verifies | Method |
 |---|---|---|
-| QV-E2E-01 | Go echo harness: process→text→result→text→result→end loop | Start server, curl 3 requests, verify each Decision, kill server |
-| QV-E2E-02 | Python minimal harness: same full loop | Start Python harness, curl verification |
-| QV-E2E-03 | TypeScript minimal harness: same full loop | Start TS harness, curl verification |
-| QV-E2E-04 | Cross-harness: same test battery passes against all 3 | Run `h3-test` sequentially against all 3 language harnesses |
-| QV-E2E-05 | Harness logs: every request timestamped with duration | Verify log output format: `DATE harness: METHOD /path STATUS DURATION` |
+| QV-E2E-01 | Go echo harness: process→text→result→text→result→end loop | ✅ Done — 3/3 requests pass, end Decision: task_complete |
+| QV-E2E-02 | Python minimal harness: same full loop | pending |
+| QV-E2E-03 | TypeScript minimal harness: same full loop | pending |
+| QV-E2E-04 | Cross-harness: same test battery passes against all 3 | pending |
+| QV-E2E-05 | Harness logs: every request timestamped with duration | ✅ Done — 5 requests logged: METHOD /path STATUS DURATION |
 
 ### QV-Protocol: Schema Integrity
 
