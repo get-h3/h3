@@ -127,17 +127,19 @@
 
 ---
 
-## PHASE 6: Docs & Website
+## PHASE 6: Docs & Website ⚠️
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P6-01 | h3 | h3.sh landing page with Quickstart | pending |
-| P6-02 | h3 | Language picker (Go/Python/TS) with copy-paste code | pending |
-| P6-03 | h3 | Protocol reference (auto-generated from OpenAPI) | pending |
-| P6-04 | h3 | SDK docs (auto-generated) | pending |
-| P6-05 | h3 | Compliance badge system + verify endpoint | pending |
-| P6-06 | h3 | "Build Your First H3 Harness" guide | pending |
-| P6-07 | h3 | Migration guide: native → H3 | pending |
+| P6-01 | h3 | h3.sh landing page with Quickstart | ✅ Done (docs/index.html, 811 lines, deployed) |
+| P6-02 | h3 | Language picker (Go/Python/TS) with copy-paste code | ✅ Done (tab-based picker + copy buttons) |
+| P6-03 | h3 | Protocol reference (auto-generated from OpenAPI) | ✅ Done (docs/protocol.html, 879 lines) |
+| P6-04 | h3 | SDK docs (auto-generated) | ✅ Done (docs/sdk.html, 950 lines) |
+| P6-05 | h3 | Compliance badge system + verify endpoint | ✅ Done (3 badge SVGs, copy-paste code, h3-test section) |
+| P6-06 | h3 | "Build Your First H3 Harness" guide | ⚠️ Partial — basic quickstart exists; missing: RAG agent example, code review example, troubleshooting |
+| P6-07 | h3 | Migration guide: native → H3 | pending — no migration content in any page |
+
+**Gate: Website deployed, landing page + protocol + SDK refs live. ⚠️ PARTIAL — P6-06 expansion + P6-07 migration guide remain.**
 
 ---
 
@@ -195,7 +197,7 @@ h3-test `process_preserves_history` fails: history entries not echoed in `/v1/re
 | P3 | Test battery passes against all examples | ⚠️ BLOCKED on CROSS-003 (TS history) + shim payload fixes (Py) |
 | P4 | Scaffold → test passes end-to-end | ⚠️ P4-05 pending |
 | P5 | One tag → full cascade release | ⚠️ P5-01 pending, P5-06 pending |
-| P6 | External dev zero→harness < 30 min | ⌛ Not started |
+| P6 | External dev zero→harness < 30 min | ⚠️ P6-01–P6-05 done (website live), P6-06 partial, P6-07 pending |
 
 ---
 
