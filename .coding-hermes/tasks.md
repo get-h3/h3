@@ -96,17 +96,17 @@
 
 ---
 
-## PHASE 4: Installer & Scaffold
+## PHASE 4: Installer & Scaffold ✅
 
-| ID | Repo | Task | Status |
-|---|---|---|---|
-| P4-01 | shim | `hermes h3 install` — plugin registration, version check | 🔴 Open |
-| P4-02 | shim | `hermes h3 scaffold --lang go/python/ts` — template generator | 🔴 Open |
-| P4-03 | shim | `hermes h3 verify` — post-install verification | 🔴 Open |
-| P4-04 | protocol | `versions.yaml` — Hermes↔H3 compatibility matrix | 🔴 Open |
-| P4-05 | shim | Hermes update pre-flight hook (S11 §3) | 🔴 Open |
+| ID | Repo | Task | Status | Commit |
+|---|---|---|---|---|
+| P4-01 | shim | `hermes h3 install` — plugin registration, version check | ✅ Done | cli.py:474 |
+| P4-02 | shim | `hermes h3 scaffold --lang go/python/ts` — template generator | ✅ Done | 140fb27 |
+| P4-03 | shim | `hermes h3 verify` — post-install verification | ✅ Done | cli.py:529 |
+| P4-04 | protocol | `versions.yaml` — Hermes↔H3 compatibility matrix | ✅ Done | 53 lines |
+| P4-05 | shim | Hermes update pre-flight hook (S11 §3) | ✅ Done | upgrade_check.py |
 
-**Gate:** `scaffold --lang go` → `go run .` → `h3-test` passes < 5 min.
+**Gate:** `scaffold --lang go` → `go run .` → `h3-test` passes < 5 min. ✅
 
 ---
 
@@ -114,12 +114,12 @@
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P5-01 | protocol | Release workflow: validate → tag → dispatch downstream | 🔴 Open |
+| P5-01 | protocol | Release workflow: validate → tag → dispatch downstream | ✅ Done (2ff3a7c5) |
 | P5-02 | sdk-go | Sync-protocol: regenerate → test → release | ✅ Done (f1b0349) |
 | P5-03 | sdk-python | Sync-protocol: regenerate → test → release | ✅ Done (da26f48) |
 | P5-04 | sdk-typescript | Sync-protocol: regenerate → test → release | ✅ Done (a50a433) |
 | P5-05 | shim | Sync-protocol + PyPI publish | ✅ Done (372b32b) |
-| P5-06 | h3 | Cross-repo integration test cascade | 🟡 Blocked by P5-01 |
+| P5-06 | h3 | Cross-repo integration test cascade | ✅ Done (unblocked) |
 
 **Gate:** One tag on protocol triggers full cascade.
 
@@ -415,3 +415,5 @@
 | CHAOS | Network faults, malformed responses | 🔴 |
 
 **Never Done principle:** 19 phases, 152 tasks. The board will never be fully checked off — every audit pass finds new gaps. That's the point. |
+
+## [ ] NEVER-DONE — Run 11-point self-improvement audit
