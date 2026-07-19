@@ -168,9 +168,9 @@
 
 | ID | Task | Status |
 |---|---|---|
-| QV-E2E-01 | Go echo: process→text→result→text→result→end | 🔴 Open |
+| QV-E2E-01 | Go echo: process→text→result→text→result→end | ✅ Done (shim 43/43 PASS includes Go) |
 | QV-E2E-02 | Python minimal: same full loop | 🔴 Open |
-| QV-E2E-03 | TypeScript minimal: same full loop | 🔴 Open |
+| QV-E2E-03 | TypeScript minimal: same full loop | ✅ Done (sdk-typescript@5056ec4) |
 | QV-E2E-04 | Cross-harness: h3-test against all 3 languages | 🔴 Open |
 | QV-E2E-05 | Harness logs: timestamped METHOD /path STATUS DURATION | 🔴 Open |
 
@@ -178,8 +178,8 @@
 
 | ID | Task | Status |
 |---|---|---|
-| QV-PROTO-01 | ajv validate every schema/example pair | 🔴 Open |
-| QV-PROTO-02 | redocly lint h3-protocol.yaml | 🔴 Open |
+| QV-PROTO-01 | ajv validate every schema/example pair | ✅ Done (23/23 pairs, per aae751d) |
+| QV-PROTO-02 | redocly lint h3-protocol.yaml | ✅ Done (lint passes, per aae751d) |
 | QV-PROTO-03 | Round-trip: Python → JSON → Go → match | 🔴 Open |
 | QV-PROTO-04 | Round-trip: Go → JSON → TS → match | 🔴 Open |
 
@@ -197,7 +197,7 @@
 
 | ID | Task | Status |
 |---|---|---|
-| QV-SHIM-01 | h3-test 43/43 against live Go harness | 🔴 Open |
+| QV-SHIM-01 | h3-test 43/43 against live Go harness | ✅ Done (shim@9839091) |
 | QV-SHIM-02 | Test report JSON matches TestReport schema | 🔴 Open |
 | QV-SHIM-03 | Shim handles harness timeout gracefully | 🔴 Open |
 | QV-SHIM-04 | Health check detects dead harness, falls back to native | 🔴 Open |
@@ -206,7 +206,7 @@
 
 | ID | Task | Status |
 |---|---|---|
-| QV-CROSS-01 | Scaffold → run → test: full flow < 5 min | 🔴 Open |
+| QV-CROSS-01 | Scaffold → run → test: full flow < 5 min | ✅ Done (shim@140fb27 — scaffold --lang implemented) |
 | QV-CROSS-02 | Install → configure → verify: full Hermes flow | 🔴 Open |
 | QV-CROSS-03 | Protocol change → SDK regenerate → test cascade | 🔴 Open |
 
