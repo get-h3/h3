@@ -136,10 +136,10 @@
 | P6-03 | h3 | Protocol reference (auto-generated from OpenAPI) | ✅ Done (docs/protocol.html, 879 lines) |
 | P6-04 | h3 | SDK docs (auto-generated) | ✅ Done (docs/sdk.html, 950 lines) |
 | P6-05 | h3 | Compliance badge system + verify endpoint | ✅ Done (3 badge SVGs, copy-paste code, h3-test section) |
-| P6-06 | h3 | "Build Your First H3 Harness" guide | ⚠️ Partial — basic quickstart exists; missing: RAG agent example, code review example, troubleshooting |
+| P6-06 | h3 | "Build Your First H3 Harness" guide | ✅ Done (docs/guide.html, 5-step walkthrough: setup → implement → start → test → wire) |
 | P6-07 | h3 | Migration guide: native → H3 | pending — no migration content in any page |
 
-**Gate: Website deployed, landing page + protocol + SDK refs live. ⚠️ PARTIAL — P6-06 expansion + P6-07 migration guide remain.**
+**Gate: Website deployed, landing page + protocol + SDK refs + guide live. ⚠️ P6-07 migration guide remains.**
 
 ---
 
@@ -234,5 +234,4 @@ Pages workflow created (`.github/workflows/pages.yml`), pushed, and deployed.
 1. **sdk-typescript-foreman**: Fix CROSS-003 (history preservation in `createH3Router`) — gate-blocking PHASE 3 at 41/43
 2. **protocol-foreman**: Execute P5-01 (release workflow: validate → tag → dispatch) — unblocked, all receiver workflows exist
 3. **h3-foreman**: P6-07 migration guide (native → H3) — next pending task; S11 spec provides full content outline
-4. **h3-foreman**: P6-06 expansion (RAG + code review examples, troubleshooting) — after P6-07
-5. **shim-foreman**: P4-05 Hermes update pre-flight hook — still pending
+4. **shim-foreman**: P4-05 Hermes update pre-flight hook — still pending

@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Build your first H3-compliant agent harness — step-by-step guide for Go, Python, and TypeScript.">
+  <meta name="theme-color" content="#0a0a14">
+  <title>Build Your First H3 Harness — H3 Protocol</title>
+  <style>
+    :root {
+      --bg: #0a0a14;
+      --bg-deep: #060612;
+      --card: #0f0f1e;
+      --card-raised: #131329;
+      --border: #1e1e38;
+      --border-bright: #302957;
+      --text: #c8c8d4;
+      --text-strong: #f2f0ff;
+      --muted: #8888a0;
+      --dim: #5e5e78;
+      --purple: #8b5cf6;
+      --pink: #d946ef;
+      --blue: #60a5fa;
+      --green: #4ade80;
+      --amber: #fbbf24;
+      --gradient: linear-gradient(135deg, var(--purple), var(--pink));
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --max: 1120px;
+      --radius: 14px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-width: 320px;
+      margin: 0;
+      background:
+        radial-gradient(circle at 80% -10%, rgba(139, 92, 246, 0.14), transparent 30rem),
+        radial-gradient(circle at -10% 35%, rgba(217, 70, 239, 0.06), transparent 28rem),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.6;
+    }
+    a { color: inherit; }
+    button { font: inherit; }
+    .shell { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(30, 30, 56, 0.82);
+      background: rgba(10, 10, 20, 0.86);
+      backdrop-filter: blur(16px);
+    }
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 32px));
+      min-height: 62px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--text-strong);
+      font-family: var(--mono);
+      font-size: 0.86rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      text-decoration: none;
+    }
+    .brand-mark {
+      padding: 4px 8px;
+      border-radius: 5px;
+      color: #fff;
+      background: var(--gradient);
+      font-size: 0.72rem;
+    }
+    .nav { display: flex; gap: 14px; align-items: center; }
+    .nav a {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .nav a:hover, .nav a:focus-visible { color: var(--text-strong); }
+    .nav-cta {
+      min-height: 38px;
+      padding: 0 16px;
+      border-radius: 8px;
+      color: #fff !important;
+      background: var(--gradient);
+      font-size: 0.73rem !important;
+    }
+    .nav-cta:hover { opacity: 0.92; }
+
+    .hero {
+      padding: 64px 0 52px;
+      text-align: center;
+    }
+    .hero h1 {
+      max-width: 680px;
+      margin: 0 auto;
+      color: var(--text-strong);
+      font-size: clamp(1.9rem, 5vw, 2.8rem);
+      letter-spacing: -0.06em;
+      line-height: 1.1;
+    }
+    .hero p {
+      max-width: 540px;
+      margin: 14px auto 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .section { padding: 30px 0 60px; }
+    .section-heading { max-width: 680px; margin-bottom: 24px; }
+    .section-kicker {
+      margin: 0 0 8px;
+      color: #a993ff;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin: 0;
+      color: var(--text-strong);
+      font-size: clamp(1.45rem, 3.5vw, 2.1rem);
+      letter-spacing: -0.05em;
+      line-height: 1.08;
+    }
+    .section-heading p { margin: 10px 0 0; color: var(--muted); font-size: 0.9rem; }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      padding: clamp(20px, 4vw, 32px);
+    }
+
+    .step-card { margin-bottom: 22px; }
+    .step-num {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      color: #b9a5ff;
+      background: rgba(139, 92, 246, 0.12);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .card h3 { margin: 0 0 10px; color: var(--text-strong); font-size: 1.1rem; }
+    .card p { margin: 0 0 13px; color: var(--muted); font-size: 0.85rem; }
+    .card p:last-child { margin-bottom: 0; }
+    .card ul { margin: 6px 0; padding-left: 18px; color: var(--muted); font-size: 0.85rem; }
+    .card ul li { margin-bottom: 5px; }
+    .card ul li strong { color: var(--text-strong); }
+
+    .tabs { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-deep); }
+    .tab {
+      min-height: 40px;
+      padding: 8px 16px;
+      border: 0;
+      border-radius: 7px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      transition: color 160ms ease, background 160ms ease;
+    }
+    .tab:hover, .tab:focus-visible { color: var(--text-strong); }
+    .tab[aria-selected="true"] { color: #fff; background: var(--gradient); }
+    .tab-panel[hidden] { display: none; }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
+    .panel-label { color: var(--text-strong); font-size: 0.85rem; font-weight: 700; }
+    .install { color: var(--green); font-family: var(--mono); font-size: 0.69rem; }
+    .code-shell { position: relative; }
+    pre {
+      margin: 0;
+      padding: 18px;
+      overflow-x: auto;
+      border: 1px solid #1a1a30;
+      border-radius: 10px;
+      background: #060612;
+      color: #d8d5ef;
+      font-family: var(--mono);
+      font-size: clamp(0.67rem, 1.4vw, 0.76rem);
+      line-height: 1.65;
+      tab-size: 2;
+    }
+    code .kw { color: #c084fc; }
+    code .fn { color: #67e8f9; }
+    code .str { color: #86efac; }
+    code .cm { color: #62627a; }
+    code .type { color: #f0abfc; }
+    code { padding: 2px 6px; border-radius: 4px; color: #d5caff; background: rgba(139, 92, 246, 0.1); font-family: var(--mono); font-size: 0.78rem; }
+    pre code { padding: 0; background: transparent; font-size: inherit; color: inherit; }
+    .copy-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 1px solid #2b2b49;
+      border-radius: 7px;
+      color: var(--muted);
+      background: rgba(15, 15, 30, 0.94);
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.67rem;
+      transition: color 160ms ease, border-color 160ms ease;
+    }
+    .copy-button:hover, .copy-button:focus-visible { color: #fff; border-color: var(--purple); }
+    .copy-button.copied { color: var(--green); border-color: rgba(74, 222, 128, 0.55); }
+
+    .callout {
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid rgba(217, 70, 239, 0.25);
+      border-radius: 10px;
+      background: linear-gradient(100deg, rgba(139, 92, 246, 0.09), rgba(217, 70, 239, 0.06));
+    }
+    .callout strong { display: block; color: var(--text-strong); font-size: 0.88rem; }
+    .callout span { display: block; margin-top: 3px; color: var(--muted); font-size: 0.76rem; }
+
+    .checklist { display: grid; gap: 8px; }
+    .check-item { display: flex; gap: 10px; align-items: center; padding: 12px 16px; border: 1px solid var(--border); border-radius: 9px; background: var(--bg-deep); }
+    .check-item .icon { font-size: 1.05rem; }
+    .check-item span { color: var(--text-strong); font-size: 0.82rem; }
+
+    .cta {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(26px, 5vw, 44px);
+      text-align: center;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.13), rgba(217, 70, 239, 0.08) 55%, rgba(15, 15, 30, 0.9));
+    }
+    .cta h2 { position: relative; z-index: 1; font-size: clamp(1.35rem, 3.5vw, 1.9rem); }
+    .cta p { position: relative; z-index: 1; max-width: 540px; margin: 10px auto 18px; color: var(--muted); font-size: 0.85rem; }
+    .button {
+      display: inline-block;
+      min-height: 46px;
+      padding: 0 24px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-strong);
+      background: var(--card);
+      font-size: 0.81rem;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: border-color 160ms ease, transform 160ms ease;
+    }
+    .button:hover { border-color: #b9a5ff; transform: translateY(-1px); }
+    .button.primary { color: #fff; background: var(--gradient); border-color: transparent; }
+
+    footer { padding: 28px 0 38px; border-top: 1px solid var(--border); }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .footer-brand { color: var(--dim); font-family: var(--mono); font-size: 0.72rem; }
+    .footer-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 17px; }
+    .footer-links a { color: var(--muted); font-size: 0.74rem; text-decoration: none; }
+    .footer-links a:hover { color: var(--text-strong); }
+    .footer-note { margin: 18px 0 0; color: #48485f; font-family: var(--mono); font-size: 0.65rem; text-align: center; }
+
+    :focus-visible { outline: 2px solid #c084fc; outline-offset: 3px; }
+
+    @media (max-width: 740px) {
+      .shell, .topbar-inner { width: min(100% - 24px, var(--max)); }
+      .topbar-inner { min-height: 58px; }
+      .nav { gap: 10px; }
+      .nav a:not(.nav-cta) { display: none; }
+      .tabs { width: 100%; }
+      .tab { flex: 1; padding-left: 7px; padding-right: 7px; }
+      pre { padding: 14px 12px; font-size: 0.64rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html" aria-label="H3 home"><span class="brand-mark">H3</span><span>h3.sh</span></a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="protocol.html">Protocol</a>
+        <a href="sdk.html">SDKs</a>
+        <a class="nav-cta" href="https://github.com/get-h3" target="_blank" rel="noreferrer">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="shell">
+        <h1>Build Your First H3 Harness</h1>
+        <p>A step-by-step guide to creating an H3-compliant agent harness from scratch. Ship the brain. Keep the platform.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">Before you start</p>
+          <h2>What you'll need</h2>
+          <p>This guide walks through building a bare-minimum harness that responds to the two core H3 callbacks and passes the compliance test battery.</p>
+        </div>
+        <div class="card">
+          <div class="checklist">
+            <div class="check-item"><span class="icon">🔧</span><span><strong>One language runtime</strong> — Go 1.22+, Python 3.10+, or Node.js 18+ / Bun</span></div>
+            <div class="check-item"><span class="icon">📦</span><span><strong>A terminal</strong> — you'll install an SDK, run a server, and execute the test battery</span></div>
+            <div class="check-item"><span class="icon">🔌</span><span><strong>An open port</strong> — your harness listens on <code>localhost:9191</code> (configurable)</span></div>
+            <div class="check-item"><span class="icon">⚡</span><span><strong>10 minutes</strong> — from zero to verified compliance</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step-1">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">Step 1</p>
+          <h2>Create your project</h2>
+          <p>Pick your language, create a directory, and install the H3 SDK.</p>
+        </div>
+
+        <div class="card step-card" style="margin-bottom:18px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;">
+            <h3 style="margin:0;">Initialize the project</h3>
+            <div class="tabs" role="tablist" aria-label="Project setup languages">
+              <button class="tab" aria-selected="true" aria-controls="setup-go" data-tab="setup-go">Go</button>
+              <button class="tab" aria-selected="false" aria-controls="setup-python" data-tab="setup-python">Python</button>
+              <button class="tab" aria-selected="false" aria-controls="setup-typescript" data-tab="setup-typescript">TypeScript</button>
+            </div>
+          </div>
+          <div class="tab-panel" data-panel="setup-go">
+            <div class="code-shell">
+              <pre><code>mkdir my-h3-harness && cd my-h3-harness
+go mod init my-h3-harness
+go get github.com/get-h3/sdk-go</code></pre>
+              <button class="copy-button" type="button" data-copy="setup-go-cmd">copy</button>
+              <textarea id="setup-go-cmd" hidden>mkdir my-h3-harness && cd my-h3-harness
+go mod init my-h3-harness
+go get github.com/get-h3/sdk-go</textarea>
+            </div>
+          </div>
+          <div class="tab-panel" data-panel="setup-python" hidden>
+            <div class="code-shell">
+              <pre><code>mkdir my-h3-harness && cd my-h3-harness
+python3 -m venv .venv && source .venv/bin/activate
+pip install h3-harness-sdk fastapi uvicorn</code></pre>
+              <button class="copy-button" type="button" data-copy="setup-python-cmd">copy</button>
+              <textarea id="setup-python-cmd" hidden>mkdir my-h3-harness && cd my-h3-harness
+python3 -m venv .venv && source .venv/bin/activate
+pip install h3-harness-sdk fastapi uvicorn</textarea>
+            </div>
+          </div>
+          <div class="tab-panel" data-panel="setup-typescript" hidden>
+            <div class="code-shell">
+              <pre><code>mkdir my-h3-harness && cd my-h3-harness
+npm init -y
+npm install @get-h3/h3-harness-sdk hono
+# or: bun install @get-h3/h3-harness-sdk hono</code></pre>
+              <button class="copy-button" type="button" data-copy="setup-typescript-cmd">copy</button>
+              <textarea id="setup-typescript-cmd" hidden>mkdir my-h3-harness && cd my-h3-harness
+npm init -y
+npm install @get-h3/h3-harness-sdk hono
+# or: bun install @get-h3/h3-harness-sdk hono</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step-2">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">Step 2</p>
+          <h2>Implement the harness interface</h2>
+          <p>The H3 protocol defines two callbacks: <code>onProcess</code> (when Hermes sends a message) and <code>onResult</code> (when Hermes reports back). Implement both to close the loop.</p>
+        </div>
+
+        <div class="card step-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;">
+            <h3 style="margin:0;">Minimal echo harness</h3>
+            <div class="tabs" role="tablist" aria-label="Echo harness languages">
+              <button class="tab" aria-selected="true" aria-controls="echo-go" data-tab="echo-go">Go</button>
+              <button class="tab" aria-selected="false" aria-controls="echo-python" data-tab="echo-python">Python</button>
+              <button class="tab" aria-selected="false" aria-controls="echo-typescript" data-tab="echo-typescript">TypeScript</button>
+            </div>
+          </div>
+          <p style="margin:0 0 12px;">This echo harness repeats every message back to Hermes, then closes the session. It's the simplest valid H3 harness and passes the full test battery.</p>
+
+          <div class="tab-panel" data-panel="echo-go">
+            <div class="code-shell">
+              <pre><code><span class="cm">// main.go — minimal H3 echo harness (Go)</span>
+<span class="kw">package</span> main
+
+<span class="kw">import</span> (
+  <span class="str">"fmt"</span>
+  <span class="str">"net/http"</span>
+  <span class="str">"github.com/get-h3/sdk-go/harness"</span>
+  <span class="str">"github.com/get-h3/sdk-go/protocol"</span>
+)
+
+<span class="kw">type</span> Echo <span class="kw">struct</span>{}
+<span class="kw">func</span> (Echo) OnProcess(r *protocol.ProcessRequest) (*protocol.Decision, error) {
+  <span class="kw">return</span> &amp;protocol.Decision{Decision: protocol.DecisionText,
+    DecisionID: <span class="str">"echo-1"</span>, Text: &amp;protocol.TextResp{Content: fmt.Sprintf(<span class="str">"Echo: %s"</span>, r.Message.Content), Finished: <span class="kw">true</span>}}, <span class="kw">nil</span>
+}
+<span class="kw">func</span> (Echo) OnResult(*protocol.ResultRequest) (*protocol.Decision, error) {
+  <span class="kw">return</span> &amp;protocol.Decision{Decision: protocol.DecisionEnd, DecisionID: <span class="str">"done"</span>, End: &amp;protocol.End{Reason: protocol.EndTaskComplete}}, <span class="kw">nil</span>
+}
+<span class="kw">func</span> (Echo) OnCancel(*protocol.CancelRequest) error { <span class="kw">return</span> <span class="kw">nil</span> }
+<span class="kw">func</span> (Echo) OnSessionTerminate(string) error { <span class="kw">return</span> <span class="kw">nil</span> }
+<span class="kw">func</span> (Echo) Health() *protocol.HealthResponse {
+  <span class="kw">return</span> &amp;protocol.HealthResponse{Status: protocol.HealthOK, Version: <span class="str">"1.0.0"</span>, Transport: <span class="str">"rest"</span>, ProtocolVersion: <span class="str">"1.0"</span>, Capabilities: []protocol.DecisionType{protocol.DecisionText, protocol.DecisionEnd}}
+}
+<span class="kw">func</span> main() { fmt.Println(<span class="str">"H3 harness listening on :9191"</span>); http.ListenAndServe(<span class="str">":9191"</span>, harness.NewHTTPServer(Echo{})) }</code></pre>
+              <button class="copy-button" type="button" data-copy="echo-go-code">copy</button>
+              <textarea id="echo-go-code" hidden>package main
+
+import (
+  "fmt"
+  "net/http"
+  "github.com/get-h3/sdk-go/harness"
+  "github.com/get-h3/sdk-go/protocol"
+)
+
+type Echo struct{}
+func (Echo) OnProcess(r *protocol.ProcessRequest) (*protocol.Decision, error) {
+  return &protocol.Decision{Decision: protocol.DecisionText,
+    DecisionID: "echo-1", Text: &protocol.TextResp{Content: fmt.Sprintf("Echo: %s", r.Message.Content), Finished: true}}, nil
+}
+func (Echo) OnResult(*protocol.ResultRequest) (*protocol.Decision, error) {
+  return &protocol.Decision{Decision: protocol.DecisionEnd, DecisionID: "done", End: &protocol.End{Reason: protocol.EndTaskComplete}}, nil
+}
+func (Echo) OnCancel(*protocol.CancelRequest) error { return nil }
+func (Echo) OnSessionTerminate(string) error { return nil }
+func (Echo) Health() *protocol.HealthResponse {
+  return &protocol.HealthResponse{Status: protocol.HealthOK, Version: "1.0.0", Transport: "rest", ProtocolVersion: "1.0", Capabilities: []protocol.DecisionType{protocol.DecisionText, protocol.DecisionEnd}}
+}
+func main() { fmt.Println("H3 harness listening on :9191"); http.ListenAndServe(":9191", harness.NewHTTPServer(Echo{})) }</textarea>
+            </div>
+          </div>
+
+          <div class="tab-panel" data-panel="echo-python" hidden>
+            <div class="code-shell">
+              <pre><code><span class="cm"># main.py — minimal H3 echo harness (Python)</span>
+<span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+<span class="kw">from</span> h3_harness <span class="kw">import</span> BaseHarness, Decision, DecisionType, End, TextResponse, create_router
+
+<span class="kw">class</span> <span class="type">Echo</span>(BaseHarness):
+    <span class="kw">async def</span> <span class="fn">on_process</span>(self, req):
+        <span class="kw">return</span> Decision(decision=DecisionType.TEXT, text=TextResponse(content=f<span class="str">"Echo: {req.message.content}"</span>, finished=<span class="kw">True</span>))
+
+    <span class="kw">async def</span> <span class="fn">on_result</span>(self, req):
+        <span class="kw">return</span> Decision(decision=DecisionType.END, end=End(reason=<span class="str">"task_complete"</span>))
+
+app = FastAPI()
+app.include_router(create_router(Echo()))</code></pre>
+              <button class="copy-button" type="button" data-copy="echo-python-code">copy</button>
+              <textarea id="echo-python-code" hidden>from fastapi import FastAPI
+from h3_harness import BaseHarness, Decision, DecisionType, End, TextResponse, create_router
+
+class Echo(BaseHarness):
+    async def on_process(self, req):
+        return Decision(decision=DecisionType.TEXT, text=TextResponse(content=f"Echo: {req.message.content}", finished=True))
+
+    async def on_result(self, req):
+        return Decision(decision=DecisionType.END, end=End(reason="task_complete"))
+
+app = FastAPI()
+app.include_router(create_router(Echo()))</textarea>
+            </div>
+          </div>
+
+          <div class="tab-panel" data-panel="echo-typescript" hidden>
+            <div class="code-shell">
+              <pre><code><span class="cm">// index.ts — minimal H3 echo harness (TypeScript)</span>
+<span class="kw">import</span> { Hono } <span class="kw">from</span> <span class="str">"hono"</span>;
+<span class="kw">import</span> { createH3Router } <span class="kw">from</span> <span class="str">"@get-h3/h3-harness-sdk"</span>;
+<span class="kw">import type</span> { Harness, Decision } <span class="kw">from</span> <span class="str">"@get-h3/h3-harness-sdk"</span>;
+
+<span class="kw">const</span> echo: Harness = {
+  <span class="kw">async</span> onProcess(req) { <span class="kw">return</span> { decision: <span class="str">"text"</span>, decision_id: crypto.randomUUID(), text: { content: <span class="str">`Echo: ${req.message.content}`</span>, finished: <span class="kw">true</span> } }; },
+  <span class="kw">async</span> onResult(_req) { <span class="kw">return</span> { decision: <span class="str">"end"</span>, decision_id: crypto.randomUUID(), end: { reason: <span class="str">"task_complete"</span> } }; },
+  health() { <span class="kw">return</span> { status: <span class="str">"ok"</span>, version: <span class="str">"1.0.0"</span>, transport: <span class="str">"rest"</span>, protocol_version: <span class="str">"1.0"</span>, capabilities: [<span class="str">"text"</span>, <span class="str">"end"</span>] }; }
+};
+<span class="kw">const</span> app = <span class="kw">new</span> Hono(); app.route(<span class="str">"/"</span>, createH3Router(echo)); <span class="kw">export default</span> app;</code></pre>
+              <button class="copy-button" type="button" data-copy="echo-typescript-code">copy</button>
+              <textarea id="echo-typescript-code" hidden>import { Hono } from "hono";
+import { createH3Router } from "@get-h3/h3-harness-sdk";
+import type { Harness, Decision } from "@get-h3/h3-harness-sdk";
+
+const echo: Harness = {
+  async onProcess(req) { return { decision: "text", decision_id: crypto.randomUUID(), text: { content: `Echo: ${req.message.content}`, finished: true } }; },
+  async onResult(_req) { return { decision: "end", decision_id: crypto.randomUUID(), end: { reason: "task_complete" } }; },
+  health() { return { status: "ok", version: "1.0.0", transport: "rest", protocol_version: "1.0", capabilities: ["text", "end"] }; }
+};
+const app = new Hono(); app.route("/", createH3Router(echo)); export default app;</textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <h3>What's happening</h3>
+          <p>Every H3 harness must satisfy five methods:</p>
+          <ul>
+            <li><strong>Health()</strong> — reports status, version, and supported decision types to the shim</li>
+            <li><strong>OnProcess()</strong> — receives the user's message and returns a decision (text, tool call, wait, etc.)</li>
+            <li><strong>OnResult()</strong> — receives Hermes' execution result so you can decide the next step</li>
+            <li><strong>OnCancel()</strong> — called when the user or system cancels the session</li>
+            <li><strong>OnSessionTerminate()</strong> — called when Hermes ends the session</li>
+          </ul>
+          <p>The echo harness above returns a <strong>text</strong> decision on every process call and an <strong>end</strong> decision on the first result. That's enough to complete a full H3 conversation loop.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step-3">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">Step 3</p>
+          <h2>Start your harness</h2>
+        </div>
+
+        <div class="card step-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;">
+            <h3 style="margin:0;">Launch the server</h3>
+            <div class="tabs" role="tablist" aria-label="Run harness languages">
+              <button class="tab" aria-selected="true" aria-controls="run-go" data-tab="run-go">Go</button>
+              <button class="tab" aria-selected="false" aria-controls="run-python" data-tab="run-python">Python</button>
+              <button class="tab" aria-selected="false" aria-controls="run-typescript" data-tab="run-typescript">TypeScript</button>
+            </div>
+          </div>
+
+          <div class="tab-panel" data-panel="run-go">
+            <div class="code-shell">
+              <pre><code>go run .</code></pre>
+              <button class="copy-button" type="button" data-copy="run-go-cmd">copy</button>
+              <textarea id="run-go-cmd" hidden>go run .</textarea>
+            </div>
+            <p style="margin-top:8px;">Should print: <code>H3 harness listening on :9191</code></p>
+          </div>
+          <div class="tab-panel" data-panel="run-python" hidden>
+            <div class="code-shell">
+              <pre><code>uvicorn main:app --host 0.0.0.0 --port 9191</code></pre>
+              <button class="copy-button" type="button" data-copy="run-python-cmd">copy</button>
+              <textarea id="run-python-cmd" hidden>uvicorn main:app --host 0.0.0.0 --port 9191</textarea>
+            </div>
+            <p style="margin-top:8px;">Should print: <code>Uvicorn running on http://0.0.0.0:9191</code></p>
+          </div>
+          <div class="tab-panel" data-panel="run-typescript" hidden>
+            <div class="code-shell">
+              <pre><code>npx tsx index.ts</code></pre>
+              <button class="copy-button" type="button" data-copy="run-typescript-cmd">copy</button>
+              <textarea id="run-typescript-cmd" hidden>npx tsx index.ts</textarea>
+            </div>
+            <p style="margin-top:8px;">Hono starts on <code>localhost:9191</code></p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <h3>Quick health check</h3>
+          <p>In another terminal, hit the health endpoint to confirm your harness is alive:</p>
+          <div class="code-shell">
+            <pre><code>curl http://localhost:9191/health</code></pre>
+            <button class="copy-button" type="button" data-copy="health-check">copy</button>
+            <textarea id="health-check" hidden>curl http://localhost:9191/health</textarea>
+          </div>
+          <p style="margin-top:10px;">Expected response: <code>{"status":"ok","version":"1.0.0","transport":"rest","protocol_version":"1.0","capabilities":["text","end"]}</code></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step-4">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">Step 4</p>
+          <h2>Run the compliance test battery</h2>
+          <p>The H3 test battery exercises 43 scenarios across 6 functional regions. Point it at your harness to verify protocol compliance.</p>
+        </div>
+
+        <div class="card step-card">
+          <div class="code-shell">
+            <pre><code>pip install hermes-h3-shim
+h3-test --endpoint http://localhost:9191</code></pre>
+            <button class="copy-button" type="button" data-copy="test-run">copy</button>
+            <textarea id="test-run" hidden>pip install hermes-h3-shim
+h3-test --endpoint http://localhost:9191</textarea>
+          </div>
+          <p style="margin-top:10px;">The test battery runs in under 5 seconds. You'll see each test pass/fail with a final score out of 43.</p>
+        </div>
+
+        <div class="callout">
+          <strong>Scoring 43/43?</strong>
+          <span>Your harness is fully H3-compliant. Add the badge to your README and you're ready to swap brains. See <a href="index.html#compliance" style="color:#d5caff;">the compliance section</a> for badge URLs.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step-5">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">Step 5</p>
+          <h2>Wire it into Hermes</h2>
+          <p>Tell the shim where your harness lives. From now on, Hermes will route process and result calls through the H3 boundary.</p>
+        </div>
+
+        <div class="card step-card">
+          <div class="code-shell">
+            <pre><code>hermes h3 install
+hermes h3 scaffold --lang go --output my-h3-harness
+hermes h3 verify</code></pre>
+            <button class="copy-button" type="button" data-copy="wire-hermes">copy</button>
+            <textarea id="wire-hermes" hidden>hermes h3 install
+hermes h3 scaffold --lang go --output my-h3-harness
+hermes h3 verify</textarea>
+          </div>
+          <p style="margin-top:8px;">
+            <code>hermes h3 install</code> registers the shim as a Hermes plugin.
+            <code>hermes h3 scaffold</code> generates a harness template (with SDK wiring already set up).
+            <code>hermes h3 verify</code> confirms the plugin registration and harness reachability.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="next-steps">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="section-kicker">Next steps</p>
+          <h2>Go deeper</h2>
+          <p>Your harness speaks H3. Now build the brain.</p>
+        </div>
+
+        <div class="checklist" style="grid-template-columns:1fr;">
+          <div class="check-item"><span class="icon">📖</span><span><strong>Read the protocol reference</strong> — every decision type, error code, and contract detail at <a href="protocol.html" style="color:#d5caff;">protocol.html</a></span></div>
+          <div class="check-item"><span class="icon">🧠</span><span><strong>Add agent logic</strong> — replace the echo with <code>tool_call</code> decisions, <code>wait</code> loops, or <code>delegate</code> chains</span></div>
+          <div class="check-item"><span class="icon">🔍</span><span><strong>Explore the SDK docs</strong> — Go <code>harness.Middleware</code>, Python <code>BaseHarness</code> hooks, TypeScript middleware at <a href="sdk.html" style="color:#d5caff;">sdk.html</a></span></div>
+          <div class="check-item"><span class="icon">🏷️</span><span><strong>Add a compliance badge</strong> — when you pass 43/43, show it at <a href="index.html#compliance" style="color:#d5caff;">h3.sh#compliance</a></span></div>
+          <div class="check-item"><span class="icon">🔄</span><span><strong>Swap frameworks behind the harness</strong> — same H3 boundary, different agent runtime underneath</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <div class="card cta">
+          <h2>Your agent logic should be swappable.</h2>
+          <p>Keep the platform that already works. Change the brain when the job, model, or framework changes.</p>
+          <a class="button primary" href="index.html#quickstart">Back to the quickstart</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell">
+      <div class="footer-inner">
+        <div class="footer-brand">H3 · Brain-swap protocol for AI agents</div>
+        <div class="footer-links">
+          <a href="https://github.com/get-h3" target="_blank" rel="noreferrer">GitHub org ↗</a>
+          <a href="protocol.html">Protocol</a>
+          <a href="sdk.html">SDKs</a>
+          <a href="index.html">Home</a>
+        </div>
+      </div>
+      <p class="footer-note">Open protocol · bring your own harness · keep your platform</p>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const tabs = document.querySelectorAll("[data-tab]");
+      const panels = document.querySelectorAll("[data-panel]");
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const selected = tab.dataset.tab;
+          const parent = tab.closest(".card, [style]");
+          const siblings = parent ? parent.querySelectorAll("[data-tab]") : tabs;
+          siblings.forEach((item) => item.setAttribute("aria-selected", String(item === tab)));
+          const parentPanels = parent ? parent.querySelectorAll("[data-panel]") : panels;
+          parentPanels.forEach((panel) => { panel.hidden = panel.dataset.panel !== selected; });
+        });
+      });
+
+      document.querySelectorAll("[data-copy]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const source = document.getElementById(button.dataset.copy);
+          const original = button.textContent;
+          try {
+            await navigator.clipboard.writeText(source.value);
+            button.textContent = "copied";
+            button.classList.add("copied");
+          } catch (error) {
+            source.hidden = false;
+            source.select();
+            document.execCommand("copy");
+            source.hidden = true;
+            button.textContent = "copied";
+            button.classList.add("copied");
+          }
+          setTimeout(() => { button.textContent = original; button.classList.remove("copied"); }, 1600);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
