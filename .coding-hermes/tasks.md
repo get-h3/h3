@@ -158,7 +158,7 @@
 | ID | What It Verifies | Method |
 |---|---|---|
 | QV-E2E-01 | Go echo harness: process→text→result→text→result→end loop | ✅ Done — 3/3 requests pass, end Decision: task_complete |
-| QV-E2E-02 | Python minimal harness: same full loop | pending |
+| QV-E2E-02 | Python minimal harness: same full loop | ✅ Done — process→text echo, result→end task_complete |
 | QV-E2E-03 | TypeScript minimal harness: same full loop | pending |
 | QV-E2E-04 | Cross-harness: same test battery passes against all 3 | pending |
 | QV-E2E-05 | Harness logs: every request timestamped with duration | ✅ Done — 5 requests logged: METHOD /path STATUS DURATION |
