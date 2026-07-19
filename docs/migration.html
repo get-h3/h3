@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Migrate your native Hermes agent to an H3 harness — step-by-step guide.">
+  <meta name="theme-color" content="#0a0a14">
+  <title>Migration: Native → H3 — H3 Protocol</title>
+  <style>
+    :root {
+      --bg: #0a0a14;
+      --bg-deep: #060612;
+      --card: #0f0f1e;
+      --card-raised: #131329;
+      --border: #1e1e38;
+      --border-bright: #302957;
+      --text: #c8c8d4;
+      --text-strong: #f2f0ff;
+      --muted: #8888a0;
+      --dim: #5e5e78;
+      --purple: #8b5cf6;
+      --pink: #d946ef;
+      --blue: #60a5fa;
+      --green: #4ade80;
+      --amber: #fbbf24;
+      --red: #f87171;
+      --gradient: linear-gradient(135deg, var(--purple), var(--pink));
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --max: 1120px;
+      --radius: 14px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-width: 320px;
+      margin: 0;
+      background:
+        radial-gradient(circle at 80% -10%, rgba(139, 92, 246, 0.14), transparent 30rem),
+        radial-gradient(circle at -10% 35%, rgba(217, 70, 239, 0.06), transparent 28rem),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.6;
+    }
+    a { color: inherit; }
+    button { font: inherit; }
+    .shell { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(30, 30, 56, 0.82);
+      background: rgba(10, 10, 20, 0.86);
+      backdrop-filter: blur(16px);
+    }
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 32px));
+      min-height: 62px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--text-strong);
+      font-family: var(--mono);
+      font-size: 0.86rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      text-decoration: none;
+    }
+    .brand-mark {
+      padding: 4px 8px;
+      border-radius: 5px;
+      color: #fff;
+      background: var(--gradient);
+      font-size: 0.72rem;
+    }
+    .nav { display: flex; gap: 14px; align-items: center; }
+    .nav a {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .nav a:hover, .nav a:focus-visible { color: var(--text-strong); }
+    .nav-cta {
+      min-height: 38px;
+      padding: 0 16px;
+      border-radius: 8px;
+      color: #fff !important;
+      background: var(--gradient);
+      font-size: 0.73rem !important;
+    }
+    .nav-cta:hover { opacity: 0.92; }
+
+    .hero {
+      padding: 64px 0 52px;
+      text-align: center;
+    }
+    .hero h1 {
+      max-width: 680px;
+      margin: 0 auto 14px;
+      color: var(--text-strong);
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.18;
+    }
+    .hero p {
+      max-width: 560px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+    .hero .badge-row { margin-top: 22px; display: flex; gap: 10px; justify-content: center; }
+    .badge-pill {
+      padding: 5px 13px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.73rem;
+      font-weight: 600;
+    }
+
+    .block { padding: 28px 0; }
+    .block h2 {
+      margin: 0 0 12px;
+      color: var(--text-strong);
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .block h3 {
+      margin: 24px 0 8px;
+      color: var(--text-strong);
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+    .block p { margin: 0 0 16px; color: var(--text); }
+    .block ul, .block ol { margin: 0 0 16px; padding-left: 22px; }
+    .block li { margin-bottom: 6px; }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      padding: 26px 30px;
+      margin-bottom: 22px;
+    }
+    .card h3 { margin-top: 0; }
+
+    pre {
+      margin: 16px 0;
+      padding: 18px 22px;
+      border-radius: 10px;
+      background: var(--bg-deep);
+      border: 1px solid var(--border);
+      color: var(--text-strong);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      line-height: 1.55;
+      overflow-x: auto;
+    }
+    code {
+      font-family: var(--mono);
+      font-size: 0.84em;
+      background: rgba(139, 92, 246, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--text-strong);
+    }
+    pre code { background: none; padding: 0; border-radius: 0; }
+
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin: 22px 0;
+    }
+    @media (max-width: 768px) { .comparison { grid-template-columns: 1fr; } }
+
+    .col-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+    }
+    .before .col-label { color: var(--amber); border-color: rgba(251, 191, 36, 0.3); }
+    .after  .col-label { color: var(--green);  border-color: rgba(74, 222, 128, 0.3); }
+
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--gradient);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.84rem;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+    .step-title {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      color: var(--text-strong);
+      font-size: 1.12rem;
+      font-weight: 700;
+    }
+
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li {
+      padding: 5px 0;
+      padding-left: 26px;
+      position: relative;
+    }
+    .checklist li::before {
+      content: "▸";
+      position: absolute;
+      left: 4px;
+      color: var(--purple);
+      font-weight: 700;
+    }
+    .checklist li.done::before { content: "✓"; color: var(--green); }
+
+    .callout {
+      border-left: 3px solid var(--amber);
+      padding: 16px 20px;
+      margin: 22px 0;
+      border-radius: 0 10px 10px 0;
+      background: rgba(251, 191, 36, 0.06);
+      color: var(--amber);
+      font-size: 0.9rem;
+    }
+    .callout strong { color: var(--amber); }
+
+    .footer {
+      margin-top: 64px;
+      padding: 32px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--dim);
+      font-size: 0.76rem;
+    }
+    .footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<!-- ── Topbar ── -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="./">
+      <span class="brand-mark">H3</span> Protocol
+    </a>
+    <nav class="nav">
+      <a href="./">Home</a>
+      <a href="guide.html">Guide</a>
+      <a href="protocol.html">Protocol</a>
+      <a href="sdk.html">SDKs</a>
+      <a href="migration.html">Migration</a>
+    </nav>
+  </div>
+</header>
+
+<main class="shell">
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <h1>Native &rarr; H3 Migration</h1>
+  <p>You have a native Hermes agent. Now give it upgrade survival, language freedom, and independent deployment.</p>
+  <div class="badge-row">
+    <span class="badge-pill">Hermes v0.18+</span>
+    <span class="badge-pill">H3 Protocol v1.0</span>
+    <span class="badge-pill">~30 minute migration</span>
+  </div>
+</section>
+
+<!-- ── What Changes ── -->
+<section class="block">
+  <h2>What Changes</h2>
+
+  <div class="comparison">
+    <div class="card before">
+      <div class="col-label">Before (Native)</div>
+      <p style="margin-top:8px; color:var(--muted); font-size:0.96rem;">
+        Your agent logic lives <strong>inside Hermes</strong> — a Python module in
+        <code>hermes_cli/agent/</code>. Every Hermes update risks breaking it.
+        Deployment means patching the Hermes installation.
+      </p>
+    </div>
+    <div class="card after">
+      <div class="col-label">After (H3)</div>
+      <p style="margin-top:8px; color:var(--muted); font-size:0.96rem;">
+        Your agent logic is an <strong>independent service</strong> — a Go, Python,
+        or TypeScript process. Hermes calls it via HTTP. Upgrade Hermes freely;
+        your harness stays untouched. Deploy anywhere.
+      </p>
+    </div>
+  </div>
+
+  <div class="comparison">
+    <div class="card before">
+      <div class="col-label">Before (Native)</div>
+      <pre><code># hermes_cli/agent/my_agent.py
+from hermes_core import ToolRegistry, ModelRouter
+
+class MyAgent:
+    def on_message(self, msg):
+        # Direct access to Hermes internals
+        tools = ToolRegistry.list()
+        result = ModelRouter.call("deepseek-v4-pro", msg)
+        return result</code></pre>
+    </div>
+    <div class="card after">
+      <div class="col-label">After (H3)</div>
+      <pre><code>// harness.go — independent service
+func (h *MyHarness) OnProcess(
+    req protocol.ProcessRequest,
+) (*protocol.Decision, error) {
+    // Hermes sends context. You decide.
+    // No access to internals needed.
+    reply := h.agent.Think(req.Context.History)
+    return &protocol.Decision{
+        Type: protocol.DecisionText,
+        Content: reply,
+    }, nil
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="card" style="border-left: 3px solid var(--green);">
+    <h3 style="margin:0 0 6px;">The Promise</h3>
+    <p style="margin:0; color: var(--muted); font-size: 0.96rem;">
+      After migration: <strong>upgrade Hermes</strong> without touching your agent.
+      <strong>Switch languages</strong> without changing Hermes.
+      <strong>Deploy independently</strong> — your harness is just an HTTP server.
+      The shim handles tool/model routing, session management, and protocol compliance.
+    </p>
+  </div>
+</section>
+
+<!-- ── Step 1: Audit ── -->
+<section class="block">
+  <h2>Migration Steps</h2>
+
+  <div class="card">
+    <div class="step-title"><span class="step-num">1</span> Audit Your Native Agent</div>
+    <p>Identify what your agent actually uses. Most agents only touch a small subset of Hermes internals.</p>
+
+    <h3>What to audit</h3>
+    <ul class="checklist">
+      <li>Which tools does your agent call? (<code>web_search</code>, <code>terminal</code>, <code>memory</code>, etc.)</li>
+      <li>Which models does it request?</li>
+      <li>Does it access session state? (<code>context.history</code>, <code>context.messages</code>)</li>
+      <li>Does it call external APIs?</li>
+      <li>Does it use Hermes-specific features? (plugin hooks, internal caches, direct DB access)</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Common surprise:</strong> Most agents only use 3&ndash;5 tools and a single model.
+      The migration is usually simpler than it looks.
+    </div>
+
+    <h3>Hermes-specific features that need workarounds</h3>
+    <table style="width:100%; border-collapse:collapse; margin-top:10px; font-size:0.9rem;">
+      <thead>
+        <tr style="text-align:left; border-bottom:1px solid var(--border);">
+          <th style="padding:8px 12px;color:var(--muted);">Feature</th>
+          <th style="padding:8px 12px;color:var(--muted);">Native Access</th>
+          <th style="padding:8px 12px;color:var(--muted);">H3 Equivalent</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid rgba(30,30,56,0.5);">
+          <td style="padding:8px 12px;">Tool calls</td>
+          <td style="padding:8px 12px;"><code>ToolRegistry.call(name, args)</code></td>
+          <td style="padding:8px 12px;">Return <code>DecisionToolCall</code> &mdash; shim executes</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(30,30,56,0.5);">
+          <td style="padding:8px 12px;">LLM calls</td>
+          <td style="padding:8px 12px;"><code>ModelRouter.call(model, prompt)</code></td>
+          <td style="padding:8px 12px;">Call your own LLM API directly, or return <code>DecisionLLMCall</code></td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(30,30,56,0.5);">
+          <td style="padding:8px 12px;">Session state</td>
+          <td style="padding:8px 12px;"><code>context.history</code></td>
+          <td style="padding:8px 12px;"><code>req.Context.History</code> in every request</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(30,30,56,0.5);">
+          <td style="padding:8px 12px;">Hermes config read</td>
+          <td style="padding:8px 12px;"><code>config.get("key")</code></td>
+          <td style="padding:8px 12px;">Pass config to harness at startup (env vars or config file)</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 12px;">Plugin hooks</td>
+          <td style="padding:8px 12px;">Direct hook registration</td>
+          <td style="padding:8px 12px;">Not supported yet &mdash; keep minimal native shim if needed</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── Step 2: Pick SDK ── -->
+<section class="block">
+  <div class="card">
+    <div class="step-title"><span class="step-num">2</span> Pick Your SDK</div>
+    <p>Choose the language that matches your team. All three SDKs implement the same protocol.</p>
+
+    <table style="width:100%; border-collapse:collapse; margin-top:14px; font-size:0.9rem;">
+      <thead>
+        <tr style="text-align:left; border-bottom:1px solid var(--border);">
+          <th style="padding:8px 12px;color:var(--muted);">SDK</th>
+          <th style="padding:8px 12px;color:var(--muted);">Install</th>
+          <th style="padding:8px 12px;color:var(--muted);">Best For</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid rgba(30,30,56,0.5);">
+          <td style="padding:8px 12px;font-weight:700;">Go</td>
+          <td style="padding:8px 12px;"><code>go get github.com/get-h3/sdk-go</code></td>
+          <td style="padding:8px 12px;">Low-latency, single binary, existing Go infra</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(30,30,56,0.5);">
+          <td style="padding:8px 12px;font-weight:700;">Python</td>
+          <td style="padding:8px 12px;"><code>pip install h3-harness-sdk</code></td>
+          <td style="padding:8px 12px;">Quick prototypes, ML/AI, existing Python code</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 12px;font-weight:700;">TypeScript</td>
+          <td style="padding:8px 12px;"><code>npm install @get-h3/h3-harness-sdk</code></td>
+          <td style="padding:8px 12px;">Web-native, Node.js, existing TS/JS infra</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── Step 3: Implement ── -->
+<section class="block">
+  <div class="card">
+    <div class="step-title"><span class="step-num">3</span> Implement the Harness Interface</div>
+    <p>All H3 harnesses implement the same three-method interface. Port your agent logic into <code>OnProcess</code>.</p>
+
+    <h3>The interface (Go example)</h3>
+    <pre><code>type Harness interface {
+    Health() (*protocol.HealthResponse, error)
+    OnProcess(req protocol.ProcessRequest) (*protocol.Decision, error)
+    OnResult(req protocol.ResultRequest) (*protocol.Decision, error)
+}</code></pre>
+
+    <h3>Migration by agent type</h3>
+
+    <div class="card" style="background:var(--card-raised);">
+      <h4>Simple reply bot</h4>
+      <p style="margin:0;color:var(--muted);">Your agent reads a message and returns text. This is the echo harness with your logic swapped in. 5 minutes.</p>
+    </div>
+
+    <div class="card" style="background:var(--card-raised);">
+      <h4>Tool-using agent</h4>
+      <p style="margin:0;color:var(--muted);">Your agent calls Hermes tools. Return <code>DecisionToolCall</code> objects. The shim executes them and sends results back via <code>OnResult</code>. Most of your logic moves to <code>OnResult</code> &mdash; inspect tool output, decide next action.</p>
+    </div>
+
+    <div class="card" style="background:var(--card-raised);">
+      <h4>Multi-turn conversational agent</h4>
+      <p style="margin:0;color:var(--muted);">Your agent maintains conversation state across turns. Use <code>req.Context.History</code> for past turns and <code>req.Config</code> for runtime settings. Set <code>Finished: false</code> to keep the conversation open.</p>
+    </div>
+
+    <div class="card" style="background:var(--card-raised);">
+      <h4>LLM-orchestrator agent</h4>
+      <p style="margin:0;color:var(--muted);">Your agent calls LLMs to make decisions. Either call the LLM API directly from your harness (your own keys, your own provider), or return <code>DecisionLLMCall</code> to have the shim route through Hermes' configured providers.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Step 4: Start Server ── -->
+<section class="block">
+  <div class="card">
+    <div class="step-title"><span class="step-num">4</span> Start Your Harness</div>
+    <p>H3 harnesses are HTTP servers. Start yours on a local port.</p>
+
+    <pre><code># Go
+go run ./examples/echo/
+
+# Python
+python -m your_harness.main
+
+# TypeScript
+npx tsx examples/echo.ts
+
+# Output: H3 harness listening on http://localhost:9191</code></pre>
+
+    <p>Verify the health endpoint:</p>
+    <pre><code>curl http://localhost:9191/health
+# {"status":"ok","version":"1.0.0","capabilities":["text","tool_call","llm_call"]}</code></pre>
+  </div>
+</section>
+
+<!-- ── Step 5: Configure Hermes ── -->
+<section class="block">
+  <div class="card">
+    <div class="step-title"><span class="step-num">5</span> Configure Hermes</div>
+    <p>Point Hermes at your harness. Edit <code>~/.hermes/profiles/default/config.yaml</code>:</p>
+
+    <pre><code>harnesses:
+  _schema: 1
+  my-agent:
+    endpoint: http://localhost:9191
+    transport: rest
+
+sessions:
+  "telegram:YOUR_USER_ID":
+    harness: my-agent</code></pre>
+
+    <p>Restart Hermes and message yourself. Your harness handles it.</p>
+  </div>
+</section>
+
+<!-- ── Step 6: Test ── -->
+<section class="block">
+  <div class="card">
+    <div class="step-title"><span class="step-num">6</span> Run the Test Battery</div>
+    <p>The H3 test battery validates 43 protocol behaviors. Run it against your harness to catch edge cases.</p>
+
+    <pre><code>pip install hermes-h3-shim
+h3-test --endpoint http://localhost:9191
+
+# Output:
+# ✅ Health & Protocol ........ 7/7
+# ✅ Process Flows ........... 8/8
+# ✅ Decision Types .......... 6/6
+# ✅ Result Handling ......... 7/7
+# ✅ Edge Cases .............. 10/10
+# ✅ Stress .................. 5/5
+# ─────────────────────────────
+# Score: 43/43</code></pre>
+
+    <div class="callout">
+      <strong>Aim for 43/43 before going live.</strong> Each gap is a production edge case waiting to surface.
+      The test battery runs in &lt;5 seconds and catches protocol-level issues that manual testing misses.
+    </div>
+  </div>
+</section>
+
+<!-- ── Step 7: Cut Over ── -->
+<section class="block">
+  <div class="card">
+    <div class="step-title"><span class="step-num">7</span> Cut Over (Gradual)</div>
+
+    <h3>Don't big-bang. Use this sequence:</h3>
+    <ol>
+      <li><strong>Shadow mode:</strong> Configure both native and H3 harness. Route a subset of sessions to H3. Monitor for 24 hours.</li>
+      <li><strong>Ramp up:</strong> Move 50% of sessions to H3. Compare responses side-by-side (log both). Fix discrepancies.</li>
+      <li><strong>Full cutover:</strong> All sessions on H3. Keep native as fallback for 48 hours.</li>
+      <li><strong>Archive native:</strong> Remove the native module. Clean up config.</li>
+    </ol>
+
+    <p style="color:var(--muted); font-size:0.9rem;">
+      At each stage, verify with <code>h3-test --endpoint http://localhost:9191</code> and check Hermes logs for errors.
+    </p>
+  </div>
+</section>
+
+<!-- ── Upgrade Survival ── -->
+<section class="block">
+  <h2>What You Get: Upgrade Survival</h2>
+
+  <div class="card">
+    <h3>Before Hermes updates</h3>
+    <pre><code>hermes update  # → H3 pre-flight hook runs
+# Checks: protocol compatibility, H3 version, harness health, config schema
+# Result: OK → proceed, WARN → proceed with caveats, BLOCK → stop</code></pre>
+  </div>
+
+  <div class="card">
+    <h3>After Hermes updates</h3>
+    <pre><code>hermes h3 verify
+# Checks: shim imports OK, plugin registered, harnesses healthy,
+#         test battery passes, config schema migrated, version matrix OK</code></pre>
+  </div>
+
+  <div class="card">
+    <h3>If something breaks</h3>
+    <pre><code>hermes downgrade --version 0.18.0
+cp ~/.hermes/backups/h3-config-*.yaml ~/.hermes/profiles/default/config.yaml
+hermes h3 verify</code></pre>
+    <p style="margin:10px 0 0;color:var(--muted);font-size:0.88rem;">
+      H3 configs are automatically backed up to <code>~/.hermes/backups/</code> before every
+      <code>hermes update</code> and every <code>hermes h3 install</code>.
+    </p>
+  </div>
+</section>
+
+<!-- ── Common Pitfalls ── -->
+<section class="block">
+  <h2>Common Pitfalls</h2>
+
+  <div class="card">
+    <h3>Tool name drift</h3>
+    <p>Hermes renames tools between versions. The shim maps legacy names:</p>
+    <pre><code># Use "web_search" in your harness Decisions
+# Shim maps: "search" → "web_search", "browser_open" → "browser_navigate"
+# Removed tools return clear errors: "execute_code: Removed. Use terminal() instead."</code></pre>
+  </div>
+
+  <div class="card">
+    <h3>Model provider changes</h3>
+    <p>If a model your harness requests is unavailable, the shim auto-falls-back:</p>
+    <pre><code># deepseek-v4-pro unavailable → falls back to glm-5.2
+# Your harness gets a warning log, not a crash</code></pre>
+  </div>
+
+  <div class="card">
+    <h3>State assumptions</h3>
+    <p>Don't store state in memory across requests. The shim may route to different harness instances. Use <code>req.Context.History</code> for conversation state and external storage (DB, Redis) for persistent state.</p>
+  </div>
+
+  <div class="card">
+    <h3>Native-only features</h3>
+    <p>Plugin hooks and direct Hermes DB access have no H3 equivalent. If your agent depends on these, either:</p>
+    <ul>
+      <li>Refactor to use HTTP-accessible Hermes APIs</li>
+      <li>Keep a thin native shim that proxies these features over HTTP to your harness</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ── Compatibility ── -->
+<section class="block">
+  <h2>Compatibility Matrix</h2>
+
+  <div class="card">
+    <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+      <thead>
+        <tr style="text-align:left; border-bottom:1px solid var(--border);">
+          <th style="padding:8px 12px;color:var(--muted);">Hermes</th>
+          <th style="padding:8px 12px;color:var(--muted);">H3 Shim</th>
+          <th style="padding:8px 12px;color:var(--muted);">Protocol</th>
+          <th style="padding:8px 12px;color:var(--muted);">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid rgba(30,30,56,0.5);">
+          <td style="padding:8px 12px;">v0.18.0</td>
+          <td style="padding:8px 12px;">v1.0.0</td>
+          <td style="padding:8px 12px;">v1.0</td>
+          <td style="padding:8px 12px;color:var(--green);">current</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(30,30,56,0.5);">
+          <td style="padding:8px 12px;">v0.19.0</td>
+          <td style="padding:8px 12px;">v1.1.0</td>
+          <td style="padding:8px 12px;">v1.0</td>
+          <td style="padding:8px 12px;color:var(--amber);">planned</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 12px;">v0.20.0</td>
+          <td style="padding:8px 12px;">v2.0.0</td>
+          <td style="padding:8px 12px;">v2.0</td>
+          <td style="padding:8px 12px;color:var(--amber);">planned</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top:12px; color:var(--dim); font-size:0.82rem;">
+      Full matrix maintained at <code>get-h3/protocol/versions.yaml</code> — the single source of truth.
+    </p>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <p>
+    <a href="https://github.com/get-h3">get-h3 on GitHub</a> &middot;
+    Protocol v1.0 &middot;
+    Docs built from <a href="https://github.com/get-h3/h3">get-h3/h3</a>
+  </p>
+</footer>
+
+</main>
+</body>
+</html>
