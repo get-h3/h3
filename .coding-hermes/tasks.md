@@ -178,8 +178,8 @@
 
 | ID | Task | Status |
 |---|---|---|
-| QV-PROTO-01 | ajv validate every schema/example pair | 🔴 Open |
-| QV-PROTO-02 | redocly lint h3-protocol.yaml | 🔴 Open |
+| QV-PROTO-01 | ajv validate every schema/example pair | ✅ Done (23/23) |
+| QV-PROTO-02 | redocly lint h3-protocol.yaml | ✅ Done (passes CI) |
 | QV-PROTO-03 | Round-trip: Python → JSON → Go → match | 🔴 Open |
 | QV-PROTO-04 | Round-trip: Go → JSON → TS → match | 🔴 Open |
 
@@ -206,7 +206,7 @@
 
 | ID | Task | Status |
 |---|---|---|
-| QV-CROSS-01 | Scaffold → run → test: full flow < 5 min | 🔴 Open |
+| QV-CROSS-01 | Scaffold → run → test: full flow < 5 min | ✅ Done (7dd9747) |
 | QV-CROSS-02 | Install → configure → verify: full Hermes flow | 🔴 Open |
 | QV-CROSS-03 | Protocol change → SDK regenerate → test cascade | 🔴 Open |
 
@@ -331,7 +331,7 @@
 | P5 | One tag → full cascade release | ✅ |
 | P6 | External dev zero→harness < 30 min | ✅ |
 | DEPLOY | Bunker E2E: message → H3 → harness → back | 🔴 |
-| QV | All QV verifications pass real endpoints | 🔴 (12/17 done) |
+| QV | All QV verifications pass real endpoints | 🔴 (14/17 done) |
 | SEC | Auth + secrets + rate limiting | 🔴 |
 | OBS | Structured logging + metrics + tracing | 🔴 |
 | RES | Fallback, circuit breaker, backpressure | 🔴 |
