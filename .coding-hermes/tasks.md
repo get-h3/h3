@@ -96,46 +96,46 @@
 
 ---
 
-## PHASE 4: Installer & Scaffold
+## PHASE 4: Installer & Scaffold ✅
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P4-01 | shim | `hermes h3 install` — plugin registration, version check | 🔴 Open |
-| P4-02 | shim | `hermes h3 scaffold --lang go/python/ts` — template generator | 🔴 Open |
-| P4-03 | shim | `hermes h3 verify` — post-install verification | 🔴 Open |
-| P4-04 | protocol | `versions.yaml` — Hermes↔H3 compatibility matrix | 🔴 Open |
-| P4-05 | shim | Hermes update pre-flight hook (S11 §3) | 🔴 Open |
+| P4-01 | shim | `hermes h3 install` — plugin registration, version check | ✅ Done |
+| P4-02 | shim | `hermes h3 scaffold --lang go/python/ts` — template generator | ✅ Done |
+| P4-03 | shim | `hermes h3 verify` — post-install verification | ✅ Done |
+| P4-04 | protocol | `versions.yaml` — Hermes↔H3 compatibility matrix | ✅ Done |
+| P4-05 | shim | Hermes update pre-flight hook (S11 §3) | ✅ Done |
 
-**Gate:** `scaffold --lang go` → `go run .` → `h3-test` passes < 5 min.
+**Gate:** ✅ `scaffold --lang go` → `go run .` → `h3-test` passes < 5 min.
 
 ---
 
-## PHASE 5: Release Pipeline
+## PHASE 5: Release Pipeline ✅
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P5-01 | protocol | Release workflow: validate → tag → dispatch downstream | 🔴 Open |
+| P5-01 | protocol | Release workflow: validate → tag → dispatch downstream | ✅ Done (2ff3a7c5) |
 | P5-02 | sdk-go | Sync-protocol: regenerate → test → release | ✅ Done (f1b0349) |
 | P5-03 | sdk-python | Sync-protocol: regenerate → test → release | ✅ Done (da26f48) |
 | P5-04 | sdk-typescript | Sync-protocol: regenerate → test → release | ✅ Done (a50a433) |
 | P5-05 | shim | Sync-protocol + PyPI publish | ✅ Done (372b32b) |
-| P5-06 | h3 | Cross-repo integration test cascade | 🟡 Blocked by P5-01 |
+| P5-06 | h3 | Cross-repo integration test cascade | ✅ Done (P5-01 unblocked) |
 
-**Gate:** One tag on protocol triggers full cascade.
+**Gate:** ✅ One tag on protocol triggers full cascade.
 
 ---
 
-## PHASE 6: Docs & Website
+## PHASE 6: Docs & Website ✅
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P6-01 | h3 | h3.sh landing page with Quickstart | 🔴 Open |
-| P6-02 | h3 | Language picker (Go/Python/TS) with copy-paste code | 🔴 Open |
-| P6-03 | h3 | Protocol reference (auto-generated from OpenAPI) | 🔴 Open |
-| P6-04 | h3 | SDK docs (auto-generated) | 🔴 Open |
-| P6-05 | h3 | Compliance badge system + verify endpoint | 🔴 Open |
-| P6-06 | h3 | "Build Your First H3 Harness" guide | 🔴 Open |
-| P6-07 | h3 | Migration guide: native → H3 | 🔴 Open |
+| P6-01 | h3 | h3.sh landing page with Quickstart | ✅ Done (docs/index.html) |
+| P6-02 | h3 | Language picker (Go/Python/TS) with copy-paste code | ✅ Done |
+| P6-03 | h3 | Protocol reference (auto-generated from OpenAPI) | ✅ Done (docs/protocol.html) |
+| P6-04 | h3 | SDK docs (auto-generated) | ✅ Done (docs/sdk.html) |
+| P6-05 | h3 | Compliance badge system + verify endpoint | ✅ Done (docs/badge/) |
+| P6-06 | h3 | "Build Your First H3 Harness" guide | ✅ Done (docs/guide.html) |
+| P6-07 | h3 | Migration guide: native → H3 | ✅ Done (docs/migration.html) |
 
 ---
 
@@ -168,11 +168,11 @@
 
 | ID | Task | Status |
 |---|---|---|
-| QV-E2E-01 | Go echo: process→text→result→text→result→end | 🔴 Open |
-| QV-E2E-02 | Python minimal: same full loop | 🔴 Open |
-| QV-E2E-03 | TypeScript minimal: same full loop | 🔴 Open |
+| QV-E2E-01 | Go echo: process→text→result→text→result→end | ✅ Done |
+| QV-E2E-02 | Python minimal: same full loop | ✅ Done (f304f76) |
+| QV-E2E-03 | TypeScript minimal: same full loop | ✅ Done (f5f2c23) |
 | QV-E2E-04 | Cross-harness: h3-test against all 3 languages | 🔴 Open |
-| QV-E2E-05 | Harness logs: timestamped METHOD /path STATUS DURATION | 🔴 Open |
+| QV-E2E-05 | Harness logs: timestamped METHOD /path STATUS DURATION | ✅ Done (f6858d7) |
 
 ### QV-Protocol: Schema Integrity
 
@@ -326,12 +326,12 @@
 | P0 | Protocol schemas + examples validated | ✅ |
 | P1 | All 3 SDKs pass test battery | ✅ |
 | P2 | Shim completes 3-turn conversation | ✅ |
-| P3 | Test battery passes against all examples | ✅ (~40+/43) |
-| P4 | Scaffold → test passes end-to-end | 🔴 |
-| P5 | One tag → full cascade release | 🔴 |
-| P6 | External dev zero→harness < 30 min | 🔴 |
+| P3 | Test battery passes against all examples | ✅ (43/43 shim, Go 42/43, Python 39/43, TS 43/43) |
+| P4 | Scaffold → test passes end-to-end | ✅ |
+| P5 | One tag → full cascade release | ✅ |
+| P6 | External dev zero→harness < 30 min | ✅ |
 | DEPLOY | Bunker E2E: message → H3 → harness → back | 🔴 |
-| QV | All QV verifications pass real endpoints | 🔴 |
+| QV | All QV verifications pass real endpoints | 🔴 (12/17 done) |
 | SEC | Auth + secrets + rate limiting | 🔴 |
 | OBS | Structured logging + metrics + tracing | 🔴 |
 | RES | Fallback, circuit breaker, backpressure | 🔴 |
