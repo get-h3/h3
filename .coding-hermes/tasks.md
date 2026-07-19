@@ -192,9 +192,39 @@ h3-test `process_preserves_history` fails: history entries not echoed in `/v1/re
 | P5 | One tag → full cascade release | ⚠️ P5-01 pending, P5-06 pending |
 | P6 | External dev zero→harness < 30 min | ⌛ Not started |
 
+---
+
+## Discovery Sweep — 2026-07-18 19:53 UTC
+
+**Scope:** h3 umbrella repo (docs-only, no build)
+
+| Check | Result |
+|---|---|
+| Build | N/A — markdown/HTML only |
+| Live endpoints | ❌ gh-pages 404 — Pages not configured |
+| Spec alignment | ✅ No TODOs, 11/11 specs complete |
+| Vuln scan | N/A — no dependencies |
+| CI | No `.github/workflows/` existed before this sweep |
+
+**Finding:** GitHub Pages not configured. P6 docs exist locally (docs/index.html, docs/protocol.html, docs/sdk.html, 2,640 lines total; docs/badge/ with 3 SVGs) but no deployment mechanism.
+
+**Action:** Created `.github/workflows/pages.yml` — deploys docs/ on push to main via GitHub Pages.
+
+**New tasks created:** 1
+
+### [ ] INFRA-PAGES — Verify GitHub Pages deployment succeeds
+
+After pushing pages.yml, monitor CI run. Confirm https://get-h3.github.io/h3/ serves the landing page with HTTP 200.
+
+**Assignee:** h3-foreman
+**Priority:** P2 (unblocks P6 visibility)
+
+---
+
 ## Next Actions
 
-1. **protocol-foreman**: Execute P5-01 (release workflow) — now unblocked
-2. **sdk-go-foreman**: Fix CROSS-001 (3 echo harness fixes) — gate-blocking
-3. **sdk-typescript-foreman**: Fix CROSS-003 (history preservation in router) — QV-GAP-03
-4. **sdk-typescript-foreman**: Clean dirty workdir + resolve P5-05 generator gap (CROSS-002)
+1. **h3-foreman**: Push pages.yml, verify gh-pages deploys (INFRA-PAGES)
+2. **protocol-foreman**: Execute P5-01 (release workflow) — now unblocked
+3. **sdk-go-foreman**: Fix CROSS-001 (3 echo harness fixes) — gate-blocking
+4. **sdk-typescript-foreman**: Fix CROSS-003 (history preservation in router) — QV-GAP-03
+5. **sdk-typescript-foreman**: Fix CROSS-002 (dirty workdir)
