@@ -1,6 +1,7 @@
 # get-h3 — Cross-Repo Task Board
 
-> Discovery sweep: 2026-07-18 17:21 UTC. Verified against all 6 repos.
+> Discovery sweep: 2026-07-19 13:18 UTC. Verified against all 6 repos.
+> Foreman tick: 2026-07-19 08:59 UTC. P6-07 migration guide written.
 
 ## PHASE -1: Spec Completion ✅
 
@@ -22,7 +23,7 @@
 
 ---
 
-## PHASE 0: Protocol (Single Source of Truth) ✅
+## PHASE 0: Protocol (Single Source of Truth) ⚠️
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
@@ -31,9 +32,9 @@
 | P0-03 | protocol | Write 8 example payloads under examples/decisions/ | ✅ Done |
 | P0-04 | protocol | Validation script + round-trip tests | ✅ Done |
 | P0-05 | protocol | CI: validate on PR, release on tag | ✅ Done |
-| P0-06 | protocol | Tag v1.0.0 | ⌛ pending (after P5-01) |
+| P0-06 | protocol | Tag v1.0.0 + GitHub Release | ⚠️ Tag exists (v1.0.0) but Release workflow FAILED (run 29229442904, 2026-07-13). No GitHub Release created, no downstream dispatch. Root cause: `cd tests && npm ci` — tests dir may not exist or missing package.json. |
 
-**Gate: Schemas + examples validated. CI green. ✅ MET (P0-06 deferred to first release).**
+**Gate: Schemas + examples validated. CI green. ⚠️ P0-06 tag exists but release process incomplete.**
 
 ---
 
@@ -116,14 +117,14 @@
 
 | ID | Repo | Task | Status |
 |---|---|---|---|
-| P5-01 | protocol | Release workflow: validate → tag → dispatch to downstream | ⚠️ UNBLOCKED (SDK sync workflows exist now) |
+| P5-01 | protocol | Release workflow: validate → tag → dispatch to downstream | ⚠️ Tag exists (v1.0.0), but release.yml FAILED (run 29229442904, 2026-07-13). No GitHub Release. Workflow lacks dispatch step. Needs protocol-foreman fix. |
 | P5-02 | sdk-go | Sync-protocol workflow: regenerate → test → release | ✅ Done |
 | P5-03 | sdk-python | Sync-protocol workflow: regenerate → test → release | ✅ Done |
 | P5-04 | sdk-typescript | Sync-protocol workflow: regenerate → test → release | ✅ Done |
 | P5-05 | shim | Sync-protocol workflow + PyPI publish | ✅ Done |
 | P5-06 | h3 | Cross-repo integration test: protocol change → all SDKs update → test battery passes | ⌛ pending (needs P5-01 first) |
 
-**Gate: P5-01 unblocked — all receiver workflows exist. ✅ PROCEED.**
+**Gate: ⚠️ P5-01 blocked on protocol release workflow fix. SDK sync workflows ready. P0-06 tag exists.**
 
 ---
 
@@ -137,9 +138,9 @@
 | P6-04 | h3 | SDK docs (auto-generated) | ✅ Done (docs/sdk.html, 950 lines) |
 | P6-05 | h3 | Compliance badge system + verify endpoint | ✅ Done (3 badge SVGs, copy-paste code, h3-test section) |
 | P6-06 | h3 | "Build Your First H3 Harness" guide | ✅ Done (docs/guide.html, 5-step walkthrough: setup → implement → start → test → wire) |
-| P6-07 | h3 | Migration guide: native → H3 | pending — no migration content in any page |
+| P6-07 | h3 | Migration guide: native → H3 | ✅ Done (docs/migration.html, 694 lines, 7-step walkthrough: audit → SDK → implement → start → config → test → cutover, upgrade survival, pitfalls, compat matrix, indexed from landing page nav) |
 
-**Gate: Website deployed, landing page + protocol + SDK refs + guide live. ⚠️ P6-07 migration guide remains.**
+**Gate: Website deployed, 5 pages live. ✅ MET (P6-07 done). S10 checklist: migration guide ✓, example harnesses remain (echo done, RAG + code reviewer not started), FAQ not started.**
 
 ---
 
@@ -164,7 +165,7 @@ sdk-go/examples/echo/main.go needed 3 fixes (identified by shim CI sweep):
 
 ### [x] CROSS-002 — sdk-typescript: clean up dirty workdir + reconcile P5-05 ✅
 
-Workdir now clean (`git status --short` empty at 5056ec4). P5-05 generator fidelity resolved (commit 6cc68fb). 
+Workdir now clean (`git status --short` empty at 5056ec4). P5-05 generator fidelity resolved (commit 6cc68fb).
 
 **Resolved:** sdk-typescript@6cc68fb + clean workdir verified 2026-07-18 20:43 UTC.
 
@@ -180,6 +181,8 @@ h3-test `process_preserves_history` fails: history entries not echoed in `/v1/re
 **h3-test before fix:** 41/43 (history + streaming failures)
 **Expected after fix:** 42/43 (streaming failure only, known echo-harness gap)
 
+**Status 2026-07-19:** sdk-typescript@133c16e (zombie tick #6) — no CROSS-003 commits. Scheduler dispatching despite Enabled:false.
+
 **Blocks:** PHASE 3 gate (needs 43/43 from all 3 echo harnesses)
 **Assignee:** sdk-typescript-foreman
 **Priority:** P2 (gate-blocking but streaming gap remains)
@@ -191,47 +194,19 @@ h3-test `process_preserves_history` fails: history entries not echoed in `/v1/re
 | Phase | Gate | Status |
 |---|---|---|
 | P-1 | 11/11 specs written | ✅ MET |
-| P0 | Protocol schemas + examples validated | ✅ MET |
+| P0 | Protocol schemas + examples validated | ⚠️ Tag v1.0.0 exists but Release workflow FAILED |
 | P1 | All 3 SDKs pass test battery | ⚠️ Go: 43/43 ✅, TS: 41/43, Py: 39/43 (shim payload gaps) |
 | P2 | Shim completes 3-turn conversation | ✅ MET |
 | P3 | Test battery passes against all examples | ⚠️ BLOCKED on CROSS-003 (TS history) + shim payload fixes (Py) |
 | P4 | Scaffold → test passes end-to-end | ⚠️ P4-05 pending |
-| P5 | One tag → full cascade release | ⚠️ P5-01 pending, P5-06 pending |
-| P6 | External dev zero→harness < 30 min | ⚠️ P6-01–P6-05 done (website live), P6-06 partial, P6-07 pending |
-
----
-
-## Discovery Sweep — 2026-07-19 13:18 UTC
-
-**Scope:** h3 umbrella repo — P6 audit (website verification)
-
-| Check | Result |
-|---|---|
-| Pages | ✅ https://get-h3.github.io/h3/ — HTTP 200, deployed |
-| P6-01 Landing | ✅ docs/index.html (811 lines, 44KB) — hero, architecture SVG, quickstart |
-| P6-02 Language picker | ✅ Tab-based Go/Python/TS with copy-paste code |
-| P6-03 Protocol ref | ✅ docs/protocol.html (879 lines, 40KB) — OpenAPI endpoints, decision types |
-| P6-04 SDK docs | ✅ docs/sdk.html (950 lines, 40KB) — Go/Python/TS SDK reference |
-| P6-05 Badges | ✅ docs/badge/ (compliant, not-compliant, unknown SVGs) + copy-paste code |
-| P6-06 Harness guide | ⚠️ Quickstart exists; missing: RAG example, code review example, troubleshooting |
-| P6-07 Migration guide | ❌ No migration content in any page — needs docs/migration.html |
-| Cross-repo blockers | CROSS-003 still open (sdk-typescript history preservation, assigned to sdk-typescript-foreman) |
-| h3 repo | ✅ Clean except tasks.md (this board update) |
-
-### [x] INFRA-PAGES — Verify GitHub Pages deployment succeeds ✅
-
-Pages workflow created (`.github/workflows/pages.yml`), pushed, and deployed.
-- CI run: [29667911668](https://github.com/get-h3/h3/actions/runs/29667911668) — success
-- Deployed: https://get-h3.github.io/h3/ — HTTP 200, 44KB landing page
-
-**Assignee:** h3-foreman
-**Priority:** P2 (unblocks P6 visibility)
+| P5 | One tag → full cascade release | ⚠️ P5-01 failed (release workflow broken), P5-06 pending |
+| P6 | External dev zero→harness < 30 min | ⚠️ P6-01–P6-07 done, example harnesses + FAQ remain |
 
 ---
 
 ## Next Actions
 
-1. **sdk-typescript-foreman**: Fix CROSS-003 (history preservation in `createH3Router`) — gate-blocking PHASE 3 at 41/43
-2. **protocol-foreman**: Execute P5-01 (release workflow: validate → tag → dispatch) — unblocked, all receiver workflows exist
-3. **h3-foreman**: P6-07 migration guide (native → H3) — next pending task; S11 spec provides full content outline
-4. **shim-foreman**: P4-05 Hermes update pre-flight hook — still pending
+1. **sdk-typescript-foreman**: Fix CROSS-003 (history preservation in `createH3Router`) — gate-blocking PHASE 3 at 41/43. Also: stop zombie ticks (scheduler dispatching despite Enabled:false).
+2. **protocol-foreman**: Fix P5-01 release workflow — run 29229442904 failed (`cd tests && npm ci`). Add downstream dispatch to SDK sync workflows after successful release.
+3. **h3-foreman**: P6 example harnesses (RAG, code review) + FAQ page.
+4. **shim-foreman**: P4-05 Hermes update pre-flight hook — still pending.
