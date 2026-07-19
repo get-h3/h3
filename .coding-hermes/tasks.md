@@ -92,11 +92,11 @@
 **h3-test results against SDK echo harnesses:**
 | Harness | Score | Notes |
 |---|---|---|
-| sdk-go echo | 42/43 | 1 fail: history preservation (echo harness always returns `Finished: true`) |
+| sdk-go echo | 43/43 ✅ | Fixed in sdk-go@6f1aaa1 — capabilities, streaming, history echo |
 | sdk-python echo | 39/43 | 4 fails: shim-side payload gaps (fixtures need spec-compliant payloads) |
-| sdk-typescript echo | 41/43 | 2 fails: streaming (finished=false), history preservation. Echo example created (sdk-typescript/examples/echo/). QV-GAP-03 filed for history. |
+| sdk-typescript echo | 41/43 | 2 fails: streaming (finished=false), history preservation. CROSS-003 filed. |
 
-**Gate: 43/43 against ALL 3 examples. ⚠️ NOT MET — sdk-go echo needs 3 fixes.**
+**Gate: 43/43 against ALL 3 examples. ⚠️ NOT MET — sdk-typescript needs 2 fixes, sdk-python needs 4 (shim-side).**
 
 ---
 
@@ -143,13 +143,16 @@
 
 ## CROSS-REPO BLOCKERS
 
-### [ ] CROSS-001 — sdk-go echo harness: fix 3 issues to reach 43/43 h3-test
+### [x] CROSS-001 — sdk-go echo harness: fix 3 issues to reach 43/43 h3-test ✅
 
-sdk-go/examples/echo/main.go needs 3 fixes (identified by shim CI sweep):
+sdk-go/examples/echo/main.go needed 3 fixes (identified by shim CI sweep):
 
 1. Health(): add `Capabilities: []protocol.DecisionType{protocol.DecisionText}`
 2. OnProcess(): detect "do not finish" → `Finished: false`
 3. OnProcess(): add `History: req.Context.History` to returned Decision
+
+**Resolved:** sdk-go@6f1aaa1 — "fix: echo harness — 43/43 compliance, add capabilities, streaming, history echo"
+**Verified by:** shim@3b48554 — "mark CI compliance task complete — 43/43 PASS"
 
 **Blocks:** PHASE 3 gate, shim CI compliance job (40/43 → 43/43)
 **Assignee:** sdk-go-foreman
@@ -157,9 +160,11 @@ sdk-go/examples/echo/main.go needs 3 fixes (identified by shim CI sweep):
 
 ---
 
-### [ ] CROSS-002 — sdk-typescript: clean up dirty workdir + reconcile P5-05
+### [x] CROSS-002 — sdk-typescript: clean up dirty workdir + reconcile P5-05 ✅
 
-Modified files in workdir (`scripts/generate-schemas.ts`, `src/protocol.ts`) + untracked `src/protocol.ts.handwritten`. P5-05 generator fidelity gap open.
+Workdir now clean (`git status --short` empty at 5056ec4). P5-05 generator fidelity resolved (commit 6cc68fb). 
+
+**Resolved:** sdk-typescript@6cc68fb + clean workdir verified 2026-07-18 20:43 UTC.
 
 **Assignee:** sdk-typescript-foreman
 **Priority:** P2 (cosmetic, workdir hygiene)
@@ -185,9 +190,9 @@ h3-test `process_preserves_history` fails: history entries not echoed in `/v1/re
 |---|---|---|
 | P-1 | 11/11 specs written | ✅ MET |
 | P0 | Protocol schemas + examples validated | ✅ MET |
-| P1 | All 3 SDKs pass test battery | ⚠️ Go: 42/43, TS: 43/43, Py: 39/43 (shim payload gaps) |
+| P1 | All 3 SDKs pass test battery | ⚠️ Go: 43/43 ✅, TS: 41/43, Py: 39/43 (shim payload gaps) |
 | P2 | Shim completes 3-turn conversation | ✅ MET |
-| P3 | Test battery passes against all examples | ⚠️ BLOCKED on CROSS-001 |
+| P3 | Test battery passes against all examples | ⚠️ BLOCKED on CROSS-003 (TS history) + shim payload fixes (Py) |
 | P4 | Scaffold → test passes end-to-end | ⚠️ P4-05 pending |
 | P5 | One tag → full cascade release | ⚠️ P5-01 pending, P5-06 pending |
 | P6 | External dev zero→harness < 30 min | ⌛ Not started |
@@ -212,9 +217,11 @@ h3-test `process_preserves_history` fails: history entries not echoed in `/v1/re
 
 **New tasks created:** 1
 
-### [ ] INFRA-PAGES — Verify GitHub Pages deployment succeeds
+### [x] INFRA-PAGES — Verify GitHub Pages deployment succeeds ✅
 
-After pushing pages.yml, monitor CI run. Confirm https://get-h3.github.io/h3/ serves the landing page with HTTP 200.
+Pages workflow created (`.github/workflows/pages.yml`), pushed, and deployed.
+- CI run: [29667911668](https://github.com/get-h3/h3/actions/runs/29667911668) — success
+- Deployed: https://get-h3.github.io/h3/ — HTTP 200, 44KB landing page
 
 **Assignee:** h3-foreman
 **Priority:** P2 (unblocks P6 visibility)
