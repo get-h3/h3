@@ -336,9 +336,9 @@
 || DOC-02 | protocol | Missing README.md (schema authors need setup guide) | ✅ Done (f772534) |
 | DOC-03 | protocol | Missing CONTRIBUTING.md | ✅ Done (9c43360) |
 | DOC-04 | shim | Missing CONTRIBUTING.md | ✅ Done (637c037) |
-| DOC-05 | sdk-go | Missing CONTRIBUTING.md | 🔴 Open |
-| DOC-06 | sdk-python | Missing CONTRIBUTING.md | 🔴 Open |
-| DOC-07 | sdk-typescript | Missing CONTRIBUTING.md | 🔴 Open |
+| DOC-05 | sdk-go | Missing CONTRIBUTING.md | ✅ Done (bfec877) |
+| DOC-06 | sdk-python | Missing CONTRIBUTING.md | ✅ Done (3ed6cc6) |
+| DOC-07 | sdk-typescript | Missing CONTRIBUTING.md | ✅ Done (df6e7fb) |
 
 ### DEPS: Outdated Packages
 
