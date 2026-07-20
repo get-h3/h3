@@ -191,10 +191,10 @@
 
 | ID | Task | Status |
 |---|---|---|
-| QV-SDK-01 | Go SDK validation rejects missing fields with structured error | 🔴 Open |
-| QV-SDK-02 | Go SDK auto-generates decision_id when empty | 🔴 Open |
-| QV-SDK-03 | Python Pydantic validation matches JSON Schema | 🔴 Open |
-| QV-SDK-04 | TS Zod validation matches JSON Schema | 🔴 Open |
+| QV-SDK-01 | Go SDK validation rejects missing fields with structured error | ✅ Done (sdk-go@protocol/validate.go — structured fmt.Errorf for all required fields, 100% coverage) |
+| QV-SDK-02 | Go SDK auto-generates decision_id when empty | → PROPAGATED (sdk-go) |
+| QV-SDK-03 | Python Pydantic validation matches JSON Schema | → MAPPED to sdk-python GAP-ND (Optional fields stripped by `make generate`) |
+| QV-SDK-04 | TS Zod validation matches JSON Schema | → MAPPED to sdk-typescript MAINT-04 (FIELD_OVERRIDES for nested props) |
 | QV-SDK-05 | Cross-language wire format consistency | 🔴 Open |
 | QV-SDK-06 | FIX: Python echo harness 15/43 — Pydantic models reject optional fields. Fixed: context.config.max_iterations and session_state.started_at Optional (688cf2e), Message.timestamp, Identity.user_id, Identity.user_name Optional (b92a80c). Result: 40/43. | ✅ Done (b92a80c) |
 
@@ -203,9 +203,9 @@
 | ID | Task | Status |
 |---|---|---|
 | QV-SHIM-01 | h3-test 43/43 against live Go harness | ✅ Done (shim@9839091) |
-| QV-SHIM-02 | Test report JSON matches TestReport schema | 🔴 Open |
-| QV-SHIM-03 | Shim handles harness timeout gracefully | 🔴 Open |
-| QV-SHIM-04 | Health check detects dead harness, falls back to native | 🔴 Open |
+| QV-SHIM-02 | Test report JSON matches TestReport schema | → PROPAGATED (shim) |
+| QV-SHIM-03 | Shim handles harness timeout gracefully | → PROPAGATED (shim) |
+| QV-SHIM-04 | Health check detects dead harness, falls back to native | → PROPAGATED (shim) |
 
 ### QV-Cross: End-to-End Integration
 
