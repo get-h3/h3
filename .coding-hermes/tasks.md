@@ -146,17 +146,18 @@
 
 | ID | Task | Status |
 |---|---|---|
-| DEPLOY-01 | Spawn persistent bunker agent (24h+ TTL) | 🔴 Open |
-| DEPLOY-02 | Push `h3-echo` + `hermes-h3` images to ttl.sh | 🔴 Open |
-| DEPLOY-03 | Deploy echo harness container in bunker on :9191 | 🔴 Open |
-| DEPLOY-04 | Deploy Hermes+H3 container, harness config pointing at echo | 🔴 Open |
-| DEPLOY-05 | Configure test session routing (platform+chat_id → harness) | 🔴 Open |
-| DEPLOY-06 | Send test message; verify full H3 round-trip | 🔴 Open |
-| DEPLOY-07 | Verify harness logs (METHOD /path STATUS DURATION) | 🔴 Open |
-| DEPLOY-08 | Write `DEPLOY.md` — deployment guide | 🔴 Open |
-| DEPLOY-09 | Run `h3-test` 43/43 from inside bunker | 🔴 Open |
+| DEPLOY-01 | Spawn persistent bunker agent (24h+ TTL) | 🔴 Blocked — no bunker server connected (`bunker connect` needed) |
+| DEPLOY-02 | Push `h3-echo` + `hermes-h3` images to ttl.sh | 🔴 Blocked — needs bunker agent first |
+| DEPLOY-03 | Deploy echo harness container in bunker on :9191 | 🔴 Blocked — needs bunker agent first |
+| DEPLOY-04 | Deploy Hermes+H3 container, harness config pointing at echo | 🔴 Blocked — needs bunker agent first |
+| DEPLOY-05 | Configure test session routing (platform+chat_id → harness) | 🔴 Blocked — needs running containers |
+| DEPLOY-06 | Send test message; verify full H3 round-trip | 🔴 Blocked — needs running infrastructure |
+| DEPLOY-07 | Verify harness logs (METHOD /path STATUS DURATION) | 🔴 Blocked — needs running infrastructure |
+| DEPLOY-08 | Write `DEPLOY.md` — deployment guide | 🔴 Open — can be done independently |
+| DEPLOY-09 | Run `h3-test` 43/43 from inside bunker | 🔴 Blocked — needs running infrastructure |
 
 **Gate:** Message → H3 shim → echo harness → Hermes delivers. Agent loop swapped.
+**Blocker:** No bunker server connected. `bunker connect` must be run first.
 
 ---
 
@@ -192,7 +193,7 @@
 | QV-SDK-03 | Python Pydantic validation matches JSON Schema | 🔴 Open |
 | QV-SDK-04 | TS Zod validation matches JSON Schema | 🔴 Open |
 | QV-SDK-05 | Cross-language wire format consistency | 🔴 Open |
-| QV-SDK-06 | FIX: Python echo harness 15/43 — Pydantic models reject optional fields (context.config.max_iterations, session_state.started_at). Generator must produce lenient defaults matching protocol schema permissive semantics. Repo: sdk-python. | 🔴 Open |
+| QV-SDK-06 | FIX: Python echo harness 15/43 — Pydantic models reject optional fields (context.config.max_iterations, session_state.started_at). Root cause: `_blank_context()` sends `config: {}` and `session_state: {}` (empty dicts). Pydantic requires `max_iterations: int` and `started_at: str` with no defaults. Fix: make both `Optional[int] = None` / `Optional[str] = None` in protocol.py. Repo: sdk-python. | 🔴 Open |
 
 ### QV-Shim: Hermes Integration
 
