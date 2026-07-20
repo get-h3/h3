@@ -1,0 +1,24 @@
+{
+  "decision": "wait",
+  "decision_id": "dec-rt-wait",
+  "history": [
+    {
+      "content": "Hello",
+      "role": "user"
+    },
+    {
+      "content": "Hi! How can I help?",
+      "role": "assistant"
+    }
+  ],
+  "tool_call": null,
+  "llm_call": null,
+  "text": null,
+  "wait": {
+    "reason": "Waiting for external API response",
+    "duration_seconds": 60,
+    "poll_endpoint": "https://api.example.com/status"
+  },
+  "delegate": null,
+  "end": null
+}

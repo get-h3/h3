@@ -1,0 +1,77 @@
+{
+  "context": {
+    "config": {
+      "max_iterations": 100,
+      "timeout_seconds": 300,
+      "max_tool_calls_per_turn": 10,
+      "project_dir": "/home/test/project",
+      "temperature": 0.7
+    },
+    "history": [
+      {
+        "content": "Hello",
+        "role": "user"
+      },
+      {
+        "content": "Hi! How can I help?",
+        "role": "assistant"
+      }
+    ],
+    "models": [
+      {
+        "context_window": 1000000,
+        "name": "deepseek-v4-pro",
+        "provider": "deepseek",
+        "cost_per_1k_input": 0.005,
+        "cost_per_1k_output": 0.015,
+        "supports_tool_calling": true,
+        "supports_vision": true
+      }
+    ],
+    "session_state": {
+      "cost_so_far": 0.0,
+      "started_at": "2026-07-20T12:00:00Z",
+      "total_llm_calls": 0,
+      "total_tool_calls": 0,
+      "turn_count": 1
+    },
+    "tools": [
+      {
+        "description": "Read a file",
+        "name": "read_file",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    ],
+    "memory": "user prefers concise answers",
+    "skills": [
+      "coding-hermes-foreman"
+    ]
+  },
+  "identity": {
+    "chat_id": "-1001234567890",
+    "platform": "telegram",
+    "user_id": "987654",
+    "user_name": "testuser",
+    "thread_id": "12345"
+  },
+  "message": {
+    "content": "Please analyze this image.",
+    "role": "user",
+    "timestamp": "2026-07-20T12:00:00Z",
+    "attachments": [
+      {
+        "mime_type": "image/png",
+        "type": "image",
+        "url": "https://example.com/img.png"
+      }
+    ]
+  },
+  "session_id": "sess-rt-001"
+}

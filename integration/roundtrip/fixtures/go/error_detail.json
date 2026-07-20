@@ -1,0 +1,7 @@
+{
+  "code": "SESSION_NOT_FOUND",
+  "message": "Session sess-999 was not found",
+  "details": {
+    "session_id": "sess-999"
+  }
+}

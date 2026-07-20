@@ -1,0 +1,16 @@
+{
+  "model": "deepseek-v4-pro",
+  "system_prompt": "You are a helpful assistant.",
+  "messages": [
+    {
+      "role": "user",
+      "content": "What is the weather?"
+    },
+    {
+      "role": "assistant",
+      "content": "Let me check that for you."
+    }
+  ],
+  "temperature": 0.7,
+  "max_tokens": 4096
+}

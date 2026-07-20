@@ -1,0 +1,21 @@
+{
+  "decision": "delegate",
+  "decision_id": "dec-rt-delegate",
+  "history": [
+    {
+      "role": "user",
+      "content": "Hello"
+    },
+    {
+      "role": "assistant",
+      "content": "Hi! How can I help?"
+    }
+  ],
+  "delegate": {
+    "agent": "code-reviewer",
+    "task": "Review the auth module",
+    "context": "Focus on SQL injection",
+    "model": "deepseek-v4-flash",
+    "provider": "opencode-go"
+  }
+}

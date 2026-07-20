@@ -1,0 +1,17 @@
+{
+  "content": "Please analyze this image.",
+  "role": "user",
+  "timestamp": "2026-07-20T12:00:00Z",
+  "attachments": [
+    {
+      "mime_type": "image/png",
+      "type": "image",
+      "url": "https://example.com/img.png"
+    },
+    {
+      "mime_type": "application/pdf",
+      "type": "file",
+      "url": "https://example.com/doc.pdf"
+    }
+  ]
+}

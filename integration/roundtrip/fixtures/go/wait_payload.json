@@ -1,0 +1,5 @@
+{
+  "reason": "Waiting for file upload to complete",
+  "duration_seconds": 30,
+  "poll_endpoint": "https://example.com/status"
+}

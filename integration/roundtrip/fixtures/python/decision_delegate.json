@@ -1,0 +1,26 @@
+{
+  "decision": "delegate",
+  "decision_id": "dec-rt-delegate",
+  "history": [
+    {
+      "content": "Hello",
+      "role": "user"
+    },
+    {
+      "content": "Hi! How can I help?",
+      "role": "assistant"
+    }
+  ],
+  "tool_call": null,
+  "llm_call": null,
+  "text": null,
+  "wait": null,
+  "delegate": {
+    "task": "Review the auth module",
+    "agent": "code-reviewer",
+    "context": "Focus on SQL injection",
+    "model": "deepseek-v4-flash",
+    "provider": "opencode-go"
+  },
+  "end": null
+}

@@ -1,0 +1,12 @@
+{
+  "name": "read_file",
+  "description": "Read a file from disk",
+  "parameters": {
+    "properties": {
+      "path": {
+        "type": "string"
+      }
+    },
+    "type": "object"
+  }
+}

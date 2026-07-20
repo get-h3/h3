@@ -1,0 +1,7 @@
+{
+  "task": "Review the authentication module for SQL injection vulnerabilities",
+  "agent": "code-reviewer",
+  "context": "Focus on the login endpoint and password reset flow",
+  "model": "deepseek-v4-flash",
+  "provider": "opencode-go"
+}
