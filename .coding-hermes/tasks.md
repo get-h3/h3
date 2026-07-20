@@ -329,7 +329,7 @@
 
 | ID | Repo | Gap | Status |
 |---|---|---|---|
-| DOC-01 | h3 | Missing README.md (has AGENTS.md, no user-facing readme) | 🔴 Open |
+| DOC-01 | h3 | Missing README.md (has AGENTS.md, no user-facing readme) | ✅ Done (this tick) |
 | DOC-02 | protocol | Missing README.md (schema authors need setup guide) | 🔴 Open |
 | DOC-03 | protocol | Missing CONTRIBUTING.md | 🔴 Open |
 | DOC-04 | shim | Missing CONTRIBUTING.md | 🔴 Open |
