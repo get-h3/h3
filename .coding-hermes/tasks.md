@@ -185,7 +185,7 @@
 | QV-PROTO-01 | ajv validate every schema/example pair | ✅ Done (23/23 pairs, per aae751d) |
 | QV-PROTO-02 | redocly lint h3-protocol.yaml | ✅ Done (lint passes, per aae751d) |
 | QV-PROTO-03 | Round-trip: Python → JSON → Go → match | ✅ Done |
-| QV-PROTO-04 | Round-trip: Go → JSON → TS → match | 🔴 Open |
+| QV-PROTO-04 | Round-trip: Go → JSON → TS → match | ✅ Done (6662b34) |
 
 ### QV-SDK: Implementation Correctness
 
@@ -415,7 +415,7 @@
 | P5 | One tag → full cascade release | ✅ |
 | P6 | External dev zero→harness < 30 min | ✅ |
 | DEPLOY | Bunker E2E: message → H3 → harness → back | 🔴 |
-| QV | All QV verifications pass real endpoints | 🔴 17/18 |
+| QV | All QV verifications pass real endpoints | 🔴 18/19 |
 | ND | Never Done audit: all 11 checks pass | 🔴 22 findings |
 | SEC | Auth + secrets + rate limiting | 🔴 |
 | OBS | Structured logging + metrics + tracing | 🔴 |
