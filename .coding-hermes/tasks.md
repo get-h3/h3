@@ -357,7 +357,14 @@
 
 | ID | Repo | Gap | Status |
 |---|---|---|---|
-| QUAL-01 | All repos | TODO/FIXME/HACK markers found in source — each one is a task | 🔴 Open |
+|| QUAL-01 | All repos | TODO/FIXME/HACK markers found in source — each one is a task | 🔴 Open |
+|| QUAL-02 | h3 | `.gitignore` `.vfs/` was too broad (blocked `.vfs/.dirty` tracking for Hilo cross-machine sync). Fixed to narrow scope to cache files only. | ✅ Fixed this tick |
+
+### DUCKBRAIN: Knowledge Sync
+
+| ID | Gap | Status |
+|---|---|---|
+| DUCK-01 | DuckBrain namespace `h3` has connection error — MCP transport issue. Namespace `get-h3` doesn't exist. No persistent project memory across ticks. | 🔴 Open |
 
 ### WIRING: Middle-Out Gaps
 

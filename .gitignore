@@ -6,5 +6,11 @@ __pycache__/
 .pytest_cache/
 dist/
 *.egg-info/
-.vfs/
+
+# Hilo — local cache files (rebuildable)
+.vfs/graph/graph.db
+.vfs/graph/graph.db.wal
+.vfs/graph/.last_warm
+
+# GitReins — task state (rebuildable from board)
 .gitreins/tasks.yaml
