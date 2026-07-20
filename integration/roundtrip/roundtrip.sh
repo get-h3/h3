@@ -93,6 +93,20 @@ else
     phase_fail "Python verification of Go fixtures"
 fi
 
+# ─── Phase 3: Go → TypeScript ──────────────────────────────────
+
+section "PHASE 3: Go generates → TypeScript verifies"
+
+echo "Step 3a: Go fixtures already generated in Phase 2..."
+phase_pass "Go fixture generation (reuse from Phase 2)"
+
+echo "Step 3b: Verify with TypeScript..."
+if npx tsx verify_go_fixtures.ts; then
+    phase_pass "TypeScript verification of Go fixtures"
+else
+    phase_fail "TypeScript verification of Go fixtures"
+fi
+
 # ─── Results ────────────────────────────────────────────────────
 
 section "RESULTS"
@@ -102,11 +116,11 @@ echo "Passed: ${pass_count}  Failed: ${fail_count}"
 echo ""
 
 if [ "$fail_count" -eq 0 ]; then
-    echo -e "${GREEN}QV-PROTO-03: Cross-language protocol round-trip verification PASSED${NC}"
-    echo "Python ↔ Go wire format is consistent."
+    echo -e "${GREEN}QV-PROTO-04: Cross-language protocol round-trip verification PASSED${NC}"
+    echo "Python ↔ Go ↔ TypeScript wire format is consistent."
     exit 0
 else
-    echo -e "${RED}QV-PROTO-03: Cross-language protocol round-trip verification FAILED${NC}"
+    echo -e "${RED}QV-PROTO-04: Cross-language protocol round-trip verification FAILED${NC}"
     echo "${fail_count} phase(s) failed. See above for details."
     exit 1
 fi
