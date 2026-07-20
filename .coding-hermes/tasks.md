@@ -170,12 +170,12 @@
 | ID | Task | Status |
 |---|---|---|
 | QV-E2E-01 | Go echo: process→text→result→text→result→end | ✅ Done (re-verified 2026-07-19: 43/43 PASS, 0.20s) |
-| QV-E2E-02 | Python minimal: same full loop | 🟡 40/43 (was 15). Pydantic Optional fixes committed (688cf2e, b92a80c). 3 remaining: process_text_finished_false, process_preserves_history, session_not_found 404. |
-| QV-E2E-02a | Echo harness: respect finished=false from process request (currently always returns True) | 🔴 Open |
-| QV-E2E-02b | Echo harness: preserve message history across turns (history shrank 4→0) | 🔴 Open |
-| QV-E2E-02c | Echo harness: return 404 for unknown session_id instead of 200 | 🔴 Open |
+| QV-E2E-02 | Python echo: same full loop | ✅ Done (sdk-python@64ae951 — 43/43 PASS) |
+| QV-E2E-02a | Echo harness: respect finished=false (content-based streaming detection) | ✅ Done (sdk-python@64ae951) |
+| QV-E2E-02b | Echo harness: preserve message history across turns | ✅ Done (sdk-python@64ae951) |
+| QV-E2E-02c | Echo harness: return 404 for unknown session_id via get_session_info hook | ✅ Done (sdk-python@64ae951) |
 | QV-E2E-03 | TypeScript minimal: same full loop | ✅ Done (sdk-typescript@5056ec4) |
-| QV-E2E-04 | Cross-harness: h3-test against all 3 languages | 🔴 Open |
+| QV-E2E-04 | Cross-harness: h3-test against all 3 languages | ✅ Done — Go 43/43, Python 43/43 (sdk-python@64ae951), TS 43/43 |
 | QV-E2E-05 | Harness logs: timestamped METHOD /path STATUS DURATION | 🔴 Open |
 
 ### QV-Protocol: Schema Integrity
@@ -415,7 +415,7 @@
 | P5 | One tag → full cascade release | ✅ |
 | P6 | External dev zero→harness < 30 min | ✅ |
 | DEPLOY | Bunker E2E: message → H3 → harness → back | 🔴 |
-| QV | All QV verifications pass real endpoints | 🔴 14/18 |
+| QV | All QV verifications pass real endpoints | 🔴 17/18 |
 | ND | Never Done audit: all 11 checks pass | 🔴 22 findings |
 | SEC | Auth + secrets + rate limiting | 🔴 |
 | OBS | Structured logging + metrics + tracing | 🔴 |
