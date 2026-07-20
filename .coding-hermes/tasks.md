@@ -174,8 +174,8 @@
 | QV-E2E-02a | Echo harness: respect finished=false (content-based streaming detection) | ✅ Done (sdk-python@64ae951) |
 | QV-E2E-02b | Echo harness: preserve message history across turns | ✅ Done (sdk-python@64ae951) |
 | QV-E2E-02c | Echo harness: return 404 for unknown session_id via get_session_info hook | ✅ Done (sdk-python@64ae951) |
-|| QV-E2E-03 | TypeScript minimal: same full loop | 🔴 42/43 — 1 failure: process_preserves_history (history shrank 4→0); verified 2026-07-20 15:22 UTC |
-|| QV-E2E-04 | Cross-harness: h3-test against all 3 languages | 🔴 Go 43/43, Python 43/43, TS 42/43 — 1 failure (process_preserves_history); verified 2026-07-20 15:22 UTC |
+|| QV-E2E-03 | TypeScript minimal: same full loop | 🔄 42/43 — 1 failure: process_text_finished_false (echo harness doesn't detect partial content); process_preserves_history FIXED this tick (sdk-typescript@60b8b89) |
+|| QV-E2E-04 | Cross-harness: h3-test against all 3 languages | 🔄 Go 43/43, Python 43/43, TS 42/43 — 1 failure (process_text_finished_false, echo harness); verified 2026-07-20 17:37 UTC |
 | QV-E2E-05 | Harness logs: timestamped METHOD /path STATUS DURATION | ✅ Done — all 3 SDKs: Python middleware.py (logger), Go middleware.go (log.Printf), TS middleware.ts (console.info) |
 
 ### QV-Protocol: Schema Integrity
