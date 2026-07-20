@@ -17,3 +17,6 @@
 {"from":"integration/roundtrip/verify_go_fixtures.py","to":"pkg:os","rel":"imports","provenance":"ast_exact","confidence":1.0}
 {"from":"integration/roundtrip/verify_go_fixtures.py","to":"pkg:sys","rel":"imports","provenance":"ast_exact","confidence":1.0}
 {"from":"integration/roundtrip/verify_go_fixtures.py","to":"pkg:h3_harness.protocol","rel":"imports","provenance":"ast_exact","confidence":1.0}
+{"from":"integration/roundtrip/verify_go_fixtures.ts","to":"pkg:fs","rel":"imports","provenance":"ast_exact","confidence":1.0}
+{"from":"integration/roundtrip/verify_go_fixtures.ts","to":"pkg:path","rel":"imports","provenance":"ast_exact","confidence":1.0}
+{"from":"integration/roundtrip/verify_go_fixtures.ts","to":"local:../../../sdk-typescript/src/protocol","rel":"imports","provenance":"ast_exact","confidence":1.0}
