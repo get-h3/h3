@@ -415,7 +415,7 @@
 | P5 | One tag → full cascade release | ✅ |
 | P6 | External dev zero→harness < 30 min | ✅ |
 | DEPLOY | Bunker E2E: message → H3 → harness → back | 🔴 |
-| QV | All QV verifications pass real endpoints | 🔴 18/19 |
+| QV | All QV verifications pass real endpoints | 🔄 12 done, 6 propagated, 3 open |
 | ND | Never Done audit: all 11 checks pass | 🔴 22 findings |
 | SEC | Auth + secrets + rate limiting | 🔴 |
 | OBS | Structured logging + metrics + tracing | 🔴 |
