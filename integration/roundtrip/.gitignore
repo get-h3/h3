@@ -1,6 +1,6 @@
-# Build artifacts
-verify-python-fixtures
-generate-go-fixtures
+# Build artifacts (binaries, not source directories)
+/verify-python-fixtures
+/generate-go-fixtures
 
 # Python cache
 __pycache__/
