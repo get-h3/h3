@@ -153,7 +153,7 @@
 | DEPLOY-05 | Configure test session routing (platform+chat_id → harness) | 🔴 Blocked — needs running containers |
 | DEPLOY-06 | Send test message; verify full H3 round-trip | 🔴 Blocked — needs running infrastructure |
 | DEPLOY-07 | Verify harness logs (METHOD /path STATUS DURATION) | 🔴 Blocked — needs running infrastructure |
-| DEPLOY-08 | Write `DEPLOY.md` — deployment guide | 🔴 Open — can be done independently |
+| DEPLOY-08 | Write `DEPLOY.md` — deployment guide | ✅ Done (fece64e) |
 | DEPLOY-09 | Run `h3-test` 43/43 from inside bunker | 🔴 Blocked — needs running infrastructure |
 
 **Gate:** Message → H3 shim → echo harness → Hermes delivers. Agent loop swapped.
