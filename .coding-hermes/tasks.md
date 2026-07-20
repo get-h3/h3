@@ -176,7 +176,7 @@
 | QV-E2E-02c | Echo harness: return 404 for unknown session_id via get_session_info hook | ✅ Done (sdk-python@64ae951) |
 | QV-E2E-03 | TypeScript minimal: same full loop | ✅ Done (sdk-typescript@5056ec4) |
 | QV-E2E-04 | Cross-harness: h3-test against all 3 languages | ✅ Done — Go 43/43, Python 43/43 (sdk-python@64ae951), TS 43/43 |
-| QV-E2E-05 | Harness logs: timestamped METHOD /path STATUS DURATION | 🔴 Open |
+| QV-E2E-05 | Harness logs: timestamped METHOD /path STATUS DURATION | ✅ Done — all 3 SDKs: Python middleware.py (logger), Go middleware.go (log.Printf), TS middleware.ts (console.info) |
 
 ### QV-Protocol: Schema Integrity
 
