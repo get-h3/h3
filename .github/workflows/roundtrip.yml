@@ -1,0 +1,58 @@
+name: H3 Cross-Language Round-Trip Verification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "integration/roundtrip/**"
+      - "../sdk-go/protocol/**"
+      - "../sdk-python/src/h3_harness/protocol.py"
+  pull_request:
+    branches: [main]
+    paths:
+      - "integration/roundtrip/**"
+      - "../sdk-go/protocol/**"
+      - "../sdk-python/src/h3_harness/protocol.py"
+  workflow_dispatch:
+
+jobs:
+  roundtrip:
+    name: Python ↔ Go Round-Trip
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: integration/roundtrip
+
+    steps:
+      - name: Checkout umbrella repo
+        uses: actions/checkout@v4
+        with:
+          path: h3
+
+      - name: Checkout sdk-go
+        uses: actions/checkout@v4
+        with:
+          repository: get-h3/sdk-go
+          path: sdk-go
+
+      - name: Checkout sdk-python
+        uses: actions/checkout@v4
+        with:
+          repository: get-h3/sdk-python
+          path: sdk-python
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Run round-trip verification
+        run: bash roundtrip.sh

@@ -1,0 +1,5 @@
+{
+  "field": "session_id",
+  "message": "Session sess-999 was not found",
+  "code": "SESSION_NOT_FOUND"
+}

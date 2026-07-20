@@ -1,0 +1,7 @@
+{
+  "name": "read_file",
+  "params": {
+    "path": "/tmp/config.yaml"
+  },
+  "reasoning": "Need to check configuration"
+}

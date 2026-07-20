@@ -1,0 +1,13 @@
+{
+  "session_id": "sess-rt-001",
+  "decision_id": "dec-rt-001",
+  "result": {
+    "type": "tool_result",
+    "tool_name": "read_file",
+    "data": {
+      "content": "file contents here"
+    },
+    "duration_ms": 150,
+    "success": true
+  }
+}

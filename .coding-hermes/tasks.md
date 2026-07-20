@@ -184,7 +184,7 @@
 |---|---|---|
 | QV-PROTO-01 | ajv validate every schema/example pair | ✅ Done (23/23 pairs, per aae751d) |
 | QV-PROTO-02 | redocly lint h3-protocol.yaml | ✅ Done (lint passes, per aae751d) |
-| QV-PROTO-03 | Round-trip: Python → JSON → Go → match | 🔴 Open |
+| QV-PROTO-03 | Round-trip: Python → JSON → Go → match | ✅ Done |
 | QV-PROTO-04 | Round-trip: Go → JSON → TS → match | 🔴 Open |
 
 ### QV-SDK: Implementation Correctness

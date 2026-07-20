@@ -1,0 +1,9 @@
+{
+  "context_window": 1000000,
+  "name": "deepseek-v4-pro",
+  "provider": "deepseek",
+  "cost_per_1k_input": 0.005,
+  "cost_per_1k_output": 0.015,
+  "supports_tool_calling": true,
+  "supports_vision": true
+}

@@ -1,0 +1,23 @@
+{
+  "decision": "text",
+  "decision_id": "dec-rt-text",
+  "history": [
+    {
+      "content": "Hello",
+      "role": "user"
+    },
+    {
+      "content": "Hi! How can I help?",
+      "role": "assistant"
+    }
+  ],
+  "tool_call": null,
+  "llm_call": null,
+  "text": {
+    "content": "Here is the result of your query.",
+    "finished": true
+  },
+  "wait": null,
+  "delegate": null,
+  "end": null
+}

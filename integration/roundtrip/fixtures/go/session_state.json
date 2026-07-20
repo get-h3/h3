@@ -1,0 +1,7 @@
+{
+  "turn_count": 3,
+  "total_tool_calls": 5,
+  "total_llm_calls": 2,
+  "cost_so_far": 0.125,
+  "started_at": "2026-07-20T12:00:00Z"
+}

@@ -1,0 +1,18 @@
+{
+  "decision": "text",
+  "decision_id": "dec-rt-text",
+  "history": [
+    {
+      "role": "user",
+      "content": "Hello"
+    },
+    {
+      "role": "assistant",
+      "content": "Hi! How can I help?"
+    }
+  ],
+  "text": {
+    "content": "Here is the result of your query.",
+    "finished": true
+  }
+}

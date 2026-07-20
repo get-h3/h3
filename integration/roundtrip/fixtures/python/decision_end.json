@@ -1,0 +1,23 @@
+{
+  "decision": "end",
+  "decision_id": "dec-rt-end",
+  "history": [
+    {
+      "content": "Hello",
+      "role": "user"
+    },
+    {
+      "content": "Hi! How can I help?",
+      "role": "assistant"
+    }
+  ],
+  "tool_call": null,
+  "llm_call": null,
+  "text": null,
+  "wait": null,
+  "delegate": null,
+  "end": {
+    "reason": "task_complete",
+    "summary": "All tasks finished successfully."
+  }
+}

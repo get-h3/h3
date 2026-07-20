@@ -1,0 +1,7 @@
+{
+  "max_iterations": 100,
+  "timeout_seconds": 300,
+  "project_dir": "/home/test/project",
+  "max_tool_calls_per_turn": 10,
+  "temperature": 0.7
+}

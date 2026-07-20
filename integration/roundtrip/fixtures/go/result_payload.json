@@ -1,0 +1,9 @@
+{
+  "type": "tool_result",
+  "tool_name": "read_file",
+  "data": {
+    "content": "file contents\nline 2\nline 3"
+  },
+  "duration_ms": 150,
+  "success": true
+}

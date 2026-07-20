@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "INVALID_REQUEST",
+    "message": "Missing required field: session_id",
+    "details": {
+      "field": "session_id"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "version": "1.0.0",
+  "active_sessions": 5,
+  "capabilities": [
+    "text",
+    "tool_call",
+    "end"
+  ],
+  "degraded_reason": null,
+  "error": null,
+  "protocol_version": "1.0",
+  "transport": "rest",
+  "uptime_seconds": 3600
+}

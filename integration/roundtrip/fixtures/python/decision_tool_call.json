@@ -1,0 +1,26 @@
+{
+  "decision": "tool_call",
+  "decision_id": "dec-rt-tool_call",
+  "history": [
+    {
+      "content": "Hello",
+      "role": "user"
+    },
+    {
+      "content": "Hi! How can I help?",
+      "role": "assistant"
+    }
+  ],
+  "tool_call": {
+    "name": "read_file",
+    "params": {
+      "path": "/tmp/config.yaml"
+    },
+    "reasoning": "Need to check configuration"
+  },
+  "llm_call": null,
+  "text": null,
+  "wait": null,
+  "delegate": null,
+  "end": null
+}

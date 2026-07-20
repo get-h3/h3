@@ -1,0 +1,9 @@
+{
+  "session_id": "sess-rt-001",
+  "started_at": "2026-07-20T12:00:00Z",
+  "last_active": "2026-07-20T12:05:00Z",
+  "turn_count": 3,
+  "status": "active",
+  "current_decision": "dec-rt-001",
+  "current_decision_type": "tool_call"
+}
