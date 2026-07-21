@@ -783,7 +783,7 @@ Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace). CI=green (shi
 
 | ID | Gap | Status |
 |---|---|---|
-| CI-03 | Roundtrip CI fails on 4f12a12 (exit 1 at roundtrip.sh step). Local verification 6/6 PASS. May be environment-specific — CI setup doesn't include Node.js for Phase 3 (TS fixture verification via npx tsx). Re-run triggered on HEAD. | 🔴 Open |
+| CI-03 | Roundtrip CI fails on 4f12a12 (exit 1 at roundtrip.sh step). Root cause: Phase 3 (Go→TS) needs sdk-typescript but CI only checked out h3, sdk-go, sdk-python. `verify_go_fixtures.ts` → `MODULE_NOT_FOUND: ../../../sdk-typescript/src/protocol`. | ✅ Fixed (3b2ce81) — added missing sdk-typescript checkout step to roundtrip.yml |
 
 ### Sub-Repo Status (Snapshot)
 
@@ -816,10 +816,10 @@ SEC-06 (Secret handling audit) or SEC-04 (Token rotation spec) — both are umbr
 
 ### Quality Gate
 
-Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 10 memories). CI=mixed (deploy green, roundtrip red — investigating). 11-point audit: 6 PASS, 4 N/A, 1 FAIL (CI). ND findings: 20→21 (+CI-03).
+Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 10 memories). CI=mixed → CI-03 root cause found and fixed (missing sdk-typescript checkout, commit 3b2ce81). Awaiting CI validation. 11-point audit: 6 PASS, 4 N/A, 1 FAIL (CI) — CI fixed post-audit.
 
 ### Board Delta
 
 - SEC-03: 🔴 Next FIFO → 🔴 Blocked (needs 3 SDK foremen — analyzed, S12 §5.1 spec ready)
-- CI-03: NEW 🔴 Open (roundtrip CI failing despite local 6/6 PASS)
-- ND findings: 20 → 21
+- CI-03: NEW 🔴 Open → ✅ Fixed (3b2ce81 — missing sdk-typescript checkout)
+- ND findings: 20 → 21 → 20 (CI-03 resolved in same tick)
