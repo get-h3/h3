@@ -820,4 +820,4 @@ tls:
 
 TLS enforcement adds mandatory mTLS between Hermes and every harness. Hermes acts as the Root CA, issuing and managing all certificates. Three modes (strict, permissive, none) support the full lifecycle from development to production. Implementation is phased: Hermes-side first (shim only, no harness changes needed), then SDK-by-SDK, then end-to-end validation.
 
-**Combined with S12 (API key auth) and S13 (rate limiting), TLS enforcement completes the three-layer defense-in-depth security model for H3.**
+**Combined with S12 (API key auth) and S15 (rate limiting), TLS enforcement completes the three-layer defense-in-depth security model for H3.**
