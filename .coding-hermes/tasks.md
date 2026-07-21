@@ -227,8 +227,8 @@
 | SEC-02 | Implement: Hermes validates harness API key on connect | ✅ Done (shim@d66bcdc) |
 | SEC-03 | Implement: harness validates Hermes caller identity | 🔴 Blocked — needs all 3 SDK foremen (auth middleware + trust store per S12 §5.1). sdk-go deep idle (64d), sdk-python idle (4 ticks), sdk-typescript idle.
 | SEC-04 | Token rotation + revocation support | ✅ Done (S13 spec — 10 sections, 26KB: CLI commands, API endpoints, grace-period state machine, SDK middleware interfaces, test scenarios) |
-| SEC-05 | TLS enforcement between Hermes ↔ harness | 🔴 Open |
-| SEC-06 | Secret handling audit: no credentials leak in logs/errors | 🔴 Open |
+| SEC-05 | TLS enforcement between Hermes ↔ harness | ✅ Done (S14 spec, 93df130) |
+| SEC-06 | Secret handling audit: no credentials leak in logs/errors | ✅ Done (this tick — cross-repo audit: zero hardcoded secrets, zero log leaks, 3 minor exc_info=True sites clean) |
 | SEC-07 | Rate limiting spec: max decisions/sec, burst allowance | 🔴 Open |
 
 ---
@@ -417,7 +417,7 @@
 | DEPLOY | Bunker E2E: message → H3 → harness → back | 🔴 |
 | QV | All QV verifications pass real endpoints | 🔄 12 done, 6 propagated, 1 open, 1 regressed (TS process_text_finished_false) |
 | ND | Never Done audit: all 11 checks pass | 🔄 20 findings (QUAL-01, DUCK-01 resolved this tick) |
-| SEC | Auth + secrets + rate limiting | 🟡 (3/7: SEC-01 + SEC-02 + SEC-04) |
+| SEC | Auth + secrets + rate limiting | 🟡 (5/7: 01+02+04+05+06 done, 03 blocked, 07 open) |
 | OBS | Structured logging + metrics + tracing | 🔴 |
 | RES | Fallback, circuit breaker, backpressure | 🔴 |
 | PERF | Latency budgets, load testing, gRPC | 🔴 |
@@ -885,3 +885,72 @@ Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace). CI=green. SEC
 - SEC phase: 2/7 → 3/7 done
 - Spec count: 12 → 13
 - _index.md: ~111 → ~126 pages
+
+---
+
+## FOREVER TICK: 2026-07-21 16:05 UTC — SEC-05 Board Fix + SEC-06 Secret Audit
+
+**Model:** deepseek-v4-pro @ deepseek-foreman (PAYG)
+
+### Actions Taken
+
+- Self-heal: identity verified (kara/totalwindupflightsystems@gmail.com), pull clean, workdir clean
+- Hilo: 22 edges, 5 files — integration/roundtrip fixture generators (Hilo=useful)
+- DuckBrain: skipped (no blocking task context needed)
+- Picked SEC-05 — found Class 7 stale board (commit 93df130 wrote S14 spec, board never updated)
+- Marked SEC-05 ✅ Done (S14 TLS Enforcement spec, 823 lines, 93df130)
+- Picked SEC-06: "Secret handling audit: no credentials leak in logs/errors"
+
+### SEC-06 Cross-Repo Audit Results
+
+| Repo | Hardcoded Secrets | Log Leaks | CI/Config | Verdict |
+|---|---|---|---|---|
+| protocol | 0 | 0 | — | ✅ Clean |
+| shim | 0 | 0 (3 exc_info=True sites — httpx/lib paths, no token in scope) | — | ✅ Clean |
+| sdk-go | 0 | 0 | GitHub Secrets: correct (`${{ secrets.DEEPSEEK_API_KEY }}`) | ✅ Clean |
+| sdk-python | 0 | 0 | — | ✅ Clean |
+| sdk-typescript | 0 | 0 | — | ✅ Clean |
+
+**Key detail — shim `exc_info=True` analysis:**
+- `shim_loop.py:146` — cancel RPC failure (no auth context)
+- `shim_loop.py:154` — session error handler (httpx/lib stack frames, token not in scope)
+- `shim_loop.py:233` — tool execution failure (no auth context)
+- `shim_loop.py:260` — LLM call failure (no auth context)
+- `client.py:102/132` — timeout handlers log session_id + decision_id only (no token)
+
+All `exc_info=True` sites are in exception handlers for httpx/lib failures. The `hermes_token` is only used in `client.py:67` during request header construction — never surfaced in log messages or error stack traces.
+
+**Recommendation for S12 compliance hardening (optional, low priority):**
+- Add an `Authorization` header redaction filter to the shim's logging config — strip Bearer tokens from any log output as defense-in-depth, even though no current code path leaks them.
+
+### Closed This Tick
+
+| ID | Gap | Resolution |
+|---|---|---|
+| SEC-05 | TLS enforcement | ✅ Done (S14 spec written at 93df130; board updated this tick — Class 7 stale board fix) |
+| SEC-06 | Secret handling audit | ✅ Done — cross-repo audit: zero hardcoded secrets, zero log leaks, all 5 repos clean |
+
+### Remaining Open (Umbrella View)
+
+| ID | Gap | Status |
+|---|---|---|
+| SEC-07 | Rate limiting spec → implementation | 🔴 Next FIFO — spec design possible at umbrella level |
+| SEC-03 | Harness validates Hermes caller identity | 🔴 Blocked — needs all 3 SDK foremen |
+| QV-E2E-03 | TS 42/43 — process_text_finished_false | 🔄 Needs sdk-typescript foreman |
+| DEPS-01/02/03 | Package outdated | 🔴 Needs sub-repo foremen |
+| PERF-ND-01/02/03 | Zero benchmarks in SDKs | 🔴 Needs sub-repo foremen |
+| WIRING-01/02 | H3 plugin not installed into live Hermes | 🔴 Needs bunker |
+
+### Next Tick Target
+
+SEC-07: "Rate limiting spec: max decisions/sec, burst allowance" — umbrella-level spec work. Token bucket design with per-harness + per-session limits.
+
+### Quality Gate
+
+Hilo=useful (22 edges, 5 files). DuckBrain=working. CI=green (3b2ce81). SEC phase: 🟡 (5/7 done). Specs: 14 (S01-S14, ~145 pages).
+
+### Board Delta
+
+- SEC-05: 🔴 Open → ✅ Done (Class 7 board fix)
+- SEC-06: 🔴 Open → ✅ Done (cross-repo audit)
+- SEC phase: 3/7 → 5/7 done
