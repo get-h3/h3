@@ -416,9 +416,9 @@
 | P6 | External dev zero→harness < 30 min | ✅ |
 | DEPLOY | Bunker E2E: message → H3 → harness → back | 🔴 |
 | QV | All QV verifications pass real endpoints | 🔄 12 done, 6 propagated, 1 open, 1 regressed (TS process_text_finished_false) |
-| ND | Never Done audit: all 11 checks pass | 🔄 20 findings (QUAL-01, DUCK-01 resolved this tick) |
+|| ND | Never Done audit: all 11 checks pass | 🔄 19 findings (OBS-02 resolved) |
 | SEC | Auth + secrets + rate limiting | 🟡 (6/7: 01+02+04+05+06+07 done, 03 blocked) |
-| OBS | Structured logging + metrics + tracing | 🟡 (1/6: OBS-01 done) |
+| OBS | Structured logging + metrics + tracing | 🟡 (2/6: OBS-01+02 done) |
 | RES | Fallback, circuit breaker, backpressure | 🔴 |
 | PERF | Latency budgets, load testing, gRPC | 🔴 |
 | MULTI | Multi-harness, A/B testing, hot-reload | 🔴 |
@@ -1004,7 +1004,7 @@ Hilo=useful (22 edges, 5 files). DuckBrain=working. CI=green (3b2ce81). SEC phas
 | ID | Gap | Status |
 |---|---|---|
 | SEC-03 | Harness validates Hermes caller identity | 🔴 Blocked — needs all 3 SDK foremen |
-| OBS (6 tasks) | Structured logging + metrics + tracing | 🔴 Full phase |
+| OBS (6 tasks) | Structured logging + metrics + tracing | 🟡 Full phase (2/6) |
 | RES (7 tasks) | Fallback, circuit breaker, backpressure | 🔴 Full phase |
 | PERF (5 tasks) | Latency budgets, load testing, gRPC | 🔴 Full phase |
 | MULTI/COMPAT/CERT/CHAOS | Full phases | 🔴 |
@@ -1069,7 +1069,7 @@ Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace). CI=1/2 green 
 
 | ID | Gap | Status |
 |---|---|---|
-| OBS-02 | Metrics: decision latency (p50/p95/p99), error rate, throughput | 🔴 Next FIFO |
+| OBS-02 | Metrics: decision latency (p50/p95/p99), error rate, throughput | ✅ Done (S17 spec this tick) |
 | OBS-03 | Distributed tracing | 🔴 |
 | OBS-04 | Health check v2 | 🔴 |
 | OBS-05 | Dashboard | 🔴 |
@@ -1092,3 +1092,64 @@ Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 8 keys). CI=1/
 - OBS phase: 🔴 → 🟡 (1/6 done)
 - Spec count: 15 → 16
 - S14: stale forward-ref "S13" → "S15" fixed
+
+---
+
+## FOREVER TICK: 2026-07-21 17:26 UTC — OBS-02 Metrics Spec (S17)
+
+**Model:** deepseek-v4-pro @ deepseek-foreman (PAYG)
+
+### Actions Taken
+
+- Self-heal: identity verified (kara/totalwindupflightsystems@gmail.com), pull clean, workdir clean
+- Hilo: 22 edges, 5 files — integration/roundtrip fixture generators (Hilo=useful)
+- DuckBrain: h3 namespace active (9 keys). List keys succeeded (recall needs embedding model).
+- Picked OBS-02 (oldest FIFO non-blocked): "Metrics: decision latency (p50/p95/p99), error rate, throughput"
+- Wrote S17 — Metrics & Performance Monitoring spec (13 sections, 25,318 bytes, 617 lines)
+- Updated _index.md: 16→17 specs, ~171→~184 pages
+- Updated board: OBS-02 done, OBS phase 2/6, ND 20→19
+
+### Spec Highlights
+
+| Section | Content |
+|---|---|
+| Metric Architecture | Collection pipeline: Shim measures RTT, SDK measures server-side time, delta = network latency |
+| Decision Latency | t-digest approximate quantiles (p50/p95/p99). O(1) update, O(1) query. <1µs per record. |
+| Error Rate | 1-min and 5-min sliding window counters. deque-based, O(1) amortized. |
+| Throughput | Decisions/sec over 1-min window. Simple counter/window division. |
+| Harness Health | 4 gauges: up/down, consecutive failures, last success timestamp, uptime |
+| Exposition | JSON (`/v1/metrics`) + Prometheus/OpenMetrics (`?format=prometheus`). Both formats defined. |
+| SDK Middleware | `H3MetricsRecorder` interface in Go, Python, TypeScript. Same contract across all 3 SDKs. |
+| CLI | `hermes h3 metrics [--json|--harness|--watch]`, `hermes h3 test --metrics` |
+| Protocol | Extends `/v1/health` response with optional `metrics` object. Backward-compatible. |
+| Test Plan | 10 unit tests (MET-01 through MET-10), 6 integration tests (MET-I-01 through MET-I-06), 3 benchmarks (MET-P-01 through MET-P-03) |
+| Migration | 4-phase plan: Shim collector → SDK middleware → Protocol update → Production rollout |
+| Performance | <1µs per record, <5ms per snapshot, <1KB memory per harness, <0.1% throughput impact |
+
+### Remaining Open (Umbrella View)
+
+| ID | Gap | Status |
+|---|---|---|
+| OBS-03 | Distributed tracing | 🔴 Next FIFO |
+| OBS-04 | Health check v2 | 🔴 |
+| OBS-05 | Dashboard | 🔴 |
+| OBS-06 | Alerting | 🔴 |
+| SEC-03 | Harness validates Hermes caller identity | 🔴 Blocked — needs 3 SDK foremen |
+| QV-E2E-03 | TS 42/43 | 🔄 Needs sdk-typescript foreman |
+| WIRING-01/02 | H3 plugin not installed | 🔴 Needs bunker |
+
+### Next Tick Target
+
+OBS-03: "Distributed tracing: trace_id propagates Hermes → H3 → harness → back" — umbrella-level spec building on S16 trace_id/S17 span_id foundation.
+
+### Quality Gate
+
+Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 9 keys). CI=1/2 green (roundtrip pre-existing). OBS: 🟡 (2/6). SEC: 🟡 (6/7). Specs: 17 (~184 pages).
+
+### Board Delta
+
+- OBS-02: 🔴 Next FIFO → ✅ Done (S17 spec)
+- OBS phase: 1/6 → 2/6 done
+- Spec count: 16 → 17
+- _index.md: ~171 → ~184 pages
+- ND findings: 20 → 19
