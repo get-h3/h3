@@ -30,8 +30,9 @@
 | 09 | [Testing Framework Architecture](09-Testing-Framework-Architecture.md) | ✅ | ~10 |
 | 10 | [h3.sh Website & Developer Docs](10-Website-Docs.md) | ✅ | ~5 |
 | 11 | [Hermes Upgrade Survival](11-Hermes-Upgrade-Survival.md) | ✅ | ~8 |
+| 12 | [Security & Authentication](12-Security-Authentication.md) | ✅ | ~14 |
 
-**Total: 11 specs, ~97 pages.**
+**Total: 12 specs, ~111 pages.**
 
 ---
 

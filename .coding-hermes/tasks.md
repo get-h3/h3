@@ -223,7 +223,7 @@
 
 | ID | Task | Status |
 |---|---|---|
-| SEC-01 | Design: harness API key / token auth model | 🔴 Open |
+| SEC-01 | Design: harness API key / token auth model | ✅ Done (this tick) |
 | SEC-02 | Implement: Hermes validates harness API key on connect | 🔴 Open |
 | SEC-03 | Implement: harness validates Hermes caller identity | 🔴 Open |
 | SEC-04 | Token rotation + revocation support | 🔴 Open |
@@ -417,7 +417,7 @@
 | DEPLOY | Bunker E2E: message → H3 → harness → back | 🔴 |
 || QV | All QV verifications pass real endpoints | 🔄 12 done, 6 propagated, 1 open, 1 regressed (TS process_text_finished_false) |
 | ND | Never Done audit: all 11 checks pass | 🔄 20 findings (QUAL-01, DUCK-01 resolved this tick) |
-| SEC | Auth + secrets + rate limiting | 🔴 |
+| SEC | Auth + secrets + rate limiting | 🟡 (design done, 6 impl tasks open) |
 | OBS | Structured logging + metrics + tracing | 🔴 |
 | RES | Fallback, circuit breaker, backpressure | 🔴 |
 | PERF | Latency budgets, load testing, gRPC | 🔴 |
@@ -614,7 +614,7 @@ Hilo=useful (22 edges across 5 files — integration/roundtrip fixture generator
 
 ### Next Tick Target
 
-SEC-01: "Design: harness API key / token auth model" — oldest FIFO actionable task. Write auth model spec into protocol repo.
+SEC-02: "Implement: Hermes validates harness API key on connect" — implement Bearer token header in shim/client.py.
 
 ### Quality Gate
 
@@ -625,3 +625,70 @@ Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 10 memories). 
 - QUAL-01: 🔴 Open → ✅ Done
 - DUCK-01: 🔴 Open → ✅ Done
 - ND findings: 22 → 20
+
+---
+
+## FOREVER TICK: 2026-07-21 01:14 UTC — SEC-01 Auth Model Design
+
+**Model:** deepseek-v4-pro @ deepseek-foreman (PAYG)
+
+### Actions Taken
+
+- Self-heal: identity verified (kara/totalwindupflightsystems@gmail.com), pull clean, workdir clean
+- Hilo: 22 edges, 5 files — integration/roundtrip fixture generators (Hilo=useful)
+- DuckBrain: h3 namespace active with 5 prior memories. No existing auth design.
+- Picked SEC-01 (oldest FIFO non-blocked): Design: harness API key / token auth model
+- Wrote S12 — Security & Authentication spec (14 pages, 15 sections, 21,239 bytes)
+- Design covers: 3-layer security (API key + mTLS + rate limiting), key lifecycle (generate/register/rotate/revoke/compromise), new auth endpoints (POST /v1/auth/register, DELETE /v1/auth/pairing, POST /v1/auth/certificate), token bucket rate limiting, secret handling with redaction and env var override, 9 new error codes, backward compatibility (protocol v1.0 → v1.1 migration), threat model with 7 mitigations
+- Board updated: SEC-01 marked done, _index.md updated (12 specs, ~111 pages), SEC phase gate changed to 🟡
+- DuckBrain: updated with spec completion
+
+### Spec Highlights
+
+| Section | Content |
+|---|---|
+| Authentication Model | 3-layer: API key (app) + mTLS (transport) + rate limiting (abuse) |
+| Key Format | `h3_<base64url(24B)>` — harness. `h3_hx_<64-hex>` — Hermes identity. |
+| Key Lifecycle | Generate → Register → Rotate (5-min grace) → Revoke → Compromise response |
+| mTLS | Hermes CA issues harness certs. Ed25519, 1-year validity. Per-harness TLS mode (strict/permissive/none). |
+| Auth Flow | TLS check → API key check → Rate limit check. 3 layers evaluated in order. |
+| Rate Limiting | Token bucket: 10 decisions/sec sustained, 20 burst, per-session cap. 429 with retry-after. |
+| Secret Handling | 0600/0400 permissions, log redaction, env var override, `h3 verify` audit. |
+| Error Codes | 9 new auth-specific codes: UNAUTHORIZED, MISSING_AUTH_HEADER, INVALID_TOKEN_FORMAT, UNKNOWN_IDENTITY, TOKEN_REVOKED, TLS_CERT_INVALID, TLS_REQUIRED, RATE_LIMITED, KEY_EXPIRED |
+| Backward Compat | v1.0 harnesses treated as legacy (no auth enforced, warning logged). v1.1 → full auth. |
+| Threat Model | 7 threats mitigated: impersonation, replay, key exfiltration, host compromise, DoS, downgrade, CA compromise |
+
+### Closed This Tick
+
+| ID | Gap | Resolution |
+|---|---|---|
+| SEC-01 | Design: harness API key / token auth model | ✅ S12 spec written (14 pages, h3/specs/12-Security-Authentication.md) |
+
+### Remaining Open (Umbrella View)
+
+| ID | Gap | Status |
+|---|---|---|
+| SEC-02 | Implement: Hermes validates harness API key on connect | 🔴 Next FIFO |
+| SEC-03 | Implement: harness validates Hermes caller identity | 🔴 |
+| SEC-04 | Token rotation + revocation support | 🔴 |
+| SEC-05 | TLS enforcement between Hermes ↔ harness | 🔴 |
+| SEC-06 | Secret handling audit | 🔴 |
+| SEC-07 | Rate limiting spec → implementation | 🔴 |
+| QV-E2E-03 | TS 42/43 — process_text_finished_false | 🔄 Needs sdk-typescript foreman |
+| DEPS-01/02/03 | Package outdated | 🔴 Needs sub-repo foremen |
+| PERF-ND-01/02/03 | Zero benchmarks in SDKs | 🔴 Needs sub-repo foremen |
+| WIRING-01/02 | H3 plugin not installed into live Hermes | 🔴 Needs bunker |
+
+### Next Tick Target
+
+SEC-02: "Implement: Hermes validates harness API key on connect" — requires shim/ changes (client.py Authorization header, loader.py validation). This is a sub-repo implementation task → spawn sdk-go or shim foreman worker.
+
+### Quality Gate
+
+Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace). CI=green. SEC phase: 🟡 (design done, 6 impl open).
+
+### Board Delta
+
+- SEC-01: 🔴 Open → ✅ Done
+- SEC phase gate: 🔴 → 🟡
+- Spec count: 11 → 12 (~97 → ~111 pages)
