@@ -4,7 +4,6 @@
 Creates ONE instance of EVERY protocol type with ALL fields populated.
 Output: fixtures/python/*.json
 """
-from __future__ import annotations
 
 import json
 import os
