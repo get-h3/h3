@@ -34,8 +34,9 @@
 | 13 | [Token Rotation & Revocation](13-Token-Rotation-Revocation.md) | ✅ | ~15 |
 | 14 | [TLS Enforcement](14-TLS-Enforcement.md) | ✅ | ~19 |
 | 15 | [Rate Limiting](15-Rate-Limiting.md) | ✅ | ~14 |
+| 16 | [Observability & Structured Logging](16-Observability-Structured-Logging.md) | ✅ | ~12 |
 
-**Total: 15 specs, ~159 pages.**
+**Total: 16 specs, ~171 pages.**
 
 ---
 

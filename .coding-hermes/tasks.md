@@ -239,7 +239,7 @@
 
 | ID | Task | Status |
 |---|---|---|
-| OBS-01 | Structured logging spec: decision_id, session_id, trace_id on every log line | 🔴 Open |
+| OBS-01 | Structured logging spec: decision_id, session_id, trace_id on every log line | ✅ Done (S16 spec, 12 sections, ~20KB) |
 | OBS-02 | Metrics: decision latency (p50/p95/p99), error rate, throughput | 🔴 Open |
 | OBS-03 | Distributed tracing: trace_id propagates Hermes → H3 → harness → back | 🔴 Open |
 | OBS-04 | Health check v2: capabilities, model list, version, uptime | 🔴 Open |
@@ -418,7 +418,7 @@
 | QV | All QV verifications pass real endpoints | 🔄 12 done, 6 propagated, 1 open, 1 regressed (TS process_text_finished_false) |
 | ND | Never Done audit: all 11 checks pass | 🔄 20 findings (QUAL-01, DUCK-01 resolved this tick) |
 | SEC | Auth + secrets + rate limiting | 🟡 (6/7: 01+02+04+05+06+07 done, 03 blocked) |
-| OBS | Structured logging + metrics + tracing | 🔴 |
+| OBS | Structured logging + metrics + tracing | 🟡 (1/6: OBS-01 done) |
 | RES | Fallback, circuit breaker, backpressure | 🔴 |
 | PERF | Latency budgets, load testing, gRPC | 🔴 |
 | MULTI | Multi-harness, A/B testing, hot-reload | 🔴 |
@@ -956,7 +956,7 @@ Hilo=useful (22 edges, 5 files). DuckBrain=working. CI=green (3b2ce81). SEC phas
 
 ---
 
-## FOREVER TICK: 2026-07-21 16:41 UTC — SEC-07 Rate Limiting Spec
+| FOREVER TICK: 2026-07-21 16:48 UTC — OBS-01 Observability Spec (S16)
 
 **Model:** deepseek-v4-pro @ deepseek-foreman (PAYG)
 
@@ -1028,3 +1028,67 @@ Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace). CI=1/2 green 
 - Spec count: 14 → 15 (~145 → ~159 pages)
 - S14 cross-reference: "S13 rate limiting" → "S15 rate limiting" (fixed stale forward-ref)
 - SEC phase: 3/7 → 5/7 done
+
+---
+
+## FOREVER TICK: 2026-07-21 16:48 UTC — OBS-01 Observability Spec (S16)
+
+**Model:** deepseek-v4-pro @ deepseek-foreman (PAYG)
+
+### Actions Taken
+
+- Self-heal: identity verified (kara/totalwindupflightsystems@gmail.com), pull clean, workdir clean
+- Hilo: 22 edges, 5 files — integration/roundtrip fixture generators (Hilo=useful)
+- DuckBrain: h3 namespace active (8 keys). Semantic recall not available (no embedding model).
+- Picked OBS-01 (oldest FIFO non-blocked): "Structured logging spec"
+- Audited existing logging across all 4 components: Shim uses `logging` (session_id present, no trace_id, inconsistent), Go SDK uses `log.Printf` (free-form), TS SDK uses `console.info` (free-form), Python SDK has no logging module
+- Wrote S16 — Observability & Structured Logging spec (12 sections, 20,712 bytes)
+- Cross-reference fix: S14 §12 "S13 (rate limiting)" → "S15 (rate limiting)"
+- Updated _index.md: 15→16 specs, ~159→~171 pages
+
+### Spec Highlights
+
+| Section | Content |
+|---|---|
+| Structured Format | 13 canonical fields on every log line: timestamp, level, logger, session_id, decision_id, trace_id, span_id, event, component, duration_ms, status_code, error, msg |
+| Trace Propagation | Shim generates trace_id (32 hex UUID), span_id (16 hex) per component hop. Propagated via X-H3-Trace-ID / X-H3-Span-ID HTTP headers |
+| Component Targets | Shim: `structlog`, Go SDK: `slog`, Python SDK: `structlog`, TypeScript SDK: JSON `console.info` |
+| Security | Auth headers redacted, API keys never logged, debug-only for request bodies |
+| Performance | <1ms overhead budget per log event. 10% sampling for high-throughput harnesses |
+| Diagnostics | jq one-liners: session view, error rate, slow decisions, cross-component trace correlation |
+| Migration | 4 phases: Shim structured logging → SDK middleware → Protocol trace_id field → Production rollout |
+| Testing | 15 tests (LOG-01 through LOG-15): unit, integration, security audit, backward compat |
+
+### Closed This Tick
+
+| ID | Gap | Resolution |
+|---|---|---|
+| OBS-01 | Structured logging spec | ✅ Done — S16 spec (12 sections, ~20KB) |
+
+### Remaining Open (Umbrella View)
+
+| ID | Gap | Status |
+|---|---|---|
+| OBS-02 | Metrics: decision latency (p50/p95/p99), error rate, throughput | 🔴 Next FIFO |
+| OBS-03 | Distributed tracing | 🔴 |
+| OBS-04 | Health check v2 | 🔴 |
+| OBS-05 | Dashboard | 🔴 |
+| OBS-06 | Alerting | 🔴 |
+| SEC-03 | Harness validates Hermes caller identity | 🔴 Blocked — needs 3 SDK foremen |
+| QV-E2E-03 | TS 42/43 | 🔄 Needs sdk-typescript foreman |
+| WIRING-01/02 | H3 plugin not installed | 🔴 Needs bunker |
+
+### Next Tick Target
+
+OBS-02: "Metrics: decision latency (p50/p95/p99), error rate, throughput" — umbrella-level spec.
+
+### Quality Gate
+
+Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 8 keys). CI=1/2 green (roundtrip pre-existing). OBS: 🟡 (1/6). SEC: 🟡 (6/7). Specs: 16 (~171 pages).
+
+### Board Delta
+
+- OBS-01: 🔴 Open → ✅ Done (S16 spec)
+- OBS phase: 🔴 → 🟡 (1/6 done)
+- Spec count: 15 → 16
+- S14: stale forward-ref "S13" → "S15" fixed
