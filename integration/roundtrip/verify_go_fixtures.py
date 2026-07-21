@@ -5,7 +5,6 @@ Reads fixtures/go/*.json, deserializes with Python SDK types,
 and verifies ALL fields match the expected deterministic values.
 Exit 0 = all pass, exit 1 = failure.
 """
-from __future__ import annotations
 
 import json
 import os
