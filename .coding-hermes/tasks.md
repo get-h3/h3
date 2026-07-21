@@ -953,4 +953,78 @@ Hilo=useful (22 edges, 5 files). DuckBrain=working. CI=green (3b2ce81). SEC phas
 
 - SEC-05: 🔴 Open → ✅ Done (Class 7 board fix)
 - SEC-06: 🔴 Open → ✅ Done (cross-repo audit)
+
+---
+
+## FOREVER TICK: 2026-07-21 16:41 UTC — SEC-07 Rate Limiting Spec
+
+**Model:** deepseek-v4-pro @ deepseek-foreman (PAYG)
+
+### Actions Taken
+
+- Self-heal: identity verified (kara/totalwindupflightsystems@gmail.com), pull clean, workdir clean
+- Hilo: 22 edges, 5 files — integration/roundtrip fixture generators (Hilo=useful)
+- DuckBrain: h3 namespace active (1 prior memory). No rate limiting design artifacts.
+- Picked SEC-07 (oldest FIFO non-blocked): "Rate limiting spec: max decisions/sec, burst allowance"
+- Wrote S15 — Rate Limiting spec (14 sections, 26,575 bytes, 774 lines)
+- Spec covers: 3-tier architecture (global/harness/session), token bucket algorithm, configuration schema, HTTP headers (X-RateLimit-*), CLI commands (rate-limit show/set/reset), SDK middleware contracts (Go/Python/TS), Python reference implementation (rate_limiter.py), 24 test scenarios, performance benchmarks, monitoring metrics, security considerations
+- Cross-references: S12 (§4 Layer 3), S14 (fixed forward-ref from "S13" → "S15"), _index.md (15 specs, ~159 pages)
+- Board updated: SEC-07 marked done, SEC phase gate updated (6/7: 01+02+04+05+06+07 done, 03 blocked)
+
+### Spec Highlights
+
+| Section | Content |
+|---|---|
+| 3 Tiers | Global (100/sec system-wide), Per-Harness (10/sec token bucket), Per-Session (100 turns + $5 cost cap + 1h duration) |
+| Token Bucket | Classic algorithm with `time.monotonic()`. Rate=10, Burst=30. Float64 precision <1ns drift over 30 days. |
+| HTTP Semantics | X-RateLimit-Limit/Remaining/Reset/Harness on every response. 429 + Retry-After on deny. 503 on global exhaustion. |
+| CLI | `rate-limit show [--harness] [--json]`, `rate-limit set --harness/--global/--defaults`, `rate-limit reset --harness/--all` |
+| SDK Middleware | Advisory only (not enforcement). `RateLimitInfo` struct/class/interface with `parse_rate_limit_headers()` in all 3 languages. |
+| Test Plan | 15 unit tests (RL-01 through RL-15) + 9 integration tests (RL-I-01 through RL-I-09) + 3 performance benchmarks (RL-P-01 through RL-P-03) |
+| Sessions | Turn limit terminates session with `H3Decision(type=end)`. Cost budget per-session based on model pricing table. Duration cap at 1h. |
+| Security | Global tier prevents multi-harness bypass. Slowloris mitigated by 30s harness timeout. Restart in-memory state → refilled buckets (future: persist to disk). |
+
+### CI Status
+
+- Main workflow: ✅ PASS (a5d2395, 2026-07-21 21:10 UTC)
+- Roundtrip workflow: ❌ FAIL (5/6, TypeScript verification of Go fixtures — `requireStack` in `verify_go_fixtures.ts`). Pre-existing issue, not caused by this tick. Needs sdk-typescript foreman investigation.
+
+### Sub-Repo Status (Snapshot)
+
+| Repo | Last Commit | Status |
+|---|---|---|
+| protocol | 9c43360 (CONTRIBUTING.md) | Idle, stable |
+| shim | f5247ea (idle tick #7) | Idle, stable |
+| sdk-go | 0acd932 (idle tick #14, cooldown 128d) | Deep idle |
+| sdk-python | 5b50746 (NEVER-DONE audit, idle=8+) | Idle, stable |
+| sdk-typescript | 43c38cf (tick #19, cooldown 6h) | Idle, stable |
+
+### Remaining Open (Umbrella View)
+
+| ID | Gap | Status |
+|---|---|---|
+| SEC-03 | Harness validates Hermes caller identity | 🔴 Blocked — needs all 3 SDK foremen |
+| OBS (6 tasks) | Structured logging + metrics + tracing | 🔴 Full phase |
+| RES (7 tasks) | Fallback, circuit breaker, backpressure | 🔴 Full phase |
+| PERF (5 tasks) | Latency budgets, load testing, gRPC | 🔴 Full phase |
+| MULTI/COMPAT/CERT/CHAOS | Full phases | 🔴 |
+| IMPL tasks | SEC-IMPL, OBS-IMPL, RES-IMPL | 🔴 |
+| DEPS/PERF-ND | Sub-repo maintenance | 🔴 Needs sub-repo foremen |
+| QV-E2E-03 | TS 42/43 | 🔄 Needs sdk-typescript foreman |
+| WIRING-01/02 | H3 plugin not installed into live Hermes | 🔴 Needs bunker |
+
+### Next Tick Target
+
+OBS-01: "Structured logging spec: decision_id, session_id, trace_id on every log line" — umbrella-level spec work.
+
+### Quality Gate
+
+Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace). CI=1/2 green (roundtrip pre-existing). SEC phase: 🟡 (6/7 done). Specs: 15 (S01-S15, ~159 pages).
+
+### Board Delta
+
+- SEC-07: 🔴 Open → ✅ Done (S15 spec, a5d2395)
+- SEC phase gate: 5/7 → 6/7
+- Spec count: 14 → 15 (~145 → ~159 pages)
+- S14 cross-reference: "S13 rate limiting" → "S15 rate limiting" (fixed stale forward-ref)
 - SEC phase: 3/7 → 5/7 done
