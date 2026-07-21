@@ -35,8 +35,9 @@
 | 14 | [TLS Enforcement](14-TLS-Enforcement.md) | ✅ | ~19 |
 | 15 | [Rate Limiting](15-Rate-Limiting.md) | ✅ | ~14 |
 | 16 | [Observability & Structured Logging](16-Observability-Structured-Logging.md) | ✅ | ~12 |
+| 17 | [Metrics & Performance Monitoring](17-Metrics-Performance-Monitoring.md) | ✅ | ~13 |
 
-**Total: 16 specs, ~171 pages.**
+**Total: 17 specs, ~184 pages.**
 
 ---
 
