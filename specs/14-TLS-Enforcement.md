@@ -17,7 +17,7 @@ H3 currently runs over plain HTTP. Every `/v1/process` and `/v1/result` call tra
 
 TLS enforcement closes these gaps at the transport layer. This spec defines mandatory mTLS between Hermes and every registered harness, with phased deployment and backward compatibility.
 
-**Relationship to S12 (Security & Authentication):** S12 defines API key auth at the application layer (Layer 1). This spec defines mTLS at the transport layer (Layer 2). They are independent — an attacker who bypasses one still faces the other. Combined with S13 rate limiting (Layer 3), the three layers form defense in depth.
+**Relationship to S12 (Security & Authentication):** S12 defines API key auth at the application layer (Layer 1). This spec defines mTLS at the transport layer (Layer 2). They are independent — an attacker who bypasses one still faces the other. Combined with S15 rate limiting (Layer 3), the three layers form defense in depth.
 
 **Design principle:** "Secure by default, permissive by opt-in." Every harness starts in `strict` mode. Relaxation requires explicit configuration.
 

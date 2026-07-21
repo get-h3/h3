@@ -12,7 +12,7 @@ The H3 protocol currently has zero authentication. Any process on the network ca
 
 **Design principle:** Defense in depth. Three independent layers — API key (application), mTLS (transport), rate limiting (abuse prevention). Each layer can fail independently without compromising the others.
 
-**Scope:** This spec covers the design. Implementation tasks (SEC-02 through SEC-07) are tracked on the task board.
+**Scope:** This spec covers the design. Implementation tasks (SEC-02 through SEC-07) are tracked on the task board. Rate limiting (Layer 3) is specified in S15.
 
 ---
 

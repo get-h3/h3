@@ -229,7 +229,7 @@
 | SEC-04 | Token rotation + revocation support | ✅ Done (S13 spec — 10 sections, 26KB: CLI commands, API endpoints, grace-period state machine, SDK middleware interfaces, test scenarios) |
 | SEC-05 | TLS enforcement between Hermes ↔ harness | ✅ Done (S14 spec, 93df130) |
 | SEC-06 | Secret handling audit: no credentials leak in logs/errors | ✅ Done (this tick — cross-repo audit: zero hardcoded secrets, zero log leaks, 3 minor exc_info=True sites clean) |
-| SEC-07 | Rate limiting spec: max decisions/sec, burst allowance | 🔴 Open |
+| SEC-07 | Rate limiting spec: max decisions/sec, burst allowance | ✅ Done (S15 spec — 14 sections, 26KB: token bucket algorithm, 3 tiers, CLI commands, SDK middleware, 24 test scenarios) |
 
 ---
 
@@ -417,7 +417,7 @@
 | DEPLOY | Bunker E2E: message → H3 → harness → back | 🔴 |
 | QV | All QV verifications pass real endpoints | 🔄 12 done, 6 propagated, 1 open, 1 regressed (TS process_text_finished_false) |
 | ND | Never Done audit: all 11 checks pass | 🔄 20 findings (QUAL-01, DUCK-01 resolved this tick) |
-| SEC | Auth + secrets + rate limiting | 🟡 (5/7: 01+02+04+05+06 done, 03 blocked, 07 open) |
+| SEC | Auth + secrets + rate limiting | 🟡 (6/7: 01+02+04+05+06+07 done, 03 blocked) |
 | OBS | Structured logging + metrics + tracing | 🔴 |
 | RES | Fallback, circuit breaker, backpressure | 🔴 |
 | PERF | Latency budgets, load testing, gRPC | 🔴 |
