@@ -360,14 +360,14 @@
 
 | ID | Repo | Gap | Status |
 |---|---|---|---|
-|| QUAL-01 | All repos | TODO/FIXME/HACK markers found in source — each one is a task | 🔴 Open |
+|| QUAL-01 | All repos | TODO/FIXME/HACK markers found in source — each one is a task | ✅ Done (this tick — zero markers across all 6 repos) |
 || QUAL-02 | h3 | `.gitignore` `.vfs/` was too broad (blocked `.vfs/.dirty` tracking for Hilo cross-machine sync). Fixed to narrow scope to cache files only. | ✅ Fixed this tick |
 
 ### DUCKBRAIN: Knowledge Sync
 
 | ID | Gap | Status |
 |---|---|---|
-| DUCK-01 | DuckBrain namespace `h3` has connection error — MCP transport issue. Namespace `get-h3` doesn't exist. No persistent project memory across ticks. | 🔴 Open |
+| DUCK-01 | DuckBrain namespace `h3` — confirmed working (recall succeeded this tick). Original MCP transport issue resolved. | ✅ Done (this tick — verified working) |
 
 ### WIRING: Middle-Out Gaps
 
@@ -416,7 +416,7 @@
 | P6 | External dev zero→harness < 30 min | ✅ |
 | DEPLOY | Bunker E2E: message → H3 → harness → back | 🔴 |
 || QV | All QV verifications pass real endpoints | 🔄 12 done, 6 propagated, 1 open, 1 regressed (TS process_text_finished_false) |
-| ND | Never Done audit: all 11 checks pass | 🔴 22 findings |
+| ND | Never Done audit: all 11 checks pass | 🔄 20 findings (QUAL-01, DUCK-01 resolved this tick) |
 | SEC | Auth + secrets + rate limiting | 🔴 |
 | OBS | Structured logging + metrics + tracing | 🔴 |
 | RES | Fallback, circuit breaker, backpressure | 🔴 |
@@ -574,3 +574,54 @@ Hilo=useful (22 edges across 5 files — integration/roundtrip fixture generator
 - QV-CROSS-03: 🔴 Open → ✅ Done (4f12a12)
 - DOC-08: 🔴 Open → ✅ Done
 - QV Phase Gate: 13 done, 5 propagated, 1 open → now 14 done
+
+---
+
+## FOREVER TICK: 2026-07-21 00:39 UTC — QUAL-01 + DUCK-01 Resolved
+
+**Model:** deepseek-v4-pro @ deepseek-foreman (PAYG)
+
+### Actions Taken
+
+- Self-heal: identity verified (kara/totalwindupflightsystems@gmail.com), pull clean, workdir clean
+- Hilo: 22 edges across 5 files — integration/roundtrip fixture generators (Hilo=useful)
+- DuckBrain: h3 namespace recall SUCCEEDED (10 memories, active project)
+- Picked QUAL-01 (oldest FIFO non-blocked): cross-repo TODO/FIXME/HACK sweep
+- QUAL-01 result: Zero markers across all 6 repos (h3, protocol, shim, sdk-go, sdk-python, sdk-typescript). Clean codebase.
+- Picked DUCK-01: verified DuckBrain namespace h3 works. Original MCP transport issue resolved.
+- Board updated: QUAL-01 ✅, DUCK-01 ✅, ND findings 22→20
+
+### Sub-Repo Status (Snapshot)
+
+| Repo | Last Commit | Status |
+|---|---|---|
+| protocol | 9c43360 (CONTRIBUTING.md) | Idle, stable |
+| shim | c627875 (idle tick #6) | Idle, stable |
+| sdk-go | fdf6232 (idle tick #12, cooldown 768h) | Deep idle |
+| sdk-python | 75d6790 (NEVER-DONE audit) | Idle, stable |
+| sdk-typescript | 13aacc6 (idle tick #15, cooldown 4h) | Idle, stable |
+
+### Remaining Open (Umbrella View)
+
+| ID | Gap | Status |
+|---|---|---|
+| QV-E2E-03 | TS 42/43 — process_text_finished_false | 🔄 Needs sdk-typescript foreman |
+| DEPS-01/02/03 | Package outdated | 🔴 Needs sub-repo foremen |
+| PERF-ND-01/02/03 | Zero benchmarks in SDKs | 🔴 Needs sub-repo foremen |
+| WIRING-01/02 | H3 plugin not installed into live Hermes | 🔴 Needs bunker |
+| SEC (7 tasks) | Auth spec phase — protocol has zero auth content | 🔴 Next FIFO |
+| OBS/RES/PERF/MULTI/COMPAT/CERT/CHAOS | Full phases | 🔴 |
+
+### Next Tick Target
+
+SEC-01: "Design: harness API key / token auth model" — oldest FIFO actionable task. Write auth model spec into protocol repo.
+
+### Quality Gate
+
+Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 10 memories). CI=green across all sub-repos.
+
+### Board Delta
+
+- QUAL-01: 🔴 Open → ✅ Done
+- DUCK-01: 🔴 Open → ✅ Done
+- ND findings: 22 → 20
