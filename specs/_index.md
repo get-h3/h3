@@ -36,8 +36,9 @@
 | 15 | [Rate Limiting](15-Rate-Limiting.md) | ✅ | ~14 |
 | 16 | [Observability & Structured Logging](16-Observability-Structured-Logging.md) | ✅ | ~12 |
 | 17 | [Metrics & Performance Monitoring](17-Metrics-Performance-Monitoring.md) | ✅ | ~13 |
+| 18 | [Distributed Tracing](18-Distributed-Tracing.md) | ✅ | ~15 |
 
-**Total: 17 specs, ~184 pages.**
+**Total: 18 specs, ~199 pages.**
 
 ---
 
