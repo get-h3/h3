@@ -31,8 +31,9 @@
 | 10 | [h3.sh Website & Developer Docs](10-Website-Docs.md) | ✅ | ~5 |
 | 11 | [Hermes Upgrade Survival](11-Hermes-Upgrade-Survival.md) | ✅ | ~8 |
 | 12 | [Security & Authentication](12-Security-Authentication.md) | ✅ | ~14 |
+| 13 | [Token Rotation & Revocation](13-Token-Rotation-Revocation.md) | ✅ | ~15 |
 
-**Total: 12 specs, ~111 pages.**
+**Total: 13 specs, ~126 pages.**
 
 ---
 

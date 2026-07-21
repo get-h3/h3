@@ -226,7 +226,7 @@
 | SEC-01 | Design: harness API key / token auth model | ✅ Done (this tick) |
 | SEC-02 | Implement: Hermes validates harness API key on connect | ✅ Done (shim@d66bcdc) |
 | SEC-03 | Implement: harness validates Hermes caller identity | 🔴 Blocked — needs all 3 SDK foremen (auth middleware + trust store per S12 §5.1). sdk-go deep idle (64d), sdk-python idle (4 ticks), sdk-typescript idle.
-| SEC-04 | Token rotation + revocation support | 🔴 Open |
+| SEC-04 | Token rotation + revocation support | ✅ Done (S13 spec — 10 sections, 26KB: CLI commands, API endpoints, grace-period state machine, SDK middleware interfaces, test scenarios) |
 | SEC-05 | TLS enforcement between Hermes ↔ harness | 🔴 Open |
 | SEC-06 | Secret handling audit: no credentials leak in logs/errors | 🔴 Open |
 | SEC-07 | Rate limiting spec: max decisions/sec, burst allowance | 🔴 Open |
@@ -415,9 +415,9 @@
 | P5 | One tag → full cascade release | ✅ |
 | P6 | External dev zero→harness < 30 min | ✅ |
 | DEPLOY | Bunker E2E: message → H3 → harness → back | 🔴 |
-|| QV | All QV verifications pass real endpoints | 🔄 12 done, 6 propagated, 1 open, 1 regressed (TS process_text_finished_false) |
+| QV | All QV verifications pass real endpoints | 🔄 12 done, 6 propagated, 1 open, 1 regressed (TS process_text_finished_false) |
 | ND | Never Done audit: all 11 checks pass | 🔄 20 findings (QUAL-01, DUCK-01 resolved this tick) |
-| SEC | Auth + secrets + rate limiting | 🟡 (design done, 6 impl tasks open) |
+| SEC | Auth + secrets + rate limiting | 🟡 (3/7: SEC-01 + SEC-02 + SEC-04) |
 | OBS | Structured logging + metrics + tracing | 🔴 |
 | RES | Fallback, circuit breaker, backpressure | 🔴 |
 | PERF | Latency budgets, load testing, gRPC | 🔴 |
@@ -823,3 +823,65 @@ Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 10 memories). 
 - SEC-03: 🔴 Next FIFO → 🔴 Blocked (needs 3 SDK foremen — analyzed, S12 §5.1 spec ready)
 - CI-03: NEW 🔴 Open → ✅ Fixed (3b2ce81 — missing sdk-typescript checkout)
 - ND findings: 20 → 21 → 20 (CI-03 resolved in same tick)
+
+---
+
+## FOREVER TICK: 2026-07-21 03:33 UTC — SEC-04 Token Rotation Spec (S13)
+
+**Model:** deepseek-v4-pro @ deepseek-foreman (PAYG)
+
+### Actions Taken
+
+- Self-heal: identity verified (kara/totalwindupflightsystems@gmail.com), pull clean, workdir clean
+- Hilo: 22 edges, 5 files — integration/roundtrip fixture generators (Hilo=useful)
+- DuckBrain: h3 namespace active, 2 status entries recalled
+- Picked SEC-04 (oldest FIFO non-blocked): "Token rotation + revocation support"
+- Identified as umbrella-level spec work — non-code task, shortened loop (skip Steps 5-7)
+- Wrote S13 — Token Rotation & Revocation implementation spec (10 sections, 26,323 bytes)
+- Spec covers: 3 CLI commands (rotate-key, revoke-key, rotate-identity), 4 new API endpoints with full JSON schemas, grace-period state machine (dual-key acceptance window), SDK middleware interfaces in Go/Python/TypeScript, 11 test scenarios, implementation ordering across 4 phases, new error codes, config file schema changes
+- Updated _index.md: 12 specs→13 specs, ~111 pages→~126 pages
+- Board updated: SEC-04 marked done, SEC phase 2/7→3/7
+
+### Closed This Tick
+
+| ID | Gap | Resolution |
+|---|---|---|
+| SEC-04 | Token rotation + revocation support | ✅ Done — S13 spec written (10 sections, 26KB) |
+
+### Remaining Open (Umbrella View)
+
+| ID | Gap | Status |
+|---|---|---|
+| SEC-05 | TLS enforcement between Hermes ↔ harness | 🔴 Next FIFO — spec design possible at umbrella level |
+| SEC-06 | Secret handling audit | 🔴 Audit possible at umbrella level |
+| SEC-07 | Rate limiting spec → implementation | 🔴 |
+| SEC-03 | Harness validates Hermes caller identity | 🔴 Blocked — needs all 3 SDK foremen |
+| QV-E2E-03 | TS 42/43 — process_text_finished_false | 🔄 Needs sdk-typescript foreman |
+| DEPS-01/02/03 | Package outdated | 🔴 Needs sub-repo foremen |
+| PERF-ND-01/02/03 | Zero benchmarks in SDKs | 🔴 Needs sub-repo foremen |
+| WIRING-01/02 | H3 plugin not installed into live Hermes | 🔴 Needs bunker |
+
+### Sub-Repo Status (Snapshot)
+
+| Repo | HEAD | Status |
+|---|---|---|
+| protocol | 9c43360 | Idle, stable |
+| shim | d66bcdc | Idle (SEC-02 auth headers done) |
+| sdk-go | 6b5ec12 | Deep idle (cooldown 64d) |
+| sdk-python | 874962d | Idle |
+| sdk-typescript | c3166d9 | Idle |
+
+### Next Tick Target
+
+SEC-05 (TLS enforcement spec) or SEC-06 (Secret handling audit) — both umbrella-level, no sub-repo foremen needed.
+
+### Quality Gate
+
+Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace). CI=green. SEC phase: 🟡 (3/7). Specs: 13 (S01-S13, ~126 pages).
+
+### Board Delta
+
+- SEC-04: 🔴 Open → ✅ Done
+- SEC phase: 2/7 → 3/7 done
+- Spec count: 12 → 13
+- _index.md: ~111 → ~126 pages

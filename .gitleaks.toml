@@ -1,0 +1,21 @@
+# Allow example API keys in H3 spec documentation
+# These are documentation-only example keys — not real secrets
+# Pattern: h3_<24B base64url> for harness keys, h3_hx_<64 hex> for Hermes tokens
+
+[[rules]]
+id = "h3-example-api-keys"
+description = "Example H3 API keys in documentation"
+regex = '''(?i)h3_[A-Za-z0-9_-]{32}'''
+[rules.allowlist]
+paths = [
+  '''specs/.*\.md$''',
+]
+
+[[rules]]
+id = "h3-example-hermes-tokens"
+description = "Example Hermes identity tokens in documentation"
+regex = '''(?i)h3_hx_[0-9a-f]{64}'''
+[rules.allowlist]
+paths = [
+  '''specs/.*\.md$''',
+]
