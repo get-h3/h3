@@ -225,7 +225,7 @@
 |---|---|---|
 | SEC-01 | Design: harness API key / token auth model | ✅ Done (this tick) |
 | SEC-02 | Implement: Hermes validates harness API key on connect | ✅ Done (shim@d66bcdc) |
-| SEC-03 | Implement: harness validates Hermes caller identity | 🔴 Open |
+| SEC-03 | Implement: harness validates Hermes caller identity | 🔴 Blocked — needs all 3 SDK foremen (auth middleware + trust store per S12 §5.1). sdk-go deep idle (64d), sdk-python idle (4 ticks), sdk-typescript idle.
 | SEC-04 | Token rotation + revocation support | 🔴 Open |
 | SEC-05 | TLS enforcement between Hermes ↔ harness | 🔴 Open |
 | SEC-06 | Secret handling audit: no credentials leak in logs/errors | 🔴 Open |
@@ -747,3 +747,79 @@ Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace). CI=green (shi
 
 - SEC-02: 🔴 Open → ✅ Done (shim@d66bcdc)
 - SEC phase: 1/7 → 2/7 done
+
+---
+
+## FOREVER TICK: 2026-07-21 02:52 UTC — 11-Point Audit + SEC-03 Triage
+
+**Model:** deepseek-v4-pro @ deepseek-foreman (PAYG)
+
+### Actions Taken
+
+- Self-heal: identity verified (kara/totalwindupflightsystems@gmail.com), pull clean, workdir clean
+- Hilo: 22 edges, 5 files — integration/roundtrip fixture generators (Hilo=useful)
+- DuckBrain: h3 namespace active, 10 memories recalled
+- Picked SEC-03 (oldest FIFO): "Implement: harness validates Hermes caller identity"
+- **Triage result:** SEC-03 blocked on sub-repo foremen. Needs auth middleware in all 3 SDKs (Go, Python, TypeScript). Each SDK needs: Bearer token validation, trust store, identity matching per S12 §5.1. Sub-repo foremen are all idle/deep-idle and would need explicit wake-up.
+- Ran full 11-point NEVER-DONE audit as productive fallback
+
+### 11-Point Audit Results
+
+| # | Check | Result | Detail |
+|---|-------|--------|--------|
+| 1 | Spec Alignment | PASS | 12/12 specs present (S01-S12). All match completed phases. |
+| 2 | Doc Coverage | PASS | All 6 repos have README.md + CONTRIBUTING.md. DOC-01 through DOC-08 all resolved. |
+| 3 | Test Gaps | N/A | Umbrella repo — no buildable code. Specs, docs, integration fixtures only. |
+| 4 | Package Upgrades | N/A | No package manager at umbrella level. DEPS-01/02/03 tracked in sub-repos. |
+| 5 | Pitfall Hunt | PASS | Zero TODO/FIXME/HACK/XXX markers across all umbrella files. |
+| 6 | Performance | N/A | No benchmarks at umbrella level. PERF-ND-01/02/03 in sub-repos. |
+| 7 | Endpoint | N/A | Static HTML (GitHub Pages). No live endpoints. |
+| 8 | CI Health | FAIL | Roundtrip CI failing on 4f12a12 (exit 1, "Run round-trip verification" step). Local: 6/6 PASS. Deploy CI: PASS (d239289). Re-run triggered on HEAD for diagnosis. |
+| 9 | DuckBrain | PASS | h3 namespace working, 10 memories. |
+| 10 | Code Quality | PASS | Clean workdir (no dirty files, no stashes). .gitignore narrow-scoped: excludes .vfs/graph/*.db + .last_warm, tracks .vfs/.dirty. |
+| 11 | Middle-Out Wiring | N/A | Umbrella coordination repo — no main.go/entry point to audit. |
+
+### New Finding
+
+| ID | Gap | Status |
+|---|---|---|
+| CI-03 | Roundtrip CI fails on 4f12a12 (exit 1 at roundtrip.sh step). Local verification 6/6 PASS. May be environment-specific — CI setup doesn't include Node.js for Phase 3 (TS fixture verification via npx tsx). Re-run triggered on HEAD. | 🔴 Open |
+
+### Sub-Repo Status (Snapshot)
+
+| Repo | HEAD | Status |
+|---|---|---|
+| protocol | 9c43360 (CONTRIBUTING.md) | Idle, stable |
+| shim | d66bcdc (SEC-02 auth headers) | Just updated |
+| sdk-go | 6b5ec12 (deep idle, cooldown 64d) | Needs wake for SEC-03 |
+| sdk-python | 874962d (NEVER-DONE audit) | Idle, 4 ticks idle |
+| sdk-typescript | c3166d9 (tick #16, cooldown reset) | Idle |
+
+### Remaining Open (Umbrella View)
+
+| ID | Gap | Status |
+|---|---|---|
+| SEC-03 | Harness validates Hermes caller identity | 🔴 Blocked — needs all 3 SDK foremen (auth middleware + trust store per S12 §5.1) |
+| SEC-04 | Token rotation + revocation support | 🔴 Design spec work possible at umbrella level |
+| SEC-05 | TLS enforcement | 🔴 |
+| SEC-06 | Secret handling audit | 🔴 Audit possible at umbrella level |
+| SEC-07 | Rate limiting spec → implementation | 🔴 |
+| CI-03 | Roundtrip CI failing (NEW) | 🔴 Open — re-run triggered |
+| QV-E2E-03 | TS 42/43 — process_text_finished_false | 🔄 Needs sdk-typescript foreman |
+| DEPS-01/02/03 | Package outdated | 🔴 Needs sub-repo foremen |
+| PERF-ND-01/02/03 | Zero benchmarks in SDKs | 🔴 Needs sub-repo foremen |
+| WIRING-01/02 | H3 plugin not installed into live Hermes | 🔴 Needs bunker |
+
+### Next Tick Target
+
+SEC-06 (Secret handling audit) or SEC-04 (Token rotation spec) — both are umbrella-level work that don't need sub-repo foremen. SEC-03 needs SDK foreman coordination; wake sdk-go from deep idle first.
+
+### Quality Gate
+
+Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 10 memories). CI=mixed (deploy green, roundtrip red — investigating). 11-point audit: 6 PASS, 4 N/A, 1 FAIL (CI). ND findings: 20→21 (+CI-03).
+
+### Board Delta
+
+- SEC-03: 🔴 Next FIFO → 🔴 Blocked (needs 3 SDK foremen — analyzed, S12 §5.1 spec ready)
+- CI-03: NEW 🔴 Open (roundtrip CI failing despite local 6/6 PASS)
+- ND findings: 20 → 21
