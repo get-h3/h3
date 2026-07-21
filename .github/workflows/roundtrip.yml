@@ -41,6 +41,12 @@ jobs:
           repository: get-h3/sdk-python
           path: sdk-python
 
+      - name: Checkout sdk-typescript
+        uses: actions/checkout@v4
+        with:
+          repository: get-h3/sdk-typescript
+          path: sdk-typescript
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
