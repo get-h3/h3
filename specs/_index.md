@@ -15,7 +15,7 @@
 
 ---
 
-## Specs — All 19 Complete ✅
+## Specs — All 20 Complete ✅
 
 | # | Spec | Status | Pages |
 |---|---|---|---|
@@ -38,8 +38,9 @@
 | 17 | [Metrics & Performance Monitoring](17-Metrics-Performance-Monitoring.md) | ✅ | ~13 |
 | 18 | [Distributed Tracing](18-Distributed-Tracing.md) | ✅ | ~15 |
 | 19 | [Health Check v2](19-Health-Check-v2.md) | ✅ | ~14 |
+| 20 | [Operational Dashboard](20-Operational-Dashboard.md) | ✅ | ~20 |
 
-**Total: 19 specs, ~213 pages.**
+**Total: 20 specs, ~233 pages.**
 
 ---
 
