@@ -46,7 +46,7 @@ cd "$SDK_PYTHON"
 if [ ! -d ".venv" ]; then
     uv venv 2>&1 || python3 -m venv .venv
 fi
-.venv/bin/pip install -e ".[dev]" -q 2>&1
+uv pip install --python .venv/bin/python -e ".[dev]" -q 2>&1 || .venv/bin/pip install -e ".[dev]" -q 2>&1
 echo "Python SDK installed."
 echo "Python: $(.venv/bin/python --version)"
 
