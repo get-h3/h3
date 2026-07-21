@@ -15,7 +15,7 @@
 
 ---
 
-## Specs — All 14 Complete ✅
+## Specs — All 19 Complete ✅
 
 | # | Spec | Status | Pages |
 |---|---|---|---|
@@ -37,8 +37,10 @@
 | 16 | [Observability & Structured Logging](16-Observability-Structured-Logging.md) | ✅ | ~12 |
 | 17 | [Metrics & Performance Monitoring](17-Metrics-Performance-Monitoring.md) | ✅ | ~13 |
 | 18 | [Distributed Tracing](18-Distributed-Tracing.md) | ✅ | ~15 |
+| 18 | [Distributed Tracing](18-Distributed-Tracing.md) | ✅ | ~15 |
+| 19 | [Health Check v2](19-Health-Check-v2.md) | ✅ | ~14 |
 
-**Total: 18 specs, ~199 pages.**
+**Total: 19 specs, ~213 pages.**
 
 ---
 
