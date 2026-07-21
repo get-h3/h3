@@ -212,7 +212,7 @@
 | ID | Task | Status |
 |---|---|---|
 | QV-CROSS-01 | Scaffold → run → test: full flow < 5 min | ✅ Done (shim@140fb27 — scaffold --lang implemented) |
-| QV-CROSS-02 | Install → configure → verify: full Hermes flow | 🔴 Open |
+| QV-CROSS-02 | Install → configure → verify: full Hermes flow | 🟡 Partial — CLI verified (install/scaffold/list/verify/test all OK). Test battery 43/43 against Go echo (0.18s). Live Hermes integration blocked (WIRING-01). |
 | QV-CROSS-03 | Protocol change → SDK regenerate → test cascade | 🔴 Open |
 
 ---
@@ -456,15 +456,16 @@
 
 | ID | Gap | Status |
 |---|---|---|
-| CI-01 | Fix CI `working-directory: h3/integration/roundtrip` in roundtrip.yml (currently `integration/roundtrip` — breaks when checkout uses `path: h3`) | 🔴 Open |
+| CI-01 | Fix CI `working-directory: h3/integration/roundtrip` in roundtrip.yml (currently `integration/roundtrip` — breaks when checkout uses `path: h3`) | ✅ Fixed (1c9f681) — but CI NOW FAILS on different issue (CI-02) |
 | DOC-08 | Add CONTRIBUTING.md for umbrella h3 repo | 🔴 Open |
+| CI-02 | roundtrip.sh L49: `.venv/bin/pip` doesn't exist in uv-created venvs — use `uv pip install` instead | 🔴 Open |
 
 ### CI Drill-Down
 
 - **Workflow:** H3 Cross-Language Round-Trip Verification (roundtrip.yml)
-- **Last 5 runs:** FAIL, FAIL, FAIL, FAIL, SUCCESS
-- **Root cause:** Line 24 `working-directory: integration/roundtrip` — checkout step uses `path: h3` (line 30), so the actual path is `h3/integration/roundtrip`. Every step fails with "No such file or directory."
-- **Fix:** Change `working-directory: integration/roundtrip` → `working-directory: h3/integration/roundtrip`
+- **Last run:** FAIL (exit code 127) — `roundtrip.sh` line 49: `.venv/bin/pip: No such file or directory`
+- **Previous issue (CI-01, FIXED):** `working-directory` was `integration/roundtrip` instead of `h3/integration/roundtrip`. Checkout uses `path: h3` so subdirectory is `h3/integration/roundtrip`. Fixed in commit 1c9f681.
+- **Current issue (CI-02, NEW):** `uv venv` creates a venv without `pip` binary. Line 49 of `h3/h3/integration/roundtrip/roundtrip.sh` calls `.venv/bin/pip` which fails. Fix: use `uv pip install` instead, or check for `.venv/bin/pip3` as fallback.
 
 ### Existing QV Regressions (Unchanged)
 
@@ -486,3 +487,40 @@
 ### Hilo Quality Gate
 
 Hilo=useful (22 edges across 5 files — integration/roundtrip fixture generators)
+
+---
+
+## FOREVER TICK: 2026-07-20 21:52 UTC — QV-CROSS-02 Verification + CI Debug
+
+**Model:** deepseek-v4-pro @ deepseek-foreman (PAYG)
+
+### Actions Taken
+
+- Self-heal: identity verified (kara/totalwindupflightsystems@gmail.com), pull clean
+- Picked QV-CROSS-02 (oldest FIFO non-blocked task)
+- Installed shim (`uv pip install -e ".[dev]"` in ai_plays_poke venv)
+- Started Go echo harness (sdk-go/examples/echo) on :9191
+- Ran test battery: 43/43 PASS in 0.18s against Go echo
+- Verified all CLI commands: `hermes-h3 scaffold/list/verify/install/uninstall` all work
+- Triggered CI on fix commit 1c9f681 — passed checkout but failed on new issue (CI-02)
+- Diagnosed CI-02: `roundtrip.sh` uses `.venv/bin/pip` which doesn't exist in uv-created venvs
+
+### QV-CROSS-02 Status
+
+🟡 Partial. CLI and test battery verified working. Live Hermes integration still blocked by WIRING-01 (H3 plugin not installed into running Hermes).
+
+### New Findings
+
+| ID | Gap | Status |
+|---|---|---|
+| CI-02 | roundtrip.sh L49: `.venv/bin/pip` doesn't exist in uv-created venvs — use `uv pip install` | 🔴 Open |
+
+### CI Status
+
+CI-01 (working-directory path) fixed in 1c9f681. CI now fails on CI-02 (venv pip binary). Next step: fix roundtrip.sh to use `uv pip install` in the integration test.
+
+### Board Delta
+
+- QV-CROSS-02: 🔴 Open → 🟡 Partial
+- CI-01: 🔴 Open → ✅ Fixed
+- CI-02: NEW 🔴 Open
