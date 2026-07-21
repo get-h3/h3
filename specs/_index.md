@@ -15,7 +15,7 @@
 
 ---
 
-## Specs — All 11 Complete ✅
+## Specs — All 14 Complete ✅
 
 | # | Spec | Status | Pages |
 |---|---|---|---|
@@ -32,8 +32,9 @@
 | 11 | [Hermes Upgrade Survival](11-Hermes-Upgrade-Survival.md) | ✅ | ~8 |
 | 12 | [Security & Authentication](12-Security-Authentication.md) | ✅ | ~14 |
 | 13 | [Token Rotation & Revocation](13-Token-Rotation-Revocation.md) | ✅ | ~15 |
+| 14 | [TLS Enforcement](14-TLS-Enforcement.md) | ✅ | ~19 |
 
-**Total: 13 specs, ~126 pages.**
+**Total: 14 specs, ~145 pages.**
 
 ---
 
