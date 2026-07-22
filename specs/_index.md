@@ -15,7 +15,7 @@
 
 ---
 
-## Specs — All 25 Complete ✅
+## Specs — All 26 Complete ✅
 
 | # | Spec | Status | Pages |
 |---|---|---|---|
@@ -44,8 +44,9 @@
 | 23 | [Multi-Tenancy Architecture](23-Multi-Tenancy-Architecture.md) | ✅ | ~16 |
 | 24 | [Compatibility Matrix](24-Compatibility-Matrix.md) | ✅ | ~15 |
 | 25 | [Conformance Certification](25-Conformance-Certification.md) | ✅ | ~16 |
+| 26 | [Chaos Engineering](26-Chaos-Engineering.md) | ✅ | ~16 |
 
-**Total: 25 specs, ~302 pages.**
+**Total: 26 specs, ~318 pages.**
 
 ---
 

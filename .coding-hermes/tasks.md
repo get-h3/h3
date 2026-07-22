@@ -316,10 +316,10 @@
 
 | ID | Task | Status |
 |---|---|---|
-| CHAOS-01 | Network partition: Hermes ↔ harness latency injection | 🔴 Open |
-| CHAOS-02 | Harness returns malformed Decision → Hermes handles gracefully | 🔴 Open |
-| CHAOS-03 | Harness returns decisions out of expected sequence | 🔴 Open |
-| CHAOS-04 | Partial response: harness hangs mid-decision | 🔴 Open |
+| CHAOS-01 | Network partition: Hermes ↔ harness latency injection | ✅ Done (S26 spec, this tick) |
+| CHAOS-02 | Harness returns malformed Decision → Hermes handles gracefully | ✅ Done (S26 §4 — 10 malformed response test scenarios) |
+| CHAOS-03 | Harness returns decisions out of expected sequence | ✅ Done (S26 §5 — 8 out-of-sequence test scenarios) |
+| CHAOS-04 | Partial response: harness hangs mid-decision | ✅ Done (S26 §6 — 8 partial response test scenarios) |
 
 ---
 
@@ -424,9 +424,72 @@
 | MULTI | Multi-harness, A/B testing, hot-reload | ✅ (S23 spec covers MULTI-01 through 04) |
 | COMPAT | Cross-version, deprecation, migration | ✅ (S24 spec: 5 tasks, 11 sections, ~31KB) |
 | CERT | Compliance badge, verification endpoint | ✅ (S25 spec: 15 sections, ~27KB, all 4 CERT tasks completed) |
-| CHAOS | Network faults, malformed responses | 🔴 |
+| CHAOS | Network faults, malformed responses | ✅ |
 
-**Never Done principle:** 19 phases, 152 tasks. The board will never be fully checked off — every audit pass finds new gaps. That's the point. |
+**Never Done principle:** 19 phases, 152 tasks. The board will never be fully checked off — every audit pass finds new gaps. That's the point. **ALL 19 PHASES NOW COMPLETE.** S26 Chaos Engineering (34 test scenarios, 15 sections) closes the last open phase.
+
+---
+
+## FOREVER TICK: 2026-07-22 00:52 UTC — CHAOS Phase: S26 Chaos Engineering Spec
+
+**Model:** deepseek-v4-pro @ deepseek-foreman (PAYG)
+
+### Actions Taken
+
+- **Step 0:** Identity verified (kara/totalwindupflightsystems@gmail.com), pull clean, workdir clean. Co-author: Alexis Okuwa (discovered from git history; `.env` write blocked by security scanner — noted).
+- **Step 2:** Hilo: 22 edges, 5 files — integration/roundtrip fixture generators (Hilo=useful)
+- **Step 3:** DuckBrain: h3 namespace active, 15 keys. Working.
+- **Step 4:** Picked CHAOS-01 through CHAOS-04 (oldest FIFO non-blocked): Chaos Engineering — the LAST open phase.
+- **Combined CHAOS-01 through CHAOS-04** (same root cause: chaos engineering framework). Single S26 spec.
+- **Wrote S26 — Chaos Engineering spec** (15 sections, 33,182 bytes, ~16 pages)
+- Spec covers: chaos proxy architecture (TCP forward proxy with 6 fault types), 4 experiment categories (network partition, malformed responses, out-of-sequence, partial responses), 34 test scenarios, SDK harness interfaces in Go/Python/TypeScript, CLI surface (`hermes h3 chaos`), CI integration, 12 new error codes, 4-phase migration plan
+- Updated _index.md: 25→26 specs, ~302→~318 pages
+- Board updated: CHAOS-01 through CHAOS-04 marked ✅, CHAOS phase gate ✅, ALL 19 PHASES COMPLETE
+
+### Spec Highlights
+
+| Section | Content |
+|---------|---------|
+| Chaos Proxy | Lightweight TCP forward proxy with JSON rule engine. 6 fault types: packet_loss, latency, corrupt, drop, reorder, duplicate. Control API on separate port. |
+| CHAOS-01 (Network) | 4 experiments: transient partition (5s→fallback), prolonged partition (60s→circuit breaker), variable latency, partial loss (50%→retry). 8 test scenarios. Validates every S21 resilience claim. |
+| CHAOS-02 (Malformed) | 6 experiments: missing fields, wrong types, unknown types, non-JSON, HTTP 500, binary garbage. 10 test scenarios. Validates protocol enforcement. |
+| CHAOS-03 (Sequence) | 5 experiments: early end, duplicate IDs, unknown IDs, double result, reversed order. 8 test scenarios. Validates session state machine. |
+| CHAOS-04 (Partial) | 5 experiments: hang forever, truncated JSON, TCP close mid-response, slow chunked, Content-Length mismatch. 8 test scenarios. Validates timeout + fallback. |
+| SDK Interfaces | ChaosHarness with ChaosMode enum in Go, Python, TypeScript. `/_chaos/mode` control endpoint gated by `--chaos-enabled`. |
+| Test Plan | 12 unit + 12 integration + 3 performance = 27 tests across 4 phases. |
+| CI | Separate `chaos.yml` workflow. Daily at 6 AM + on chaos spec changes. Informational only — never blocks deploy. |
+| Security | Localhost-only proxy. Chaos mode disabled in production. No fault data persisted to disk. |
+
+### Closed This Tick
+
+| ID | Gap | Resolution |
+|----|-----|------------|
+| CHAOS-01 | Network partition: Hermes ↔ harness latency injection | ✅ Done — S26 §3 (4 experiments, 8 test scenarios) |
+| CHAOS-02 | Harness returns malformed Decision → Hermes handles gracefully | ✅ Done — S26 §4 (6 experiments, 10 test scenarios) |
+| CHAOS-03 | Harness returns decisions out of expected sequence | ✅ Done — S26 §5 (5 experiments, 8 test scenarios) |
+| CHAOS-04 | Partial response: harness hangs mid-decision | ✅ Done — S26 §6 (5 experiments, 8 test scenarios) |
+
+### Remaining Open (Umbrella View)
+
+| ID | Gap | Status |
+|----|-----|--------|
+| SEC-03 | Harness validates Hermes caller identity | 🔴 Blocked — needs 3 SDK foremen |
+| QV-E2E-03 | TS 42/43 — process_text_finished_false | 🔄 Needs sdk-typescript foreman |
+| WIRING-01/02 | H3 plugin not installed into live Hermes | 🔴 Needs bunker |
+| DEPS/PERF-ND | Sub-repo maintenance | 🔴 Needs sub-repo foremen |
+| IMPL tasks | SEC-IMPL/OBS-IMPL/RES-IMPL | 🔴 Open (implementation tasks) |
+
+### Quality Gate
+
+Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 15 keys). CI=✅ ALL GREEN. **ALL 19 PHASES COMPLETE.** Specs: 26 (~318 pages).
+
+### Board Delta
+
+- CHAOS-01 through CHAOS-04: 🔴 Open → ✅ Done (S26 spec)
+- CHAOS phase gate: 🔴 → ✅ COMPLETE
+- Phase gates: 18/19 → **19/19 COMPLETE** 🎉
+- Spec count: 25 → 26
+- _index.md: ~302 → ~318 pages |
 
 ## [ ] NEVER-DONE — Run 11-point self-improvement audit
 
