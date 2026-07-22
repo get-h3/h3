@@ -15,7 +15,7 @@
 
 ---
 
-## Specs — All 24 Complete ✅
+## Specs — All 25 Complete ✅
 
 | # | Spec | Status | Pages |
 |---|---|---|---|
@@ -43,8 +43,9 @@
 | 22 | [Performance Architecture](22-Performance-Architecture.md) | ✅ | ~10 |
 | 23 | [Multi-Tenancy Architecture](23-Multi-Tenancy-Architecture.md) | ✅ | ~16 |
 | 24 | [Compatibility Matrix](24-Compatibility-Matrix.md) | ✅ | ~15 |
+| 25 | [Conformance Certification](25-Conformance-Certification.md) | ✅ | ~16 |
 
-**Total: 24 specs, ~286 pages.**
+**Total: 25 specs, ~302 pages.**
 
 ---
 

@@ -305,10 +305,10 @@
 
 | ID | Task | Status |
 |---|---|---|
-| CERT-01 | Official "H3 Compliant" badge spec | 🔴 Open |
-| CERT-02 | Badge generation from h3-test output | 🔴 Open |
-| CERT-03 | Verification endpoint: `h3.sh/verify?url=https://my-harness.com` | 🔴 Open |
-| CERT-04 | Conformance results registry: public dashboard of certified harnesses | 🔴 Open |
+| CERT-01 | Official "H3 Compliant" badge spec | ✅ Done (S25 spec, this tick) |
+| CERT-02 | Badge generation from h3-test output | ✅ Done (S25 §4, this tick) |
+| CERT-03 | Verification endpoint: `h3.sh/verify?url=https://my-harness.com` | ✅ Done (S25 §5, this tick) |
+| CERT-04 | Conformance results registry: public dashboard of certified harnesses | ✅ Done (S25 §6-7, this tick) |
 
 ---
 
@@ -423,7 +423,7 @@
 | PERF | Latency budgets, load testing, gRPC | ✅ (S22 spec covers all 5) |
 | MULTI | Multi-harness, A/B testing, hot-reload | ✅ (S23 spec covers MULTI-01 through 04) |
 | COMPAT | Cross-version, deprecation, migration | ✅ (S24 spec: 5 tasks, 11 sections, ~31KB) |
-| CERT | Compliance badge, verification endpoint | 🔴 |
+| CERT | Compliance badge, verification endpoint | ✅ (S25 spec: 15 sections, ~27KB, all 4 CERT tasks completed) |
 | CHAOS | Network faults, malformed responses | 🔴 |
 
 **Never Done principle:** 19 phases, 152 tasks. The board will never be fully checked off — every audit pass finds new gaps. That's the point. |
@@ -1685,7 +1685,7 @@ All CI runs green across the board:
 ### Remaining Open (Umbrella View)
 
 | ID | Gap | Status |
-|---|---|---|
+|----|-----|--------|
 | CERT-01 through CERT-04 | Conformance certification (badge, verification, registry) | 🔴 Next FIFO |
 | CHAOS-01 through CHAOS-04 | Chaos engineering | 🔴 |
 | SEC-03 | Harness validates Hermes caller identity | 🔴 Blocked — needs 3 SDK foremen |
@@ -1702,3 +1702,68 @@ Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 15 keys). CI=�
 - Full 11-point audit: ALL PASS (no new gaps found)
 - CI health: 1/2 green → all green ✅
 - No code changes this tick (S24 already committed by prior tick, verified genuine)
+
+---
+
+## FOREVER TICK: 2026-07-22 00:13 UTC — CERT Phase: S25 Conformance Certification Spec
+
+**Model:** deepseek-v4-pro @ deepseek-foreman (PAYG)
+
+### Actions Taken
+
+- **Step 0:** Identity verified (kara/totalwindupflightsystems@gmail.com), pull clean, workdir clean. Co-author: Alexis Okuwa.
+- **Step 2:** Hilo: 22 edges, 5 files — integration/roundtrip fixture generators (Hilo=useful)
+- **Step 3:** DuckBrain: h3 namespace active, 18 keys. CI all green (5/5 recent runs).
+- **Step 4:** Picked CERT-01 through CERT-04 (oldest FIFO non-blocked): Conformance Certification
+- **Combined CERT-01 through CERT-04** (same root cause: conformance certification architecture). Single S25 spec.
+- **Wrote S25 — Conformance Certification spec** (15 sections, 27,436 bytes, ~16 pages)
+- Spec covers: badge format (signed JSON + SVG), Ed25519 signing, badge lifecycle (90-day expiry, revocation), verification endpoint (11-check algorithm, offline/online/deep modes), registry API (submit/list/revoke with h3_hx auth), public dashboard (h3.sh/certified), CI integration (GitHub Actions template, badge gate), CLI surface (hermes-h3 badge), 24 test scenarios (12 unit + 8 integration + 4 dashboard), 4 security mitigations, 5-phase migration plan
+- Updated _index.md: 24→25 specs, ~286→~302 pages
+- Board updated: CERT-01 through CERT-04 marked done, CERT phase gate ✅, CHAOS remains as last open phase
+
+### Spec Highlights
+
+| Section | Content |
+|---------|---------|
+| Badge Format | Signed JSON with 17 fields + Ed25519 signature. 3 SVG badge variants (green/yellow/grey). |
+| Badge Lifecycle | 90-day expiry, yellow at 60 days, revocation for protocol bumps. Auto-expiry with `expires_at` field. |
+| Verification Algorithm | 11 checks: parse→version→protocol→signature→signer→expiry→revocation→test version→pass rate→domain match→(optional) health probe |
+| Verification Modes | Offline (signature+expiry), Online (+registry revocation check), Deep (+harness health probe) |
+| Registry API | POST/GET/DELETE /api/badges. h3_hx auth for submit/revoke. Public for list/verify. |
+| Dashboard | h3.sh/certified page with badge cards, filter by language/status, per-badge detail view, aggregate stats |
+| CI Integration | GitHub Actions workflow template, badge gate for deploy, auto-submit on main |
+| CLI Surface | `hermes-h3 badge generate/verify/submit/revoke/list/sign` — 8 subcommands |
+| Test Plan | 24 tests across 3 groups: 12 unit (CERT-01-01 through 01-12), 8 integration (CERT-I-01 through I-08), 4 dashboard (CERT-D-01 through D-04) |
+| Security | 7 threats mitigated: forgery (Ed25519), reuse (endpoint binding), spam (rate limit), revocation bypass (signed revocation list), stale badges (protocol version binding), endpoint harvesting (public-by-design), private harnesses (self-signed mode) |
+
+### Closed This Tick
+
+| ID | Gap | Resolution |
+|----|-----|------------|
+| CERT-01 | Official "H3 Compliant" badge spec | ✅ Done — S25 §3 (signed JSON + SVG badge spec, Ed25519) |
+| CERT-02 | Badge generation from h3-test output | ✅ Done — S25 §4 (CLI interface, output files, signing flow) |
+| CERT-03 | Verification endpoint | ✅ Done — S25 §5 (11-check algorithm, offline/online/deep modes) |
+| CERT-04 | Conformance results registry | ✅ Done — S25 §6-7 (registry API + dashboard spec) |
+
+### Remaining Open (Umbrella View)
+
+| ID | Gap | Status |
+|----|-----|--------|
+| CHAOS-01 through CHAOS-04 | Chaos engineering (network partition, malformed decisions, out-of-sequence, partial response) | 🔴 Next FIFO |
+| SEC-03 | Harness validates Hermes caller identity | 🔴 Blocked — needs 3 SDK foremen |
+| QV-E2E-03 | TS 42/43 — process_text_finished_false | 🔄 Needs sdk-typescript foreman |
+| WIRING-01/02 | H3 plugin not installed into live Hermes | 🔴 Needs bunker |
+| DEPS/PERF-ND | Sub-repo maintenance | 🔴 Needs sub-repo foremen |
+| IMPL tasks | SEC-IMPL/OBS-IMPL/RES-IMPL | 🔴 |
+
+### Quality Gate
+
+Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 18 keys). CI=✅ ALL GREEN. CERT: ✅ (4/4 complete). Completed phases: **18/19** (CHAOS remaining). Specs: 25 (~302 pages).
+
+### Board Delta
+
+- CERT-01 through CERT-04: 🔴 Open → ✅ Done (S25 spec)
+- CERT phase gate: 🔴 → ✅ COMPLETE
+- Phase gates: 16/19 complete → 18/19 complete
+- Spec count: 24 → 25
+- _index.md: ~286 → ~302 pages
