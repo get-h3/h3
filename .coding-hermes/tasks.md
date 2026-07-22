@@ -293,11 +293,11 @@
 
 | ID | Task | Status |
 |---|---|---|
-| COMPAT-01 | Cross-version test: Hermes vX with H3 protocol vY | 🔴 Open |
-| COMPAT-02 | Protocol version negotiation on connect | 🔴 Open |
-| COMPAT-03 | Deprecation policy: N versions before breaking change | 🔴 Open |
-| COMPAT-04 | Backward compat: v1 harness works with v2 protocol | 🔴 Open |
-| COMPAT-05 | Migration tool: upgrade harness from v1 to v2 protocol | 🔴 Open |
+|| COMPAT-01 | Cross-version test: Hermes vX with H3 protocol vY | ✅ Done (this tick — S24 spec, 11 sections, ~31KB) |
+|| COMPAT-02 | Protocol version negotiation on connect | ✅ Done (S24 §3 — 8 negotiation test scenarios + state machine) |
+|| COMPAT-03 | Deprecation policy: N versions before breaking change | ✅ Done (S24 §4 — 4-stage lifecycle, deprecation headers, registry) |
+|| COMPAT-04 | Backward compat: v1 harness works with v2 protocol | ✅ Done (S24 §5 — wire format, SDK, CLI guarantees + compat mode adapter) |
+|| COMPAT-05 | Migration tool: upgrade harness from v1 to v2 protocol | ✅ Done (S24 §7 — `hermes h3 migrate` CLI spec, 8 test scenarios) |
 
 ---
 
@@ -422,7 +422,7 @@
 | RES | Fallback, circuit breaker, backpressure | ✅ (S21 spec covers all 7) |
 | PERF | Latency budgets, load testing, gRPC | ✅ (S22 spec covers all 5) |
 | MULTI | Multi-harness, A/B testing, hot-reload | ✅ (S23 spec covers MULTI-01 through 04) |
-| COMPAT | Cross-version, deprecation, migration | 🔴 |
+| COMPAT | Cross-version, deprecation, migration | ✅ (S24 spec: 5 tasks, 11 sections, ~31KB) |
 | CERT | Compliance badge, verification endpoint | 🔴 |
 | CHAOS | Network faults, malformed responses | 🔴 |
 
@@ -1560,11 +1560,11 @@ Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 13 keys). CI=1
 
 ### Next Tick Target
 
-COMPAT-01: "Cross-version test: Hermes vX with H3 protocol vY" — umbrella-level spec design. Compatibility matrix architecture.
+CERT-01: "Official 'H3 Compliant' badge spec" — umbrella-level spec design. Conformance certification architecture with badge generation, verification endpoint, and public registry.
 
 ### Quality Gate
 
-Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 14 keys). CI=1/2 green (roundtrip pre-existing). MULTI: ✅ (4/4). SEC: 🟡 (6/7). Specs: 23 (~273 pages). Completed phases: 16/19 (SPEC, P0, P1, P2, P3, P4, P5, P6, QV, SEC, OBS, RES, PERF, MULTI, DEPLOY blocked, COMPAT/CERT/CHAOS remaining).
+Hilo=useful (22 edges, 5 files). DuckBrain=connection error (pre-existing MCP transport). CI=1/2 green (roundtrip pre-existing, Deploy workflow all green). COMPAT: ✅ (5/5 complete). Completed phases: 17/19 (SPEC, P0, P1, P2, P3, P4, P5, P6, QV, SEC, OBS, RES, PERF, MULTI, COMPAT, DEPLOY blocked, CERT/CHAOS remaining).
 
 ### Board Delta
 
@@ -1572,3 +1572,75 @@ Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 14 keys). CI=1
 - MULTI phase gate: 🔴 → ✅ COMPLETE
 - Spec count: 22 → 23
 - _index.md: ~257 → ~273 pages
+
+---
+
+## FOREVER TICK: 2026-07-21 22:05 UTC — COMPAT Phase: S24 Compatibility Matrix Spec
+
+**Model:** deepseek-v4-pro @ deepseek-foreman (PAYG)
+
+### Actions Taken
+
+- Self-heal: identity verified (kara/totalwindupflightsystems@gmail.com), pull clean, workdir clean
+- Hilo: 22 edges, 5 files — integration/roundtrip fixture generators (Hilo=useful)
+- DuckBrain: connection error (pre-existing MCP transport) — skipped
+- Picked COMPAT-01 (oldest FIFO non-blocked): "Cross-version test: Hermes vX with H3 protocol vY"
+- Combined COMPAT-01 through COMPAT-05 (same root cause: compatibility matrix architecture). Single S24 spec.
+- Wrote S24 — Compatibility Matrix spec (11 sections, 31,044 bytes, ~16 pages)
+- Updated _index.md: 23→24 specs, ~273→~289 pages
+- Updated board: COMPAT-01 through COMPAT-05 marked ✅, COMPAT phase gate ✅
+
+### Spec Highlights
+
+| Section | Content |
+|---|---|
+| Version Numbering | Semver protocol (MAJOR.MINOR). Hermes↔H3 matrix in `versions.yaml`. SDK versions decoupled. |
+| Version Negotiation | Connect-time header handshake. Shim selects max mutually supported version. 426 Upgrade Required on mismatch. |
+| Deprecation Policy | 4-stage lifecycle (STABLE/DEPRECATED/SUNSET/REMOVED). 3-version removal window (~18-24 months). Deprecation headers on every use. |
+| Backward Compatibility | 5 wire format guarantees (fields never removed within major, new fields always optional). SDK/CLI stability per major version. Compatibility mode adapter for serving old protocol format. |
+| Migration Tool | `hermes h3 migrate [--dry-run] [--force] v1.0 v1.1`. Non-breaking: config changes + test. Breaking: requires `--force`, rewrites endpoints. |
+| Cross-Version CI | 15 CVT tests across protocol×shim×SDK matrix. Version fixtures in `protocol/examples/v*.*/`. |
+| Test Plan | 45 tests across 5 groups: cross-version (15), negotiation (8), deprecation (6), backward compat (8), migration (8). |
+
+### Closed This Tick
+
+| ID | Gap | Resolution |
+|---|---|---|
+| COMPAT-01 | Cross-version test: Hermes vX with H3 protocol vY | ✅ Done — S24 §6 (15 CVT tests across version matrix) |
+| COMPAT-02 | Protocol version negotiation on connect | ✅ Done — S24 §3 (state machine + 8 NEG tests) |
+| COMPAT-03 | Deprecation policy | ✅ Done — S24 §4 (4-stage lifecycle + 6 DEP tests) |
+| COMPAT-04 | Backward compat: v1 harness works with v2 | ✅ Done — S24 §5 (wire/SDK/CLI guarantees + compat adapter + 8 BC tests) |
+| COMPAT-05 | Migration tool: upgrade harness | ✅ Done — S24 §7 (CLI spec + 8 MIG tests) |
+
+### Remaining Open (Umbrella View)
+
+| ID | Gap | Status |
+|---|---|---|
+| CERT-01 through CERT-04 | Conformance certification (badge, verification, registry) | 🔴 Next FIFO |
+| CHAOS-01 through CHAOS-04 | Chaos engineering (network partition, malformed decisions) | 🔴 |
+| SEC-IMPL/OBS-IMPL/RES-IMPL | Concrete implementation tasks | 🔴 |
+| SEC-03 | Harness validates Hermes caller identity | 🔴 Blocked — needs 3 SDK foremen |
+| QV-E2E-03 | TS 42/43 | 🔄 Needs sdk-typescript foreman |
+| WIRING-01/02 | H3 plugin not installed | 🔴 Needs bunker |
+| DEPS/PERF-ND | Sub-repo maintenance | 🔴 Needs sub-repo foremen |
+
+### Sub-Repo Status (Snapshot)
+
+| Repo | Last Commit | Status |
+|---|---|---|
+| protocol | 9c43360 | Idle, stable |
+| shim | d66bcdc | Idle |
+| sdk-go | 0acd932 | Deep idle (cooldown 128d) |
+| sdk-python | 5b50746 | Idle |
+| sdk-typescript | 43c38cf | Idle |
+
+### Quality Gate
+
+Hilo=useful (22 edges, 5 files). DuckBrain=connection error (pre-existing MCP transport). CI=1/2 green (roundtrip pre-existing, Deploy all green). COMPAT: ✅ (5/5). Completed phases: 17/19 (CERT/CHAOS remaining). Specs: 24 (~289 pages).
+
+### Board Delta
+
+- COMPAT-01 through COMPAT-05: 🔴 Open → ✅ Done (S24 spec)
+- COMPAT phase gate: 🔴 → ✅ COMPLETE
+- Spec count: 23 → 24
+- _index.md: ~273 → ~289 pages
