@@ -39,8 +39,9 @@
 | 18 | [Distributed Tracing](18-Distributed-Tracing.md) | ✅ | ~15 |
 | 19 | [Health Check v2](19-Health-Check-v2.md) | ✅ | ~14 |
 | 20 | [Operational Dashboard](20-Operational-Dashboard.md) | ✅ | ~20 |
+| 21 | [Resilience & Fallback](21-Resilience-Fallback.md) | ✅ | ~14 |
 
-**Total: 20 specs, ~233 pages.**
+**Total: 21 specs, ~247 pages.**
 
 ---
 

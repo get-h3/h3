@@ -92,7 +92,7 @@
 | P3-09 | shim | CI: GitHub Actions compliance workflow | ✅ Done | 94e82cd |
 | P3-10 | shim | Publish `hermes-h3-shim` to PyPI | 🔴 BLOCKED | Needs PYPI_API_TOKEN |
 
-**Gate:** 43/43 passes against Go echo harness. Go 42/43, Python 39/43, TS 43/43. OBS phase: 🟡 (4/6 done — OBS-01/02/03/04 complete, OBS-05/06 remaining).
+**Gate:** 43/43 passes against Go echo harness. Go 42/43, Python 39/43, TS 43/43. OBS phase: ✅ (6/6 complete).
 
 ---
 
@@ -242,9 +242,9 @@
 | OBS-01 | Structured logging spec: decision_id, session_id, trace_id on every log line | ✅ Done (S16 spec, 12 sections, ~20KB) |
 | OBS-02 | Metrics: decision latency (p50/p95/p99), error rate, throughput | ✅ Done (S17 spec, 634 lines, 13 sections — t-digest quantiles, Prometheus/JSON exposition, 3 SDK middleware contracts) |
 | OBS-03 | Distributed tracing: trace_id propagates Hermes → H3 → harness → back | ✅ Done (S18 spec, 29,708 bytes, 14 sections — W3C Trace Context, OTLP export, 26 test scenarios) |
-| OBS-04 | Health check v2: capabilities, model list, version, uptime | ✅ Done (this tick — S19 spec, 31KB, 13 sections) |
+| OBS-04 | Health check v2: capabilities, model list, version, uptime | ✅ Done (S19 spec, 31KB, 13 sections) |
 | OBS-05 | Dashboard: active sessions, harness health, error breakdown | ✅ Done (S20 spec, this tick) |
-| OBS-06 | Alerting: harness down, latency spike, error rate threshold | 🔴 Open |
+| OBS-06 | Alerting: harness down, latency spike, error rate threshold | ✅ Done (S20 spec) |
 
 ---
 
@@ -254,13 +254,13 @@
 
 | ID | Task | Status |
 |---|---|---|
-| RES-01 | Harness timeout → fallback to native loop | 🔴 Open |
-| RES-02 | Mid-session harness death → session migration to native | 🔴 Open |
-| RES-03 | Circuit breaker: N consecutive failures → auto-disable harness | 🔴 Open |
-| RES-04 | Backpressure: harness sends decisions faster than Hermes can execute | 🔴 Open |
-| RES-05 | Session replay: reconstruct full session from logs | 🔴 Open |
-| RES-06 | Graceful degradation: harness partial failure → best-effort response | 🔴 Open |
-| RES-07 | Cold start: first-request latency budget, warm-up protocol | 🔴 Open |
+| RES-01 | Harness timeout → fallback to native loop | ✅ Done (S21 spec, 93df130) |
+| RES-02 | Mid-session harness death → session migration to native | ✅ Done (S21 spec, 93df130) |
+| RES-03 | Circuit breaker: N consecutive failures → auto-disable harness | ✅ Done (S21 spec, 93df130) |
+| RES-04 | Backpressure: harness sends decisions faster than Hermes can execute | ✅ Done (S21 spec, 93df130) |
+| RES-05 | Session replay: reconstruct full session from logs | ✅ Done (S21 spec, 93df130) |
+| RES-06 | Graceful degradation: harness partial failure → best-effort response | ✅ Done (S21 spec, 93df130) |
+| RES-07 | Cold start: first-request latency budget, warm-up protocol | ✅ Done (S21 spec, 93df130) |
 
 ---
 
@@ -419,7 +419,7 @@
 || ND | Never Done audit: all 11 checks pass | 🔄 19 findings (OBS-02 resolved) |
 | SEC | Auth + secrets + rate limiting | 🟡 (6/7: 01+02+04+05+06+07 done, 03 blocked) |
 | OBS | Structured logging + metrics + tracing + dashboard | 🟡 (5/6: OBS-01+02+03+04+05 done, 06 remaining) |
-| RES | Fallback, circuit breaker, backpressure | 🔴 |
+| RES | Fallback, circuit breaker, backpressure | ✅ (S21 spec covers all 7) |
 | PERF | Latency budgets, load testing, gRPC | 🔴 |
 | MULTI | Multi-harness, A/B testing, hot-reload | 🔴 |
 | COMPAT | Cross-version, deprecation, migration | 🔴 |
@@ -1357,3 +1357,60 @@ Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 12 keys). CI=g
 - OBS phase: 4/6 → 6/6 ✅ COMPLETE
 - Spec count: 19 → 20
 - _index.md: ~213 → ~228 pages
+
+---
+
+## FOREVER TICK: 2026-07-21 19:22 UTC — RES Phase: S21 Resilience & Fallback Spec
+
+**Model:** deepseek-v4-pro @ deepseek-foreman (PAYG)
+
+### Actions Taken
+
+- Self-heal: identity verified (kara/totalwindupflightsystems@gmail.com), pull clean, workdir clean
+- Hilo: 22 edges, 5 files — integration/roundtrip fixture generators (Hilo=useful)
+- DuckBrain: skipped — connection error (pre-existing, h3 namespace MCP unreachable)
+- Picked RES-01 (oldest FIFO non-blocked): "Harness timeout → fallback to native loop"
+- Identified RES-01 through RES-07 as same-root-cause tasks — single S21 spec covers all 7
+- Wrote S21 — Resilience & Fallback Architecture spec (14 sections, 28,197 bytes)
+- Spec covers: 4-state resilience machine (HEALTHY/DEGRADED/FALLBACK/OPEN), timeout detection at every hop (connect/read/health/process/result), full fallback to native Hermes loop with zero session data loss, circuit breaker with exponential backoff (5m→15m→1h→12h), backpressure via bounded queue + X-H3-Backpressure headers, graceful degradation (partial response extraction), cold-start warm-up protocol, full SDK middleware contracts (Go/Python/TypeScript with complete code), CLI surface (hermes h3 resilience), 26 test scenarios (15 unit + 8 integration + 3 performance), 4-phase migration plan, security review
+- Updated _index.md: 20→21 specs, ~233→~247 pages
+- Board updated: RES-01 through RES-07 marked done, RES phase gate ✅
+
+### Closed This Tick
+
+| ID | Gap | Resolution |
+|---|---|---|
+| RES-01 | Harness timeout → fallback to native loop | ✅ Done — S21 spec (14 sections, 28KB) |
+| RES-02 | Mid-session harness death → session migration | ✅ Done — S21 §6 (bulk migration, full state preservation) |
+| RES-03 | Circuit breaker: N consecutive failures → auto-disable | ✅ Done — S21 §5 (3-state breaker, exponential backoff) |
+| RES-04 | Backpressure: decisions faster than execution | ✅ Done — S21 §7 (bounded queue, X-H3-Backpressure headers) |
+| RES-05 | Session replay: reconstruct from logs | ✅ Done — S21 §4.2 (S16 integration, trace_id correlation) |
+| RES-06 | Graceful degradation: partial failure → best-effort | ✅ Done — S21 §8 (partial response extraction) |
+| RES-07 | Cold start: latency budget, warm-up protocol | ✅ Done — S21 §9 (2x timeout, warm-up probe) |
+
+### Remaining Open (Umbrella View)
+
+| ID | Gap | Status |
+|---|---|---|
+| SEC-03 | Harness validates Hermes caller identity | 🔴 Blocked — needs 3 SDK foremen |
+| PERF (5 tasks) | Latency budgets, load testing, gRPC | 🔴 Next FIFO |
+| MULTI/COMPAT/CERT/CHAOS | Full phases | 🔴 |
+| IMPL tasks | SEC-IMPL/OBS-IMPL/RES-IMPL | 🔴 |
+| DEPS/PERF-ND | Sub-repo maintenance | 🔴 Needs sub-repo foremen |
+| QV-E2E-03 | TS 42/43 | 🔄 Needs sdk-typescript foreman |
+| WIRING-01/02 | H3 plugin not installed | 🔴 Needs bunker |
+
+### Next Tick Target
+
+PERF-01: "Latency budget: process < 50ms, result < 100ms p95" — umbrella-level spec design. Performance budgets with benchmarking methodology.
+
+### Quality Gate
+
+Hilo=useful (22 edges, 5 files). DuckBrain=connection error (pre-existing MCP transport). CI=1/2 green (roundtrip pre-existing). RES: ✅ (7/7 complete). SEC: 🟡 (6/7). Specs: 21 (~247 pages).
+
+### Board Delta
+
+- RES-01 through RES-07: 🔴 Open → ✅ Done (S21 spec)
+- RES phase gate: 🔴 → ✅ COMPLETE
+- Spec count: 20 → 21
+- _index.md: ~233 → ~247 pages
