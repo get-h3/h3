@@ -15,7 +15,7 @@
 
 ---
 
-## Specs — All 23 Complete ✅
+## Specs — All 24 Complete ✅
 
 | # | Spec | Status | Pages |
 |---|---|---|---|
@@ -42,8 +42,9 @@
 | 21 | [Resilience & Fallback](21-Resilience-Fallback.md) | ✅ | ~14 |
 | 22 | [Performance Architecture](22-Performance-Architecture.md) | ✅ | ~10 |
 | 23 | [Multi-Tenancy Architecture](23-Multi-Tenancy-Architecture.md) | ✅ | ~16 |
+| 24 | [Compatibility Matrix](24-Compatibility-Matrix.md) | ✅ | ~15 |
 
-**Total: 23 specs, ~271 pages.**
+**Total: 24 specs, ~286 pages.**
 
 ---
 
@@ -69,4 +70,4 @@
 
 ---
 
-*Generated July 12, 2026. Architecture from h3.html design doc.*
+*Generated July 21, 2026. Architecture from h3.html design doc.*
