@@ -40,8 +40,9 @@
 | 19 | [Health Check v2](19-Health-Check-v2.md) | ✅ | ~14 |
 | 20 | [Operational Dashboard](20-Operational-Dashboard.md) | ✅ | ~20 |
 | 21 | [Resilience & Fallback](21-Resilience-Fallback.md) | ✅ | ~14 |
+| 22 | [Performance Architecture](22-Performance-Architecture.md) | ✅ | ~10 |
 
-**Total: 21 specs, ~247 pages.**
+**Total: 22 specs, ~257 pages.**
 
 ---
 
