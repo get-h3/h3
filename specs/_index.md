@@ -41,7 +41,7 @@
 | 20 | [Operational Dashboard](20-Operational-Dashboard.md) | ✅ | ~20 |
 | 21 | [Resilience & Fallback](21-Resilience-Fallback.md) | ✅ | ~14 |
 | 22 | [Performance Architecture](22-Performance-Architecture.md) | ✅ | ~10 |
-| 23 | [Multi-Tenancy & Harness Routing](23-Multi-Tenancy-Harness-Routing.md) | ✅ | ~14 |
+| 23 | [Multi-Tenancy Architecture](23-Multi-Tenancy-Architecture.md) | ✅ | ~16 |
 
 **Total: 23 specs, ~271 pages.**
 
