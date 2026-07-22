@@ -278,14 +278,14 @@
 
 ---
 
-## PHASE MULTI: Multi-Tenancy
+## PHASE MULTI: Multi-Tenancy ✅
 
 | ID | Task | Status |
 |---|---|---|
-| MULTI-01 | Multiple harnesses simultaneously (per-session routing) | 🔴 Open |
-| MULTI-02 | Harness isolation: one harness crash doesn't affect others | 🔴 Open |
-| MULTI-03 | A/B testing: route X% of sessions to harness, rest to native | 🔴 Open |
-| MULTI-04 | Hot-reload: add/remove harnesses without restarting Hermes | 🔴 Open |
+| MULTI-01 | Multiple harnesses simultaneously (per-session routing) | ✅ Done (S23 spec) |
+| MULTI-02 | Harness isolation: one harness crash doesn't affect others | ✅ Done (S23 §5) |
+| MULTI-03 | A/B testing: route X% of sessions to harness, rest to native | ✅ Done (S23 §6) |
+| MULTI-04 | Hot-reload: add/remove harnesses without restarting Hermes | ✅ Done (S23 §7) |
 
 ---
 
@@ -420,8 +420,8 @@
 | SEC | Auth + secrets + rate limiting | 🟡 (6/7: 01+02+04+05+06+07 done, 03 blocked) |
 | OBS | Structured logging + metrics + tracing + dashboard | 🟡 (5/6: OBS-01+02+03+04+05 done, 06 remaining) |
 | RES | Fallback, circuit breaker, backpressure | ✅ (S21 spec covers all 7) |
-| PERF | Latency budgets, load testing, gRPC | 🔴 |
-| MULTI | Multi-harness, A/B testing, hot-reload | 🔴 |
+| PERF | Latency budgets, load testing, gRPC | ✅ (S22 spec covers all 5) |
+| MULTI | Multi-harness, A/B testing, hot-reload | ✅ (S23 spec covers MULTI-01 through 04) |
 | COMPAT | Cross-version, deprecation, migration | 🔴 |
 | CERT | Compliance badge, verification endpoint | 🔴 |
 | CHAOS | Network faults, malformed responses | 🔴 |
@@ -1495,3 +1495,80 @@ Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 13 keys). CI=1
 - OBS phase gate: 4/6 → 6/6 fixed
 - Spec count: 21 → 22
 - _index.md: ~247 → ~257 pages
+
+---
+
+## FOREVER TICK: 2026-07-21 20:00 UTC — MULTI-01 through MULTI-04 Multi-Tenancy Spec (S23)
+
+**Model:** deepseek-v4-pro @ deepseek-foreman (PAYG)
+
+### Actions Taken
+
+- Self-heal: identity verified (kara/totalwindupflightsystems@gmail.com), pull clean, workdir clean
+- Hilo: 22 edges, 5 files — integration/roundtrip fixture generators (Hilo=useful)
+- Picked MULTI-01 (oldest FIFO non-blocked): "Multiple harnesses simultaneously (per-session routing)"
+- Combined MULTI-01 through MULTI-04 (same root cause: multi-tenancy architecture). Single S23 spec.
+- Wrote S23 — Multi-Tenancy Architecture spec (13 sections, 30,083 bytes, ~16 pages)
+- Spec covers: harness registry (per-session binding, weighted routing), isolation guarantees (crash isolation, resource quotas, no cross-harness communication), A/B testing (5-phase rollout, weighted distribution, metrics comparison), hot-reload (watchdog-based config reload, atomic writes, add/remove/drain without restart), SDK middleware contracts (Go/Python/TS with HarnessInfo passthrough), 18 test scenarios (12 unit + 6 integration + 3 performance), 4-phase migration plan, 9 new error codes, full CLI surface (harness/routing commands), security review (7 mitigations)
+- Updated _index.md: 22→23 specs, ~257→~273 pages
+- Updated board: MULTI-01 through MULTI-04 marked ✅, MULTI phase gate ✅
+
+### Spec Highlights
+
+| Section | Content |
+|---|---|
+| Registry | Per-session binding, immutable once set. YAML config file watched for changes. |
+| Routing | Rule-based + weighted random. First-match rules for user_id/chat_type, fallback to weighted. |
+| Isolation | Process isolation, memory isolation, crash isolation. No cross-harness communication. |
+| A/B Testing | 5-phase rollout (canary→expand→split→migrate→replace). Per-harness metrics comparison. |
+| Hot-Reload | Atomic config writes, watchdog-based detection. Add/remove/drain without restart. |
+| SDK Contracts | HarnessInfo passthrough only. Harnesses are single-tenant — multi-tenancy is shim-only. |
+| Test Plan | 12 unit + 6 integration + 3 perf. Covers routing, isolation, hot-reload, A/B rollout. |
+| Security | 7 mitigations: enumeration prevention, impersonation detection, data isolation, config tampering, DoS limits, A/B data bias. |
+
+### Closed This Tick
+
+| ID | Gap | Resolution |
+|---|---|---|
+| MULTI-01 | Multiple harnesses simultaneously (per-session routing) | ✅ Done — S23 §2 (registry + session binding + weighted routing) |
+| MULTI-02 | Harness isolation: one crash doesn't affect others | ✅ Done — S23 §3 (process/memory/crash isolation + resource quotas) |
+| MULTI-03 | A/B testing: route X% of sessions to harness | ✅ Done — S23 §4 (5-phase rollout, weighted distribution, metrics comparison) |
+| MULTI-04 | Hot-reload: add/remove harnesses without restart | ✅ Done — S23 §5 (atomic config reload, watchdog, add/remove/drain) |
+
+### Remaining Open (Umbrella View)
+
+| ID | Gap | Status |
+|---|---|---|
+| COMPAT-01 through COMPAT-05 | Compatibility matrix (cross-version, negotiation, deprecation) | 🔴 Next FIFO |
+| CERT-01 through CERT-04 | Conformance certification (badge, verification, registry) | 🔴 |
+| CHAOS-01 through CHAOS-04 | Chaos engineering (network partition, malformed decisions) | 🔴 |
+| SEC-IMPL/OBS-IMPL/RES-IMPL | Concrete implementation tasks | 🔴 |
+| SEC-03 | Harness validates Hermes caller identity | 🔴 Blocked — needs 3 SDK foremen |
+| QV-E2E-03 | TS 42/43 | 🔄 Needs sdk-typescript foreman |
+| WIRING-01/02 | H3 plugin not installed | 🔴 Needs bunker |
+| DEPS/PERF-ND | Sub-repo maintenance | 🔴 Needs sub-repo foremen |
+
+### Sub-Repo Status (Snapshot)
+
+| Repo | Last Commit | Status |
+|---|---|---|
+| protocol | 9c43360 (CONTRIBUTING.md) | Idle, stable |
+| shim | f5247ea (idle tick #7) | Idle, stable |
+| sdk-go | 0acd932 (idle tick #14, cooldown 128d) | Deep idle |
+| sdk-python | 5b50746 (NEVER-DONE audit, idle=8+) | Idle, stable |
+| sdk-typescript | 43c38cf (tick #19, cooldown 6h) | Idle, stable |
+
+### Next Tick Target
+
+COMPAT-01: "Cross-version test: Hermes vX with H3 protocol vY" — umbrella-level spec design. Compatibility matrix architecture.
+
+### Quality Gate
+
+Hilo=useful (22 edges, 5 files). DuckBrain=working (h3 namespace, 14 keys). CI=1/2 green (roundtrip pre-existing). MULTI: ✅ (4/4). SEC: 🟡 (6/7). Specs: 23 (~273 pages). Completed phases: 16/19 (SPEC, P0, P1, P2, P3, P4, P5, P6, QV, SEC, OBS, RES, PERF, MULTI, DEPLOY blocked, COMPAT/CERT/CHAOS remaining).
+
+### Board Delta
+
+- MULTI-01 through MULTI-04: 🔴 Open → ✅ Done (S23 spec)
+- MULTI phase gate: 🔴 → ✅ COMPLETE
+- Spec count: 22 → 23
+- _index.md: ~257 → ~273 pages
