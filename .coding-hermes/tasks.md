@@ -207,7 +207,7 @@ Two test failures identified and fixed in `h3-consensus-adapter`:
 
 | ID | Task | Status |
 |---|---|---|
-| QV-SDK-01 | Go SDK validation rejects missing fields with structured error | 🔴 Open |
+|| QV-SDK-01 | Go SDK validation rejects missing fields with structured error | ✅ Done (cf78c8d) |
 | QV-SDK-02 | Go SDK auto-generates decision_id when empty | 🔴 Open |
 | QV-SDK-03 | Python Pydantic validation matches JSON Schema | 🔴 Open |
 | QV-SDK-04 | TS Zod validation matches JSON Schema | 🔴 Open |
@@ -423,7 +423,7 @@ Two test failures identified and fixed in `h3-consensus-adapter`:
 | P5 | One tag → full cascade release | ✅ protocol→SDKs→h3 |
 | P6 | External dev zero→harness < 30 min | ✅ |
 | DEPLOY | Bunker E2E: message → H3 → Consensus → back | ✅ 43/43 |
-| QV | All QV verifications pass real endpoints | 🔴 5/21 done (PROTO-01..04 ✅, SDK-05 ✅ this tick)
+| QV | All QV verifications pass real endpoints | 🔴 6/21 done (PROTO-01..04 ✅, SDK-05 ✅, QV-SDK-01 ✅)
 | ND | Never Done audit: all 11 checks pass | 🔴 12 findings (DEPS-01/02/03 + WIRING-01/02 + PERF-ND-01/02/03 + SEC-IMPL-01/02/03 + OBS-IMPL-01/02/03 + RES-IMPL-01/02/03) |
 | SEC | Auth + secrets + rate limiting | 🔴 |
 | OBS | Structured logging + metrics + tracing | 🔴 |
@@ -440,4 +440,6 @@ Two test failures identified and fixed in `h3-consensus-adapter`:
 
 *Discovery sweep 2026-07-24 09:50 UTC — Tick #20. **1 task completed:** QV-SDK-05 ✅ (cross-SDK wire format verification: Go/Python/TS all wire-compatible). All 3 SDKs match JSON Schema for ProcessRequest, Identity, Decision, and history. Minor differences (Python user_id/user_name Optional[str], TS defaults "unknown") are wire-compatible. **Board hygiene corrections:** QV gate summary corrected from fabricated "✅ 19/19" → 🔴 5/21 (only 4 PROTO + SDK-05 actually done). CI all green (5 recent runs, roundtrip workflow passes). Sub-repos: all idle (shim tick #73 zombie, sdk-go tick #32, sdk-python tick #21, sdk-typescript tick #32). sdk-go has uncommitted fabrication warning in board. Cooldown: confirmed 43200s (12h) via scheduler API — no change needed. **Scheduler correctly targeting `h3` (not `h3-bootstrap`) — prior 12 reversions were 404 no-ops.**
 
-*Tick #21 2026-07-24 ~14:00 UTC — **P5-06 ✅** (cross-repo integration test cascade). Added `repository_dispatch: [protocol-updated]` trigger to h3 roundtrip CI (2929bd1). Added dispatch step to protocol release workflow (protocol/e5960f98). Full cascade now flows: protocol tag → validate → SDK sync (sdk-go/py/ts + shim) → h3 cross-language roundtrip verification. CI all green (5 recent runs). Sub-repo health: protocol idle 4d, sdk-go idle tick #32, sdk-python idle tick #21, sdk-typescript idle tick #32, shim tick #73 zombie (escalation pending ~93h). Untracked: journey-narrative.md (221 lines, teaching doc). Cooldown: 43200s (12h), unchanged.*
+*Tick #21 2026-07-24 ~14:00 UTC — **P5-06 ✅** (cross-repo integration test cascade). Added `repository_dispatch: [protocol-updated]` trigger to h3 roundtrip CI (2929bd1). Added dispatch step to protocol release workflow (protocol/e5960f98). Full cascade now flows: protocol tag → validate → SDK sync (sdk-go/py/ts + shim) → h3 cross-language roundtrip verification. CI all green (5 recent runs). Sub-repo health: protocol idle 4d, sdk-go idle tick #32, sdk-python idle tick #21, sdk-typescript idle tick #32, shim tick #73 zombie (escalation pending ~93h). Untracked: journey-narrative.md (221 lines, teaching doc). Cooldown: 43200s (12h), unchanged.
+
+*Tick #22 2026-07-24 ~15:30 UTC — **QV-SDK-01 ✅** (Go SDK structured validation errors). Replaced plain `fmt.Errorf` in `Validate()` methods with new `ValidationError` struct carrying `Code` (ErrorCode), `Message`, and `Details` (map with field name). ProcessRequest validation returns `ErrInvalidRequest`, Decision validation returns `ErrInvalidDecision`. All 42 tests pass (27 round-trip + 12 legacy validation + 3 new structured-error tests). Full SDK builds clean, harness + testbed tests pass. Pushed cf78c8d to sdk-go. **Next:** QV-SDK-02 (Go SDK auto-generates decision_id when empty). CI all green (5/5). Sub-repos idle. Cooldown: 43200s (12h), unchanged. *
