@@ -198,8 +198,8 @@ Two test failures identified and fixed in `h3-consensus-adapter`:
 
 | ID | Task | Status |
 |---|---|---|
-| QV-PROTO-01 | ajv validate every schema/example pair | 🔴 Open |
-| QV-PROTO-02 | redocly lint h3-protocol.yaml | 🔴 Open |
+| QV-PROTO-01 | ajv validate every schema/example pair | ✅ Done (23/23 pass, 2026-07-24) |
+| QV-PROTO-02 | redocly lint h3-protocol.yaml | ✅ Done (clean with project config, 2026-07-24) |
 | QV-PROTO-03 | Round-trip: Python → JSON → Go → match | ✅ Done (roundtrip CI, 0cc31b8) |
 | QV-PROTO-04 | Round-trip: Go → JSON → TS → match | ✅ Done (CI-03 fix, 0cc31b8) |
 
@@ -359,9 +359,9 @@ Two test failures identified and fixed in `h3-consensus-adapter`:
 
 | ID | Repo | Gap | Status |
 |---|---|---|---|
-| DEPS-01 | shim | Python packages outdated — run `uv pip list --outdated` | 🔴 Open |
-| DEPS-02 | sdk-python | Python packages outdated — run `uv pip list --outdated` | 🔴 Open |
-| DEPS-03 | sdk-typescript | npm packages outdated — run `npm outdated` | 🔴 Open |
+| DEPS-01 | shim | Python packages outdated — 16 packages (gitreins 0.10.2→0.11.0, pydantic-core 2.46.4→2.47.0 blocked by fastapi constraint, +14 more) | 🔴 Open |
+| DEPS-02 | sdk-python | Python packages outdated — 7 packages (pydantic-core blocked, +6 more) | 🔴 Open |
+| DEPS-03 | sdk-typescript | npm packages outdated — 4 packages (typescript 5.9→7.0, hono, prettier, @hono/node-server) | 🔴 Open |
 
 ### PERF: Zero Benchmarks
 
@@ -375,7 +375,7 @@ Two test failures identified and fixed in `h3-consensus-adapter`:
 
 | ID | Repo | Gap | Status |
 |---|---|---|---|
-| QUAL-01 | All repos | TODO/FIXME/HACK markers found in source — each one is a task | 🔴 Open |
+| QUAL-01 | All repos | TODO/FIXME/HACK markers found in source — each one is a task | ✅ Done (zero markers across all repos, 2026-07-24) |
 
 ### WIRING: Middle-Out Gaps
 
@@ -423,8 +423,8 @@ Two test failures identified and fixed in `h3-consensus-adapter`:
 | P5 | One tag → full cascade release | 🔴 P5-06 pending |
 | P6 | External dev zero→harness < 30 min | ✅ |
 | DEPLOY | Bunker E2E: message → H3 → Consensus → back | ✅ 43/43 |
-| QV | All QV verifications pass real endpoints | ✅ 17/17 |
-| ND | Never Done audit: all 11 checks pass | 🔴 15 findings |
+| QV | All QV verifications pass real endpoints | ✅ 19/19 |
+| ND | Never Done audit: all 11 checks pass | 🔴 12 findings (DEPS-01/02/03 + WIRING-01/02 + PERF-ND-01/02/03 + SEC-IMPL-01/02/03 + OBS-IMPL-01/02/03 + RES-IMPL-01/02/03) |
 | SEC | Auth + secrets + rate limiting | 🔴 |
 | OBS | Structured logging + metrics + tracing | 🔴 |
 | RES | Fallback, circuit breaker, backpressure | 🔴 |
@@ -435,3 +435,7 @@ Two test failures identified and fixed in `h3-consensus-adapter`:
 | CHAOS | Network faults, malformed responses | 🔴 |
 
 **Never Done principle:** 19 phases, 152 tasks. The board will never be fully checked off — every audit pass finds new gaps. That's the point. |
+
+---
+
+*Discovery sweep 2026-07-24 09:31 UTC — Tick #19. **3 tasks completed:** QV-PROTO-01 ✅ (23/23 schema+example validation passes), QV-PROTO-02 ✅ (redocly lint clean with project config), QUAL-01 ✅ (zero TODO/FIXME/HACK markers across all repos). All 5 sub-repos clean, all tests pass (shim 178/178, sdk-python 54/54, sdk-go all pass, sdk-typescript 91/91). DEPS: shim 16 outdated (gitreins 0.10.2→0.11.0, pydantic-core blocked by fastapi), sdk-python 7 outdated, sdk-typescript 4 outdated. **Prior cooldown reversions were no-ops:** ticks #7–#18 targeted `h3-bootstrap` (404) instead of `h3` (registered correctly with CooldownS=43200). This is the first tick that verified via the correct project name. **Escalation to Bane:** 12 prior cooldown reversions were silent 404s. Project is idle but not stuck — actionable tasks completed this tick.*
