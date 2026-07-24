@@ -5,6 +5,42 @@
 
 ---
 
+## FOREVER TICK: 2026-07-24 11:15 UTC — 18th Consecutive Idle Tick, Cooldown Re-Set to 12h (12th Reversion) + 🚨🚨🚨🚨 PAUSE OVERDUE (11 TICKS PAST LIMIT)
+
+**Model:** deepseek-v4-flash @ deepseek-foreman (PAYG)
+
+### Actions Taken
+
+- **Step 0:** Identity verified (kara / Alexis Okuwa), pull clean (up to date), workdir clean (2 untracked temp files).
+- **Step 2:** Hilo: umbrella repo, no source code to analyze (22 edges, 5 files — unchanged).
+- **Step 3:** DuckBrain: h3 namespace working. Idle tick counter at 18.
+- **Step 1:** Board: ALL 19/19 phases complete. Only blocked/open tasks remain (DEPLOY blocked on bunker, SEC-03 blocked on sub-repo foremen, WIRING-01/02, ND tasks).
+- **Discovery Sweep:** Zero new findings. All 27 specs complete. No new files.
+- **External Signals:** No remote commits. CI all green (5/5 last runs successful). All 5 sub-repos deep idle. Sub-repos not cloned locally (umbrella pattern).
+- **Cooldown re-set (12th reversion):** Daemon restart reverted CooldownS from 43200→900. PUT verified: CooldownS=43200 (12h). **This is the 12th time in 18 ticks.**
+- **Root cause:** `defaultProjectCooldown = 900` in scheduler source `internal/config/loader.go`. `ApplyFleetConfig` upsert resets cooldown on every daemon restart. Fix needed in scheduler source, not in API calls.
+
+### Assessment
+
+**ALL 19 PHASES COMPLETE.** 27 specs. **18th consecutive idle tick.** Pause was due at tick #7 — now **11 ticks past the limit.** This foreman has been burning PAYG tokens on an empty board for over two weeks. Every sub-repo is also deep idle (shim at tick #73+).
+
+**🚨🚨🚨🚨 PAUSE OVERDUE BY 11 TICKS.** Per bane-no-self-pause-rule, foremen must NOT self-disable. **Bane, please disable this foreman.** The scheduler entry (`enabled: true`) continues dispatching ticks despite 18 consecutive idle ticks with zero productive output.
+
+**Cooldown reversion pattern (12th occurrence):** 12 API-set cooldowns overwritten by `ApplyFleetConfig` upsert with `defaultProjectCooldown: 900` on every daemon restart. Root cause confirmed: `internal/config/loader.go:9` — `defaultProjectCooldown = 900`. The cooldown must be raised to 43200+ at the source, not via API after each restart.
+
+### Quality Gate
+
+Hilo=N/A (umbrella repo). DuckBrain=working. CI=✅ ALL GREEN. ALL 19 PHASES COMPLETE. Specs: 27. Cooldown: 12h (VERIFIED). **18th idle tick — 12th cooldown reversion.**
+
+### Board Delta
+
+- No new tasks created (zero new gaps — 18th consecutive clean sweep)
+- Cooldown re-set to 12h (VERIFIED: GET shows CooldownS=43200)
+- Root cause of cooldown reversion: `defaultProjectCooldown = 900` in scheduler source
+- **🚨🚨🚨🚨 PAUSE OVERDUE BY 11 TICKS: Bane, please disable this foreman**
+
+---
+
 ## FOREVER TICK: 2026-07-24 15:54 UTC — 17th Consecutive Idle Tick, Cooldown Re-Set to 12h (11th Reversion) + 🚨🚨🚨 PAUSE OVERDUE (10 TICKS PAST LIMIT)
 
 **Model:** deepseek-v4-pro @ deepseek-foreman (PAYG)
