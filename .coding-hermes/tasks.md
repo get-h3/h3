@@ -208,9 +208,9 @@ Two test failures identified and fixed in `h3-consensus-adapter`:
 | ID | Task | Status |
 |---|---|---|
 || QV-SDK-01 | Go SDK validation rejects missing fields with structured error | ✅ Done (cf78c8d) |
-|| QV-SDK-02 | Go SDK auto-generates decision_id when empty | ✅ Done (0f4d384) |
-| QV-SDK-03 | Python Pydantic validation matches JSON Schema | 🔴 Open |
-| QV-SDK-04 | TS Zod validation matches JSON Schema | 🔴 Open |
+||| QV-SDK-02 | Go SDK auto-generates decision_id when empty | ✅ Done (0f4d384) |
+|| QV-SDK-03 | Python Pydantic validation matches JSON Schema | ✅ Done (856922c) |
+|| QV-SDK-04 | TS Zod validation matches JSON Schema | 🔴 Open |
 | QV-SDK-05 | Cross-language wire format consistency | ✅ Done (8f1ae87) |
 
 ### QV-Shim: Hermes Integration
@@ -423,7 +423,7 @@ Two test failures identified and fixed in `h3-consensus-adapter`:
 | P5 | One tag → full cascade release | ✅ protocol→SDKs→h3 |
 | P6 | External dev zero→harness < 30 min | ✅ |
 | DEPLOY | Bunker E2E: message → H3 → Consensus → back | ✅ 43/43 |
-| QV | All QV verifications pass real endpoints | 🔴 7/21 done (PROTO-01..04 ✅, SDK-01 ✅, SDK-02 ✅, SDK-05 ✅)
+| QV | All QV verifications pass real endpoints | 🔴 8/21 done (PROTO-01..04 ✅, SDK-01 ✅, SDK-02 ✅, SDK-03 ✅, SDK-05 ✅)
 | ND | Never Done audit: all 11 checks pass | 🔴 12 findings (DEPS-01/02/03 + WIRING-01/02 + PERF-ND-01/02/03 + SEC-IMPL-01/02/03 + OBS-IMPL-01/02/03 + RES-IMPL-01/02/03) |
 | SEC | Auth + secrets + rate limiting | 🔴 |
 | OBS | Structured logging + metrics + tracing | 🔴 |
@@ -445,3 +445,5 @@ Two test failures identified and fixed in `h3-consensus-adapter`:
 *Tick #22 2026-07-24 ~15:30 UTC — **QV-SDK-01 ✅** (Go SDK structured validation errors). Replaced plain `fmt.Errorf` in `Validate()` methods with new `ValidationError` struct carrying `Code` (ErrorCode), `Message`, and `Details` (map with field name). ProcessRequest validation returns `ErrInvalidRequest`, Decision validation returns `ErrInvalidDecision`. All 42 tests pass (27 round-trip + 12 legacy validation + 3 new structured-error tests). Full SDK builds clean, harness + testbed tests pass. Pushed cf78c8d to sdk-go. **Next:** QV-SDK-02 (Go SDK auto-generates decision_id when empty). CI all green (5/5). Sub-repos idle. Cooldown: 43200s (12h), unchanged. *
 
 *Tick #23 2026-07-24 ~16:30 UTC — **QV-SDK-02 ✅** (Go SDK auto-generates decision_id when empty). Added `GenerateUUID()` (stdlib crypto/rand, UUIDv4) and `NewDecision(decisionType) *Decision` factory to the protocol package. Harness developers can now create decisions with auto-generated traceable identifiers without manual ID assignment. 5 new tests: UUID format/version/variant validation, 100-ID uniqueness, NewDecision sets non-empty ID, consecutive calls produce unique IDs, and full Validate() passes with auto-generated ID + payload. All 47 tests pass (42 existing + 5 new). Full build + test suite clean. Pushed 0f4d384 to sdk-go. **Cooldown:** Was reset to 900s by daemon restart — re-fixed to 43200s (12h) via scheduler API, verified GET shows CooldownS=43200, Enabled=True. **Scheduler correctly targeting `h3` (not `h3-bootstrap`).** CI all green (5/5). Sub-repos: all idle. **Next:** QV-SDK-03 (Python Pydantic validation matches JSON Schema). *
+
+*Tick #24 2026-07-24 ~17:00 UTC — **QV-SDK-03 ✅** (Python Pydantic validation matches JSON Schema). Fixed 5 field-optionality mismatches: Message.timestamp, Identity.user_name/user_id, SessionState.started_at, Config.max_iterations — all changed from Optional to Required per JSON Schema spec. Added numeric constraints: Config.max_iterations (≥1), Config.timeout_seconds (≥1), Config.temperature (0.0–2.0), LLMCall.temperature (0.0–2.0), LLMCall.max_tokens (≥1). Created `tests/test_schema_validation.py` with 58 tests across 4 categories: 18 schema-validation (every model → JSON → validates against schema), 11 required-field enforcement, 8 enum-alignment, 5 constraint-enforcement. All 98 tests pass (40 existing + 58 new). Pushed 856922c to sdk-python. **Cooldown:** 43200s (12h), unchanged. **Scheduler targeting `h3`.** CI all green (5/5). Sub-repos: sdk-go has uncommitted tasks.md + .vfs + untracked consensus-adapter; sdk-python now up-to-date; sdk-typescript idle tick #32; shim zombie tick #73. **Next:** QV-SDK-04 (TS Zod validation matches JSON Schema). *
