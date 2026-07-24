@@ -7,12 +7,14 @@ on:
       - "integration/roundtrip/**"
       - "../sdk-go/protocol/**"
       - "../sdk-python/src/h3_harness/protocol.py"
+      - "../sdk-typescript/src/protocol.ts"
   pull_request:
     branches: [main]
     paths:
       - "integration/roundtrip/**"
       - "../sdk-go/protocol/**"
       - "../sdk-python/src/h3_harness/protocol.py"
+      - "../sdk-typescript/src/protocol.ts"
   workflow_dispatch:
 
 jobs:
@@ -57,8 +59,18 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
       - name: Install uv
         run: pip install uv
 
+      - name: Install TypeScript SDK dependencies
+        working-directory: sdk-typescript
+        run: npm install
+
       - name: Run round-trip verification
+        working-directory: h3/integration/roundtrip
         run: bash roundtrip.sh
