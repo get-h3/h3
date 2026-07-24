@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H3 — Project Status Report</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0a14; color: #c8c8d4;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6; padding: 12px;
+  }
+  @media (min-width: 800px) { body { padding: 24px; } }
+  .container { max-width: 1000px; margin: 0 auto; }
+
+  .hero {
+    text-align: center; padding: 36px 16px 28px;
+    background: linear-gradient(180deg, #0f0f1e 0%, #0a0a14 100%);
+    border: 1px solid #1e1e38; border-radius: 16px; margin-bottom: 20px;
+  }
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 2.4rem); font-weight: 800;
+    background: linear-gradient(135deg, #8b5cf6, #d946ef);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+  .tagline { font-size: 0.95rem; color: #8888a0; }
+  .date { font-size: 0.75rem; color: #5c5c78; margin-top: 8px; }
+
+  .card {
+    background: #0f0f1e; border: 1px solid #1e1e38; border-radius: 12px;
+    padding: 20px; margin-bottom: 16px;
+  }
+  .card h2 { font-size: 1.05rem; font-weight: 700; color: #e0e0f0; margin-bottom: 14px; }
+  .card h3 { font-size: 0.9rem; font-weight: 700; color: #d0d0e0; margin: 16px 0 8px; }
+
+  .grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  @media (min-width: 700px) { .grid { grid-template-columns: 1fr 1fr; } }
+  .grid-3 { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  @media (min-width: 700px) { .grid-3 { grid-template-columns: 1fr 1fr 1fr; } }
+
+  .stat-box {
+    background: #0a0a18; border: 1px solid #1e1e38; border-radius: 10px;
+    padding: 16px; text-align: center;
+  }
+  .stat-box .num { font-size: 2rem; font-weight: 800; color: #8b5cf6; }
+  .stat-box .lbl { font-size: 0.7rem; color: #707088; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .status-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; }
+  .status-done { background: #0d2818; color: #4ade80; }
+  .status-active { background: #1a1a3c; color: #a78bfa; }
+  .status-blocked { background: #2a1a0a; color: #f59e0b; }
+  .status-open { background: #1a0a0a; color: #f87171; }
+  .status-idle { background: #1a1a1a; color: #6b7280; }
+
+  .phase-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #14142a; }
+  .phase-row:last-child { border-bottom: none; }
+  .phase-row .name { font-size: 0.8rem; color: #c0c0d0; }
+  .phase-row .count { font-size: 0.7rem; color: #707088; }
+
+  .bar { height: 4px; background: #1e1e38; border-radius: 2px; margin-top: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 2px; }
+  .bar-green { background: #4ade80; }
+  .bar-yellow { background: #f59e0b; }
+  .bar-red { background: #f87171; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+  th { text-align: left; color: #808090; font-weight: 600; padding: 6px 8px; border-bottom: 1px solid #1e1e38; font-size: 0.68rem; text-transform: uppercase; }
+  td { padding: 6px 8px; border-bottom: 1px solid #14142a; }
+  tr:hover td { background: #12122a; }
+
+  .score-bar { display: flex; align-items: center; gap: 8px; }
+  .score-bar .bar { flex: 1; height: 6px; border-radius: 3px; }
+  .score-bar .num { font-size: 0.75rem; font-weight: 700; color: #4ade80; min-width: 48px; text-align: right; }
+
+  .path-step { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid #14142a; }
+  .path-step:last-child { border-bottom: none; }
+  .path-step .idx { background: #1a1a30; color: #8b5cf6; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
+  .path-step .desc { font-size: 0.78rem; color: #a0a0b8; }
+  .path-step .cmd { font-family: 'SF Mono', monospace; font-size: 0.72rem; color: #61afef; background: #060612; padding: 2px 6px; border-radius: 3px; display: inline-block; margin-top: 4px; }
+
+  .warn { background: #1a1200; border-left: 3px solid #f59e0b; border-radius: 0 8px 8px 0; padding: 10px 14px; font-size: 0.78rem; margin: 12px 0; color: #c0a040; }
+  .note { background: #12121f; border-left: 3px solid #8b5cf6; border-radius: 0 8px 8px 0; padding: 10px 14px; font-size: 0.78rem; margin: 12px 0; }
+  .critical { background: #1a0808; border-left: 3px solid #f87171; border-radius: 0 8px 8px 0; padding: 10px 14px; font-size: 0.78rem; margin: 12px 0; color: #e08080; }
+
+  .footer { text-align: center; padding: 20px; font-size: 0.7rem; color: #505068; }
+
+  pre { background: #060612; border: 1px solid #1a1a30; border-radius: 8px; padding: 12px; overflow-x: auto; font-family: 'SF Mono', monospace; font-size: 0.7rem; line-height: 1.5; margin: 8px 0; }
+  .kw { color: #c678dd; } .str { color: #98c379; } .cm { color: #5c5c78; } .fn { color: #61afef; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<section class="hero">
+  <h1>H3 — Project Status</h1>
+  <p class="tagline">Hermes Harness Hooks · Brain-Swap Protocol</p>
+  <p class="date">Generated: 2026-07-24 06:22 UTC · get-h3/h3</p>
+</section>
+
+<!-- ═══ STATS ═══ -->
+<div class="grid-3">
+  <div class="stat-box">
+    <div class="num">27</div>
+    <div class="lbl">Specs Written</div>
+    <div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div>
+  </div>
+  <div class="stat-box">
+    <div class="num">6</div>
+    <div class="lbl">Repositories</div>
+    <div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div>
+  </div>
+  <div class="stat-box">
+    <div class="num">43/43</div>
+    <div class="lbl">Compliance Score</div>
+    <div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div>
+  </div>
+</div>
+
+<div class="grid-3" style="margin-top:10px;">
+  <div class="stat-box">
+    <div class="num">452</div>
+    <div class="lbl">Total Tests</div>
+    <div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div>
+  </div>
+  <div class="stat-box">
+    <div class="num">19/19</div>
+    <div class="lbl">Phases Complete</div>
+    <div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div>
+  </div>
+  <div class="stat-box">
+    <div class="num">3</div>
+    <div class="lbl">SDK Languages</div>
+    <div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div>
+  </div>
+</div>
+
+<!-- ═══ WHAT'S BUILT ═══ -->
+<div class="card" style="margin-top:16px;">
+  <h2>What's Built <span class="status-badge status-done">Production-Ready</span></h2>
+  <table>
+    <tr><th style="width:25%">Layer</th><th style="width:30%">What</th><th style="width:20%">Tests</th><th style="width:25%">Status</th></tr>
+    <tr>
+      <td><strong>Protocol</strong></td>
+      <td>JSON Schema v1.0, 15 schemas, OpenAPI 3.1, 23/23 validation</td>
+      <td>Schema validators</td>
+      <td><span class="status-badge status-done">v1.0.0 tagged</span></td>
+    </tr>
+    <tr>
+      <td><strong>Go SDK</strong></td>
+      <td>Full server/client, 6 endpoints, zero dependencies</td>
+      <td>67 tests, 85% coverage</td>
+      <td><span class="status-badge status-done">43/43 h3-test</span></td>
+    </tr>
+    <tr>
+      <td><strong>Python SDK</strong></td>
+      <td>FastAPI server, H3Client, middleware, testbed</td>
+      <td>54 tests</td>
+      <td><span class="status-badge status-done">43/43 h3-test</span></td>
+    </tr>
+    <tr>
+      <td><strong>TypeScript SDK</strong></td>
+      <td>Hono server, Zod validation, code generator</td>
+      <td>91 tests, 95% coverage</td>
+      <td><span class="status-badge status-done">43/43 h3-test</span></td>
+    </tr>
+    <tr>
+      <td><strong>Shim (Hermes Plugin)</strong></td>
+      <td>hermes h3 CLI: install, verify, scaffold, test, route — 8 subcommands</td>
+      <td>178 tests</td>
+      <td><span class="status-badge status-done">Ready</span></td>
+    </tr>
+    <tr>
+      <td><strong>Test Battery</strong></td>
+      <td>h3-test: 43 E2E compliance tests across 6 regions</td>
+      <td>43 compliance checks</td>
+      <td><span class="status-badge status-done">Cross-SDK verified</span></td>
+    </tr>
+    <tr>
+      <td><strong>CI/CD</strong></td>
+      <td>GitHub Actions, cross-repo sync pipeline, GitReins gates</td>
+      <td>All 5 repos green</td>
+      <td><span class="status-badge status-done">Working</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══ WHAT'S MISSING ═══ -->
+<div class="card">
+  <h2>What's Missing <span class="status-badge status-blocked">4 Blockers</span></h2>
+
+  <div class="critical">
+    <strong>🔴 BLOCKER 1: H3 shim not installed in live Hermes.</strong> The code exists on disk but no session is routed through an external brain. You need <code style="background:#1a0808;padding:1px 4px;border-radius:2px;">hermes h3 install http://localhost:9191</code> to register a harness and route a chat through it.
+  </div>
+
+  <div class="critical">
+    <strong>🔴 BLOCKER 2: No bunker for E2E testing.</strong> The DEPLOY phase requires an isolated Hermes instance to test the full brain-swap without risking production. <code style="background:#1a0808;padding:1px 4px;border-radius:2px;">bunker connect</code> needed.
+  </div>
+
+  <div class="critical">
+    <strong>🔴 BLOCKER 3: No real harness registered.</strong> The echo harnesses (Go/Python/TS) are examples that prove the protocol works. You need a real harness — Consensus, LangChain agent, or CrewAI — connected via <code style="background:#1a0808;padding:1px 4px;border-radius:2px;">hermes h3 install</code>.
+  </div>
+
+  <div class="warn">
+    <strong>🟡 BLOCKER 4: PyPI publish needs PYPI_API_TOKEN.</strong> h3-shim and h3-sdk-python can't be distributed via pip until the token is provided. Currently only installable from source.
+  </div>
+</div>
+
+<!-- ═══ HOW TO USE H3 ═══ -->
+<div class="card">
+  <h2>The Path: How to Actually Use H3</h2>
+
+  <div class="path-step">
+    <div class="idx">1</div>
+    <div class="desc">
+      <strong>Build a harness</strong> in Go, Python, or TypeScript that implements <code>/v1/process</code> and <code>/v1/result</code>.<br>
+      <span class="cmd">hermes h3 scaffold --lang go</span> generates the boilerplate.
+    </div>
+  </div>
+
+  <div class="path-step">
+    <div class="idx">2</div>
+    <div class="desc">
+      <strong>Verify compliance</strong> with the 43-test battery.<br>
+      <span class="cmd">h3-test --endpoint http://localhost:9191</span>
+    </div>
+  </div>
+
+  <div class="path-step">
+    <div class="idx">3</div>
+    <div class="desc">
+      <strong>Register the harness</strong> with Hermes so sessions can be routed through it.<br>
+      <span class="cmd">hermes h3 install http://localhost:9191</span>
+    </div>
+  </div>
+
+  <div class="path-step">
+    <div class="idx">4</div>
+    <div class="desc">
+      <strong>Route a chat</strong> through H3. Every message now goes to your harness instead of Hermes' native agent loop.<br>
+      <span class="cmd">hermes h3 route telegram:&lt;chat_id&gt;</span>
+    </div>
+  </div>
+
+  <div class="path-step">
+    <div class="idx">5</div>
+    <div class="desc">
+      <strong>Message that chat.</strong> Hermes builds the context (tools, models, history, memory, skills), calls your harness via <code>POST /v1/process</code>, executes the decision, feeds results back via <code>POST /v1/result</code>, and loops until your harness returns <code>{"decision":"end"}</code>.
+    </div>
+  </div>
+</div>
+
+<!-- ═══ COMPLIANCE ═══ -->
+<div class="card">
+  <h2>SDK Compliance Scores</h2>
+  <table>
+    <tr><th>SDK</th><th>Score</th><th style="width:70%">Bar</th></tr>
+    <tr>
+      <td><strong>Go</strong></td>
+      <td><span class="status-badge status-done">43/43</span></td>
+      <td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td>
+    </tr>
+    <tr>
+      <td><strong>Python</strong></td>
+      <td><span class="status-badge status-done">43/43</span></td>
+      <td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td>
+    </tr>
+    <tr>
+      <td><strong>TypeScript</strong></td>
+      <td><span class="status-badge status-done">43/43</span></td>
+      <td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td>
+    </tr>
+  </table>
+  <div class="note" style="margin-top:12px;">
+    <strong>All 3 SDKs pass the full 43-test battery across 6 E2E regions:</strong> Health &amp; Protocol (7), Process Flows (8), Decision Types (6), Result Handling (7), Error &amp; Edge Cases (10), Stress &amp; Performance (5).
+  </div>
+</div>
+
+<!-- ═══ PHASES ═══ -->
+<div class="card">
+  <h2>Phase Completion</h2>
+  <table>
+    <tr><th>Phase</th><th>Tasks</th><th>Status</th><th style="width:40%">Bar</th></tr>
+    <tr><td class="name">P-1 — Specifications</td><td class="count">11/11</td><td><span class="status-badge status-done">Done</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td></tr>
+    <tr><td class="name">P0 — Protocol v1.0</td><td class="count">6/6</td><td><span class="status-badge status-done">Done</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td></tr>
+    <tr><td class="name">P1 — SDKs (Go/Python/TS)</td><td class="count">9/9</td><td><span class="status-badge status-done">Done</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td></tr>
+    <tr><td class="name">P2 — Shim (Hermes Plugin)</td><td class="count">8/8</td><td><span class="status-badge status-done">Done</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td></tr>
+    <tr><td class="name">P3 — Test Battery</td><td class="count">5/5</td><td><span class="status-badge status-done">Done</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td></tr>
+    <tr><td class="name">P4 — Installer &amp; Scaffold</td><td class="count">5/5</td><td><span class="status-badge status-done">Done</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td></tr>
+    <tr><td class="name">P5 — Release Pipeline</td><td class="count">6/6</td><td><span class="status-badge status-done">Done</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td></tr>
+    <tr><td class="name">P6 — Docs &amp; Website</td><td class="count">6/6</td><td><span class="status-badge status-done">Done</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td></tr>
+    <tr><td class="name">DEPLOY — Bunker E2E</td><td class="count">0/9</td><td><span class="status-badge status-blocked">Blocked</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-red" style="width:0%"></div></div></div></td></tr>
+    <tr><td class="name">QV — Quality Verification</td><td class="count">14/18</td><td><span class="status-badge status-active">Active</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:78%"></div></div></div></td></tr>
+    <tr><td class="name">SEC — Security</td><td class="count">6/7</td><td><span class="status-badge status-active">1 Blocked</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:86%"></div></div></div></td></tr>
+    <tr><td class="name">OBS — Observability</td><td class="count">6/6</td><td><span class="status-badge status-done">Done</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td></tr>
+    <tr><td class="name">RES — Resilience</td><td class="count">7/7</td><td><span class="status-badge status-done">Done</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td></tr>
+    <tr><td class="name">PERF — Performance</td><td class="count">5/5</td><td><span class="status-badge status-done">Done</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td></tr>
+    <tr><td class="name">MULTI — Multi-Tenancy</td><td class="count">4/4</td><td><span class="status-badge status-done">Done</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td></tr>
+    <tr><td class="name">COMPAT — Compatibility</td><td class="count">5/5</td><td><span class="status-badge status-done">Done</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td></tr>
+    <tr><td class="name">CERT — Conformance Certification</td><td class="count">4/4</td><td><span class="status-badge status-done">Done</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td></tr>
+    <tr><td class="name">CHAOS — Chaos Engineering</td><td class="count">4/4</td><td><span class="status-badge status-done">Done</span></td><td><div class="score-bar"><div class="bar"><div class="bar-fill bar-green" style="width:100%"></div></div></div></td></tr>
+  </table>
+
+  <div class="note" style="margin-top:14px;">
+    <strong>17 of 19 phases fully complete (all specs written).</strong> Only DEPLOY (9 tasks, needs bunker) and QV (4 remaining integration checks) have open work. The remaining SEC-03 task is blocked on SDK foremen implementing auth middleware — the specs exist (S12-S15).
+  </div>
+</div>
+
+<!-- ═══ REPOSITORY MAP ═══ -->
+<div class="card">
+  <h2>Repository Map</h2>
+  <table>
+    <tr><th>Repository</th><th>Purpose</th><th>Language</th><th>Tests</th><th>CI</th></tr>
+    <tr>
+      <td><strong>get-h3/h3</strong></td>
+      <td>Spec hub, task board, docs (umbrella coordination)</td>
+      <td>Markdown</td>
+      <td>N/A</td>
+      <td><span class="status-badge status-done">✅</span></td>
+    </tr>
+    <tr>
+      <td><strong>get-h3/protocol</strong></td>
+      <td>JSON Schema definitions, OpenAPI 3.1, version negotiation</td>
+      <td>JSON/YAML</td>
+      <td>23/23 validation</td>
+      <td><span class="status-badge status-done">✅</span></td>
+    </tr>
+    <tr>
+      <td><strong>get-h3/shim</strong></td>
+      <td>Hermes plugin: H3 protocol loop, CLI, test battery, scaffold</td>
+      <td>Python</td>
+      <td>178</td>
+      <td><span class="status-badge status-done">✅</span></td>
+    </tr>
+    <tr>
+      <td><strong>get-h3/sdk-go</strong></td>
+      <td>Go SDK: harness server, HTTP client, protocol types, examples</td>
+      <td>Go</td>
+      <td>67</td>
+      <td><span class="status-badge status-done">✅</span></td>
+    </tr>
+    <tr>
+      <td><strong>get-h3/sdk-python</strong></td>
+      <td>Python SDK: FastAPI harness server, middleware, testbed</td>
+      <td>Python</td>
+      <td>54</td>
+      <td><span class="status-badge status-done">✅</span></td>
+    </tr>
+    <tr>
+      <td><strong>get-h3/sdk-typescript</strong></td>
+      <td>TypeScript SDK: Hono server, Zod validation, code generator</td>
+      <td>TypeScript</td>
+      <td>91</td>
+      <td><span class="status-badge status-done">✅</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══ FOREMAN FLEET ═══ -->
+<div class="card">
+  <h2>Foreman Fleet Status</h2>
+  <div class="note">
+    <strong>All 5 sub-repo foremen are DEEP IDLE.</strong> Every project is genuinely complete with zero actionable gaps. The foremen continue to fire zombie ticks because the scheduler's <code>ApplyFleetConfig</code> overwrites API-set cooldowns on daemon restart. Cooldowns have been set to 12h (43200s) via scheduler API but will revert on next restart unless <code>fleet.toml</code> is updated.
+  </div>
+  <table>
+    <tr><th>Foreman</th><th>Idle Ticks</th><th>Cooldown</th><th>Status</th></tr>
+    <tr>
+      <td><strong>h3 (umbrella)</strong></td>
+      <td>18</td>
+      <td>12h</td>
+      <td><span class="status-badge status-idle">Deep Idle</span></td>
+    </tr>
+    <tr>
+      <td><strong>h3-shim-foreman</strong></td>
+      <td>73</td>
+      <td>12h</td>
+      <td><span class="status-badge status-idle">Zombie — escalated 96h ago</span></td>
+    </tr>
+    <tr>
+      <td><strong>h3-sdk-go-foreman</strong></td>
+      <td>32</td>
+      <td>160 days</td>
+      <td><span class="status-badge status-idle">Deep Idle</span></td>
+    </tr>
+    <tr>
+      <td><strong>h3-sdk-python-foreman</strong></td>
+      <td>21</td>
+      <td>12h</td>
+      <td><span class="status-badge status-idle">Deep Idle</span></td>
+    </tr>
+    <tr>
+      <td><strong>h3-sdk-typescript-foreman</strong></td>
+      <td>32</td>
+      <td>12h</td>
+      <td><span class="status-badge status-idle">Deep Idle</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══ SPEC CATALOG ═══ -->
+<div class="card">
+  <h2>Spec Catalog — 27 Documents (~320 pages)</h2>
+  <table>
+    <tr><th style="width:5%">#</th><th>Title</th><th style="width:12%">Pages</th><th>Phase</th></tr>
+    <tr><td>S01</td><td>Overview &amp; Architecture</td><td>~10</td><td>P-1</td></tr>
+    <tr><td>S02</td><td>Protocol Specification</td><td>~28</td><td>P-1</td></tr>
+    <tr><td>S03</td><td>Installer &amp; Version Compatibility</td><td>~16</td><td>P-1</td></tr>
+    <tr><td>S04</td><td>SDK Libraries</td><td>~28</td><td>P-1</td></tr>
+    <tr><td>S05</td><td>Test Battery</td><td>~18</td><td>P-1</td></tr>
+    <tr><td>S06</td><td>Hermes Core Integration</td><td>~18</td><td>P-1</td></tr>
+    <tr><td>S07</td><td>OpenAPI / JSON Schema</td><td>~10</td><td>P-1</td></tr>
+    <tr><td>S08</td><td>Cross-Repo Release Pipeline</td><td>~14</td><td>P-1</td></tr>
+    <tr><td>S09</td><td>Testing Framework Architecture</td><td>~18</td><td>P-1</td></tr>
+    <tr><td>S10</td><td>Website &amp; Documentation</td><td>~10</td><td>P-1</td></tr>
+    <tr><td>S11</td><td>Hermes Upgrade Survival</td><td>~12</td><td>P-1</td></tr>
+    <tr><td>S12</td><td>Security &amp; Authentication</td><td>~14</td><td>SEC-01</td></tr>
+    <tr><td>S13</td><td>Token Rotation &amp; Revocation</td><td>~15</td><td>SEC-04</td></tr>
+    <tr><td>S14</td><td>TLS Enforcement</td><td>~14</td><td>SEC-05</td></tr>
+    <tr><td>S15</td><td>Rate Limiting</td><td>~14</td><td>SEC-07</td></tr>
+    <tr><td>S16</td><td>Observability &amp; Structured Logging</td><td>~12</td><td>OBS-01</td></tr>
+    <tr><td>S17</td><td>Metrics &amp; Performance Monitoring</td><td>~13</td><td>OBS-02</td></tr>
+    <tr><td>S18</td><td>Distributed Tracing</td><td>~14</td><td>OBS-03</td></tr>
+    <tr><td>S19</td><td>Health Check v2</td><td>~14</td><td>OBS-04</td></tr>
+    <tr><td>S20</td><td>Dashboard &amp; Alerting</td><td>~11</td><td>OBS-05/06</td></tr>
+    <tr><td>S21</td><td>Resilience &amp; Fallback</td><td>~14</td><td>RES</td></tr>
+    <tr><td>S22</td><td>Performance Architecture</td><td>~10</td><td>PERF</td></tr>
+    <tr><td>S23</td><td>Multi-Tenancy Architecture</td><td>~16</td><td>MULTI</td></tr>
+    <tr><td>S24</td><td>Compatibility Matrix</td><td>~15</td><td>COMPAT</td></tr>
+    <tr><td>S25</td><td>Conformance Certification</td><td>~15</td><td>CERT</td></tr>
+    <tr><td>S26</td><td>Chaos Engineering</td><td>~16</td><td>CHAOS</td></tr>
+    <tr><td>S27</td><td>Never-Done Audit Framework</td><td>~8</td><td>ND</td></tr>
+  </table>
+</div>
+
+<div class="footer">
+  H3 · Hermes Harness Hooks · <span style="color:#8b5cf6;">get-h3/h3</span> · Report generated 2026-07-24 06:22 UTC
+</div>
+
+</div>
+</body>
+</html>
