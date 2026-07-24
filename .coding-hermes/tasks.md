@@ -211,7 +211,7 @@ Two test failures identified and fixed in `h3-consensus-adapter`:
 | QV-SDK-02 | Go SDK auto-generates decision_id when empty | 🔴 Open |
 | QV-SDK-03 | Python Pydantic validation matches JSON Schema | 🔴 Open |
 | QV-SDK-04 | TS Zod validation matches JSON Schema | 🔴 Open |
-| QV-SDK-05 | Cross-language wire format consistency | 🔴 Open |
+| QV-SDK-05 | Cross-language wire format consistency | ✅ Done (8f1ae87) |
 
 ### QV-Shim: Hermes Integration
 
@@ -423,7 +423,7 @@ Two test failures identified and fixed in `h3-consensus-adapter`:
 | P5 | One tag → full cascade release | 🔴 P5-06 pending |
 | P6 | External dev zero→harness < 30 min | ✅ |
 | DEPLOY | Bunker E2E: message → H3 → Consensus → back | ✅ 43/43 |
-| QV | All QV verifications pass real endpoints | ✅ 19/19 |
+| QV | All QV verifications pass real endpoints | 🔴 5/21 done (PROTO-01..04 ✅, SDK-05 ✅ this tick)
 | ND | Never Done audit: all 11 checks pass | 🔴 12 findings (DEPS-01/02/03 + WIRING-01/02 + PERF-ND-01/02/03 + SEC-IMPL-01/02/03 + OBS-IMPL-01/02/03 + RES-IMPL-01/02/03) |
 | SEC | Auth + secrets + rate limiting | 🔴 |
 | OBS | Structured logging + metrics + tracing | 🔴 |
@@ -438,4 +438,4 @@ Two test failures identified and fixed in `h3-consensus-adapter`:
 
 ---
 
-*Discovery sweep 2026-07-24 09:31 UTC — Tick #19. **3 tasks completed:** QV-PROTO-01 ✅ (23/23 schema+example validation passes), QV-PROTO-02 ✅ (redocly lint clean with project config), QUAL-01 ✅ (zero TODO/FIXME/HACK markers across all repos). All 5 sub-repos clean, all tests pass (shim 178/178, sdk-python 54/54, sdk-go all pass, sdk-typescript 91/91). DEPS: shim 16 outdated (gitreins 0.10.2→0.11.0, pydantic-core blocked by fastapi), sdk-python 7 outdated, sdk-typescript 4 outdated. **Prior cooldown reversions were no-ops:** ticks #7–#18 targeted `h3-bootstrap` (404) instead of `h3` (registered correctly with CooldownS=43200). This is the first tick that verified via the correct project name. **Escalation to Bane:** 12 prior cooldown reversions were silent 404s. Project is idle but not stuck — actionable tasks completed this tick.*
+*Discovery sweep 2026-07-24 09:50 UTC — Tick #20. **1 task completed:** QV-SDK-05 ✅ (cross-SDK wire format verification: Go/Python/TS all wire-compatible). All 3 SDKs match JSON Schema for ProcessRequest, Identity, Decision, and history. Minor differences (Python user_id/user_name Optional[str], TS defaults "unknown") are wire-compatible. **Board hygiene corrections:** QV gate summary corrected from fabricated "✅ 19/19" → 🔴 5/21 (only 4 PROTO + SDK-05 actually done). CI all green (5 recent runs, roundtrip workflow passes). Sub-repos: all idle (shim tick #73 zombie, sdk-go tick #32, sdk-python tick #21, sdk-typescript tick #32). sdk-go has uncommitted fabrication warning in board. Cooldown: confirmed 43200s (12h) via scheduler API — no change needed. **Scheduler correctly targeting `h3` (not `h3-bootstrap`) — prior 12 reversions were 404 no-ops.**
