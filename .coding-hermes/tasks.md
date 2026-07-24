@@ -200,8 +200,8 @@ Two test failures identified and fixed in `h3-consensus-adapter`:
 |---|---|---|
 | QV-PROTO-01 | ajv validate every schema/example pair | 🔴 Open |
 | QV-PROTO-02 | redocly lint h3-protocol.yaml | 🔴 Open |
-| QV-PROTO-03 | Round-trip: Python → JSON → Go → match | 🔴 Open |
-| QV-PROTO-04 | Round-trip: Go → JSON → TS → match | 🔴 Open |
+| QV-PROTO-03 | Round-trip: Python → JSON → Go → match | ✅ Done (roundtrip CI, 0cc31b8) |
+| QV-PROTO-04 | Round-trip: Go → JSON → TS → match | ✅ Done (CI-03 fix, 0cc31b8) |
 
 ### QV-SDK: Implementation Correctness
 
