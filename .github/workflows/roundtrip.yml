@@ -16,6 +16,8 @@ on:
       - "../sdk-python/src/h3_harness/protocol.py"
       - "../sdk-typescript/src/protocol.ts"
   workflow_dispatch:
+  repository_dispatch:
+    types: [protocol-updated]
 
 jobs:
   roundtrip:
