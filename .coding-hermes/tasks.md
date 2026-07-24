@@ -119,7 +119,7 @@
 | P5-03 | sdk-python | Sync-protocol: regenerate → test → release | ✅ Done (da26f48) |
 | P5-04 | sdk-typescript | Sync-protocol: regenerate → test → release | ✅ Done (a50a433) |
 | P5-05 | shim | Sync-protocol + PyPI publish | ✅ Done (372b32b) |
-| P5-06 | h3 | Cross-repo integration test cascade | 🔴 Open |
+|| P5-06 | h3 | Cross-repo integration test cascade | ✅ Done (2929bd1 + protocol/e5960f98) |
 
 **Gate:** One tag on protocol triggers full cascade.
 
@@ -420,7 +420,7 @@ Two test failures identified and fixed in `h3-consensus-adapter`:
 | P2 | Shim completes 3-turn conversation | ✅ |
 | P3 | Test battery passes against all examples | ✅ 43/43 |
 | P4 | Scaffold → test passes end-to-end | ✅ |
-| P5 | One tag → full cascade release | 🔴 P5-06 pending |
+| P5 | One tag → full cascade release | ✅ protocol→SDKs→h3 |
 | P6 | External dev zero→harness < 30 min | ✅ |
 | DEPLOY | Bunker E2E: message → H3 → Consensus → back | ✅ 43/43 |
 | QV | All QV verifications pass real endpoints | 🔴 5/21 done (PROTO-01..04 ✅, SDK-05 ✅ this tick)
@@ -439,3 +439,5 @@ Two test failures identified and fixed in `h3-consensus-adapter`:
 ---
 
 *Discovery sweep 2026-07-24 09:50 UTC — Tick #20. **1 task completed:** QV-SDK-05 ✅ (cross-SDK wire format verification: Go/Python/TS all wire-compatible). All 3 SDKs match JSON Schema for ProcessRequest, Identity, Decision, and history. Minor differences (Python user_id/user_name Optional[str], TS defaults "unknown") are wire-compatible. **Board hygiene corrections:** QV gate summary corrected from fabricated "✅ 19/19" → 🔴 5/21 (only 4 PROTO + SDK-05 actually done). CI all green (5 recent runs, roundtrip workflow passes). Sub-repos: all idle (shim tick #73 zombie, sdk-go tick #32, sdk-python tick #21, sdk-typescript tick #32). sdk-go has uncommitted fabrication warning in board. Cooldown: confirmed 43200s (12h) via scheduler API — no change needed. **Scheduler correctly targeting `h3` (not `h3-bootstrap`) — prior 12 reversions were 404 no-ops.**
+
+*Tick #21 2026-07-24 ~14:00 UTC — **P5-06 ✅** (cross-repo integration test cascade). Added `repository_dispatch: [protocol-updated]` trigger to h3 roundtrip CI (2929bd1). Added dispatch step to protocol release workflow (protocol/e5960f98). Full cascade now flows: protocol tag → validate → SDK sync (sdk-go/py/ts + shim) → h3 cross-language roundtrip verification. CI all green (5 recent runs). Sub-repo health: protocol idle 4d, sdk-go idle tick #32, sdk-python idle tick #21, sdk-typescript idle tick #32, shim tick #73 zombie (escalation pending ~93h). Untracked: journey-narrative.md (221 lines, teaching doc). Cooldown: 43200s (12h), unchanged.*
