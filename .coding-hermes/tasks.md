@@ -132,6 +132,9 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 | RES-IMPL-01 | Shim loader: 3 consecutive harness failures → auto-fallback to native | HIGH | 2 | — | resilience,fallback | Kimi K3 | Bug fix: failure detection + fallback | MiniMax M3 |
 | RES-IMPL-02 | Circuit breaker: track error rate, open after 50% failures | MEDIUM | 2 | — | resilience,circuit-breaker | MiniMax M3 | Feature: circuit breaker | DeepSeek V4 Flash |
 | RES-IMPL-03 | `hermes h3 verify` tests fallback path explicitly | LOW | 2 | — | resilience,testing | Step 3.7 Flash | Testing/e2e: fallback path test | DeepSeek V4 Pro |
+| INFRA-GR-01 | sdk-typescript: missing GitReins evaluator config — add evaluator section to .gitreins/config.yaml (model: deepseek-v4-flash, api_key_env: GITREINS_LLM_API_KEY) | HIGH | 1 | — | infra,gitreins,typescript | DeepSeek V4 Flash | Simple: config addition | — |
+| INFRA-GR-02 | protocol: missing GitReins evaluator config — add evaluator section to .gitreins/config.yaml (model: deepseek-v4-flash, api_key_env: GITREINS_LLM_API_KEY) | HIGH | 1 | — | infra,gitreins,protocol | DeepSeek V4 Flash | Simple: config addition | — |
+| INFRA-GR-03 | sdk-go: GitReins evaluator missing api_key_env — add `api_key_env: GITREINS_LLM_API_KEY` to .gitreins/config.yaml | HIGH | 1 | — | infra,gitreins,go | DeepSeek V4 Flash | Simple: config addition | — |
 | NEVER-DONE | 11-point audit: spec alignment, doc coverage, test gaps, package upgrades, pitfall hunt, performance audit, endpoint verification, CI/CD health, DuckBrain sync, code quality, middle-out wiring. Run every 3-4 ticks. | LOW | 3 | — | audit,quality | DeepSeek V4 Pro | Architecture-level project audit across all subsystems | GLM-5.2 |
 
 - [ ] **E2E-001 — E2E Testing Tick (self-improving loop)** | Recurring every 5-10 ticks | — | — | Luna (browser/screenshots) or Step 3.7 Flash (CLI/API) | foreman-direct | — | —
