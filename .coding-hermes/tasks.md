@@ -120,6 +120,15 @@ Tick #35 (2026-07-26): QV-E2E-04 ✅ Cross-harness test: Go 43/43, TS 43/43
 |    sdk-typescript 134/134 ✅ (2.63s). GitReins JUDGE ✅ on all 6 repos.
 ||    WIRING-01/02 remain unaddressed (12+ ticks). DuckBrain synced.-->
 |
+|  Tick #41 (2026-07-26): Shim GitReins config: added explicit test_command (.venv/bin/python)
+|    to prevent VIRTUAL_ENV contamination. sdk-python .gitignore: widened _run_echo*.py→_*.py
+|    + .gitreins/history/ to match shim pattern. sdk-python 98/98 ✅ via .venv (bare python3
+|    fails due to missing editable install — config fix in tick #32, user must use .venv).
+|    Fleet: shim 225/225 ✅ (1.78s), sdk-go 5/5 ✅ (cached), sdk-python 98/98 ✅ (1.63s),
+|    sdk-typescript 134/134 ✅ (1.79s). GitReins JUDGE ✅ on all 6 repos. DEPS-01/02:
+|    pydantic-core 2.46.4→2.47.0 still blocked by fastapi 0.140.0 constraint chain (both repos).
+|    No other outdated deps. WIRING-01/02 remain (14+ ticks). Hilo=useful (22 edges, 5 files).-->
+|
 |  Tick #40 (2026-07-26): NEVER-DONE 11-point audit ✅ (3 ticks since #37 — overdue).
 |    sdk-python certifi 2026.6.17→2026.7.22 ✅ (was missed when shim got same update in tick #35).
 |    uv lock --upgrade-package certifi updated lockfile. 98/98 tests pass.
