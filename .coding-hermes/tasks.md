@@ -43,6 +43,12 @@
     - Context.session_state: SessionState = SessionState() — no longer required on empty {}
     98/98 tests pass. Test battery blank context {} now validates correctly.
     Fix unblocks QV-E2E-02 (Python full protocol loop).
+
+  Tick #31 (2026-07-26): QV-SDK-03 ✅ confirmed complete (44/44 Pydantic→JSON Schema validation
+    tests). QV-SDK-04 ✅ (43/43 Zod→JSON Schema via ajv, required fields, enum alignment, 
+    numeric constraints — TypeScript SDK now at 134/134 across 6 test files). Fleet health:
+    shim 178/178, sdk-go 5/5, sdk-python 98/98, sdk-typescript 134/134.
+    GitReins JUDGE PASS on umbrella. WIRING-01/02 remain unaddressed (H3 not in live Hermes).
 -->
 
 # h3 — Model Router Task Matrix
@@ -61,12 +67,11 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 | QV-E2E-01 | Go echo: process→text→result→text→result→end — full protocol loop verification | HIGH | 3 | — | e2e,go,testing | GPT-5.6 Luna | Testing/e2e: full protocol loop across Go echo harness | Step 3.7 Flash |
 | QV-E2E-02 | Python minimal: process→text→result→text→result→end — full protocol loop | HIGH | 3 | — | e2e,python,testing | GPT-5.6 Luna | Testing/e2e: full protocol loop across Python | Step 3.7 Flash |
 | QV-E2E-03 | TypeScript minimal: process→text→result→text→result→end — full protocol loop | HIGH | 3 | — | e2e,typescript,testing | GPT-5.6 Luna | Testing/e2e: full protocol loop across TypeScript | Step 3.7 Flash |
-| QV-E2E-04 | Cross-harness: h3-test against all 3 languages simultaneously | MEDIUM | 3 | QV-E2E-01,02,03 | e2e,cross-lang,testing | Step 3.7 Flash | Testing/e2e: cross-language test execution | GPT-5.6 Luna |
-| QV-E2E-05 | Harness logs: timestamped METHOD /path STATUS DURATION | LOW | 2 | — | logging,observability | DeepSeek V4 Flash | Simple/boilerplate: structured logging format | — |
-| QV-SDK-03 | Python Pydantic validation matches JSON Schema — verify all formats match protocol | MEDIUM | 3 | — | sdk,python,validation | DeepSeek V4 Pro | Architecture/design: schema validation alignment | MiniMax M3 |
-| QV-SDK-04 | TS Zod validation matches JSON Schema — verify all formats match protocol | MEDIUM | 3 | — | sdk,typescript,validation | DeepSeek V4 Pro | Architecture/design: schema validation alignment | MiniMax M3 |
-| QV-SHIM-01 | h3-test 43/43 against live Go harness — verify with real running harness | HIGH | 2 | — | shim,testing,go | Step 3.7 Flash | Testing/e2e: test battery against live harness | GPT-5.6 Luna |
-| QV-SHIM-02 | Test report JSON matches TestReport schema — schema compliance | MEDIUM | 2 | — | shim,testing,schema | DeepSeek V4 Flash | Simple: schema compliance check | — |
+|| QV-E2E-04 | Cross-harness: h3-test against all 3 languages simultaneously | MEDIUM | 3 | QV-E2E-01,02,03 | e2e,cross-lang,testing | Step 3.7 Flash | Testing/e2e: cross-language test execution | GPT-5.6 Luna |
+|| QV-SDK-03 | ~~Python Pydantic validation matches JSON Schema — verify all formats match protocol~~ | ✅ Tick #30 | 3 | — | sdk,python,validation | DeepSeek V4 Pro | ✅ 44/44 Pydantic→JSON Schema validation tests pass | MiniMax M3 |
+|| QV-SDK-04 | ~~TS Zod validation matches JSON Schema — verify all formats match protocol~~ | ✅ Tick #31 | 3 | — | sdk,typescript,validation | DeepSeek V4 Pro | ✅ 43/43 Zod→JSON Schema validation via ajv. 134/134 TS tests. | MiniMax M3 |
+|| QV-E2E-05 | Harness logs: timestamped METHOD /path STATUS DURATION | LOW | 2 | — | logging,observability | DeepSeek V4 Flash | Simple/boilerplate: structured logging format | — |
+|| QV-SHIM-02 | Test report JSON matches TestReport schema — schema compliance | MEDIUM | 2 | — | shim,testing,schema | DeepSeek V4 Flash | Simple: schema compliance check | — |
 | QV-SHIM-03 | Shim handles harness timeout gracefully — resilience testing | MEDIUM | 3 | — | shim,resilience,testing | MiniMax M3 | Bug fix: timeout handling, resilience | DeepSeek V4 Pro |
 | QV-SHIM-04 | Health check detects dead harness, falls back to native — resilience | MEDIUM | 3 | — | shim,health,fallback | Kimi K3 | Bug fix: health check, fallback mechanism | MiniMax M3 |
 
