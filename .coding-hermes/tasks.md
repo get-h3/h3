@@ -148,8 +148,20 @@ Tick #35 (2026-07-26): QV-E2E-04 ✅ Cross-harness test: Go 43/43, TS 43/43
 |    middle-out wiring ⚠️ (WIRING-01/02 remain 16+ ticks — `hermes h3` not registered in live Hermes :8642).
 |    Hermes API available on :8642 (v0.18.2). Docker images exist, no containers running.
 |    sdk-go idle escalation active (#47 tick, #14 idle). WIRING-01/02 need Bane review.
-|    DuckBrain populated with tick record.
+||    DuckBrain populated with tick record.
     -->
+|
+|
+|  Tick #42 (2026-07-26): Fleet health: shim 225/225 ✅ (1.44s), sdk-go 5/5 ✅ (cached, idle #15),
+|    sdk-python 98/98 ✅ (0.50s), sdk-typescript 134/134 ✅ (391ms), protocol clean.
+|    GitReins JUDGE: umbrella has 2 tasks (qv-e2e-go-echo✅, qv-sdk-cross-lang pending).
+|    DuckBrain: h3 namespace was EMPTY (wrong-namespace silent write — prior ticks
+|    wrote to wojons-mythos instead). Switched to h3, populated 5 entries.
+|    Shim certifi: local venv updated 2026.6.17→2026.7.22 (uv.lock gitignored — ephemeral).
+|    jsonschema dev dep: uv sync needs --all-extras (dual dev group config in pyproject.toml:
+|    [project.optional-dependencies] dev + [dependency-groups] dev both exist, not a new bug).
+|    WIRING-01/02 remain (17+ ticks). Hilo=useful (22 edges, 5 files, 3 languages).-->
+
 
     # h3 — Model Router Task Matrix
 
