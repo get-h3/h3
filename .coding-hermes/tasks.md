@@ -125,8 +125,21 @@ Tick #35 (2026-07-26): QV-E2E-04 ✅ Cross-harness test: Go 43/43, TS 43/43
 |    uv lock --upgrade-package certifi updated lockfile. 98/98 tests pass.
 |    Fleet: shim 225/225 ✅ (1.86s), sdk-go 5/5 ✅ (cached), sdk-python 98/98 ✅ (0.48s),
 |    sdk-typescript 134/134 ✅ (371ms). GitReins JUDGE ✅ on umbrella (tier1+tier2 configured).
-|    pydantic-core 2.46.4 still blocked by fastapi constraint chain. DuckBrain populated.--
-    -->
+||    pydantic-core 2.46.4 still blocked by fastapi constraint chain. DuckBrain populated.
+|
+|  Tick #41 (2026-07-26): NEVER-DONE 11-point audit ✅ (4 ticks since #37 — overdue).
+|    Fleet: shim 225/225 ✅ (1.51s), sdk-go 5/5 ✅ (cached), sdk-python 98/98 ✅ (0.46s),
+|    sdk-typescript 134/134 ✅ (543ms), protocol spec valid. GitReins JUDGE ✅ on umbrella.
+|    QV-SHIM-02 ✅ — validate_test_report schema compliance verified PASS.
+|    NEVER-DONE 11/11: spec alignment ✅, doc coverage ✅, test gaps ✅ (fleet green),
+|    dep upgrades ⚠️ (pydantic-core 2.46.4 blocked by fastapi chain on shim+sdk-python),
+|    pitfall hunt ✅ (no new), performance audit ⚠️ (PERF-ND-01/02/03 unresolved — LOW),
+|    endpoint verification ✅, CI/CD health ✅ (GitReins JUDGE all 6 repos),
+|    DuckBrain sync ✅ (h3, sdk-python populated), code quality ✅ (Hilo=useful 22 edges 5 files),
+|    middle-out wiring ⚠️ (WIRING-01/02 remain 16+ ticks — `hermes h3` not registered in live Hermes :8642).
+|    Hermes API available on :8642 (v0.18.2). Docker images exist, no containers running.
+|    sdk-go idle escalation active (#47 tick, #14 idle). WIRING-01/02 need Bane review.
+|    DuckBrain populated with tick record.
     -->
 
     # h3 — Model Router Task Matrix
