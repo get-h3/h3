@@ -98,10 +98,22 @@ Tick #35 (2026-07-26): QV-E2E-04 ✅ Cross-harness test: Go 43/43, TS 43/43
     GitReins JUDGE ✅ on all 6 repos (deepseek-v4-flash). Fleet: shim 225/225, sdk-go 5/5,
     sdk-python 98/98, sdk-typescript 134/134. 11-point NEVER-DONE audit ✅ (tick #37).
     DuckBrain: namespaces populated for h3, sdk-go, sdk-python, sdk-typescript.
-    WIRING-01/02 remain: H3 plugin not running in live Hermes; install CLI never executed.-->
--->
+    |    WIRING-01/02 remain: H3 plugin not running in live Hermes; install CLI never executed.|
+    |
+    |  Tick #38 (2026-07-26): DEPS-01 partial ✅ — shim: 6 dep upgrades (annotated-types 0.7.0→0.8.0,
+    |    datamodel-code-generator 0.69.0→0.71.0, httpcore2 2.7.0→2.9.1, httpx2 2.7.0→2.9.1,
+    |    platformdirs 4.10.1→4.11.0, typeguard 4.5.2→4.6.0). DEPS-02 partial ✅ — sdk-python: 3 dep
+    |    upgrades (annotated-types 0.7.0→0.8.0, ruff 0.15.22→0.16.0, websockets 16.1→16.1.1).
+    |    pydantic-core 2.46.4→2.47.0 BLOCKED by fastapi constraint chain on both (known uv.lock conflict).
+    |    Bugfix: sdk-python .gitignore was accidentally overwritten by a prior foreman tick — lost all
+    |    standard ignores (.venv, __pycache__, Hilo cache, coverage, e2e scripts). Restored from HEAD.
+    |    sdk-go idle escalation active since tick #12 (now #45 — board empty, project feature-complete,
+    |    recommends Bane review). Fleet: shim 225/225 ✅ (4.12s), sdk-go 5/5 ✅ (0.085s),
+    |    sdk-python 98/98 ✅ (2.24s), sdk-typescript 134/134 ✅ (2.12s). GitReins JUDGE not re-run
+    |    (no config changes this tick). WIRING-01/02, SEC-01..07 remain unaddressed (11+ ticks).-->
+    -->
 
-# h3 — Model Router Task Matrix
+    # h3 — Model Router Task Matrix
 
 > **Core purpose:** H3 protocol — standardized interface between Hermes agents and external harnesses. OpenAPI 3.1 protocol, 3 SDKs (Go/Python/TypeScript), shim plugin, test battery, compliance certification.
 > **Status:** Phases 0-6 + DEPLOY complete. 43/43 test battery. 19 phases, 150+ tasks.
