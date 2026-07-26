@@ -21,6 +21,10 @@
   This is CRITICAL for code quality — no automated review of worker output without it.
 
   NEVER remove the matrix header row or NEVER-DONE / E2E-001 fixtures.
+  
+  Tick #27 (2026-07-25): INFRA-GR-01/02/03 ✅ (GitReins evaluator configs added to sdk-typescript, protocol, sdk-go). 
+  h3 umbrella GitReins config enhanced with pipeline.stages + compaction/code_context_budget defaults.
+  11-point audit PASSED.
 -->
 
 # h3 — Model Router Task Matrix
