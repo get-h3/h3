@@ -3,7 +3,7 @@
   All tasks MUST use matrix format: | ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback |
   Before editing this file, load the skill: skill_view(name='coding-hermes-model-router')
   Validate: python3 ~/.hermes/scripts/validate-board-format.py .coding-hermes/tasks.md
-- [ ] **GITREINS-JUDGE — Configure LLM evaluator for commit quality review**
+- [x] **GITREINS-JUDGE — Configure LLM evaluator for commit quality review** ✅
   | 🔴 Critical | — | — | deepseek-v4-flash @ deepseek-foreman | GITREINS_LLM_API_KEY in ~/.hermes/.env | foreman-direct |
 
   Run: `python3 ~/.hermes/scripts/check-gitreins-judge.py .` to verify.
@@ -56,6 +56,15 @@
     guard config fixed: test_command uses .venv/bin/python to avoid VIRTUAL_ENV contamination.
     11-point NEVER-DONE audit: all checks PASS. Fleet: shim 178/178, sdk-go 5/5, 
     sdk-python 98/98, sdk-typescript 134/134.
+
+  Tick #33 (2026-07-26): NEVER-DONE 11-point audit ✅ (6 ticks since #27 — overdue).
+    GITREINS-JUDGE ✅ (all 6 repos have evaluator configured — verified via check script).
+    sdk-python protocol fix committed: Decision.history defaults to None (omitted from wire
+    JSON), routes use response_model_exclude_none=True to match Go/TS behavior.
+    h3 umbrella config: tier2 pipeline stage added, tests disabled (coordination repo).
+    sdk-python: _run_echo*.py gitignored. Cross-language roundtrip (QV-PROTO-04): 6/6 PASS
+    Python↔Go↔TypeScript wire format consistent. Fleet: shim 223/223, sdk-go 5/5, 
+    sdk-python 98/98, sdk-typescript all pass.-->
 -->
 
 # h3 — Model Router Task Matrix
@@ -151,7 +160,7 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 |----|------|-----|-----|------|------|-------|-----------|----------|
 | DEPS-01 | shim: Python packages outdated — 16 packages (gitreins, pydantic-core blocked by fastapi, +14 more) | LOW | 2 | — | deps,python | DeepSeek V4 Flash | Simple: dep updates | — |
 | DEPS-02 | sdk-python: Python packages outdated — 7 packages | LOW | 2 | — | deps,python | DeepSeek V4 Flash | Simple: dep updates | — |
-| DEPS-03 | sdk-typescript: npm packages outdated — 4 packages (typescript, hono, prettier, @hono/node-server) | LOW | 2 | — | deps,typescript | DeepSeek V4 Flash | Simple: dep updates | — |
+| DEPS-03 | sdk-typescript: npm packages outdated — 4 packages (typescript, hono, prettier, @hono/node-server) | LOW | 2 | — | deps,typescript | DeepSeek V4 Flash | ✅ Tick #33: hono 4.12.32, @hono/node-server 2.0.12, prettier 3.9.6. TS 5→7 skipped (major semver jump) | — |
 | PERF-ND-01 | sdk-go: Zero Go benchmarks — add `Benchmark*` functions | LOW | 2 | — | performance,benchmark,go | DeepSeek V4 Flash | Simple: benchmark additions | — |
 | PERF-ND-02 | sdk-python: Zero performance benchmarks — add pytest-benchmark | LOW | 2 | — | performance,benchmark,python | DeepSeek V4 Flash | Simple: benchmark additions | — |
 | PERF-ND-03 | shim: Zero performance benchmarks — test battery latency tracking | LOW | 2 | — | performance,benchmark,shim | DeepSeek V4 Flash | Simple: benchmark additions | — |
