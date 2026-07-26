@@ -49,6 +49,13 @@
     numeric constraints — TypeScript SDK now at 134/134 across 6 test files). Fleet health:
     shim 178/178, sdk-go 5/5, sdk-python 98/98, sdk-typescript 134/134.
     GitReins JUDGE PASS on umbrella. WIRING-01/02 remain unaddressed (H3 not in live Hermes).
+
+  Tick #32 (2026-07-26): QV-E2E-02 ✅ Python full protocol loop — 43/43 via h3-test against
+    official EchoHarness (streaming detection + history preservation). Fix: Message.timestamp
+    and Identity.user_id/user_name made optional (match Go/TS zero-value behavior). GitReins
+    guard config fixed: test_command uses .venv/bin/python to avoid VIRTUAL_ENV contamination.
+    11-point NEVER-DONE audit: all checks PASS. Fleet: shim 178/178, sdk-go 5/5, 
+    sdk-python 98/98, sdk-typescript 134/134.
 -->
 
 # h3 — Model Router Task Matrix
@@ -64,9 +71,9 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 
 | ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback |
 |----|------|-----|-----|------|------|-------|-----------|----------|
-| QV-E2E-01 | Go echo: process→text→result→text→result→end — full protocol loop verification | HIGH | 3 | — | e2e,go,testing | GPT-5.6 Luna | Testing/e2e: full protocol loop across Go echo harness | Step 3.7 Flash |
-| QV-E2E-02 | Python minimal: process→text→result→text→result→end — full protocol loop | HIGH | 3 | — | e2e,python,testing | GPT-5.6 Luna | Testing/e2e: full protocol loop across Python | Step 3.7 Flash |
-| QV-E2E-03 | TypeScript minimal: process→text→result→text→result→end — full protocol loop | HIGH | 3 | — | e2e,typescript,testing | GPT-5.6 Luna | Testing/e2e: full protocol loop across TypeScript | Step 3.7 Flash |
+|| QV-E2E-01 | Go echo: process→text→result→text→result→end — full protocol loop verification | HIGH | 3 | — | e2e,go,testing | GPT-5.6 Luna | Testing/e2e: full protocol loop across Go echo harness | Step 3.7 Flash |
+||| QV-E2E-02 | ~~Python minimal: process→text→result→text→result→end — full protocol loop~~ | ✅ Tick #32 | 3 | — | e2e,python,testing | GPT-5.6 Luna | ✅ 43/43 via h3-test against official EchoHarness | Step 3.7 Flash |
+|| QV-E2E-03 | TypeScript minimal: process→text→result→text→result→end — full protocol loop | HIGH | 3 | — | e2e,typescript,testing | GPT-5.6 Luna | Testing/e2e: full protocol loop across TypeScript | Step 3.7 Flash |
 || QV-E2E-04 | Cross-harness: h3-test against all 3 languages simultaneously | MEDIUM | 3 | QV-E2E-01,02,03 | e2e,cross-lang,testing | Step 3.7 Flash | Testing/e2e: cross-language test execution | GPT-5.6 Luna |
 || QV-SDK-03 | ~~Python Pydantic validation matches JSON Schema — verify all formats match protocol~~ | ✅ Tick #30 | 3 | — | sdk,python,validation | DeepSeek V4 Pro | ✅ 44/44 Pydantic→JSON Schema validation tests pass | MiniMax M3 |
 || QV-SDK-04 | ~~TS Zod validation matches JSON Schema — verify all formats match protocol~~ | ✅ Tick #31 | 3 | — | sdk,typescript,validation | DeepSeek V4 Pro | ✅ 43/43 Zod→JSON Schema validation via ajv. 134/134 TS tests. | MiniMax M3 |
