@@ -74,12 +74,23 @@
 |    (hermes-h3:latest, h3-echo:latest), no containers running. Install + verify paths exist in
 |    shim cli.py (install() at line 477, verify() at line 539).
 |
-|  Tick #35 (2026-07-26): QV-E2E-04 ✅ Cross-harness test: Go 43/43, TS 43/43
-|    (Python 43/43 previously verified Tick #32 — port 8000 busy this tick, stand-in got 41/43
-|    with 2 expected test-harness-limitation failures). Cross-harness test script created at
-|    _run_cross_harness.sh. certifi security update applied to shim (2026.6.17→2026.7.22) and
-|    sdk-python (same). Fleet: shim 225/225 ✅, sdk-go 5/5 ✅, sdk-python 98/98 ✅,
-|    sdk-typescript 134/134 ✅. GitReins JUDGE ✅ on umbrella.-->
+Tick #35 (2026-07-26): QV-E2E-04 ✅ Cross-harness test: Go 43/43, TS 43/43
+  (Python 43/43 previously verified Tick #32 — port 8000 busy this tick, stand-in got 41/43
+  with 2 expected test-harness-limitation failures). Cross-harness test script created at
+  _run_cross_harness.sh. certifi security update applied to shim (2026.6.17→2026.7.22) and
+  sdk-python (same). Fleet: shim 225/225 ✅, sdk-go 5/5 ✅, sdk-python 98/98 ✅,
+  sdk-typescript 134/134 ✅. GitReins JUDGE ✅ on umbrella.
+|
+|  Tick #36 (2026-07-26): NEVER-DONE 11-point audit ✅ (3 ticks since #33 — overdue).
+|  Fleet health: shim 225/225 ✅, sdk-go 5/5 ✅, sdk-python 98/98 ✅, sdk-typescript 134/134 ✅.
+|  GitReins JUDGE ✅ on umbrella and shim (full Tier1+Tier2 pipeline configured).
+|  GitReins JUDGE ❌ on 4 sub-repos missing Tier2 pipeline stage — filed INFRA-GR-04/05/06/07.
+|  sdk-python: has evaluator config but NO pipeline.stages at all — `gitreins judge` can't
+|  run LLM evaluator. sdk-go/sdk-typescript/protocol: have tier1 only, no ai_eval tier2 stage.
+|  Outdated deps audited: minor bumps available (annotated-types, fastapi, httpcore2).
+|  DuckBrain sync: h3 namespace populated with tick record. WIRING-01/02 remain unaddressed.
+|  Untracked files noted: _run_cross_harness.sh, .cross-harness-results/, .gitreins/history/
+|  on umbrella; _parse_h3test.py on sdk-python. Hilo=useful (22 edges, 5 files).-->
 -->
 
 # h3 — Model Router Task Matrix
@@ -192,7 +203,12 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 | RES-IMPL-03 | `hermes h3 verify` tests fallback path explicitly | LOW | 2 | — | resilience,testing | Step 3.7 Flash | Testing/e2e: fallback path test | DeepSeek V4 Pro |
 | INFRA-GR-01 | sdk-typescript: missing GitReins evaluator config — add evaluator section to .gitreins/config.yaml (model: deepseek-v4-flash, api_key_env: GITREINS_LLM_API_KEY) | HIGH | 1 | — | infra,gitreins,typescript | DeepSeek V4 Flash | ✅ Tick #27 | — |
 | INFRA-GR-02 | protocol: missing GitReins evaluator config — add evaluator section to .gitreins/config.yaml (model: deepseek-v4-flash, api_key_env: GITREINS_LLM_API_KEY) | HIGH | 1 | — | infra,gitreins,protocol | DeepSeek V4 Flash | ✅ Tick #27 | — |
-| INFRA-GR-03 | sdk-go: GitReins evaluator missing api_key_env — add `api_key_env: GITREINS_LLM_API_KEY` to .gitreins/config.yaml | HIGH | 1 | — | infra,gitreins,go | DeepSeek V4 Flash | ✅ Tick #27 | — |
+|| INFRA-GR-03 | sdk-go: GitReins evaluator missing api_key_env — add `api_key_env: GITREINS_LLM_API_KEY` to .gitreins/config.yaml | HIGH | 1 | — | infra,gitreins,go | DeepSeek V4 Flash | ✅ Tick #27 | — |
+|| INFRA-GR-04 | sdk-python: Missing pipeline.stages entirely — has evaluator config but no Tier2 ai_eval stage, so `gitreins judge` can't run LLM evaluator. Add full pipeline (tier1 + tier2). | HIGH | 1 | — | infra,gitreins,python | DeepSeek V4 Flash | Simple: add pipeline.stages with tier1 guard + tier2 ai_eval (50 iter, deepseek-v4-flash) | — |
+|| INFRA-GR-05 | sdk-go: Missing Tier2 ai_eval pipeline stage — has tier1 only. Add `type: ai_eval` stage to pipeline. | HIGH | 1 | — | infra,gitreins,go | DeepSeek V4 Flash | Simple: add tier2 stage to pipeline (25-50 iter, deepseek-v4-flash) | — |
+|| INFRA-GR-06 | sdk-typescript: Missing Tier2 ai_eval pipeline stage — has tier1 only. Add `type: ai_eval` stage to pipeline. | HIGH | 1 | — | infra,gitreins,typescript | DeepSeek V4 Flash | Simple: add tier2 stage to pipeline (50 iter, deepseek-v4-flash) | — |
+|| INFRA-GR-07 | protocol: Missing Tier2 ai_eval pipeline stage — has tier1 only. Add `type: ai_eval` stage to pipeline. | HIGH | 1 | — | infra,gitreins,protocol | DeepSeek V4 Flash | Simple: add tier2 stage to pipeline (50 iter, deepseek-v4-flash) | — |
+|| NEVER-DONE
 | NEVER-DONE | 11-point audit: spec alignment, doc coverage, test gaps, package upgrades, pitfall hunt, performance audit, endpoint verification, CI/CD health, DuckBrain sync, code quality, middle-out wiring. Run every 3-4 ticks. | LOW | 3 | — | audit,quality | DeepSeek V4 Pro | Architecture-level project audit across all subsystems | GLM-5.2 |
 || PYTHON-E2E-01 | ~~Python SDK: Context Pydantic model too strict — context.config.max_iterations and context.session_state.started_at are required but test battery sends empty context {}. Go/TS tolerate (zero-values), Python returns 422 — fix: add defaults~~ | ✅ Tick #30 | 2 | — | sdk,python,protocol | DeepSeek V4 Flash | ✅ Tick #30: Config.max_iterations=100, SessionState.started_at="", Context.config/session_state have defaults. 98/98 tests pass. | — |
 
