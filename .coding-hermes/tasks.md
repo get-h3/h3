@@ -33,8 +33,16 @@
   Tick #29 (2026-07-26): QV-E2E-01 ✅ Go echo full protocol loop (43/43 via live h3-test). 
   QV-E2E-03 ✅ TS echo full protocol loop (43/43). QV-SHIM-01 ✅ verified again. 
   QV-E2E-02 ❌ Python echo only 15/43 — Pydantic requires context.config.max_iterations and 
-  context.session_state.started_at, but test battery sends empty context {}. 
+  context.session_state.started_at, but test battery sends empty context {}.
   Filed as PYTHON-E2E-01 (Python SDK protocol compliance fix needed).
+  
+  Tick #30 (2026-07-26): PYTHON-E2E-01 ✅ Fixed Python SDK Pydantic model defaults:
+    - Config.max_iterations: int = Field(default=100, ge=1) — matches TS SDK default
+    - SessionState.started_at: str = "" — matches Go zero-value behavior
+    - Context.config: Config = Config() — no longer required on empty {}
+    - Context.session_state: SessionState = SessionState() — no longer required on empty {}
+    98/98 tests pass. Test battery blank context {} now validates correctly.
+    Fix unblocks QV-E2E-02 (Python full protocol loop).
 -->
 
 # h3 — Model Router Task Matrix
@@ -150,6 +158,6 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 | INFRA-GR-02 | protocol: missing GitReins evaluator config — add evaluator section to .gitreins/config.yaml (model: deepseek-v4-flash, api_key_env: GITREINS_LLM_API_KEY) | HIGH | 1 | — | infra,gitreins,protocol | DeepSeek V4 Flash | ✅ Tick #27 | — |
 | INFRA-GR-03 | sdk-go: GitReins evaluator missing api_key_env — add `api_key_env: GITREINS_LLM_API_KEY` to .gitreins/config.yaml | HIGH | 1 | — | infra,gitreins,go | DeepSeek V4 Flash | ✅ Tick #27 | — |
 | NEVER-DONE | 11-point audit: spec alignment, doc coverage, test gaps, package upgrades, pitfall hunt, performance audit, endpoint verification, CI/CD health, DuckBrain sync, code quality, middle-out wiring. Run every 3-4 ticks. | LOW | 3 | — | audit,quality | DeepSeek V4 Pro | Architecture-level project audit across all subsystems | GLM-5.2 |
-| PYTHON-E2E-01 | Python SDK: Context Pydantic model too strict — context.config.max_iterations and context.session_state.started_at are required but test battery sends empty context {}. Go/TS tolerate (zero-values), Python returns 422 — fix: add defaults | HIGH | 2 | — | sdk,python,protocol | DeepSeek V4 Flash | Simple: Pydantic model default fix | — |
+|| PYTHON-E2E-01 | ~~Python SDK: Context Pydantic model too strict — context.config.max_iterations and context.session_state.started_at are required but test battery sends empty context {}. Go/TS tolerate (zero-values), Python returns 422 — fix: add defaults~~ | ✅ Tick #30 | 2 | — | sdk,python,protocol | DeepSeek V4 Flash | ✅ Tick #30: Config.max_iterations=100, SessionState.started_at="", Context.config/session_state have defaults. 98/98 tests pass. | — |
 
 - [ ] **E2E-001 — E2E Testing Tick (self-improving loop)** | Recurring every 5-10 ticks | — | — | Luna (browser/screenshots) or Step 3.7 Flash (CLI/API) | foreman-direct | — | —
