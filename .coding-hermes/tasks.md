@@ -29,6 +29,12 @@
   Tick #28 (2026-07-26): Fixed 12 golangci-lint errcheck/staticcheck issues in sdk-go h3-consensus-adapter 
   (CI lint job was failing). Committed shim's uncommitted GitReins config from shim foreman tick #75 
   (pipeline+evaluator+defaults). Cross-repo fleet: all clean, all tests pass.
+
+  Tick #29 (2026-07-26): QV-E2E-01 ✅ Go echo full protocol loop (43/43 via live h3-test). 
+  QV-E2E-03 ✅ TS echo full protocol loop (43/43). QV-SHIM-01 ✅ verified again. 
+  QV-E2E-02 ❌ Python echo only 15/43 — Pydantic requires context.config.max_iterations and 
+  context.session_state.started_at, but test battery sends empty context {}. 
+  Filed as PYTHON-E2E-01 (Python SDK protocol compliance fix needed).
 -->
 
 # h3 — Model Router Task Matrix
@@ -144,5 +150,6 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 | INFRA-GR-02 | protocol: missing GitReins evaluator config — add evaluator section to .gitreins/config.yaml (model: deepseek-v4-flash, api_key_env: GITREINS_LLM_API_KEY) | HIGH | 1 | — | infra,gitreins,protocol | DeepSeek V4 Flash | ✅ Tick #27 | — |
 | INFRA-GR-03 | sdk-go: GitReins evaluator missing api_key_env — add `api_key_env: GITREINS_LLM_API_KEY` to .gitreins/config.yaml | HIGH | 1 | — | infra,gitreins,go | DeepSeek V4 Flash | ✅ Tick #27 | — |
 | NEVER-DONE | 11-point audit: spec alignment, doc coverage, test gaps, package upgrades, pitfall hunt, performance audit, endpoint verification, CI/CD health, DuckBrain sync, code quality, middle-out wiring. Run every 3-4 ticks. | LOW | 3 | — | audit,quality | DeepSeek V4 Pro | Architecture-level project audit across all subsystems | GLM-5.2 |
+| PYTHON-E2E-01 | Python SDK: Context Pydantic model too strict — context.config.max_iterations and context.session_state.started_at are required but test battery sends empty context {}. Go/TS tolerate (zero-values), Python returns 422 — fix: add defaults | HIGH | 2 | — | sdk,python,protocol | DeepSeek V4 Flash | Simple: Pydantic model default fix | — |
 
 - [ ] **E2E-001 — E2E Testing Tick (self-improving loop)** | Recurring every 5-10 ticks | — | — | Luna (browser/screenshots) or Step 3.7 Flash (CLI/API) | foreman-direct | — | —
