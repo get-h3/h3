@@ -1,7 +1,7 @@
 guards:
   secrets: true
   lint: true
-  tests: true
+  tests: false         # umbrella repo — no test suite
   test_mode: diff
 
 pipeline:
@@ -14,6 +14,12 @@ pipeline:
           type: script
           run: "gitreins guard"
           on_fail: block
+    - id: tier2
+      type: ai_eval
+      on: [pre-eval]
+      condition: "true"
+      max_iterations: 50
+      tools: [read_file, run_command, search_pattern, read_diff, sandbox, detect_dead_code]
 
 evaluator:
   max_iterations: 50
