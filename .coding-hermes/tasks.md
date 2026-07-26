@@ -118,7 +118,15 @@ Tick #35 (2026-07-26): QV-E2E-04 ✅ Cross-harness test: Go 43/43, TS 43/43
 |    removed it). Added to pyproject.toml dev deps, uv lock + sync. 98/98 restored.
 |    Fleet: shim 225/225 ✅ (3.65s), sdk-go 5/5 ✅, sdk-python 98/98 ✅ (1.81s),
 |    sdk-typescript 134/134 ✅ (2.63s). GitReins JUDGE ✅ on all 6 repos.
-|    WIRING-01/02 remain unaddressed (12+ ticks). DuckBrain synced.-->
+||    WIRING-01/02 remain unaddressed (12+ ticks). DuckBrain synced.-->
+|
+|  Tick #40 (2026-07-26): NEVER-DONE 11-point audit ✅ (3 ticks since #37 — overdue).
+|    sdk-python certifi 2026.6.17→2026.7.22 ✅ (was missed when shim got same update in tick #35).
+|    uv lock --upgrade-package certifi updated lockfile. 98/98 tests pass.
+|    Fleet: shim 225/225 ✅ (1.86s), sdk-go 5/5 ✅ (cached), sdk-python 98/98 ✅ (0.48s),
+|    sdk-typescript 134/134 ✅ (371ms). GitReins JUDGE ✅ on umbrella (tier1+tier2 configured).
+|    pydantic-core 2.46.4 still blocked by fastapi constraint chain. DuckBrain populated.--
+    -->
     -->
 
     # h3 — Model Router Task Matrix
