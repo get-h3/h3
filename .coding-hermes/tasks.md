@@ -110,7 +110,15 @@ Tick #35 (2026-07-26): QV-E2E-04 ✅ Cross-harness test: Go 43/43, TS 43/43
     |    sdk-go idle escalation active since tick #12 (now #45 — board empty, project feature-complete,
     |    recommends Bane review). Fleet: shim 225/225 ✅ (4.12s), sdk-go 5/5 ✅ (0.085s),
     |    sdk-python 98/98 ✅ (2.24s), sdk-typescript 134/134 ✅ (2.12s). GitReins JUDGE not re-run
-    |    (no config changes this tick). WIRING-01/02, SEC-01..07 remain unaddressed (11+ ticks).-->
+    |    (no config changes this tick). WIRING-01/02, SEC-01..07 remain unaddressed (11+ ticks).
+|
+|  Tick #39 (2026-07-26): ⚠️ Concurrent dispatch — tick #38 already ran at 11:09. 
+|    DEPS-01/02 continued: fastapi 0.139.2→0.140.0 on shim + sdk-python (uv lock --upgrade-package).
+|    Bugfix: sdk-python missing jsonschema dev dep (was pip-installed, not in uv.lock — uv sync
+|    removed it). Added to pyproject.toml dev deps, uv lock + sync. 98/98 restored.
+|    Fleet: shim 225/225 ✅ (3.65s), sdk-go 5/5 ✅, sdk-python 98/98 ✅ (1.81s),
+|    sdk-typescript 134/134 ✅ (2.63s). GitReins JUDGE ✅ on all 6 repos.
+|    WIRING-01/02 remain unaddressed (12+ ticks). DuckBrain synced.-->
     -->
 
     # h3 — Model Router Task Matrix
