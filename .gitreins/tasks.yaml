@@ -21,5 +21,6 @@ tasks:
     \ \u2192 matches original"
   - "Round-trip: serialize in TS \u2192 deserialize in Go \u2192 re-serialize \u2192\
     \ matches original"
-  status: pending
+  status: complete
   created_at: '2026-07-16T15:38:37.589745+00:00'
+  completed_at: '2026-07-27T05:17:01.291918+00:00'
