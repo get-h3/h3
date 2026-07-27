@@ -216,6 +216,21 @@ Tick #35 (2026-07-26): QV-E2E-04 ✅ Cross-harness test: Go 43/43, TS 43/43
     due every 3-4). pydantic-core 2.46.4 still blocked by fastapi chain (known).
     WIRING-01/02 remain 21+ ticks — need Bane review. No new gaps found.
 
+  Tick #47 (2026-07-26): NEVER-DONE 11-point audit ✅ (3 ticks since #44 — due).
+    Fleet: shim 225/225 ✅ (1.92s), sdk-go 5/5 ✅ (cached), sdk-python 98/98 ✅ (0.65s),
+    sdk-typescript 134/134 ✅ (413ms), protocol clean (76 lines YAML).
+    GitReins JUDGE ✅ configured on all 6 repos (umbrella: tier1+tier2 1M caps).
+    Stale gitreins tasks cleaned: infra-gr-04-verify ✅ complete, sdk-python placeholder deleted.
+    Stale version scripts cleaned: _check_versions.py/_check_versions2.py/_check_versions3.py removed.
+    11-point NEVER-DONE: spec alignment ✅ (26 specs), doc coverage ✅ (all 6 AGENTS.md),
+    test gaps ✅ (fleet green), dep upgrades ⚠️ (pydantic-core 2.46.4→2.47.0 blocked by
+    fastapi chain — known, tick #38), pitfall hunt ✅ (no new), performance audit ⚠️
+    (PERF-ND-01/02/03 unresolved — LOW), endpoint verification ✅ (SDK tests exercise all
+    endpoints), CI/CD health ✅ (GitReins JUDGE on umbrella+5 sub-repos), DuckBrain sync ⚠️
+    (MCP read-path flaky, write succeeded), code quality ✅ (Hilo=useful 22 edges 5 files 3 languages),
+    middle-out wiring ⚠️ (WIRING-01/02 remain 22+ ticks — need Bane review).
+    DuckBrain: h3 namespace populated with tick-47 record.
+
     # h3 — Model Router Task Matrix
 
 > **Core purpose:** H3 protocol — standardized interface between Hermes agents and external harnesses. OpenAPI 3.1 protocol, 3 SDKs (Go/Python/TypeScript), shim plugin, test battery, compliance certification.
