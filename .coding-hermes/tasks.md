@@ -729,3 +729,30 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     sdk-go (idle #35+). Protocol clean.
     WIRING-01/02 remain (45+ ticks — need Bane review). No new gaps found.
     VERDICT: idle — maintenance mode.
+
+  Tick #70 (2026-07-27 23:55): NEVER-DONE 11-point audit ✅ (3 ticks since #67 — due).
+    Fleet: shim 225/225 ✅ (1.40s), sdk-go 5/5 ✅ (3 pkgs), sdk-python 98/98 ✅ (0.39s,
+    1 StarletteDeprecationWarning httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅
+    (367ms, 6 files), protocol clean (306 lines YAML, valid).
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Tasks:
+    qv-e2e-go-echo ✅, qv-sdk-cross-lang ✅ — board consistent with YAML.
+    Guard ✅ umbrella (git status clean, no dirty files).
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected, all imports/orphans).
+    11-point NEVER-DONE: spec alignment ✅ (27 specs, 13,849 lines), doc coverage ✅
+    (all 7 AGENTS.md), test gaps ✅ (fleet: 225+5+98+134 = 462 total), dep upgrades ⚠️
+    (pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain — shim +
+    sdk-python, known tick #38+. fastapi 0.140.0→0.140.7 available for sdk-python,
+    also chain-blocked. sdk-typescript typescript 5.9.3→7.0.2 major deferred.
+    sdk-go: no outdated. shim: only pydantic-core outdated), pitfall hunt ✅ (no new),
+    performance audit ⚠️ (PERF-ND-01/02/03 unresolved — LOW; PERF-01..05 + matrix tasks
+    unresolved), endpoint verification ✅ (SDK tests exercise all endpoints),
+    CI/CD health ✅ (GitReins JUDGE + Guard on all 6 repos), DuckBrain sync ✅
+    (tick-70 record saved, key /tick/70), code quality ✅ (Hilo=useful: h3 22e/5f,
+    shim 139e/26f, sdk-go 94e/18f, sdk-python 81e/19f, sdk-typescript 58e/26f,
+    protocol 4e/1f), middle-out wiring ⚠️ (WIRING-01/02 remain 46+ ticks — need
+    Bane review).
+    Sub-repo foremen active: shim (tick #92), sdk-python (tick #26), sdk-typescript
+    (tick #50), sdk-go (tick #65, idle #36+). E2E-001: last successful tick #64
+    (6 ticks ago — within 5-10 window, not overdue).
+    Host: load 5.47 (1m), 46Gi available. Swap: 15Gi/31Gi.
+    No new gaps found. VERDICT: idle — maintenance mode.
