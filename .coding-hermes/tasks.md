@@ -859,3 +859,74 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     within 5-10 window, not overdue). Host: load 9.77 (1m), 20.26 (5m) — elevated,
     49Gi available. Swap: 15Gi/31Gi.
     No new gaps found. VERDICT: idle — maintenance mode.
+
+  Tick #75 (2026-07-28 03:01): Fleet health all green. Shim 225/225 ✅ (1.42s),
+    sdk-go 5/5 ✅ (3 pkgs cached), sdk-python 98/98 ✅ (0.46s, 1 StarletteDeprecationWarning
+    httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅ (342ms, 6 files), protocol clean
+    (306 lines YAML valid). Total: 462/462.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅
+    umbrella (secrets clean). All 6 repos git-clean. No dirty files, no untracked.
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected, all imports/orphans).
+    NEVER-DONE audit skipped (tick #74 was 1 tick ago, due every 3-4 — next due #77).
+    E2E-001: last successful tick #72 (3 ticks ago — within 5-10 window, not overdue).
+    Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+    (shim + sdk-python, known tick #38+). fastapi 0.140.0→0.140.7 available for
+    sdk-python (also chain-blocked). sdk-typescript typescript 5.9.3→7.0.2 (major
+    deferred). sdk-go: no outdated. shim: only pydantic-core outdated.
+    Sub-repo foremen active: shim (active), sdk-python (active), sdk-typescript
+    (active), sdk-go (idle #41+). Protocol repo clean.
+    Host: load 3.19 (1m), 3.88 (5m), 5.64 (15m), 48Gi available. Swap: 15Gi/31Gi.
+    No GPU detected.
+    WIRING-01/02 remain (51+ ticks — need Bane review). No new gaps found.
+    DuckBrain: write succeeded (key /tick/75, id 683f6223-0017-4bb2-a6ae-e4c254e22416).
+    VERDICT: idle — maintenance mode.
+
+  Tick #76 (2026-07-28 03:35): Fleet health all green. Shim 225/225 ✅ (1.41s),
+    sdk-go 5/5 ✅ (3 pkgs cached), sdk-python 98/98 ✅ (0.38s, 1 StarletteDeprecationWarning
+    httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅ (425ms, 6 files), protocol clean
+    (306 lines YAML valid). Total: 462/462.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅
+    umbrella (secrets clean). Both tasks complete in YAML.
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected, all imports/orphans).
+    All sub-repos git-clean. h3 umbrella: dirty (.coding-hermes/tasks.md only — this tick).
+    NEVER-DONE audit skipped (tick #74 was 2 ticks ago, due every 3-4 — next due #77).
+    E2E-001: last successful tick #72 (4 ticks ago — within 5-10 window, not overdue).
+    Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+    (shim + sdk-python, known tick #38+). fastapi 0.140.0→0.140.7 available for both
+    (also chain-blocked). sdk-typescript typescript 5.9.3→7.0.2 (major deferred).
+    sdk-go: no outdated. shim: fastapi + pydantic-core only.
+    Sub-repo foremen active: shim, sdk-python, sdk-typescript, sdk-go (idle #42+).
+    Host: load 5.56 (1m), 4.33 (5m), 6.02 (15m), 47Gi available. Swap: 14Gi/31Gi.
+    WIRING-01/02 remain (52+ ticks — need Bane review). No new gaps found.
+    DuckBrain: write + verified (key /tick/76).
+    VERDICT: idle — maintenance mode.
+
+  Tick #77 (2026-07-28 09:14 UTC): NEVER-DONE 11-point audit ✅ (3 ticks since #74 — due).
+    Fleet: shim 225/225 ✅ (1.41s), sdk-go 5/5 ✅ (3 pkgs), sdk-python 98/98 ✅ (0.37s,
+    1 StarletteDeprecationWarning httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅
+    (362ms, 6 files), protocol clean (306 lines YAML valid). Total: 462/462.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅
+    umbrella (secrets clean). Both tasks complete (qv-e2e-go-echo, qv-sdk-cross-lang).
+    All 6 repos git-clean except shim (.coding-hermes/tasks.md — foreman tick) and
+    h3 umbrella (.coding-hermes/tasks.md — this tick).
+    Governance: All 6 repos have full governance (LICENSE, SECURITY.md, CODEOWNERS,
+    AGENTS.md) ✅ — verified via `ls` this tick (fabrication prevention gate).
+    11-point NEVER-DONE: spec alignment ✅ (27 specs, 13,849 lines), doc coverage ✅
+    (all 7 AGENTS.md + full governance on all 6 repos), test gaps ✅ (fleet: 462 total),
+    dep upgrades ⚠️ (pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint
+    chain — shim + sdk-python, known tick #38+. fastapi 0.140.0→0.140.7 available for
+    sdk-python but also chain-blocked. sdk-typescript typescript 5.9.3→7.0.2 major
+    deferred. sdk-go: no outdated. shim: only pydantic-core outdated),
+    pitfall hunt ✅ (no new — governance gaps fully resolved tick #74, verified this tick),
+    performance audit ⚠️ (PERF-ND-01/02/03 unresolved — LOW; PERF-01..05 + matrix tasks
+    unresolved), endpoint verification ✅ (SDK tests exercise all endpoints),
+    CI/CD health ✅ (GitReins JUDGE + Guard on all 6 repos), DuckBrain sync ✅
+    (tick-77 record saved, key /tick/77, id 979ddc9d, verified via key recall),
+    code quality ✅ (Hilo=useful: h3 22e/5f, shim 139e/26f, sdk-go 94e/18f,
+    sdk-python 81e/19f, sdk-typescript 58e/26f, protocol 4e/1f),
+    middle-out wiring ⚠️ (WIRING-01/02 remain 53+ ticks — need Bane review).
+    Sub-repo foremen active: shim, sdk-python, sdk-typescript, sdk-go (idle #43+).
+    Protocol clean. E2E-001: last successful tick #72 (5 ticks ago — within 5-10
+    window, approaching upper bound; cross-harness run recommended tick #78/79).
+    Host: load 2.58 (1m), 3.23 (5m), 3.87 (15m), 46Gi available. Swap: 14Gi/31Gi.
+    No new gaps found. VERDICT: idle — maintenance mode.
