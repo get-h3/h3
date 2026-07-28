@@ -826,3 +826,36 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     WIRING-01/02 remain (49+ ticks — need Bane review). No new gaps found.
     DuckBrain: write succeeded (key /tick/73).
     VERDICT: idle — maintenance mode.
+
+  Tick #74 (2026-07-28 02:28): NEVER-DONE 11-point audit ✅ (3 ticks since #71 — due).
+    Fleet: shim 225/225 ✅ (1.43s), sdk-go 5/5 ✅ (3 pkgs), sdk-python 98/98 ✅ (0.40s,
+    1 StarletteDeprecationWarning httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅
+    (385ms, 6 files), protocol clean (306 lines YAML valid). Total: 462/462.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅
+    umbrella (secrets clean). All repos git-clean.
+    GOVERNANCE (foreman-direct fix — gaps first found tick #67, rechecked tick #71,
+    unresolved by sub-repo foremen for 7+ ticks):
+    - GOV-GAP-01 ✅ protocol: LICENSE + SECURITY.md + CODEOWNERS added (ab2bda01)
+    - GOV-GAP-02 ✅ sdk-typescript: SECURITY.md + CODEOWNERS added (4e7a669)
+    - GOV-GAP-03 ✅ shim: CODEOWNERS already resolved by tick #67
+    All 6 repos now have full governance (LICENSE, SECURITY.md, CODEOWNERS).
+    Shim ruff drift: RESOLVED (25 files already formatted, all checks pass).
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected, all imports/orphans).
+    11-point NEVER-DONE: spec alignment ✅ (27 specs, 13,849 lines), doc coverage ✅
+    (all 7 AGENTS.md), test gaps ✅ (fleet: 462 total), dep upgrades ⚠️ (pydantic-core
+    2.46.4→2.47.0 still blocked by fastapi constraint chain — shim + sdk-python, known
+    tick #38+. fastapi 0.140.0→0.140.7 available for sdk-python but also chain-blocked.
+    sdk-typescript typescript 5.9.3→7.0.2 major deferred. sdk-go: no outdated),
+    pitfall hunt ✅ (governance gaps found + FIXED this tick — all 6 repos complete),
+    performance audit ⚠️ (PERF-ND-01/02/03 unresolved — LOW; PERF-01..05 + matrix tasks
+    unresolved), endpoint verification ✅ (SDK tests exercise all endpoints),
+    CI/CD health ✅ (GitReins JUDGE + Guard on all 6 repos), DuckBrain sync ✅
+    (tick-74 record saved, key /tick/74, id ef8a5749), code quality ✅ (Hilo=useful:
+    h3 22e/5f, shim 139e/26f, sdk-go 94e/18f, sdk-python 81e/19f, sdk-typescript
+    58e/26f, protocol 4e/1f), middle-out wiring ⚠️ (WIRING-01/02 remain 50+ ticks —
+    need Bane review).
+    Sub-repo foremen active: shim (active), sdk-python (active), sdk-typescript
+    (active), sdk-go (idle #40+). E2E-001: last successful tick #72 (2 ticks ago —
+    within 5-10 window, not overdue). Host: load 9.77 (1m), 20.26 (5m) — elevated,
+    49Gi available. Swap: 15Gi/31Gi.
+    No new gaps found. VERDICT: idle — maintenance mode.
