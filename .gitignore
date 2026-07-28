@@ -1,16 +1,12 @@
-# H3 — gitignore
-.venv/
-__pycache__/
-*.pyc
-*.pyo
-.pytest_cache/
-dist/
-*.egg-info/
-
 # Hilo — local cache files (rebuildable)
 .vfs/graph/graph.db
 .vfs/graph/graph.db.wal
+.vfs/graph/graph.duckdb
 .vfs/graph/.last_warm
 
-# GitReins — task state (rebuildable from board)
-.gitreins/tasks.yaml
+# GitReins MCP runtime state (never commit)
+.gitreins/history/
+
+# Cross-harness test artifacts
+.cross-harness-results/
+_run_cross_harness.sh
