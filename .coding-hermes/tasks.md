@@ -930,3 +930,23 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     window, approaching upper bound; cross-harness run recommended tick #78/79).
     Host: load 2.58 (1m), 3.23 (5m), 3.87 (15m), 46Gi available. Swap: 14Gi/31Gi.
     No new gaps found. VERDICT: idle — maintenance mode.
+
+  Tick #78 (2026-07-28 05:44 UTC): Fleet health all green. Shim 225/225 (1.60s),
+    sdk-go 5/5 (3 pkgs, cached), sdk-python 98/98 (0.40s, 1 StarletteDeprecationWarning
+    httpx→httpx2 — cosmetic), sdk-typescript 134/134 (447ms, 6 files), protocol clean.
+    Total: 462/462.
+    E2E-001 (QV-E2E-04 cross-harness): Go 43/43, TypeScript 43/43, Python FAIL
+    (port 8000 in use — same known conflict from ticks #35/#64/#72. Python SDK individually
+    verified 98/98. Go :9191 reused existing process, TS :9193 clean start).
+    GitReins JUDGE on all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard
+    umbrella (git-clean). Hilo=useful: h3 22 edges/5 files (flat umbrella — expected).
+    NEVER-DONE audit skipped (tick #77 was 1 tick ago, due every 3-4 — next due #80).
+    Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+    (shim + sdk-python, known tick #38+). sdk-typescript typescript 5.9.3→7.0.2
+    (major deferred). sdk-go: no outdated. shim: no outdated.
+    Sub-repo foremen active: shim, sdk-python, sdk-typescript, sdk-go (idle #44+).
+    E2E-001: now reset — Go+TS pass, Python port conflict (non-regression).
+    Host: load 5.86 (1m), 3.80 (5m), 3.37 (15m), 46Gi available. Swap: 14Gi/31Gi.
+    WIRING-01/02 remain (54+ ticks — need Bane review). No new gaps found.
+    DuckBrain: write succeeded (key /tick/78).
+    VERDICT: idle — maintenance mode.
