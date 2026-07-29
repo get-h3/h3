@@ -1288,3 +1288,39 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     WIRING-01/02 remain (67+ ticks — need Bane review). 51 tasks remain.
     Next: SEC-02 — Implement Hermes-side harness API key validation in shim/client.py.
     VERDICT: ACTIVE — governance gaps closed. 51 tasks remain. Next: SEC-02.
+
+
+  Tick #92 (2026-07-28 22:50 UTC): NEVER-DONE 11-point audit (3 ticks since #89 — due).
+    Fleet: shim 225/225 (1.40s), sdk-go 5/5 (3 pkgs cached), sdk-python 98/98 (0.35s,
+    1 StarletteDeprecationWarning httpx-httpx2 — cosmetic), sdk-typescript 134/134
+    (341ms, 6 files), protocol clean (306 lines YAML valid). Total: 462/462.
+    GitReins: JUDGE all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard umbrella
+    (secrets clean). Both tasks complete (qv-e2e-go-echo, qv-sdk-cross-lang).
+    Governance: All 6 repos 7/7 (LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md, SUPPORT.md,
+    CODE_OF_CONDUCT.md, CHANGELOG.md) — verified via ls this tick (fabrication gate).
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected, all imports/orphans).
+    11-point NEVER-DONE: spec alignment (27 specs), doc coverage (all 7 AGENTS.md +
+    full governance on all 6 repos), test gaps (fleet: 462 total), dep upgrades
+    (pydantic-core 2.46.4-2.47.0 still blocked by fastapi constraint chain — shim +
+    sdk-python, known tick #38+. fastapi 0.140.0-0.140.13 available sdk-python
+    (chain-blocked). annotated-doc 0.0.4-0.0.5 available shim (tick #86 upgraded
+    sdk-python, shim reverted). sdk-typescript typescript 5.9.3-7.0.2 major deferred.
+    sdk-go: no outdated), pitfall hunt (no new), performance audit (PERF-ND-01/02/03
+    unresolved — LOW; PERF-01..05 + matrix tasks unresolved), endpoint verification
+    (SDK tests exercise all endpoints), CI/CD health (GitReins JUDGE all 6 repos),
+    DuckBrain sync (h3 namespace: 3 keys by keyPrefix, tick-92 record pending),
+    code quality (Hilo=useful: h3 22e/5f, shim 139e/26f, sdk-go 94e/18f,
+    sdk-python 81e/19f, sdk-typescript 58e/26f, protocol 4e/1f),
+    middle-out wiring (WIRING-01/02 remain 68+ ticks — need Bane review).
+    SEC-02: NOT STARTED on shim. Shim foreman at tick #110 — no auth implementation
+    (Authorization/API key patterns absent from client.py, only venv site-packages).
+    Shim board has no SEC-02 entry. SEC-02 requires worker dispatch on shim sub-repo
+    to implement harness API key validation in client.py.
+    Shim foreman ticks #79-110: no SEC/auth work — cross-sync from tick #89 covered
+    P4-01/02/03/05 + RES-IMPL-01/02/03. 30+ shim ticks since last cross-sync, all idle.
+    Sub-repo foremen active: shim (tick #110, idle), sdk-python (active),
+    sdk-typescript (active), sdk-go (idle #54+). Protocol clean.
+    E2E-001: last successful tick #86 (6 ticks ago — within 5-10 window, not overdue).
+    Host: load 8.54 (1m), 47Gi available. Swap: 14Gi/31Gi. No GPU detected.
+    51 tasks remain. Next: SEC-02 needs shim worker dispatch.
+    VERDICT: idle — maintenance mode (SEC-02 blocked on worker, no foreman-direct fix).
