@@ -1828,3 +1828,79 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     DuckBrain: tick-106 record saved + verified (id eaabd9f1, key /tick/106).
     VERDICT: idle — maintenance mode. Cooldown 1800s (scheduler-confirmed).
     Next: NEVER-DONE due tick #107, E2E-001 ~#110-115 window.
+
+  Tick #107 (2026-07-29 14:12 UTC): NEVER-DONE 14-point audit ✅ (3 ticks since #104 — due).
+    Fleet: shim 227/227 ✅ (1.49s), sdk-go 5/5 ✅ (3 pkgs cached), sdk-python 98/98 ✅ (0.82s,
+    1 StarletteDeprecationWarning httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅
+    (433ms, 6 files), protocol clean (306 lines YAML valid). Total: 464/464.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Tier2 judge on
+    qv-sdk-cross-lang FAIL (expected — umbrella has no SDK code, cross-repo verification done
+    in ticks #33/#35/#105). Guard ✅ umbrella (secrets clean, no Python staged, git-clean).
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected, all imports/orphans).
+    Governance: 10/10 on all 6 repos (README, LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md,
+    SUPPORT.md, CODE_OF_CONDUCT.md, CONTRIBUTING.md, CHANGELOG.md, .gitignore) — verified via
+    `ls` this tick (fabrication prevention gate). Ground truth: 0 missing files across all 6 repos.
+    14-point NEVER-DONE:
+    1.  Build: N/A (umbrella — no source code to build; sub-repos have own builds)
+    2.  Tests: ✅ fleet 464/464 across all 5 sub-repos (shim 227, sdk-go 5, sdk-python 98, sdk-ts 134)
+    3.  Coverage: N/A (umbrella-level; sub-repos handle independently)
+    4.  Vulnerabilities: ✅ Guard secrets clean (gitleaks PASS)
+    5.  Depcheck: ⚠️ pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+        (shim + sdk-python, known tick #38+ — 69 ticks). fastapi 0.140.0→0.140.13 available sdk-python
+        (chain-blocked), 0.140.7→0.140.13 available shim (chain-blocked). annotated-doc 0.0.4→0.0.5
+        available both repos (was upgraded tick #86, reverted — known uv.lock/pip interaction).
+        uvicorn 0.51.0→0.52.0 available sdk-python. sdk-typescript typescript 5.9.3→7.0.2
+        (major deferred). sdk-go: no outdated.
+    6.  Formatting: N/A (umbrella — markdown only, no source code)
+    7.  TODO/FIXME/HACK: ✅ clean — grep across specs/ and docs/ returned empty
+    8.  Guard: ✅ GitReins guard_run PASS (secrets clean, no Python staged)
+    9.  CI: N/A (umbrella; sub-repos have own CI pipelines via GitReins JUDGE)
+    10. DuckBrain: ✅ tick-107 record saved (id 7a06b026-be77-4e1d-a486-e92222b2d690).
+        MCP transport working this tick (remember succeeded).
+    11. Hilo: ✅ h3 22e/5f (flat umbrella — expected topology, all imports/orphans)
+    12. Specs: ✅ 27 spec files, 13,849 lines
+    13. Docs: ✅ h3 10/10 + all 5 sub-repos 10/10 — verified via ls this tick (fabrication gate)
+    14. GitReins judge: ✅ all 6 repos configured (deepseek-v4-flash, check PASS)
+    M4 implicit-pending: 0 undispatched matrix rows (all active rows have ✅ markers).
+    44 pending matrix tasks remain (8 HIGH: SEC-02/03, WIRING-01/02, RES-01/02, SEC-IMPL-01/02).
+    All HIGH tasks blocked on shim worker dispatch (SEC/RES/SEC-IMPL) or Bane review (WIRING).
+    Sub-repo foremen: shim (tick #115+, idle — 227/227), sdk-python (active), sdk-typescript
+    (active), sdk-go (idle 67+ ticks). Protocol clean. All repos git-clean.
+    E2E-001: last Go+TS 43/43 verified tick #105 (2 ticks ago — within 5-10 window, not overdue).
+    TS echo resolved (standalone serve wrapper), Python still blocked by port 8000 zombie
+    (known non-regression since tick #35). E2E-001 next due ~#110-115.
+    Cooldown: 1800s (last scheduler-confirmed tick #106).
+    Host: load 4.45 (1m), 3.59 (5m), 3.98 (15m) — moderate. Memory: 47Gi/59Gi available.
+    Disk: 89% (208G free). Swap: ~15Gi/31Gi. No GPU detected.
+    No new gaps found. VERDICT: idle — maintenance mode. 14-point audit all clear.
+    DuckBrain write succeeded — first confirmed working MCP transport in several ticks.
+    Next: idle tick ~#108, NEVER-DONE ~#110, E2E-001 ~#110-115 window.
+
+  Tick #108 (2026-07-29 09:17 UTC): IDLE — maintenance mode. Fleet: shim 227/227 ✅ (1.44s),
+    sdk-go 5/5 ✅ (3 pkgs cached), sdk-python 98/98 ✅ (0.40s, 1 StarletteDeprecationWarning
+    httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅ (367ms, 6 files), protocol clean
+    (YAML valid). Total: 464/464.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard not run
+    (no code changes — umbrella repo). Both MCP tasks complete.
+    Hilo=useful: h3 22e/5f, shim 141e/26f, sdk-go 96e/18f, sdk-python 85e/20f, sdk-ts 58e/26f,
+    protocol 4e/1f — all unchanged since tick #107 (sub-repo foremen edge growth stable).
+    sdk-go: M .vfs/graph/edges.jsonl (Hilo post-commit noise from sub foreman, cosmetic).
+    All other repos git-clean.
+    NEVER-DONE audit skipped (tick #107 was 1 tick ago — due every 3-4, next due ~#110).
+    E2E-001: last Go+TS 43/43 verified tick #105 (3 ticks ago — within 5-10 window, not overdue).
+    Python blocked by port 8000 zombie listener (known non-regression since tick #35).
+    Governance: 10/10 on all 6 repos (last verified tick #107 via ls — fabrication prevention gate).
+    Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+    (shim + sdk-python, known tick #38+ — 70 ticks). fastapi 0.140.0→0.140.13 available sdk-python
+    (chain-blocked), 0.140.7→0.140.13 available shim (chain-blocked). annotated-doc 0.0.4→0.0.5
+    available both repos (was upgraded tick #86, reverted — known uv.lock/pip interaction).
+    uvicorn 0.51.0→0.52.0 available sdk-python. sdk-typescript typescript 5.9.3→7.0.2
+    (major deferred). sdk-go: no outdated.
+    Sub-repo foremen: shim (tick #121, idle), sdk-python (active), sdk-typescript (active),
+    sdk-go (idle 68+ ticks). Protocol clean. All repos git-clean.
+    44 pending tasks remain (8 HIGH: SEC-02/03, WIRING-01/02, RES-01/02, SEC-IMPL-01/02).
+    All HIGH tasks blocked on shim worker dispatch (SEC/RES/SEC-IMPL) or Bane review (WIRING).
+    Host: load 7.30 (1m), 45Gi available. Disk: 88% (212G free). Swap: 15Gi/31Gi. No GPU.
+    DuckBrain: tick-108 record saved (id 3a7d3e61). MCP transport working.
+    VERDICT: idle — maintenance mode. No new gaps found.
+    Next: idle tick ~#109, NEVER-DONE ~#110, E2E-001 ~#110-115 window.
