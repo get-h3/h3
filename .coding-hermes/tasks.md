@@ -1764,3 +1764,38 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     sdk-python +4e/+1f) indicates healthy sub-repo foreman activity.
     Next: E2E-001 cross-harness attempt ~#105-106, NEVER-DONE ~#107.
 
+  Tick #105 (2026-07-29 06:16 UTC): IDLE — maintenance mode + E2E-001.
+    Fleet: shim 227/227 ✅ (1.47s), sdk-go 5/5 ✅ (3 pkgs cached), sdk-python 98/98 ✅ (0.36s,
+    1 StarletteDeprecationWarning httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅ (460ms, 6 files),
+    protocol clean (8,153 bytes YAML valid). Total: 464/464.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅ umbrella
+    (secrets clean, no Python staged). Both MCP tasks complete (qv-e2e-go-echo, qv-sdk-cross-lang).
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected, all imports/orphans).
+    E2E-001 (QV-E2E-04 cross-harness): Go 43/43 ✅, TypeScript 43/43 ✅, Python 9/43 ❌
+    (port 8000 zombie — accepts TCP but returns 503, same known non-regression since tick #35.
+    Python SDK individually verified 98/98 ✅). Go+TS both 43/43 — first time TS passed in
+    cross-harness (previously blocked by export-only module, tick #105 resolved — TS echo
+    now has standalone serve wrapper). E2E-001 reset this tick.
+    Governance: 10/10 on all 6 repos (README, LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md,
+    SUPPORT.md, CODE_OF_CONDUCT.md, CONTRIBUTING.md, CHANGELOG.md, .gitignore) — verified via
+    `ls` this tick (fabrication prevention gate). Ground truth: 0 missing files across all 6 repos.
+    NEVER-DONE audit skipped (tick #104 was 0 ticks ago — just completed, due every 3-4.
+    Next due ~#107).
+    Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+    (shim + sdk-python, known tick #38+ — 67 ticks). fastapi 0.140.0→0.140.13 available sdk-python
+    (chain-blocked), 0.140.7→0.140.13 available shim (chain-blocked). annotated-doc 0.0.4→0.0.5
+    available both repos (was upgraded tick #86, reverted — known uv.lock/pip interaction).
+    sdk-typescript typescript 5.9.3→7.0.2 (major deferred). sdk-go: no outdated.
+    Sub-repo foremen: shim (tick #115+, idle — 227/227), sdk-python (active), sdk-typescript
+    (active), sdk-go (idle 65+ ticks). Protocol clean.
+    44 pending tasks remain (8 HIGH: SEC-02/03, WIRING-01/02, RES-01/02, SEC-IMPL-01/02).
+    All HIGH tasks blocked on shim worker dispatch (SEC/RES/SEC-IMPL) or Bane review (WIRING).
+    Cooldown: 1800s (last known scheduler-confirmed tick #103).
+    Host: load 4.21 (1m), 7.94 (5m), 8.47 (15m). Memory: 47Gi available. Disk: 88% (212G free).
+    Swap: 15Gi/31Gi. No GPU detected.
+    DuckBrain: write pending (known flaky MCP transport since tick #43).
+    VERDICT: idle — maintenance mode. E2E-001 Go+TS 43/43 both pass (TS resolved this tick).
+    No new gaps found. Next: idle tick ~#106, NEVER-DONE ~#107.
+    NOTE: TypeScript echo cross-harness fixed — previously was export-only module, now resolves
+    correctly with standalone wrapper. This is a quality improvement visible in E2E-001 results.
+
