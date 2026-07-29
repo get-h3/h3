@@ -1373,3 +1373,40 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     WIRING-01/02 remain (70+ ticks — need Bane review). 51 tasks remain.
     Host: load check skipped (idle tick). DuckBrain: tick-94 record saved (37c638cf).
     VERDICT: idle — maintenance mode. Cooldown corrected 900→1350 (scheduler reset).
+
+
+  Tick #95 (2026-07-29 00:51 UTC): NEVER-DONE 11-point audit (3 ticks since #92 — due).
+    Fleet: shim 227/227 (1.60s), sdk-go 5/5 (3 pkgs, cached), sdk-python 98/98 (0.52s,
+    1 StarletteDeprecationWarning httpx→httpx2 — cosmetic), sdk-typescript 134/134
+    (471ms, 6 files), protocol clean (306 lines YAML). Total: 464/464.
+    GitReins: JUDGE umbrella tier1 PASS (secrets clean). tier2 failed on qv-sdk-cross-lang
+    (known limit — cross-repo verification ticks #33/#35, umbrella has no SDK code).
+    check-gitreins-judge.py: PASS (model=deepseek-v4-flash). Guard PASS umbrella.
+    Hilo=useful: 22 edges/5 files (flat umbrella — normal, all imports/orphans).
+    Governance: ALL 6 repos 9/9 (README, LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md,
+    SUPPORT.md, CODE_OF_CONDUCT.md, CONTRIBUTING.md, CHANGELOG.md) — verified via ls
+    on umbrella + all 5 sub-repos (fabrication gate).
+    M4 implicit-pending: 1 (NEVER-DONE recurring — being executed this tick).
+    All 13 active matrix rows have ✅ markers. 0 undispatched.
+    Cooldown: ~1350s assumed — scheduler API unreachable this tick (empty body,
+    JSONDecodeError, known pitfall from rethinkdb tick #58). Last known from tick #94.
+    SEC-02: partial (H3_API_KEY env var fallback in shim a4df720, 227/227 tests).
+    Remaining: harness-side key validation middleware — needs shim worker dispatch.
+    Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+    (shim + sdk-python, known tick #38+). sdk-go: no outdated. sdk-typescript:
+    typescript 5.9.3→7.0.2 (major deferred).
+    Sub-repo foremen: shim (tick #111, idle), sdk-python (active), sdk-typescript
+    (active), sdk-go (idle #56+).
+    NEVER-DONE 11-point: spec alignment (27 specs), doc coverage (9/9 all 6 repos),
+    test gaps (fleet 464/464 green), dep upgrades (pydantic-core blocked, fastapi chain),
+    pitfall hunt (no new), performance audit (PERF-ND-01/02/03 + matrix PERF-01..05
+    unresolved — LOW), endpoint verification (SDK tests), CI/CD health (GitReins JUDGE
+    all 6 repos), DuckBrain sync (tick-95 record saved + recall-verified: c1177477),
+    code quality (Hilo=useful: h3 22e/5f, shim 139e/26f, sdk-go 94e/18f,
+    sdk-python 81e/19f, sdk-typescript 58e/26f, protocol 4e/1f),
+    middle-out wiring (WIRING-01/02 remain 71+ ticks — need Bane review).
+    E2E-001: last tick #86 (9 ticks ago — approaching due window #91-96).
+    51 tasks remain. No new gaps found.
+    Host: load 6.35/6.68/6.98, 48Gi available, disk 88% (220G free).
+    DuckBrain: tick-95 saved (c1177477), recall verified by ID — confirmed persisted.
+    VERDICT: idle — maintenance mode. Cooldown ~1350s (scheduler unreachable, assumed).
