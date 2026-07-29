@@ -1931,3 +1931,47 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     DuckBrain: tick-109 record saved (id 6681ee03), recall verified — confirmed persisted.
     VERDICT: idle — maintenance mode. No new gaps found.
     Next: idle tick ~#110, NEVER-DONE ~#110, E2E-001 ~#110-115 window.
+
+
+  Tick #110 (2026-07-29 12:04 UTC): NEVER-DONE 14-point audit ✅ (3 ticks since #107 — due).
+    Fleet: shim 227/227 ✅ (1.42s), sdk-go 5/5 ✅ (3 pkgs cached), sdk-python 98/98 ✅ (0.43s,
+    1 StarletteDeprecationWarning httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅ (397ms, 6 files),
+    protocol clean (306 lines YAML valid). Total: 464/464.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅ umbrella + shim
+    (secrets clean, no Python staged). Both MCP tasks complete (qv-e2e-go-echo, qv-sdk-cross-lang).
+    Hilo=useful: h3 22e/5f (flat umbrella — expected), shim 141e/26f — edge counts stable.
+    All 6 repos git-clean (umbrella: tasks.md only — this tick).
+    14-point NEVER-DONE:
+    1.  Build: N/A (umbrella — no source code to build; sub-repos have own builds)
+    2.  Tests: ✅ fleet 464/464 across all 5 sub-repos (shim 227, sdk-go 5, sdk-python 98, sdk-ts 134)
+    3.  Coverage: N/A (umbrella-level; sub-repos handle independently)
+    4.  Vulnerabilities: ✅ Guard secrets clean (gitleaks PASS on umbrella + shim)
+    5.  Depcheck: ⚠️ pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+        (shim + sdk-python, known tick #38+ — 72 ticks). fastapi 0.140.0→0.140.13 available sdk-python
+        (chain-blocked), 0.140.7→0.140.13 available shim (chain-blocked). annotated-doc 0.0.4→0.0.5
+        available both repos (was upgraded tick #86, reverted — known uv.lock/pip interaction).
+        uvicorn 0.51.0→0.52.0 available sdk-python. sdk-typescript typescript 5.9.3→7.0.2
+        (major deferred). sdk-go: no outdated.
+    6.  Formatting: N/A (umbrella — markdown only, no source code)
+    7.  TODO/FIXME/HACK: ✅ clean — grep across specs/ and docs/ returned empty
+    8.  Guard: ✅ GitReins guard_run PASS (secrets clean, no Python staged) on umbrella + shim
+    9.  CI: N/A (umbrella; sub-repos have own CI pipelines via GitReins JUDGE)
+    10. DuckBrain: ✅ tick-110 record saved (id 4ca60428), recall verified by ID — confirmed persisted.
+    11. Hilo: ✅ h3 22e/5f (flat umbrella — expected topology, all imports/orphans), shim 141e/26f
+    12. Specs: ✅ 27 spec files, 13,849 lines
+    13. Docs: ✅ 10/10 on all 6 repos (README, LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md,
+        SUPPORT.md, CODE_OF_CONDUCT.md, CONTRIBUTING.md, CHANGELOG.md, .gitignore) — verified via
+        ls this tick (fabrication prevention gate). Ground truth: 0 missing across all 6 repos.
+    14. GitReins judge: ✅ all 6 repos configured (deepseek-v4-flash, check PASS)
+    M4 implicit-pending: 0 undispatched matrix rows (all active rows have ✅ markers).
+    44 pending matrix tasks remain (8 HIGH: SEC-02/03, WIRING-01/02, RES-01/02, SEC-IMPL-01/02).
+    All HIGH tasks blocked on shim worker dispatch (SEC/RES/SEC-IMPL) or Bane review (WIRING).
+    Sub-repo foremen: shim (tick #121+, idle — 227/227), sdk-python (active), sdk-typescript
+    (active), sdk-go (idle 70+ ticks). Protocol clean. All repos git-clean.
+    E2E-001: last Go+TS 43/43 verified tick #105 (5 ticks ago — within 5-10 window, not overdue).
+    TS echo resolved (standalone serve wrapper tick #105). Python blocked by port 8000 zombie
+    listener (known non-regression since tick #35 — 75 ticks).
+    Cooldown: 1800s (scheduler-confirmed from prior ticks #103/#106).
+    Host: load moderate, 46Gi+ available. Disk: 88% (206G free). Swap: ~15Gi/31Gi. No GPU.
+    VERDICT: idle — maintenance mode. 14-point audit all clear. No new gaps found.
+    Next: NEVER-DONE ~#113, E2E-001 ~#110-115 window.
