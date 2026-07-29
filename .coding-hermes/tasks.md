@@ -1449,3 +1449,41 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     Next: E2E-001 cross-harness attempt (tick #96) — if Python port cleared, run full
     QV-E2E-04; else Go+TS only (known limitation). SEC-02 harness middleware
     (foreman-direct on shim, or shim foreman dispatch). NEVER-DONE next due tick #98.
+
+  Tick #96 (2026-07-29 01:18 UTC): Fleet health + E2E-001.
+    Fleet: shim 227/227 ✅ (1.63s .venv), sdk-go 5/5 ✅ (3 pkgs cached),
+    sdk-python 98/98 ✅ (0.47s .venv, 1 StarletteDeprecationWarning httpx→httpx2 — cosmetic),
+    sdk-typescript 134/134 ✅ (624ms, 6 files), protocol clean (306 lines YAML).
+    Total: 464/464.
+    E2E-001 (Go echo): 43/43 ✅ (0.21s via h3-test against http://127.0.0.1:9191).
+    Full cross-harness script timed out at 180s — same known issues: TS echo requires
+    standalone server wrapper (not export-only module, known since tick #35), Python
+    port 8000 zombie (accepts TCP, never responds, fuser -k ineffective — known
+    since tick #35). Go echo individually verified 43/43 clean.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅
+    umbrella (secrets clean). 0 pending tasks across all repos.
+    MCP tasks: qv-e2e-go-echo ✅, qv-sdk-cross-lang ✅ — board consistent with YAML.
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected, all imports/orphans).
+    Governance: 9/9 on all 6 repos (README, LICENSE, SECURITY.md, CODEOWNERS,
+    AGENTS.md, SUPPORT.md, CODE_OF_CONDUCT.md, CONTRIBUTING.md, CHANGELOG.md) —
+    verified tick #95 (fabrication gate).
+    Scheduler: API returned empty body (JSONDecodeError — known pitfall, tick #95+).
+    Cooldown assumed 1350s (last known from tick #94 ground-truth DB query).
+    NEVER-DONE audit skipped (tick #95 was 1 tick ago, due every 3-4 — next due #98).
+    E2E-001: reset — Go 43/43 ✅ this tick. TS+Python held back by known non-regression
+    issues. Last successful cross-harness: tick #86 (10 ticks ago).
+    Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+    (shim + sdk-python, known tick #38+). fastapi 0.140.0→0.140.13 available
+    sdk-python (chain-blocked). sdk-typescript typescript 5.9.3→7.0.2 (major deferred).
+    sdk-go: no outdated. shim: annotated-doc 0.0.4→0.0.5 (minor, skipped — shim
+    foreman to handle).
+    Sub-repo foremen: shim (tick #111, idle), sdk-python (active), sdk-typescript
+    (active), sdk-go (idle #56+). Protocol clean.
+    44 pending tasks remain (8 HIGH: SEC-02/03, WIRING-01/02, RES-01/02,
+    SEC-IMPL-01/02). All HIGH tasks blocked on shim worker dispatch or Bane review.
+    WIRING-01/02 remain (72+ ticks — need Bane review).
+    Host: load 7.58, 47Gi available, disk 88% (219G free). Swap: 15Gi/31Gi.
+    No GPU detected.
+    DuckBrain: write pending (known flaky MCP transport since tick #43).
+    No new gaps found. VERDICT: idle — maintenance mode. E2E-001 Go 43/43 verified.
+    Next: NEVER-DONE audit (tick #98).
