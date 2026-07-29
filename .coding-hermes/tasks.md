@@ -2031,3 +2031,57 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     DuckBrain: tick-112 record saved (id e2308281).
     VERDICT: idle — maintenance mode. No new gaps found. Cooldown 1800s.
     Next: NEVER-DONE ~#113, E2E-001 ~#113-115 window.
+
+  Tick #113 (2026-07-29 17:37 UTC): NEVER-DONE 14-point audit ✅ (3 ticks since #110 — due).
+    Fleet: shim 227/227 ✅ (1.44s), sdk-go 5/5 ✅ (3 pkgs), sdk-python 98/98 ✅ (0.45s,
+    1 StarletteDeprecationWarning httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅
+    (869ms, 6 files), protocol clean (306 lines YAML valid). Total: 464/464.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅ umbrella
+    (secrets clean, gitleaks PASS). Both MCP tasks complete.
+    🚨 FABRICATION CHAIN DISCOVERY: GOVERNANCE.md was MISSING on h3 umbrella — 20+ ticks
+    (since governance was first checked) claimed "10/10" by counting .gitignore as the 10th
+    file. The 9-file one-liner (CHANGELOG.md, CODE_OF_CONDUCT.md, CODEOWNERS, CONTRIBUTING.md,
+    GOVERNANCE.md, LICENSE, README.md, SECURITY.md, SUPPORT.md) revealed GOVERNANCE.md was
+    absent from project creation. .gitignore is NOT in the 9-file checklist. The previous
+    "10/10" claims across 20+ ticks (including #107, #110) were fabrication — using `ls *.md |
+    wc -l` or similar, mistaking .gitignore for GOVERNANCE.md. FIXED this tick: GOVERNANCE.md
+    created (26 lines) ✅. Now 9/9 via the correct one-liner. Ground truth verified with ls.
+    14-point NEVER-DONE:
+    1.  Build: N/A (umbrella — no source code to build; sub-repos have own builds)
+    2.  Tests: ✅ fleet 464/464 across all 5 sub-repos (shim 227, sdk-go 5, sdk-python 98, sdk-ts 134)
+    3.  Coverage: N/A (umbrella-level; sub-repos handle independently)
+    4.  Vulnerabilities: ✅ Guard secrets clean (gitleaks PASS)
+    5.  Depcheck: ⚠️ shim: 4 outdated (annotated-doc 0.0.4→0.0.5, fastapi 0.140.13→0.141.1,
+        pydantic_core 2.46.4→2.47.0 blocked by fastapi chain, pip 26.1.2→26.2).
+        sdk-python: 7 outdated (annotated-doc 0.0.4→0.0.5, fastapi 0.140.0→0.141.1,
+        importlib_metadata 8.9.0→9.0.0, pydantic_core 2.46.4→2.47.0 blocked, uvicorn
+        0.51.0→0.52.0, websockets 16.1.1→17.0, pip 26.1.2→26.2).
+        pydantic-core still blocked by fastapi constraint chain (shim + sdk-python,
+        known tick #38+ — 75 ticks). sdk-typescript: typescript 5.9.3→7.0.2 (major deferred).
+        sdk-go: no outdated.
+    6.  Formatting: N/A (umbrella — markdown only, no source code)
+    7.  TODO/FIXME/HACK: ✅ clean — grep across specs/ and docs/ returned empty
+    8.  Guard: ✅ GitReins guard_run PASS (secrets clean, gitleaks clean)
+    9.  CI: N/A (umbrella; sub-repos have own CI via GitReins JUDGE)
+    10. DuckBrain: ✅ tick-113 record saved (id f816c659), recall verified by ID —
+        confirmed persisted (count=1). MCP transport working.
+    11. Hilo: ✅ h3 22e/5f (flat umbrella — expected topology, all imports/orphans)
+    12. Specs: ✅ 27 spec files, 13,849 lines
+    13. Docs: ✅ 9/9 on h3 umbrella — corrected this tick. GOVERNANCE.md added (was missing,
+        fabrication chain exposed). All 5 sub-repos verified via prior ticks.
+    14. GitReins judge: ✅ all 6 repos configured (deepseek-v4-flash, check PASS)
+    M4 implicit-pending: 0 undispatched matrix rows (all active rows have ✅ markers).
+    44 pending matrix tasks remain (8 HIGH: SEC-02/03, WIRING-01/02, RES-01/02, SEC-IMPL-01/02).
+    All HIGH tasks blocked on shim worker dispatch (SEC/RES/SEC-IMPL) or Bane review (WIRING).
+    Sub-repo foremen: shim (tick #121+, idle — 227/227), sdk-python (active), sdk-typescript
+    (active), sdk-go (idle 73+ ticks). Protocol clean. All repos git-clean.
+    Scheduler: CooldownS=1800 (DB-verified this tick via API query). Weight=15, Priority=10.
+    h3-shim: CooldownS=4050. sdk-go/sdk-python/sdk-ts: CooldownS=43200 (idle).
+    E2E-001: last Go+TS 43/43 verified tick #105 (8 ticks ago — within 5-10 window,
+    near upper bound; cross-harness due tick #113-115. Next tick recommended).
+    Python blocked by port 8000 zombie listener (known non-regression since tick #35).
+    Host: load moderate, 46Gi+ available. Disk: 88% (206G free). Swap: ~15Gi/31Gi. No GPU.
+    VERDICT: idle — maintenance mode. 14-point audit all clear.
+    Gap found + fixed: GOVERNANCE.md (26 lines) — fabrication chain spanning 20+ ticks exposed
+    and corrected. All prior "10/10" claims were erroneous (.gitignore ≠ GOVERNANCE.md).
+    Cooldown 1800s (DB-verified). Next: E2E-001 ~#114, NEVER-DONE ~#116.
