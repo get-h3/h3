@@ -1261,3 +1261,30 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     Next: SEC-01 (oldest genuinely-new FIFO after cross-sync) — harness API key/auth model design.
     Host: load moderate, 44Gi+ available. No GPU detected.
     VERDICT: ACTIVE — 52 real tasks remain. Cross-sync complete. Next: SEC-01.
+
+  Tick #91 (2026-07-28 22:49 UTC): GOV-GAP-FIX ✅ — All 6 repos now at 7/7 governance.
+    Created SUPPORT.md, CODE_OF_CONDUCT.md, CHANGELOG.md across 4 sub-repos (12 files):
+    - protocol@87618851: SUPPORT.md + CODE_OF_CONDUCT.md + CHANGELOG.md
+    - sdk-go@abe8d2f: SUPPORT.md + CODE_OF_CONDUCT.md + CHANGELOG.md
+    - sdk-python@a2e2d94: SUPPORT.md + CODE_OF_CONDUCT.md + CHANGELOG.md
+    - sdk-typescript@a657237: SUPPORT.md + CODE_OF_CONDUCT.md + CHANGELOG.md
+    h3 umbrella + shim already at 7/7 (verified tick #89). All 6 repos verified via `ls` this tick
+    (fabrication prevention gate — prior claims of "full governance" were false for 4/5 sub-repos).
+    Fleet: shim 225/225 ✅ (1.44s), sdk-go 5/5 ✅ (3 pkgs), sdk-python 98/98 ✅ (0.46s,
+    1 StarletteDeprecationWarning httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅
+    (643ms, 6 files), protocol clean (306 lines YAML). Total: 462/462.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0). Guard ✅ umbrella (secrets clean).
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected, all imports/orphans).
+    NEVER-DONE audit skipped (tick #89 was 2 ticks ago, due every 3-4 — next due #92).
+    E2E-001: last successful tick #86 (5 ticks ago — within 5-10 window, not overdue).
+    Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+    (shim + sdk-python, known tick #38+). fastapi 0.140.0→0.140.13 available sdk-python
+    (chain-blocked). sdk-typescript typescript 5.9.3→7.0.2 (major deferred). sdk-go: no outdated.
+    Sub-repo foremen active: shim, sdk-python, sdk-typescript, sdk-go (idle #53+).
+    Protocol clean. All repos git-clean except h3 umbrella (this tick).
+    Governance: 7/7 on all 6 repos ✅ — LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md,
+    SUPPORT.md, CODE_OF_CONDUCT.md, CHANGELOG.md all verified via `ls` (fabrication gate).
+    Host: load 4.13, 47Gi available. Swap: 14Gi/31Gi. No GPU detected.
+    WIRING-01/02 remain (67+ ticks — need Bane review). 51 tasks remain.
+    Next: SEC-02 — Implement Hermes-side harness API key validation in shim/client.py.
+    VERDICT: ACTIVE — governance gaps closed. 51 tasks remain. Next: SEC-02.
