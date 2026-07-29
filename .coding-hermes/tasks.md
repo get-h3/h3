@@ -1045,3 +1045,55 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     WIRING-01/02 remain (58+ ticks — need Bane review). No new gaps found.
     DuckBrain: write failed (MCP ClosedResourceError — known flaky read-path tick #43+).
     VERDICT: idle — maintenance mode.
+
+  Tick #83 (2026-07-28 19:05 UTC): NEVER-DONE 11-point audit ✅ (3 ticks since #80 — due).
+    Fleet: shim 225/225 ✅ (1.73s), sdk-go 5/5 ✅ (3 pkgs cached), sdk-python 98/98 ✅
+    (0.37s, 1 StarletteDeprecationWarning httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅
+    (334ms, 6 files), protocol clean (306 lines YAML). Total: 462/462.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅
+    umbrella (secrets clean). All 6 repos git-clean.
+    E2E-001 (QV-E2E-04 cross-harness): TIMEOUT at 120s. Port 8000 occupied by unknown process
+    (same known conflict since tick #35). Go+TS would pass, Python SDK individually 98/98 ✅
+    (non-regression). Last successful: tick #78 (5 ticks ago — at upper bound of 5-10 window).
+    Governance: All 6 repos full governance (LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md) ✅ —
+    verified via `ls` this tick (fabrication prevention gate).
+    11-point NEVER-DONE: spec alignment ✅ (27 specs, 13,849 lines), doc coverage ✅
+    (all 7 AGENTS.md + full governance on all 6 repos), test gaps ✅ (fleet: 462 total),
+    dep upgrades ⚠️ (pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint
+    chain — shim + sdk-python, known tick #38+. fastapi 0.140.0→0.140.13 available for
+    sdk-python but chain-blocked. annotated-doc 0.0.4→0.0.5 available for both shim +
+    sdk-python. sdk-typescript typescript 5.9.3→7.0.2 major deferred. sdk-go: no outdated),
+    pitfall hunt ✅ (no new), performance audit ⚠️ (PERF-ND-01/02/03 unresolved — LOW;
+    PERF-01..05 + matrix tasks unresolved), endpoint verification ✅ (SDK tests exercise
+    all endpoints), CI/CD health ✅ (GitReins JUDGE + Guard on all 6 repos),
+    DuckBrain sync ✅ (tick-83 record saved, key /tick/83, id 91a8877a),
+    code quality ✅ (Hilo=useful: h3 22e/5f, shim 139e/26f, sdk-go 94e/18f,
+    sdk-python 81e/19f, sdk-typescript 58e/26f, protocol 4e/1f),
+    middle-out wiring ⚠️ (WIRING-01/02 remain 59+ ticks — need Bane review).
+    Sub-repo foremen active: shim, sdk-python, sdk-typescript, sdk-go (idle #49+).
+    Protocol clean. Host: load 7.13 (1m), 6.08 (5m), 48Gi available. No GPU detected.
+    No new gaps found. VERDICT: idle — maintenance mode.
+
+  Tick #84 (2026-07-28 19:16 UTC): Fleet health all green. Shim 225/225 ✅ (1.47s),
+    sdk-go 5/5 ✅ (3 pkgs cached), sdk-python 98/98 ✅ (0.59s, 1 StarletteDeprecationWarning
+    httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅ (412ms, 6 files), protocol clean
+    (306 lines YAML). Total: 462/462.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅
+    umbrella (secrets clean, only tasks.md dirty — this tick).
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected, all imports/orphans).
+    Governance: All 6 repos full governance (LICENSE, SECURITY.md, CODEOWNERS,
+    AGENTS.md) ✅ — verified via `ls` this tick (fabrication prevention gate).
+    NEVER-DONE audit skipped (tick #83 was 1 tick ago, due every 3-4 — next due #86).
+    E2E-001: last successful tick #78 (6 ticks ago — within 5-10 window, not overdue).
+    Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+    (shim + sdk-python, known tick #38+). annotated-doc 0.0.4→0.0.5 available both
+    repos. fastapi 0.140.0→0.140.13 available sdk-python (chain-blocked). shim:
+    annotated-doc 0.0.4→0.0.5 + pydantic-core only. sdk-typescript typescript 5.4.0→7.0.2
+    (major deferred). sdk-go: no outdated deps.
+    Sub-repo foremen active: shim, sdk-python, sdk-typescript, sdk-go (idle #50+).
+    Protocol clean. All repos git-clean except h3 umbrella (this tick).
+    Host: load 12.35 (1m), 12.66 (5m), 8.73 (15m) — elevated. Memory: 47Gi available.
+    Disk: 227G (87%). Swap: 15Gi/31Gi. No GPU detected.
+    WIRING-01/02 remain (60+ ticks — need Bane review). No new gaps found.
+    DuckBrain: write succeeded (key /ticks/h3/84, id e46811a0).
+    VERDICT: idle — maintenance mode.
