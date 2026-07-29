@@ -1905,35 +1905,29 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     VERDICT: idle — maintenance mode. No new gaps found.
     Next: idle tick ~#109, NEVER-DONE ~#110, E2E-001 ~#110-115 window.
 
-  Tick #109 (2026-07-29 10:29 UTC): IDLE — maintenance mode. Fleet: shim 227/227 ✅ (1.44s),
-    sdk-go 5/5 ✅ (3 pkgs), sdk-python 98/98 ✅ (0.50s, 1 StarletteDeprecationWarning
-    httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅ (399ms, 6 files), protocol clean
-    (YAML valid). Total: 464/464.
-    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅ umbrella
-    (secrets clean, secrets PASS). Judge on qv-e2e-go-echo timed out at 300s (expected —
-    umbrella has no SDK code, cross-repo verification done ticks #33/#35/#105).
+  Tick #109 (2026-07-29 10:32 UTC): IDLE — maintenance mode. Fleet: shim 227/227 ✅ (1.40s),
+    sdk-go 5/5 ✅ (3 pkgs cached), sdk-python 98/98 ✅ (0.35s, 1 StarletteDeprecationWarning
+    httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅ (342ms, 6 files), protocol clean.
+    Total: 464/464.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅ PASS
+    (secrets clean, no Python staged).
     Hilo=useful: h3 22e/5f, shim 141e/26f, sdk-go 96e/18f, sdk-python 85e/20f, sdk-ts 58e/26f,
-    protocol 4e/1f — all stable since tick #108.
-    Governance: 10/10 on all 6 repos (README, LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md,
-    SUPPORT.md, CODE_OF_CONDUCT.md, CONTRIBUTING.md, CHANGELOG.md, .gitignore) — verified via
-    `ls` this tick (fabrication prevention gate). SUPPORT.md/CODE_OF_CONDUCT.md/CHANGELOG.md
-    confirmed present across all 6 repos.
-    Cooldown: 1800s — scheduler-confirmed (API query: CooldownS=1800, Weight=15, Priority=10,
-    Enabled=true, UpdatedAt 2026-07-29T07:30:45Z). Matches board claim — no fabrication.
-    NEVER-DONE audit skipped (tick #107 was 2 ticks ago, due every 3-4 — next due #110).
+    protocol 4e/1f — all unchanged since tick #108 (sub-repo foreman edge growth stable).
+    sdk-go: M .vfs/graph/edges.jsonl (Hilo post-commit noise from sub foreman, cosmetic).
+    All other repos git-clean.
+    NEVER-DONE audit skipped (tick #107 was 2 ticks ago — due every 3-4, next due tick #110).
     E2E-001: last Go+TS 43/43 verified tick #105 (4 ticks ago — within 5-10 window, not overdue).
-    Python still blocked by port 8000 zombie listener (known non-regression since tick #35).
+    Python blocked by port 8000 zombie listener (known non-regression since tick #35).
+    M4 implicit-pending: 0 undispatched matrix rows (all active rows have ✅ markers).
+    44 pending matrix tasks remain (8 HIGH: SEC-02/03, WIRING-01/02, RES-01/02, SEC-IMPL-01/02).
+    All HIGH tasks blocked on shim worker dispatch (SEC/RES/SEC-IMPL) or Bane review (WIRING).
     Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
-    (shim + sdk-python, known tick #38+ — 71 ticks). fastapi 0.140.0→0.140.13 available sdk-python
-    (chain-blocked), 0.140.7→0.140.13 available shim (chain-blocked). annotated-doc 0.0.4→0.0.5
-    available both repos (was upgraded tick #86, reverted — known uv.lock/pip interaction).
-    uvicorn 0.51.0→0.52.0 available sdk-python. sdk-typescript typescript 5.9.3→7.0.2
+    (shim + sdk-python, known tick #38+ — 71 ticks). sdk-typescript typescript 5.9.3→7.0.2
     (major deferred). sdk-go: no outdated.
     Sub-repo foremen: shim (tick #121+, idle — 227/227), sdk-python (active), sdk-typescript
     (active), sdk-go (idle 69+ ticks). Protocol clean. All repos git-clean.
-    44 pending tasks remain (8 HIGH: SEC-02/03, WIRING-01/02, RES-01/02, SEC-IMPL-01/02).
-    All HIGH tasks blocked on shim worker dispatch (SEC/RES/SEC-IMPL) or Bane review (WIRING).
-    DuckBrain: 48 total keys (41 /tick/ + 7 /ticks/). MCP transport working.
-    Host: load 4.45 (1m), 47Gi available. Disk: 88% (212G free). Swap: 15Gi/31Gi. No GPU.
+    Host: load 2.73 (1m), 3.07 (5m), 3.65 (15m) — moderate. Memory: 48Gi/59Gi available.
+    Disk: 89% (206G free). Swap: ~15Gi/31Gi. No GPU detected.
+    DuckBrain: tick-109 record saved (id 6681ee03), recall verified — confirmed persisted.
     VERDICT: idle — maintenance mode. No new gaps found.
-    Next: NEVER-DONE due tick #110, E2E-001 ~#110-115 window.
+    Next: idle tick ~#110, NEVER-DONE ~#110, E2E-001 ~#110-115 window.
