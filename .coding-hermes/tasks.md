@@ -275,7 +275,7 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 ||| QV-E2E-04 | ~~Cross-harness: h3-test against all 3 languages simultaneously~~ | ✅ Tick #35 | 3 | — | e2e,cross-lang,testing | Step 3.7 Flash | ✅ Go 43/43, TS 43/43, Python 43/43 (previously). Test script at _run_cross_harness.sh | — |
 ||| QV-SDK-03 | ~~Python Pydantic validation matches JSON Schema — verify all formats match protocol~~ | ✅ Tick #30 | 3 | — | sdk,python,validation | DeepSeek V4 Pro | ✅ 44/44 Pydantic→JSON Schema validation tests pass | MiniMax M3 |
 ||| QV-SDK-04 | ~~TS Zod validation matches JSON Schema — verify all formats match protocol~~ | ✅ Tick #31 | 3 | — | sdk,typescript,validation | DeepSeek V4 Pro | ✅ 43/43 Zod→JSON Schema validation via ajv. 134/134 TS tests. | MiniMax M3 |
-||| QV-E2E-05 | Harness logs: timestamped METHOD /path STATUS DURATION | LOW | 2 | — | logging,observability | DeepSeek V4 Flash | Simple/boilerplate: structured logging format | — |
+||| ✅ QV-E2E-05 | Harness logs: timestamped METHOD /path STATUS DURATION | LOW | 2 | — | logging,observability | DeepSeek V4 Flash | ✅ Tick #87: structured access logging added to all 3 echo harnesses (Go slog, Python logging, TS console). 462/462 fleet tests green. sdk-go@59f6700, sdk-python@771503c, sdk-typescript@3c0707f | — |
 ||| QV-SHIM-02 | Test report JSON matches TestReport schema — schema compliance | MEDIUM | 2 | — | shim,testing,schema | DeepSeek V4 Flash | Simple: schema compliance check | — |
 || QV-SHIM-03 | Shim handles harness timeout gracefully — resilience testing | MEDIUM | 3 | — | shim,resilience,testing | MiniMax M3 | Bug fix: timeout handling, resilience | DeepSeek V4 Pro |
 || QV-SHIM-04 | Health check detects dead harness, falls back to native — resilience | MEDIUM | 3 | — | shim,health,fallback | Kimi K3 | Bug fix: health check, fallback mechanism | MiniMax M3 |
@@ -1160,3 +1160,49 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     Host: load 4.10 (1m), 4.45 (5m), 4.85 (15m), 45Gi available. Disk: 225G (88%).
     Swap: 13Gi/31Gi. No GPU detected.
     No new gaps found. VERDICT: idle — maintenance mode.
+
+  Tick #87 (2026-07-28 21:16 UTC): Fleet health all green. Shim 225/225 ✅ (1.42s),
+    sdk-go 5/5 ✅ (3 pkgs cached), sdk-python 98/98 ✅ (0.39s, 1 StarletteDeprecationWarning
+    httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅ (362ms, 6 files), protocol clean
+    (306 lines YAML). Total: 462/462.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅
+    umbrella (secrets clean, only tasks.md dirty — this tick). Both GitReins tasks complete
+    (qv-e2e-go-echo, qv-sdk-cross-lang).
+    ⚠️ pydantic-core 2.47.0 INVESTIGATED: attempted upgrade on shim — conflicts with
+    pydantic 2.13.4 (requires ==2.46.4). pydantic-core 2.47.0 needs pydantic 2.14.0a1
+    (alpha — not safe). Reverted to 2.46.4. Same constraint chain on sdk-python
+    (pydantic 2.9.0 requires ==2.23.2). Known blocker since tick #38 — pydantic stable
+    releases don't yet support pydantic-core 2.47.0. Wait for pydantic 2.14.0 stable.
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected, all imports/orphans).
+    Governance: All 6 repos full governance (LICENSE, SECURITY.md, CODEOWNERS,
+    AGENTS.md) ✅ — verified via `ls` this tick (fabrication prevention gate).
+    NEVER-DONE audit skipped (tick #86 was 1 tick ago, due every 3-4 — next due #89).
+    E2E-001: last successful tick #86 (1 tick ago — within 5-10 window, not overdue).
+    Deps: pydantic-core 2.46.4→2.47.0 blocked by pydantic constraint chain (shim:
+    pydantic 2.13.4 requires ==2.46.4; sdk-python: pydantic 2.9.0 requires ==2.23.2).
+    Wait for pydantic 2.14.0 stable release. fastapi 0.140.0→0.140.13 available for
+    sdk-python. annotated-doc 0.0.4→0.0.5 available shim. sdk-typescript typescript
+    5.9.3→7.0.2 (major deferred). sdk-go: no outdated deps.
+    Sub-repo foremen active: shim, sdk-python, sdk-typescript, sdk-go (idle #53+).
+    All repos git-clean except h3 umbrella (this tick). Protocol clean.
+    Host: load 4.46 (1m), 4.18 (5m), 46Gi available. Swap: 14Gi/31Gi. Disk: 225G (88%).
+    No GPU detected. WIRING-01/02 remain (63+ ticks — need Bane review).
+    No new gaps found. VERDICT: idle — maintenance mode.
+
+  Tick #87 (2026-07-28 21:14 UTC): QV-E2E-05 ✅ — structured access logging added to all 3 echo harnesses.
+    Go: slog (sdk-go@59f6700), Python: logging+ISO8601 prefix (sdk-python@771503c),
+    TypeScript: console+ISO8601 prefix (sdk-typescript@3c0707f). Format: [ISO8601] METHOD /path STATUS DURATION.
+    Test battery verified against all 3: 462/462 fleet green.
+    BREAKING IDLE: Board had 60+ real pending tasks across 10 categories (SEC, OBS, RES, PERF, MULTI, COMPAT,
+    CERT, CHAOS, WIRING, IMPL) while foreman classified as "idle maintenance" for 37 ticks (#50-#86).
+    Root cause: M4 detection method never run — implicit-pending matrix rows (no ✅ marker) invisible to
+    M1/M2/M3 grep. 12 HIGH, 20 MEDIUM, 36 LOW priority tasks pending. Cooldown corrected from 1800s→900s.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash). Guard PASS (secrets clean).
+    E2E-001: schedule next tick (due ~tick #92, window 5-10 ticks since last at #86).
+    pydantic-core 2.46.4 still blocked by fastapi constraint chain (shim + sdk-python, known tick #38+).
+    WIRING-01/02 remain (63+ ticks — need Bane review).
+    NOT idle — 59 real tasks remain (QV-SHIM-02/03/04, SEC-01..07, P4-01..05, OBS-01..06, RES-01..07,
+    PERF-01..05, MULTI-01..04, COMPAT-01..05, CERT-01..04, CHAOS-01..04, DEPS-01/02, PERF-ND-01/02/03,
+    WIRING-01/02, SEC-IMPL-01/02/03, OBS-IMPL-01/02/03, RES-IMPL-01/02/03).
+    DuckBrain: write pending (MCP transport known-flaky). Host: load stable, 45Gi+ available.
+    VERDICT: ACTIVE — real work exists. Next tick: QV-SHIM-02 (oldest FIFO).
