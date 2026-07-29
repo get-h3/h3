@@ -284,7 +284,7 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 
 | ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback |
 |----|------|-----|-----|------|------|-------|-----------|----------|
-|| SEC-01 | Design: harness API key / token auth model | HIGH | 3 | — | security,auth,design | DeepSeek V4 Pro | Architecture/design: security model design | GPT-5.6 Sol |
+|| ✅ SEC-01 | ~~Design: harness API key / token auth model~~ | ✅ Tick #90 | 3 | — | security,auth,design | DeepSeek V4 Pro | ✅ S12 Security-Authentication.md (640 lines, 15 sections) — full design: 3-layer auth (API key + mTLS + rate limit), key hierarchy, lifecycle, auth endpoints, error codes, threat model. Spec written 2026-07-21, board stale. | — |
 || SEC-02 | Implement: Hermes validates harness API key on connect | HIGH | 3 | SEC-01 | security,auth,implementation | DeepSeek V4 Pro | Architecture/design: auth implementation | Kimi K3 |
 || SEC-03 | Implement: harness validates Hermes caller identity | HIGH | 3 | SEC-01 | security,auth,implementation | DeepSeek V4 Pro | Architecture/design: mutual auth | Kimi K3 |
 || SEC-04 | Token rotation + revocation support | MEDIUM | 3 | SEC-02 | security,token,rotation | MiniMax M3 | Feature: token lifecycle management | DeepSeek V4 Pro |
@@ -1203,7 +1203,35 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     VERDICT: ACTIVE — 3 QV-SHIM cleared, 55 remaining. Next tick: cross-sync P4/RES-IMPL completions from shim foreman.
 
   Tick #89 (2026-07-28 21:52 UTC): CROSS-SYNC + NEVER-DONE 11-point audit ✅.
-    Ground truth: Scheduler CooldownS=1350, Weight=15, Priority=10, Enabled=true.
+    ...
+
+  Tick #90 (2026-07-28 22:20 UTC): SEC-01 ✅ — Design already complete in S12 Security-Authentication.md.
+    SEC-01 has been fully designed since 2026-07-21 (640 lines, 15 sections, 21KB). The spec covers:
+    3-layer security model (API key auth + mTLS + rate limiting), key hierarchy (harness key,
+    Hermes identity token, CA certificates), full key lifecycle (generation, registration,
+    rotation with grace period, revocation, compromise response), mTLS certificate architecture,
+    request authentication (Authorization: Bearer headers), 3 new auth endpoints
+    (/v1/auth/register, DELETE /v1/auth/pairing, POST /v1/auth/certificate),
+    rate limiting (token bucket, per-harness + per-session), secret handling (0600 permissions,
+    env var overrides, log redaction), error codes (9 new), and threat model.
+    Board was stale — SEC-01 marked complete this tick.
+    Fleet: shim 225/225 ✅ (1.45s), sdk-go 5/5 ✅ (3 pkgs cached), sdk-python 98/98 ✅ (0.37s,
+    1 StarletteDeprecationWarning httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅ (417ms, 6 files),
+    protocol clean (306 lines YAML valid). Total: 462/462.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0). Guard PASS umbrella (secrets clean).
+    check-gitreins-judge.py false-negative on umbrella (config.yaml exists at .gitreins/config.yaml
+    with full pipeline+evaluator — script needs fix, not config).
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected).
+    SEC-01 COMPLETE → SEC-02 unblocked: Hermes validates harness API key on connect.
+    S13 already has implementation-level spec for rotation/revocation.
+    51 tasks remain after SEC-01 cleared.
+    NEVER-DONE audit skipped (tick #89 was 1 tick ago, due every 3-4 — next due #92).
+    E2E-001: last successful tick #86 (4 ticks ago — within 5-10 window, not overdue).
+    Sub-repo foremen active: shim (tick #108), sdk-python, sdk-typescript, sdk-go (idle).
+    pydantic-core 2.46.4 still blocked by fastapi constraint chain (known tick #38+).
+    WIRING-01/02 remain (66+ ticks — need Bane review).
+    Next: SEC-02 — Implement Hermes-side harness API key validation in shim/client.py.
+    VERDICT: ACTIVE — SEC-01 design complete, 51 tasks remain. Next: SEC-02.
     Fleet: shim 225/225 ✅ (0.11s collect), sdk-go 5/5 ✅ (3 pkgs), sdk-python 98/98 ✅ (0.23s collect),
     sdk-typescript 134/134 ✅ (537ms, 6 files), protocol clean (306 lines YAML). Total: 462/462.
     CROSS-SYNC (from shim foreman ticks #79-80):
