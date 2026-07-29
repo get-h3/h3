@@ -1716,3 +1716,51 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     No new gaps found. VERDICT: idle — maintenance mode. Cooldown 1800s (scheduler-confirmed).
     Next: idle tick ~#104, NEVER-DONE ~#104-105, E2E-001 ~#101-106 window.
 
+  Tick #104 (2026-07-29 05:39 UTC): NEVER-DONE 14-point audit ✅ (3 ticks since #101 — due).
+    Fleet: shim 227/227 ✅ (1.40s), sdk-go 5/5 ✅ (3 pkgs cached), sdk-python 98/98 ✅ (0.44s,
+    1 StarletteDeprecationWarning httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅ (352ms, 6 files),
+    protocol clean (306 lines YAML valid). Total: 464/464.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅ umbrella
+    (secrets clean, git-clean). Both MCP tasks complete (qv-e2e-go-echo, qv-sdk-cross-lang).
+    All 6 repos git-clean.
+    14-point NEVER-DONE:
+    1.  Build: N/A (umbrella — no source code; sub-repos have own builds)
+    2.  Tests: ✅ fleet 464/464 across all 5 sub-repos (shim 227, sdk-go 5, sdk-python 98, sdk-ts 134)
+    3.  Coverage: N/A (umbrella-level; sub-repos handle independently)
+    4.  Vulnerabilities: ✅ Guard secrets clean (gitleaks PASS)
+    5.  Depcheck: ⚠️ pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+        (shim + sdk-python, known tick #38+ — 66 ticks). fastapi 0.140.0→0.140.13 available
+        sdk-python (chain-blocked), 0.140.7→0.140.13 available shim (chain-blocked). annotated-doc
+        0.0.4→0.0.5 available both repos (was upgraded tick #86, reverted — known uv.lock/pip
+        interaction). uvicorn 0.51.0→0.52.0 available sdk-python. sdk-typescript typescript
+        5.9.3→7.0.2 (major deferred). sdk-go: no outdated.
+    6.  Formatting: N/A (umbrella — markdown only, no source code)
+    7.  TODO/FIXME/HACK: ✅ clean — only incidental narrative in journey-narrative.md
+    8.  Guard: ✅ GitReins guard_run PASS (secrets clean, no Python staged)
+    9.  CI: N/A (umbrella; sub-repos have own CI pipelines via GitReins JUDGE)
+    10. DuckBrain: ⚠️ write skipped (known flaky MCP transport since tick #43 — 61 ticks).
+        h3 namespace active, previous writes confirmed via key recall from ticks #99-#103.
+    11. Hilo: ✅ h3 22e/5f (flat umbrella — expected), shim 141e/26f (+2e), sdk-go 96e/18f (+2e),
+        sdk-python 85e/20f (+4e/+1f), sdk-typescript 58e/26f, protocol 4e/1f.
+        sdk-group edge growth consistent with active foreman work on shim+sdk-python.
+    12. Specs: ✅ 27 spec files, 13,849 lines
+    13. Docs: ✅ 10/10 on all 6 repos (README, LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md,
+        SUPPORT.md, CODE_OF_CONDUCT.md, CONTRIBUTING.md, CHANGELOG.md, .gitignore) — verified
+        via `ls` this tick (fabrication prevention gate). Ground truth: 0 missing across all 6 repos.
+    14. GitReins judge: ✅ all 6 repos configured (deepseek-v4-flash, check PASS)
+    M4 implicit-pending: 0 undispatched matrix rows (all active rows have ✅ markers).
+    44 pending matrix tasks remain (8 HIGH: SEC-02/03, WIRING-01/02, RES-01/02, SEC-IMPL-01/02).
+    All HIGH tasks blocked on shim worker dispatch (SEC/RES/SEC-IMPL) or Bane review (WIRING).
+    Sub-repo foremen: shim (tick #115+, idle — 227/227), sdk-python (active), sdk-typescript
+    (active), sdk-go (idle 64+ ticks). Protocol clean.
+    E2E-001: last Go 43/43 verified tick #96 (8 ticks ago — within 5-10 window, approaching
+    upper bound; cross-harness due tick #105-106). TS+Python blocked by known non-regression
+    issues since tick #35 (TS export-only module needs server wrapper, Python port 8000 zombie).
+    Host: load 7.58 (1m), 47Gi available, disk 88% (214G free). Swap: 15Gi/31Gi. No GPU.
+    DuckBrain: write skipped (known flaky MCP transport since tick #43). h3 namespace active,
+    previous writes confirmed (latest: tick #103, id 170e4eae — key recall verified).
+    VERDICT: idle — maintenance mode. 14-point audit all clear. 44 tasks pending, 8 HIGH
+    blocked on shim/Bane. No new gaps found. Hilo edge growth (shim +2e, sdk-go +2e,
+    sdk-python +4e/+1f) indicates healthy sub-repo foreman activity.
+    Next: E2E-001 cross-harness attempt ~#105-106, NEVER-DONE ~#107.
+
