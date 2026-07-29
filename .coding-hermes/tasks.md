@@ -296,11 +296,11 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 
 | ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback |
 |----|------|-----|-----|------|------|-------|-----------|----------|
-|| P4-01 | `hermes h3 install` — plugin registration, version check | HIGH | 3 | — | shim,cli,installer | DeepSeek V4 Pro | Architecture/design: plugin installation system | MiniMax M3 |
-|| P4-02 | `hermes h3 scaffold --lang go/python/ts` — template generator | HIGH | 3 | — | shim,cli,scaffold | DeepSeek V4 Pro | Architecture/design: code generation, templates | MiniMax M3 |
-|| P4-03 | `hermes h3 verify` — post-install verification | MEDIUM | 2 | P4-01,P4-02 | shim,cli,verification | MiniMax M3 | Feature: verification tool | DeepSeek V4 Pro |
+|| ✅ P4-01 | ~~`hermes h3 install` — plugin registration, version check~~ | ✅ Tick #89 (shim #79) | 3 | — | shim,cli,installer | DeepSeek V4 Pro | ✅ Cross-synced from shim foreman — shim tick #79: install CLI command + plugin registration implemented in cli.py | — |
+|| ✅ P4-02 | ~~`hermes h3 scaffold --lang go/python/ts` — template generator~~ | ✅ Tick #89 (shim #79) | 3 | — | shim,cli,scaffold | DeepSeek V4 Pro | ✅ Cross-synced from shim foreman — shim tick #79: scaffold command + 3 template dirs implemented | — |
+|| ✅ P4-03 | ~~`hermes h3 verify` — post-install verification~~ | ✅ Tick #89 (shim #79) | 2 | P4-01,P4-02 | shim,cli,verification | MiniMax M3 | ✅ Cross-synced from shim foreman — shim tick #79: verify CLI uses H3Client health() | — |
 || P4-04 | `versions.yaml` — Hermes↔H3 compatibility matrix | MEDIUM | 2 | — | protocol,compatibility,spec | GPT-5.6 Terra | Spec/doc writing: compatibility matrix | — |
-|| P4-05 | Hermes update pre-flight hook (S11 §3) | MEDIUM | 3 | — | shim,upgrade,hook | MiniMax M3 | Feature: upgrade pre-flight check | DeepSeek V4 Pro |
+|| ✅ P4-05 | ~~Hermes update pre-flight hook (S11 §3)~~ | ✅ Tick #89 (shim #79) | 3 | — | shim,upgrade,hook | MiniMax M3 | ✅ Cross-synced from shim foreman — shim tick #79: upgrade_check.py + pre_update_check_cmd in cli.py | — |
 || P3-10 | Publish `hermes-h3-shim` to PyPI — BLOCKED: Needs PYPI_API_TOKEN | MEDIUM | 1 | — | shim,pypi,blocked | DeepSeek V4 Flash | Simple: blocked, waiting on credentials | — |
 
 ## Active — Cross-Cutting (OBS, RES, PERF, MULTI, COMPAT, CERT, CHAOS)
@@ -361,9 +361,9 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 || OBS-IMPL-01 | Add `trace_id` to ProcessRequest and Decision schemas | MEDIUM | 2 | — | observability,schema | GPT-5.6 Terra | Spec/doc writing: schema update | — |
 || OBS-IMPL-02 | Shim loop logs every hop: process_latency_ms, result_latency_ms, decision_type | MEDIUM | 2 | — | observability,logging | DeepSeek V4 Flash | Simple: structured logging addition | — |
 || OBS-IMPL-03 | `h3-test --json` report includes latency percentiles | LOW | 2 | — | observability,testing | DeepSeek V4 Flash | Simple: report enhancement | — |
-|| RES-IMPL-01 | Shim loader: 3 consecutive harness failures → auto-fallback to native | HIGH | 2 | — | resilience,fallback | Kimi K3 | Bug fix: failure detection + fallback | MiniMax M3 |
-|| RES-IMPL-02 | Circuit breaker: track error rate, open after 50% failures | MEDIUM | 2 | — | resilience,circuit-breaker | MiniMax M3 | Feature: circuit breaker | DeepSeek V4 Flash |
-|| RES-IMPL-03 | `hermes h3 verify` tests fallback path explicitly | LOW | 2 | — | resilience,testing | Step 3.7 Flash | Testing/e2e: fallback path test | DeepSeek V4 Pro |
+|| ✅ RES-IMPL-01 | ~~Shim loader: 3 consecutive harness failures → auto-fallback to native~~ | ✅ Tick #89 (shim #79) | 2 | — | resilience,fallback | Kimi K3 | ✅ Cross-synced from shim foreman — shim tick #79: health_check_loop max_consecutive_failures=3 + _reroute_sessions in loader.py | — |
+|| ✅ RES-IMPL-02 | ~~Circuit breaker: track error rate, open after 50% failures~~ | ✅ Tick #89 (shim #79) | 2 | — | resilience,circuit-breaker | MiniMax M3 | ✅ Cross-synced from shim foreman — shim tick #79: CircuitBreaker class + 35 unit+integration tests PASS | — |
+|| ✅ RES-IMPL-03 | ~~`hermes h3 verify` tests fallback path explicitly~~ | ✅ Tick #89 (shim #80) | 2 | — | resilience,testing | Step 3.7 Flash | ✅ Cross-synced from shim foreman — shim tick #80: --fallback flag + _report_fallback() ENGAGED/STANDBY + 2 tests | — |
 || INFRA-GR-01 | sdk-typescript: missing GitReins evaluator config — add evaluator section to .gitreins/config.yaml (model: deepseek-v4-flash, api_key_env: GITREINS_LLM_API_KEY) | HIGH | 1 | — | infra,gitreins,typescript | DeepSeek V4 Flash | ✅ Tick #27 | — |
 || INFRA-GR-02 | protocol: missing GitReins evaluator config — add evaluator section to .gitreins/config.yaml (model: deepseek-v4-flash, api_key_env: GITREINS_LLM_API_KEY) | HIGH | 1 | — | infra,gitreins,protocol | DeepSeek V4 Flash | ✅ Tick #27 | — |
 ||| INFRA-GR-03 | sdk-go: GitReins evaluator missing api_key_env — add `api_key_env: GITREINS_LLM_API_KEY` to .gitreins/config.yaml | HIGH | 1 | — | infra,gitreins,go | DeepSeek V4 Flash | ✅ Tick #27 | — |
@@ -1201,3 +1201,35 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     Host: load moderate, 45Gi+ available.
     DuckBrain: write skipped (MCP transport known-flaky since tick #43).
     VERDICT: ACTIVE — 3 QV-SHIM cleared, 55 remaining. Next tick: cross-sync P4/RES-IMPL completions from shim foreman.
+
+  Tick #89 (2026-07-28 21:52 UTC): CROSS-SYNC + NEVER-DONE 11-point audit ✅.
+    Ground truth: Scheduler CooldownS=1350, Weight=15, Priority=10, Enabled=true.
+    Fleet: shim 225/225 ✅ (0.11s collect), sdk-go 5/5 ✅ (3 pkgs), sdk-python 98/98 ✅ (0.23s collect),
+    sdk-typescript 134/134 ✅ (537ms, 6 files), protocol clean (306 lines YAML). Total: 462/462.
+    CROSS-SYNC (from shim foreman ticks #79-80):
+    - P4-01/02/03/05 ✅ — shim tick #79: install, scaffold, verify, pre-update-check all implemented
+    - RES-IMPL-01/02/03 ✅ — shim ticks #79-80: auto-fallback, circuit breaker, fallback testing
+    - P4-04 (versions.yaml) still pending — protocol-level spec, not in shim
+    Governance (foreman-direct fix — gaps persisted 50+ ticks):
+    - GOV-H3-FIX ✅ h3 umbrella: SUPPORT.md + CODE_OF_CONDUCT.md + CHANGELOG.md created (were MISSING)
+    - ⚠️ Sub-repo gaps: sdk-go, sdk-python, sdk-typescript, protocol all missing SUPPORT.md, CODE_OF_CONDUCT.md, CHANGELOG.md
+    - shim: ✅ has full 9-doc governance — only sub-repo with all docs
+    Previous board claims of "all 6 repos full governance verified" were fabricated — only shim had full docs.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅ umbrella (secrets clean, no Python staged).
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected, all imports/orphans).
+    Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain (shim + sdk-python, known tick #38+).
+    fastapi 0.140.0→0.140.13 available sdk-python (chain-blocked). annotated-doc 0.0.4→0.0.5 available both repos (minor).
+    sdk-typescript typescript 5.9.3→7.0.2 (major deferred). sdk-go: no outdated.
+    NEVER-DONE 11-point: spec alignment ✅ (27 specs), doc coverage ⚠️ (h3 umbrella FIXED this tick,
+    sub-repo gaps flagged), test gaps ✅ (462 total), dep upgrades ⚠️ (pydantic-core blocked, fastapi chain),
+    pitfall hunt ⚠️ (governance fabrication exposed — board claimed full docs, 4/5 sub-repos missing 3 each),
+    performance audit ⚠️ (PERF-ND-01/02/03 + PERF-01..05 unresolved), endpoint verification ✅,
+    CI/CD health ✅ (GitReins JUDGE all 6 repos), DuckBrain sync ✅ (33 keys, /tick/89 saved, id cefca7a8),
+    code quality ✅ (Hilo=useful: h3 22e/5f, shim 139e/26f, sdk-go 94e/18f, sdk-python 81e/19f,
+    sdk-typescript 58e/26f, protocol 4e/1f), middle-out wiring ⚠️ (WIRING-01/02 remain 65+ ticks — need Bane review).
+    Sub-repo foremen: shim (tick #108, idle), sdk-python (active), sdk-typescript (active), sdk-go (idle #53+).
+    E2E-001: last successful tick #86 (3 ticks ago — within 5-10 window, not overdue). E2E-001 due ~tick #91.
+    Tasks cleared this tick: P4-01/02/03/05 + RES-IMPL-01/02/03 (7 tasks via cross-sync). 52 tasks remain after clearing 7.
+    Next: SEC-01 (oldest genuinely-new FIFO after cross-sync) — harness API key/auth model design.
+    Host: load moderate, 44Gi+ available. No GPU detected.
+    VERDICT: ACTIVE — 52 real tasks remain. Cross-sync complete. Next: SEC-01.
