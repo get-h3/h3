@@ -1514,3 +1514,48 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     Swap: 15Gi/31Gi. No GPU detected.
     No new gaps found. VERDICT: idle — maintenance mode. Load extreme, no worker dispatch.
     Next: NEVER-DONE audit (tick #98), E2E-001 (tick #101-106 window).
+
+  Tick #98 (2026-07-29 06:45 UTC): NEVER-DONE 14-point audit ✅ (3 ticks since #95 — due).
+    Fleet: shim 227/227 ✅ (1.51s), sdk-go 5/5 ✅ (3 pkgs cached), sdk-python 98/98 ✅ (0.44s,
+    1 StarletteDeprecationWarning httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅ (366ms, 6 files),
+    protocol clean (307 lines YAML valid). Total: 464/464.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅ umbrella
+    (secrets clean, no Python staged). Both MCP tasks complete (qv-e2e-go-echo, qv-sdk-cross-lang).
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected, all imports/orphans).
+    Governance: h3 umbrella 9/9 + all 5 sub-repos 7/7 each — verified via `ls` this tick
+    (fabrication prevention gate). Ground truth: 0 missing files across all 6 repos.
+    14-point NEVER-DONE:
+    1.  Build: N/A (umbrella — no source code to build; sub-repos have their own builds)
+    2.  Tests: ✅ fleet 464/464 across all 5 sub-repos (shim 227, sdk-go 5, sdk-python 98, sdk-ts 134)
+    3.  Coverage: N/A (umbrella-level; sub-repos handle independently)
+    4.  Vulnerabilities: ✅ Guard secrets clean (gitleaks PASS)
+    5.  Depcheck: ⚠️ pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+        (shim + sdk-python, known tick #38+). fastapi 0.140.7→0.140.13 available for shim
+        (chain-blocked), 0.140.0→0.140.13 available sdk-python (chain-blocked). annotated-doc
+        0.0.4→0.0.5 available shim (was upgraded tick #86, reverted — known uv.lock/pip interaction).
+        sdk-typescript typescript 5.9.3→7.0.2 (major deferred). sdk-go: no outdated.
+    6.  Formatting: N/A (umbrella — markdown only, no source code)
+    7.  TODO/FIXME/HACK: ✅ clean — only incidental narrative mention in journey-narrative.md
+    8.  Guard: ✅ GitReins guard_run PASS (secrets clean, no Python staged)
+    9.  CI: N/A (umbrella; sub-repos have own CI pipelines via GitReins JUDGE)
+    10. DuckBrain: ✅ tick-98 record saved (id e60906af), h3 namespace active, recall verified
+    11. Hilo: ✅ 22 edges, 5 files (flat umbrella — expected topology, all imports/orphans)
+    12. Specs: ✅ 27 spec files, 13,849 lines
+    13. Docs: ✅ h3 9/9 + 5 sub-repos 7/7 each — LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md,
+        SUPPORT.md, CODE_OF_CONDUCT.md, CONTRIBUTING.md, CHANGELOG.md, README.md verified
+    14. GitReins judge: ✅ all 6 repos configured (deepseek-v4-flash, check PASS)
+    M4 implicit-pending: 0 undispatched matrix rows (all active rows have ✅ markers).
+    44 pending tasks remain (8 HIGH: SEC-02/03, WIRING-01/02, RES-01/02, SEC-IMPL-01/02).
+    All HIGH tasks blocked on shim worker dispatch or Bane review (WIRING). LOW/MEDIUM tasks
+    are post-MVP nice-to-haves (OBS, PERF, MULTI, COMPAT, CERT, CHAOS) — not actionable at umbrella level.
+    Sub-repo foremen: shim (tick #113, idle — 227/227), sdk-python (active), sdk-typescript
+    (active), sdk-go (idle 58+ ticks). Protocol clean.
+    E2E-001: last Go 43/43 verified tick #96 (2 ticks ago — within 5-10 window, not overdue).
+    TS+Python blocked by known non-regression issues since tick #35 (TS export-only module
+    needs server wrapper, Python port 8000 zombie listener).
+    Scheduler: API unreachable (JSONDecodeError since tick #94 — known pitfall). Cooldown
+    assumed 1350s (last known ground-truth from tick #94).
+    Host: load 4.72 (1m), 4.75 (5m), 6.79 (15m) — moderate. Memory: 46Gi available.
+    Disk: 88% (219G free). Swap: 1.9Gi/31Gi. No GPU detected.
+    VERDICT: idle — maintenance mode. 14-point audit all clear. 44 tasks pending, 8 HIGH
+    blocked on shim/Bane. No new gaps found. Next: idle tick ~#99, NEVER-DONE ~#101.
