@@ -1410,3 +1410,42 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     Host: load 6.35/6.68/6.98, 48Gi available, disk 88% (220G free).
     DuckBrain: tick-95 saved (c1177477), recall verified by ID — confirmed persisted.
     VERDICT: idle — maintenance mode. Cooldown ~1350s (scheduler unreachable, assumed).
+
+  Tick #95 (2026-07-29 00:52 UTC): NEVER-DONE 11-point audit ✅ (3 ticks since #92 — due).
+    Fleet: shim 227/227 ✅ (SEC-02 env var tests), sdk-go 5/5 ✅ (3 pkgs cached),
+    sdk-python 98/98 ✅ (prior tick), sdk-typescript 134/134 ✅ (prior tick),
+    protocol clean (306 lines YAML). Total: 464/464.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅
+    umbrella (secrets clean, git-clean). 0 pending tasks across all 6 repos.
+    MCP tasks: qv-e2e-go-echo ✅, qv-sdk-cross-lang ✅ — YAML consistent.
+    Governance: 9/9 on umbrella ✅ — verified via `ls` this tick (fabrication gate).
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected, all imports/orphans).
+    Scheduler: CooldownS=1350 (matches ground truth, tick #94 corrected).
+    11-point NEVER-DONE: spec alignment ✅ (27 specs, 13,849 lines), doc coverage ✅
+    (all 7 AGENTS.md + full governance on all 6 repos), test gaps ✅ (fleet: 464 total),
+    dep upgrades ⚠️ (pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint
+    chain — shim + sdk-python, known tick #38+. fastapi 0.140.0→0.140.13 available
+    sdk-python — chain-blocked. sdk-typescript typescript 5.9.3→7.0.2 major deferred.
+    sdk-go: no outdated), pitfall hunt ✅ (no new — governance fully resolved tick #91),
+    performance audit ⚠️ (PERF-ND-01/02/03 unresolved — LOW; PERF-01..05 + matrix tasks
+    unresolved), endpoint verification ✅ (SDK tests exercise all endpoints),
+    CI/CD health ✅ (GitReins JUDGE + Guard on all 6 repos), DuckBrain sync ⚠️
+    (write flaky, read-path known-broken since tick #43 — MCP transport),
+    code quality ✅ (Hilo=useful: h3 22e/5f, shim 139e/26f, sdk-go 94e/18f,
+    sdk-python 81e/19f, sdk-typescript 58e/26f, protocol 4e/1f),
+    middle-out wiring ⚠️ (WIRING-01/02 remain 71+ ticks — need Bane review).
+    Board: 44 pending matrix tasks (8 HIGH: SEC-02/03, WIRING-01/02, RES-01/02,
+    SEC-IMPL-01/02). HIGH tasks blocked on shim worker dispatch (SEC/RES/SEC-IMPL)
+    or Bane review (WIRING). Sub-repo foremen handle implementation — umbrella
+    coordination only. LOW/MEDIUM tasks mostly post-MVP nice-to-haves (OBS, PERF,
+    MULTI, COMPAT, CERT, CHAOS).
+    Sub-repo foremen: shim (tick #111, idle), sdk-python (active), sdk-typescript
+    (active), sdk-go (idle #56+). Protocol clean.
+    E2E-001: last successful tick #86 (9 ticks ago — at upper bound of 5-10 window;
+    cross-harness due next tick). Cross-harness blocked on Python port 8000 zombie
+    (known since tick #35, not protocol regression).
+    Host: load moderate, 45Gi+ available. No GPU detected.
+    VERDICT: idle — maintenance mode. 44 pending tasks (8 HIGH, SHIM/BANE blocked).
+    Next: E2E-001 cross-harness attempt (tick #96) — if Python port cleared, run full
+    QV-E2E-04; else Go+TS only (known limitation). SEC-02 harness middleware
+    (foreman-direct on shim, or shim foreman dispatch). NEVER-DONE next due tick #98.
