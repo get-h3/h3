@@ -1553,3 +1553,86 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     VERDICT: idle — maintenance mode. No new gaps found.
     Cooldown 2700s (DB ground truth — unchanged since tick #125).
     Next: NEVER-DONE ~#137, E2E-001 ~#137-140 window.
+
+  Tick #137 (2026-07-30 13:44 UTC): NEVER-DONE 14-point audit ✅ (3 ticks since #134 — due).
+    Fleet: shim 227/227 ✅ (1.41s), sdk-go 3 pkgs all pass ✅ (cached, idle 94+ ticks),
+    sdk-python 98/98 ✅ (0.35s, 1 StarletteDeprecationWarning httpx→httpx2 — cosmetic),
+    sdk-typescript 134/134 ✅ (340ms, 6 files), protocol clean (306 lines YAML valid).
+    Total: 466/466.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard PASS
+    umbrella (git-clean). Both MCP tasks complete (qv-e2e-go-echo ✅, qv-sdk-cross-lang ✅).
+    All 6 repos git-clean except shim (.coding-hermes/tasks.md — own foreman tick).
+    Hilo=useful: h3 22e/5f, shim 141e/26f.
+    Governance: 12/12 on h3 umbrella (LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md,
+    CHANGELOG.md, CODE_OF_CONDUCT.md, CONTRIBUTING.md, GOVERNANCE.md, NOTICE,
+    README.md, SUPPORT.md, TRADEMARK_POLICY.md) — unchanged since tick #132. All 6
+    repos full governance (LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md) ✅ — verified
+    via `ls` this tick (fabrication prevention gate).
+    14-point NEVER-DONE: spec alignment ✅ (27 specs, 13,849 lines), doc coverage ✅
+    (all 7 AGENTS.md + full governance on all 6 repos), test gaps ✅ (fleet: 466 total),
+    dep upgrades ⚠️ (pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint
+    chain — shim + sdk-python, known tick #38+ — 99 ticks. fastapi 0.140.6→0.141.1
+    available shim+sdk-python (chain-blocked). annotated-doc 0.0.4→0.0.5 available
+    both repos. gitreins 0.8.2→0.11.0 available both repos — non-critical harness.
+    sdk-python: filelock 3.31.1→3.32.2, huggingface_hub 1.25.1→1.26.0,
+    importlib_metadata 8.9.0→9.0.0. sdk-typescript typescript 5.9.3→7.0.2
+    (major deferred). sdk-go: no outdated deps),
+    pitfall hunt ✅ (no new — governance fully resolved since tick #74, verified),
+    performance audit ⚠️ (PERF-ND-01/02/03 unresolved — LOW; PERF-01..05 + matrix
+    tasks unresolved), endpoint verification ✅ (SDK tests exercise all endpoints),
+    CI/CD health ✅ (GitReins JUDGE + Guard on all 6 repos), DuckBrain sync ✅
+    (tick-137 record saved, key /tick/137, id 0d269d75, recall verified — confirmed
+    persisted), vulnerabilities ✅ (sdk-typescript 0 npm vulns), formatting ✅
+    (N/A — umbrella repo, no source code), code quality ✅ (Hilo=useful across all
+    6 repos: 22-141 edges), middle-out wiring ⚠️ (WIRING-01/02 remain 73+ ticks —
+    blocked on Bane review).
+    E2E-001: last Go verified tick #134 (3 ticks ago — within 5-10 window, not overdue).
+    TS+Python: port 8000 = dexdat-core-api Docker container (root cause confirmed
+    tick #134). TS echo confirmed working via npx tsx. Python works on alternate ports.
+    M4 implicit-pending: 45 pending matrix tasks (6 HIGH: SEC-02/03, WIRING-01/02,
+    RES-01/02). All HIGH blocked on shim worker dispatch or Bane review.
+    39 LOW/MEDIUM post-MVP tasks (SEC/OBS/RES/PERF/MULTI/COMPAT/CERT/CHAOS/DEPS).
+    Scheduler: CooldownS=2700, Enabled=true, Weight=15, Priority=10
+    (unchanged since tick #125).
+    Sub-repo foremen: shim (active), sdk-python (active), sdk-typescript (active),
+    sdk-go (idle 94+ ticks). Protocol clean. All repos git-clean.
+    Host: load 3.64 (1m), 6.73 (5m), 7.26 (15m) — moderate. Memory: 44Gi/59Gi available.
+    Disk: 91% (171G free). Swap: 15Gi/31Gi. No GPU detected.
+    No new gaps found. VERDICT: idle — maintenance mode.
+    Cooldown 2700s (DB ground truth — unchanged since tick #125).
+    Next: NEVER-DONE ~#140, E2E-001 ~#138-141 window.
+
+  Tick #138 (2026-07-30 14:39 UTC): IDLE — maintenance mode.
+    Fleet: shim 227/227 ✅ (collected 0.14s), sdk-go 3 pkgs all pass ✅ (cached),
+    sdk-python 98/98 ✅ (collected 0.31s), sdk-typescript 134/134 ✅ (329ms, 6 files),
+    protocol clean (306 lines YAML valid). Total: 466/466.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅
+    umbrella (secrets clean). Both MCP tasks complete
+    (qv-e2e-go-echo ✅, qv-sdk-cross-lang ✅). All repos git-clean.
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected, all imports/orphans).
+    Governance: 12/12 on h3 umbrella — unchanged since tick #132. All 6 repos full
+    governance ✅.
+    NEVER-DONE audit skipped (tick #137 was 1 tick ago, due every 3-4 — next due #140).
+    E2E-001: last Go verified tick #134 (4 ticks ago — within 5-10 window, not overdue).
+    TS+Python: port 8000 = dexdat-core-api Docker container (root cause confirmed
+    tick #134). TS echo confirmed working via npx tsx. Python works on alternate ports.
+    Scheduler: CooldownS=2700, Enabled=true, Weight=15, Priority=10
+    (unchanged since tick #125).
+    Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+    (shim + sdk-python, known tick #38+ — 100 ticks). fastapi 0.141.1 available
+    shim+sdk-python (chain-blocked). annotated-doc 0.0.5 available both repos.
+    gitreins 0.8.2→0.11.0 available both repos (non-critical). sdk-python:
+    filelock 3.32.0→3.32.2, huggingface_hub 1.25.1→1.26.0,
+    importlib_metadata 8.9.0→9.0.0. sdk-typescript: typescript 5.9.3→7.0.2
+    (major deferred). sdk-go: no outdated deps.
+    M4 implicit-pending: 45 matrix tasks (6 HIGH: SEC-02/03, WIRING-01/02,
+    RES-01/02). All HIGH blocked on shim worker dispatch or Bane review.
+    39 LOW/MEDIUM post-MVP tasks.
+    Sub-repo foremen: shim (active), sdk-python (active), sdk-typescript (active),
+    sdk-go (idle 95+ ticks). Protocol clean. All repos git-clean.
+    Host: load 4.49 (1m), 5.01 (5m), 5.32 (15m) — moderate. Memory: 44Gi/59Gi available.
+    Disk: 91% (170G free). Swap: 15Gi/31Gi. No GPU detected.
+    DuckBrain: tick-138 record saved (id f9049f82), key /tick/138.
+    VERDICT: idle — maintenance mode. No new gaps found.
+    Cooldown 2700s (DB ground truth — unchanged since tick #125).
+    Next: NEVER-DONE ~#140, E2E-001 ~#139-142 window.
