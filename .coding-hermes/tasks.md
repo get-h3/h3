@@ -2283,3 +2283,37 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     VERDICT: idle — maintenance mode. 14-point audit all clear. 45 pending, 8 HIGH blocked.
     No new gaps found. Cooldown 1800s (assumed).
     Next: NEVER-DONE ~#122, E2E-001 ~#120-125 window.
+
+  Tick #120 (2026-07-30 00:11 UTC): IDLE — maintenance mode. Fleet: shim 227/227 ✅ (1.38s),
+    sdk-go 3 pkgs all pass ✅ (cached), sdk-python 98/98 ✅ (0.36s, 1 StarletteDeprecationWarning
+    httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅ (305ms, 6 files), protocol clean
+    (306 lines YAML valid). Total: 464/464.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅ umbrella
+    (secrets clean, gitleaks PASS). Both MCP tasks complete (qv-e2e-go-echo ✅, qv-sdk-cross-lang ✅).
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected, all imports/orphans).
+    Governance: 9/9 on h3 umbrella (CHANGELOG.md, CODE_OF_CONDUCT.md, CODEOWNERS,
+    CONTRIBUTING.md, GOVERNANCE.md, LICENSE, README.md, SECURITY.md, SUPPORT.md) —
+    verified via ls this tick (fabrication prevention gate). Ground truth: 0 missing.
+    NEVER-DONE audit skipped (tick #119 was 1 tick ago, due every 3-4 — next due #122).
+    E2E-001: Go echo harness alive on port 9191 (existing process pid 1572399, responds to
+    /v1/process with proper validation error). TS blocked by export-only module (resolved
+    tick #105, needs standalone wrapper). Python blocked by port 8000 zombie listener
+    (known non-regression since tick #35 — 85 ticks).
+    Scheduler: CooldownS assumed 1800s (last scheduler-confirmed tick #116).
+    Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+    (shim + sdk-python, known tick #38+ — 82 ticks). fastapi 0.140.13→0.141.1 available
+    shim (chain-blocked), 0.140.0→0.141.1 sdk-python (chain-blocked). annotated-doc
+    0.0.4→0.0.5 both repos. sdk-python: uvicorn 0.51.0→0.52.0, websockets 16.1.1→17.0,
+    importlib_metadata 8.9.0→9.0.0, filelock 3.32.0→3.32.2, pip 26.1.2→26.2.
+    shim: also pip 26.1.2→26.2. sdk-typescript typescript 5.9.3→7.0.2 (major deferred).
+    sdk-go: no outdated.
+    Sub-repo foremen: shim (tick #121+, idle — 227/227), sdk-python (active),
+    sdk-typescript (active), sdk-go (idle 80+ ticks). Protocol clean.
+    45 pending matrix tasks remain (8 HIGH: SEC-02/03, WIRING-01/02, RES-01/02, SEC-IMPL-01/02).
+    All HIGH tasks blocked on shim worker dispatch (SEC/RES/SEC-IMPL) or Bane review (WIRING).
+    All repos git-clean (umbrella: tasks.md only — this tick).
+    Host: load 5.81 (1m), 6.61 (5m), 6.17 (15m) — moderate. Memory: 44Gi/59Gi available.
+    Disk: 90% (187G free). Swap: ~15Gi/32Gi. No GPU detected.
+    DuckBrain: tick-120 record saved (id 05566985), recall verified — confirmed persisted.
+    VERDICT: idle — maintenance mode. No new gaps found.
+    Cooldown 1800s (assumed). Next: NEVER-DONE ~#122, E2E-001 ~#120-125 window.
