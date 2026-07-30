@@ -1518,3 +1518,38 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     VERDICT: idle — maintenance mode. No new gaps found.
     Cooldown 2700s (DB ground truth — unchanged since tick #125).
     Next: NEVER-DONE ~#137, E2E-001 ~#136-139 window.
+
+  Tick #136 (2026-07-30 12:57 UTC): IDLE — maintenance mode.
+    Fleet: shim 227/227 ✅ (1.37s), sdk-go 3 pkgs all pass ✅ (cached),
+    sdk-python 98/98 ✅ (0.39s, 1 StarletteDeprecationWarning httpx→httpx2 — cosmetic),
+    sdk-typescript 134/134 ✅ (330ms, 6 files), protocol clean (306 lines YAML valid).
+    Total: 466/466.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅
+    umbrella (secrets clean, gitleaks PASS). Both MCP tasks complete
+    (qv-e2e-go-echo ✅, qv-sdk-cross-lang ✅). All repos git-clean.
+    Hilo=useful: h3 22 edges/5 files (flat umbrella — expected, all imports/orphans).
+    Governance: 12/12 on h3 umbrella — unchanged since tick #132. All 6 repos
+    full governance (LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md) ✅.
+    NEVER-DONE audit skipped (tick #134 was 2 ticks ago, due every 3-4 — next due #137).
+    E2E-001: last Go verified tick #134 (2 ticks ago — within 5-10 window, not overdue).
+    TS+Python: tick #134 discovery confirmed TS echo works, Python on alternate ports
+    (port 8000 = dexdat-core-api Docker container — known).
+    Scheduler: CooldownS=2700, Enabled=true, Weight=15, Priority=10 (DB ground truth —
+    unchanged since tick #125).
+    Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+    (shim + sdk-python, known tick #38+ — 98 ticks). fastapi 0.141.1 available
+    shim+sdk-python (chain-blocked). annotated-doc 0.0.5 available both repos.
+    sdk-python: filelock 3.32.0→3.32.2, huggingface_hub 1.25.1→1.26.0,
+    importlib_metadata 8.9.0→9.0.0. sdk-typescript: typescript 5.9.3→7.0.2
+    (major deferred). sdk-go: no outdated deps.
+    M4 implicit-pending: 45 matrix tasks (6 HIGH: SEC-02/03, WIRING-01/02,
+    RES-01/02). All HIGH blocked on shim worker dispatch or Bane review.
+    39 LOW/MEDIUM post-MVP tasks.
+    Sub-repo foremen: shim (active), sdk-python (active), sdk-typescript (active),
+    sdk-go (idle 93+ ticks). Protocol clean. All repos git-clean.
+    Host: load 4.04 (1m), 6.02 (5m), 6.94 (15m) — moderate. Memory: 45Gi/59Gi available.
+    Disk: 91%. Swap: 15Gi/31Gi. No GPU detected.
+    DuckBrain: tick-136 record to be saved.
+    VERDICT: idle — maintenance mode. No new gaps found.
+    Cooldown 2700s (DB ground truth — unchanged since tick #125).
+    Next: NEVER-DONE ~#137, E2E-001 ~#137-140 window.
