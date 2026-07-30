@@ -2431,3 +2431,31 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     DuckBrain: tick-123 record saved (id f93df91b), recall verified — confirmed persisted.
     VERDICT: idle — maintenance mode. Go E2E 43/43 confirmed. No new gaps found.
     Cooldown 1800s (assumed). Next: NEVER-DONE ~#125, idle tick ~#124, E2E-001 ~#128-133 window.
+
+
+  Tick #124 (2026-07-30 01:54 UTC): IDLE — maintenance mode.
+    Fleet: shim 227/227 ✅ (1.86s), sdk-go 3 pkgs ✅ (cached), sdk-python 98/98 ✅ (0.40s,
+    1 StarletteDeprecationWarning httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅
+    (398ms, 6 files), protocol clean (306 lines YAML valid). Total: 462/462.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check PASS). Guard ✅
+    umbrella (secrets clean). git-clean except this tick.
+    M4 implicit-pending: 0 — all 13 active matrix rows marked ✅. 0 undispatched.
+    Hilo=useful: h3 22e/5f, shim 141e/26f, sdk-go 96e/18f, sdk-python 86e/20f,
+    sdk-typescript 58e/26f, protocol 4e/1f.
+    Governance: 10/10 on all 6 repos (README, LICENSE, SECURITY.md, CODEOWNERS,
+    AGENTS.md, SUPPORT.md, CODE_OF_CONDUCT.md, CONTRIBUTING.md, CHANGELOG.md,
+    GOVERNANCE.md) — verified via ls on all repos (fabrication gate).
+    NEVER-DONE audit skipped (tick #122 was 2 ticks ago, due every 3-4 — next due #125/126).
+    E2E-001: last successful tick #123 (1 tick ago — Go 43/43, within 5-10 window, not overdue).
+    Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+    (shim + sdk-python, known tick #38+). fastapi 0.140.0→0.140.13 available sdk-python
+    (chain-blocked). sdk-typescript typescript 5.9.3→7.0.2 (major deferred).
+    annotated-doc 0.0.5 upgraded tick #86 on both shim+sdk-python. sdk-go: no outdated.
+    Scheduler: CooldownS=1800 (DB ground truth), Enabled=true, Weight=15, Priority=10.
+    Sub-repo foremen active: shim, sdk-python, sdk-typescript, sdk-go (idle).
+    44 pending tasks (8 HIGH: SEC-02/03, WIRING-01/02, RES-01/02, SEC-IMPL-01/02).
+    All HIGH tasks blocked on shim worker dispatch or Bane review.
+    WIRING-01/02 remain (80+ ticks — need Bane review). No new gaps found.
+    Host: load moderate, 45Gi+ available. No GPU detected.
+    DuckBrain: tick-124 saved (e928ee56), recall verified by ID + namespace — confirmed persisted.
+    VERDICT: idle — maintenance mode.
