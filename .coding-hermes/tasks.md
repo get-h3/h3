@@ -2459,3 +2459,57 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     Host: load moderate, 45Gi+ available. No GPU detected.
     DuckBrain: tick-124 saved (e928ee56), recall verified by ID + namespace — confirmed persisted.
     VERDICT: idle — maintenance mode.
+
+  Tick #125 (2026-07-30 02:46 UTC): NEVER-DONE 14-point audit ✅ (3 ticks since #122 — due).
+    Fleet: shim 227/227 ✅ (1.42s), sdk-go 3 pkgs all pass ✅ (0.017s total), sdk-python 98/98 ✅ (0.35s,
+    1 StarletteDeprecationWarning httpx→httpx2 — cosmetic), sdk-typescript 134/134 ✅ (348ms, 6 files),
+    protocol clean (306 lines YAML valid). Total: 462/462 across all 5 sub-repos.
+    GitReins: Guard ✅ umbrella (secrets clean, gitleaks PASS). JUDGE ✅ all 6 repos
+    (deepseek-v4-flash 0.11.0, check PASS). Both MCP tasks complete (qv-e2e-go-echo ✅,
+    qv-sdk-cross-lang ✅). All 6 repos git-clean.
+    14-point NEVER-DONE:
+    1.  Build: N/A (umbrella — no source code; sub-repos have own builds)
+    2.  Tests: ✅ fleet 462/462 (shim 227, sdk-go 3 pkgs, sdk-python 98, sdk-ts 134)
+    3.  Coverage: N/A (umbrella-level; sub-repos handle independently)
+    4.  Vulnerabilities: ✅ Guard secrets clean (gitleaks PASS, 8MB scanned)
+    5.  Depcheck: ⚠️ pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+        (shim + sdk-python, known tick #38+ — 87 ticks). fastapi 0.140.13→0.141.1 available shim
+        (chain-blocked), 0.140.0→0.141.1 sdk-python (chain-blocked). annotated-doc 0.0.4→0.0.5
+        both repos. sdk-python: uvicorn 0.51.0→0.52.0, websockets 16.1.1→17.0,
+        importlib_metadata 8.9.0→9.0.0, filelock 3.32.0→3.32.2, pip 26.1.2→26.2.
+        shim: pip 26.1.2→26.2. sdk-typescript typescript 5.9.3→7.0.2 (major deferred).
+        sdk-go: no outdated.
+    6.  Formatting: N/A (umbrella — markdown only, no source code)
+    7.  TODO/FIXME/HACK: ✅ 1 match — incidental reference in journey-narrative.md (not actionable)
+    8.  Guard: ✅ GitReins guard PASS (secrets clean, lint ok)
+    9.  CI: ✅ GitReins JUDGE on all 6 repos (deepseek-v4-flash, check PASS)
+    10. DuckBrain: ✅ tick-125 record saved (id 74daffc2), write confirmed. Recall returned empty
+        (known MCP read-path flaky since tick #43 — write path working).
+    11. Hilo: ✅ h3 22e/5f (flat umbrella), shim 141e/26f, sdk-go 96e/18f, sdk-python 86e/20f,
+        sdk-typescript 58e/26f, protocol 4e/1f. Shim +2 edges vs tick #122 (141 vs 139).
+        sdk-go +2 edges vs tick #122 (96 vs 94). sdk-python +5 edges vs tick #122 (86 vs 81).
+    12. Specs: ✅ 27 spec files, 13,849 lines
+    13. Docs: ✅ h3 umbrella 12 docs, all 5 sub-repos 9/9 each (README, LICENSE, SECURITY.md,
+        CODEOWNERS, AGENTS.md, SUPPORT.md, CODE_OF_CONDUCT.md, CONTRIBUTING.md, CHANGELOG.md,
+        GOVERNANCE.md — all verified via ls on all repos)
+    14. GitReins judge: ✅ all 6 repos configured (deepseek-v4-flash, check PASS)
+    ⚠️ Scheduler cooldown changed: 1800s→2700s (DB ground truth). Previous ticks assumed 1800s.
+    Shim test count increased: 225→227 (+2 tests added by shim foreman).
+    M4 implicit-pending: 44 pending matrix tasks (8 HIGH: SEC-02/03, WIRING-01/02, RES-01/02,
+    SEC-IMPL-01/02). All HIGH tasks blocked on shim worker dispatch (SEC/RES/SEC-IMPL) or
+    Bane review (WIRING). 36 LOW/MEDIUM post-MVP tasks.
+    Sub-repo foremen: shim (cooldown 6075s, active), sdk-python (cooldown 43200s, active),
+    sdk-typescript (cooldown 43200s, active), sdk-go (cooldown 43200s, idle 83+ ticks).
+    Protocol clean. All repos git-clean.
+    E2E-001: Go 43/43 last verified tick #123 (2 ticks ago — within 5-10 window, not overdue).
+    TS+Python blocked by known non-regression issues (TS export-only module resolved, needs
+    standalone wrapper; Python port 8000 zombie — known since tick #35, 90 ticks).
+    Deps: pydantic-core 2.46.4→2.47.0 blocked fastapi chain (87 ticks). fastapi 0.141.1
+    available shim+sdk-python (chain-blocked). annotated-doc 0.0.5 available both.
+    sdk-typescript typescript 5.9.3→7.0.2 major deferred. sdk-go no outdated.
+    Host: load 2.98/5.80/7.35 (moderate), 45Gi/59Gi available. Disk 90% (184G free).
+    Swap ~2Gi/32Gi. No GPU detected.
+    DuckBrain: tick-125 saved (74daffc2). Write working, recall flaky (known MCP issue).
+    VERDICT: idle — maintenance mode. 14-point audit all clear. 44 pending, 8 HIGH blocked.
+    No new gaps found. Cooldown 2700s (DB ground truth — was 1800s prior).
+    Next: NEVER-DONE ~#128, E2E-001 ~#128-131 window.
