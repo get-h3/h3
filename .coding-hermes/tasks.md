@@ -1880,35 +1880,38 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     Note: tick spawned 00:08, session arrived 05:08 UTC (5h late-arrival — no sibling
     tick committed in gap; git log verified).
 
-  Tick #145 (2026-07-31 02:03 UTC): IDLE — maintenance mode.
-    Fleet: shim 227/227 ✅ (1.49s), sdk-go 3 pkgs all pass ✅ (cached, idle 100+ ticks),
-    sdk-python 98/98 ✅ (0.43s, 1 StarletteDeprecationWarning httpx→httpx2 — cosmetic),
-    sdk-typescript 134/134 ✅ (6 files, 370ms), protocol clean (306 lines YAML valid).
-    Total: 466/466.
-    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check-gitreins-judge.py PASS).
-    Guard ✅ umbrella (secrets clean, gitleaks PASS). Both MCP tasks complete
-    (qv-e2e-go-echo ✅, qv-sdk-cross-lang ✅). All repos git-clean.
-    Hilo=useful: h3 22e/5f (flat umbrella — expected, all imports/orphans).
+  Tick #146 (2026-07-31 04:50 UTC): IDLE — maintenance mode.
+    Fleet: shim 227/227 ✅ (1.50s), sdk-go 3 pkgs all pass ✅ (cached, idle 100+ ticks),
+    sdk-python 98/98 ✅ (0.45s, 1 StarletteDeprecationWarning httpx→httpx2 — cosmetic),
+    sdk-typescript 134/134 ✅ (6 files, 371ms), protocol clean (h3-protocol.yaml valid:
+    openapi/paths present). Total: 466/466.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash 0.11.0, check-gitreins-judge.py PASS
+    verified per-repo this tick). Guard ✅ umbrella (Tier 1 PASS: secrets clean, lint ok,
+    test mode diff). All 6 repos git-clean, 0 unpulled commits (git fetch verified per-repo).
+    E2E-001: last Go verified tick #144 (2 ticks ago — within 5-10 window, not overdue).
+    Hilo=useful: h3 22e/5f fresh this tick (flat umbrella — expected, all imports/orphans).
     Governance: 12/12 on h3 umbrella (LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md,
     CHANGELOG.md, CODE_OF_CONDUCT.md, CONTRIBUTING.md, GOVERNANCE.md, NOTICE,
-    README.md, SUPPORT.md, TRADEMARK_POLICY.md) — unchanged since tick #132.
+    README.md, SUPPORT.md, TRADEMARK_POLICY.md) — ls-verified this tick, unchanged since #132.
     All 6 repos full governance (LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md) ✅.
-    NEVER-DONE audit skipped (tick #144 was 1 tick ago, due every 3-4 — next due #147).
-    E2E-001: last Go verified tick #144 (1 tick ago — within 5-10 window, not overdue).
-    Scheduler: CooldownS=2700, Enabled=true, Weight=15, Priority=10
-    (unchanged since tick #125).
+    NEVER-DONE audit skipped (tick #144 was 2 ticks ago, due every 3-4 — next due #147).
+    Scheduler: CooldownS=9112 (drifted up from 2700 via daemon autoSlowdown — long-idle
+    project, healthy direction), Enabled=true, Weight=15, Priority=10 (API ground truth).
     Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
-    (shim + sdk-python, known tick #38+ — 107 ticks). fastapi 0.141.1 available
-    shim+sdk-python (chain-blocked). sdk-typescript: typescript 5.9.3→7.0.2
-    (major deferred). sdk-go: no outdated deps.
-    M4 implicit-pending: 45 matrix tasks (6 HIGH: SEC-02/03, WIRING-01/02,
-    RES-01/02). All HIGH blocked on shim worker dispatch or Bane review.
+    (shim + sdk-python, known tick #38+ — 108 ticks). Minor: shim annotated-doc 0.0.4→0.0.5,
+    fastapi 0.140.13→0.141.1, ruff 0.16.0→0.16.1; sdk-python filelock 3.32.0→3.32.2,
+    huggingface_hub 1.25.1→1.26.0, importlib_metadata 8.9.0→9.0.0, litellm 1.94.0→1.94.1,
+    openai 2.50.0→2.51.0 (all minor, non-critical). sdk-typescript: npm audit 0 vulns ✅.
+    sdk-go: no outdated deps. Off-by-One: healthy (163h uptime), discover returned
+    not_found for SDK protocol-compliance class — no cached solution needed this tick.
+    M4 implicit-pending: 45 matrix tasks (6 HIGH: SEC-02/03, WIRING-01/02, RES-01/02).
+    All HIGH blocked on shim worker dispatch or Bane review (live Hermes wiring).
     39 LOW/MEDIUM post-MVP tasks.
     Sub-repo foremen: shim (active), sdk-python (active), sdk-typescript (active),
     sdk-go (idle 100+ ticks). Protocol clean. All repos git-clean.
-    Host: load 2.75 (1m), 3.29 (5m), 4.07 (15m) — low. Memory: 47Gi/59Gi available.
-    Disk: 91% (158G free). Swap: 15Gi/31Gi. No GPU detected.
+    Host: load 5.74 (1m), 5.08 (5m), 4.60 (15m) — moderate. Memory: 45Gi/59Gi available.
+    Disk: 92% (151G free). Swap: 15Gi/31Gi. No GPU detected.
     VERDICT: idle — maintenance mode. No new gaps found.
-    Cooldown 2700s (unchanged since tick #125).
-    Next: NEVER-DONE #147, E2E-001 ~#154 (last verified #144).
-    DuckBrain: tick-145 record saved (id 8394f66b), key /tick/145.
+    Cooldown 9112s (scheduler API ground truth — autoSlowdown drift from 2700).
+    Next: NEVER-DONE #147, E2E-001 ~#149-154 window (Go loop live-verified tick #144).
+    DuckBrain: tick-146 record saved, key /tick/146.
