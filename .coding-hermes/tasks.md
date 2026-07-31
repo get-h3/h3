@@ -269,26 +269,27 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 
 | ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback |
 |----|------|-----|-----|------|------|-------|-----------|----------|
+|| BOARD-V2 | 🟡 MIGRATE BOARD TO DUCKDB v2.1 — run `python3 ~/.hermes/scripts/migrate-board-to-duckdb.py .` (load skill coding-hermes-board first). Creates .coding-hermes/board/ (schema.sql, tasks.parquet, events.parquet), archives tasks.md → tasks.md.bak, commit. Same pattern as DuckBrain. | P1 | 3 | — | duckdb,board,migration | deepseek-v4-flash | Run migration script, verify Parquet, commit board | deepseek-v4-flash |
 || QV-E2E-01 | ~~Go echo: process→text→result→text→result→end — full protocol loop verification~~ | ✅ Tick #29 | 3 | — | e2e,go,testing | GPT-5.6 Luna | ✅ 43/43 via h3-test against Go echo harness | Step 3.7 Flash |
 |||| QV-E2E-02 | ~~Python minimal: process→text→result→text→result→end — full protocol loop~~ | ✅ Tick #32 | 3 | — | e2e,python,testing | GPT-5.6 Luna | ✅ 43/43 via h3-test against official EchoHarness | Step 3.7 Flash |
 ||| QV-E2E-03 | ~~TypeScript minimal: process→text→result→text→result→end — full protocol loop~~ | ✅ Tick #29 | 3 | — | e2e,typescript,testing | GPT-5.6 Luna | ✅ 43/43 via h3-test against TypeScript echo | Step 3.7 Flash |
 ||| QV-E2E-04 | ~~Cross-harness: h3-test against all 3 languages simultaneously~~ | ✅ Tick #35 | 3 | — | e2e,cross-lang,testing | Step 3.7 Flash | ✅ Go 43/43, TS 43/43, Python 43/43 (previously). Test script at _run_cross_harness.sh | — |
-||| QV-SDK-03 | ~~Python Pydantic validation matches JSON Schema — verify all formats match protocol~~ | ✅ Tick #30 | 3 | — | sdk,python,validation | DeepSeek V4 Pro | ✅ 44/44 Pydantic→JSON Schema validation tests pass | MiniMax M3 |
-||| QV-SDK-04 | ~~TS Zod validation matches JSON Schema — verify all formats match protocol~~ | ✅ Tick #31 | 3 | — | sdk,typescript,validation | DeepSeek V4 Pro | ✅ 43/43 Zod→JSON Schema validation via ajv. 134/134 TS tests. | MiniMax M3 |
+||| QV-SDK-03 | ~~Python Pydantic validation matches JSON Schema — verify all formats match protocol~~ | ✅ Tick #30 | 3 | — | sdk,python,validation | deepseek-v4-flash | ✅ 44/44 Pydantic→JSON Schema validation tests pass | MiniMax M3 |
+||| QV-SDK-04 | ~~TS Zod validation matches JSON Schema — verify all formats match protocol~~ | ✅ Tick #31 | 3 | — | sdk,typescript,validation | deepseek-v4-flash | ✅ 43/43 Zod→JSON Schema validation via ajv. 134/134 TS tests. | MiniMax M3 |
 ||| ✅ QV-E2E-05 | Harness logs: timestamped METHOD /path STATUS DURATION | LOW | 2 | — | logging,observability | DeepSeek V4 Flash | ✅ Tick #87: structured access logging added to all 3 echo harnesses (Go slog, Python logging, TS console). 462/462 fleet tests green. sdk-go@59f6700, sdk-python@771503c, sdk-typescript@3c0707f | — |
 ||| ✅ QV-SHIM-02 | Test report JSON matches TestReport schema — schema compliance | MEDIUM | 2 | — | shim,testing,schema | DeepSeek V4 Flash | ✅ Tick #88: validated full 43-test report against canonical protocol/schemas/v1/test-report.json — VALID. Shim has 4 report schema unit tests (test_cli.py::TestReportSchema) all PASS. Shim foreman completed tick #77. Cross-verified umbrella tick #88. | — |
-||| ✅ QV-SHIM-03 | Shim handles harness timeout gracefully — resilience testing | MEDIUM | 3 | — | shim,resilience,testing | MiniMax M3 | ✅ Shim tick #78: max_iterations/max_polls/poll_timeout in shim_loop.py, 7 timeout unit tests PASS. Cross-verified umbrella tick #88. | DeepSeek V4 Pro |
+||| ✅ QV-SHIM-03 | Shim handles harness timeout gracefully — resilience testing | MEDIUM | 3 | — | shim,resilience,testing | MiniMax M3 | ✅ Shim tick #78: max_iterations/max_polls/poll_timeout in shim_loop.py, 7 timeout unit tests PASS. Cross-verified umbrella tick #88. | deepseek-v4-flash |
 ||| ✅ QV-SHIM-04 | Health check detects dead harness, falls back to native — resilience | MEDIUM | 3 | — | shim,health,fallback | Kimi K3 | ✅ Shim tick #79: health_check_loop + CircuitBreaker in loader.py, 33 integration tests PASS. Cross-verified umbrella tick #88. | MiniMax M3 |
 
 ## Active — Security & Auth (SEC)
 
 | ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback |
 |----|------|-----|-----|------|------|-------|-----------|----------|
-|| ✅ SEC-01 | ~~Design: harness API key / token auth model~~ | ✅ Tick #90 | 3 | — | security,auth,design | DeepSeek V4 Pro | ✅ S12 Security-Authentication.md (640 lines, 15 sections) — full design: 3-layer auth (API key + mTLS + rate limit), key hierarchy, lifecycle, auth endpoints, error codes, threat model. Spec written 2026-07-21, board stale. | — |
-|| SEC-02 | Implement: Hermes validates harness API key on connect | HIGH | 3 | SEC-01 | security,auth,implementation | DeepSeek V4 Pro | Architecture/design: auth implementation | Kimi K3 |
-|| SEC-03 | Implement: harness validates Hermes caller identity | HIGH | 3 | SEC-01 | security,auth,implementation | DeepSeek V4 Pro | Architecture/design: mutual auth | Kimi K3 |
-|| SEC-04 | Token rotation + revocation support | MEDIUM | 3 | SEC-02 | security,token,rotation | MiniMax M3 | Feature: token lifecycle management | DeepSeek V4 Pro |
-|| SEC-05 | TLS enforcement between Hermes ↔ harness | MEDIUM | 3 | — | security,tls,encryption | DeepSeek V4 Pro | Architecture/design: TLS configuration | MiniMax M3 |
+|| ✅ SEC-01 | ~~Design: harness API key / token auth model~~ | ✅ Tick #90 | 3 | — | security,auth,design | deepseek-v4-flash | ✅ S12 Security-Authentication.md (640 lines, 15 sections) — full design: 3-layer auth (API key + mTLS + rate limit), key hierarchy, lifecycle, auth endpoints, error codes, threat model. Spec written 2026-07-21, board stale. | — |
+|| SEC-02 | Implement: Hermes validates harness API key on connect | HIGH | 3 | SEC-01 | security,auth,implementation | deepseek-v4-flash | Architecture/design: auth implementation | Kimi K3 |
+|| SEC-03 | Implement: harness validates Hermes caller identity | HIGH | 3 | SEC-01 | security,auth,implementation | deepseek-v4-flash | Architecture/design: mutual auth | Kimi K3 |
+|| SEC-04 | Token rotation + revocation support | MEDIUM | 3 | SEC-02 | security,token,rotation | MiniMax M3 | Feature: token lifecycle management | deepseek-v4-flash |
+|| SEC-05 | TLS enforcement between Hermes ↔ harness | MEDIUM | 3 | — | security,tls,encryption | deepseek-v4-flash | Architecture/design: TLS configuration | MiniMax M3 |
 || SEC-06 | Secret handling audit: no credentials leak in logs/errors | MEDIUM | 2 | — | security,audit,secrets | DeepSeek V4 Flash | Simple: security audit | — |
 || SEC-07 | Rate limiting spec: max decisions/sec, burst allowance | LOW | 2 | — | security,rate-limit,spec | GPT-5.6 Terra | Spec/doc writing: rate limiting design doc | — |
 
@@ -296,8 +297,8 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 
 | ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback |
 |----|------|-----|-----|------|------|-------|-----------|----------|
-|| ✅ P4-01 | ~~`hermes h3 install` — plugin registration, version check~~ | ✅ Tick #89 (shim #79) | 3 | — | shim,cli,installer | DeepSeek V4 Pro | ✅ Cross-synced from shim foreman — shim tick #79: install CLI command + plugin registration implemented in cli.py | — |
-|| ✅ P4-02 | ~~`hermes h3 scaffold --lang go/python/ts` — template generator~~ | ✅ Tick #89 (shim #79) | 3 | — | shim,cli,scaffold | DeepSeek V4 Pro | ✅ Cross-synced from shim foreman — shim tick #79: scaffold command + 3 template dirs implemented | — |
+|| ✅ P4-01 | ~~`hermes h3 install` — plugin registration, version check~~ | ✅ Tick #89 (shim #79) | 3 | — | shim,cli,installer | deepseek-v4-flash | ✅ Cross-synced from shim foreman — shim tick #79: install CLI command + plugin registration implemented in cli.py | — |
+|| ✅ P4-02 | ~~`hermes h3 scaffold --lang go/python/ts` — template generator~~ | ✅ Tick #89 (shim #79) | 3 | — | shim,cli,scaffold | deepseek-v4-flash | ✅ Cross-synced from shim foreman — shim tick #79: scaffold command + 3 template dirs implemented | — |
 || ✅ P4-03 | ~~`hermes h3 verify` — post-install verification~~ | ✅ Tick #89 (shim #79) | 2 | P4-01,P4-02 | shim,cli,verification | MiniMax M3 | ✅ Cross-synced from shim foreman — shim tick #79: verify CLI uses H3Client health() | — |
 || P4-04 | `versions.yaml` — Hermes↔H3 compatibility matrix | MEDIUM | 2 | — | protocol,compatibility,spec | GPT-5.6 Terra | Spec/doc writing: compatibility matrix | — |
 || ✅ P4-05 | ~~Hermes update pre-flight hook (S11 §3)~~ | ✅ Tick #89 (shim #79) | 3 | — | shim,upgrade,hook | MiniMax M3 | ✅ Cross-synced from shim foreman — shim tick #79: upgrade_check.py + pre_update_check_cmd in cli.py | — |
@@ -308,36 +309,36 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 | ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback |
 |----|------|-----|-----|------|------|-------|-----------|----------|
 || OBS-01 | Structured logging spec: decision_id, session_id, trace_id on every log line | MEDIUM | 2 | — | observability,logging,spec | GPT-5.6 Terra | Spec/doc writing: observability spec | — |
-|| OBS-02 | Metrics: decision latency (p50/p95/p99), error rate, throughput | MEDIUM | 3 | — | observability,metrics | DeepSeek V4 Pro | Architecture/design: metrics collection | MiniMax M3 |
-|| OBS-03 | Distributed tracing: trace_id propagates Hermes → H3 → harness → back | MEDIUM | 4 | — | observability,tracing | DeepSeek V4 Pro | Architecture/design: distributed tracing | MiniMax M3 |
+|| OBS-02 | Metrics: decision latency (p50/p95/p99), error rate, throughput | MEDIUM | 3 | — | observability,metrics | deepseek-v4-flash | Architecture/design: metrics collection | MiniMax M3 |
+|| OBS-03 | Distributed tracing: trace_id propagates Hermes → H3 → harness → back | MEDIUM | 4 | — | observability,tracing | deepseek-v4-flash | Architecture/design: distributed tracing | MiniMax M3 |
 || OBS-04 | Health check v2: capabilities, model list, version, uptime | LOW | 2 | — | observability,health | DeepSeek V4 Flash | Simple: health check enhancement | — |
-|| OBS-05 | Dashboard: active sessions, harness health, error breakdown | LOW | 3 | — | observability,dashboard | DeepSeek V4 Pro | Architecture/design: dashboard design | DeepSeek V4 Flash |
+|| OBS-05 | Dashboard: active sessions, harness health, error breakdown | LOW | 3 | — | observability,dashboard | deepseek-v4-flash | Architecture/design: dashboard design | DeepSeek V4 Flash |
 || OBS-06 | Alerting: harness down, latency spike, error rate threshold | LOW | 2 | — | observability,alerting | MiniMax M3 | Feature: alerting rules | DeepSeek V4 Flash |
 || RES-01 | Harness timeout → fallback to native loop | HIGH | 3 | — | resilience,fallback | Kimi K3 | Bug fix / resilience: timeout fallback | MiniMax M3 |
-|| RES-02 | Mid-session harness death → session migration to native | HIGH | 4 | — | resilience,migration | DeepSeek V4 Pro | Architecture/design: session migration | Kimi K3 |
-|| RES-03 | Circuit breaker: N consecutive failures → auto-disable harness | MEDIUM | 3 | — | resilience,circuit-breaker | MiniMax M3 | Feature: circuit breaker pattern | DeepSeek V4 Pro |
-|| RES-04 | Backpressure: harness sends decisions faster than Hermes can execute | LOW | 3 | — | resilience,backpressure | DeepSeek V4 Pro | Architecture/design: backpressure mechanism | MiniMax M3 |
-|| RES-05 | Session replay: reconstruct full session from logs | LOW | 3 | — | resilience,replay | MiniMax M3 | Feature: session replay | DeepSeek V4 Pro |
-|| RES-06 | Graceful degradation: harness partial failure → best-effort response | LOW | 3 | — | resilience,degradation | MiniMax M3 | Feature: graceful degradation | DeepSeek V4 Pro |
-|| RES-07 | Cold start: first-request latency budget, warm-up protocol | LOW | 2 | — | resilience,cold-start | DeepSeek V4 Pro | Architecture/design: cold start optimization | MiniMax M3 |
+|| RES-02 | Mid-session harness death → session migration to native | HIGH | 4 | — | resilience,migration | deepseek-v4-flash | Architecture/design: session migration | Kimi K3 |
+|| RES-03 | Circuit breaker: N consecutive failures → auto-disable harness | MEDIUM | 3 | — | resilience,circuit-breaker | MiniMax M3 | Feature: circuit breaker pattern | deepseek-v4-flash |
+|| RES-04 | Backpressure: harness sends decisions faster than Hermes can execute | LOW | 3 | — | resilience,backpressure | deepseek-v4-flash | Architecture/design: backpressure mechanism | MiniMax M3 |
+|| RES-05 | Session replay: reconstruct full session from logs | LOW | 3 | — | resilience,replay | MiniMax M3 | Feature: session replay | deepseek-v4-flash |
+|| RES-06 | Graceful degradation: harness partial failure → best-effort response | LOW | 3 | — | resilience,degradation | MiniMax M3 | Feature: graceful degradation | deepseek-v4-flash |
+|| RES-07 | Cold start: first-request latency budget, warm-up protocol | LOW | 2 | — | resilience,cold-start | deepseek-v4-flash | Architecture/design: cold start optimization | MiniMax M3 |
 || PERF-01 | Latency budget: process < 50ms, result < 100ms p95 | MEDIUM | 2 | — | performance,latency | DeepSeek V4 Flash | Simple: latency measurement + optimization | — |
-|| PERF-02 | Load test: 100 concurrent sessions, 10 decisions/sec each | MEDIUM | 3 | — | performance,load-test | Step 3.7 Flash | Testing/e2e: load testing | DeepSeek V4 Pro |
+|| PERF-02 | Load test: 100 concurrent sessions, 10 decisions/sec each | MEDIUM | 3 | — | performance,load-test | Step 3.7 Flash | Testing/e2e: load testing | deepseek-v4-flash |
 || PERF-03 | Memory profile: shim loop over 500 decisions | LOW | 2 | — | performance,memory | DeepSeek V4 Flash | Simple: memory profiling | — |
-|| PERF-04 | gRPC transport implementation + benchmark vs REST | LOW | 4 | — | performance,grpc,transport | DeepSeek V4 Pro | Architecture/design: gRPC transport | MiniMax M3 |
+|| PERF-04 | gRPC transport implementation + benchmark vs REST | LOW | 4 | — | performance,grpc,transport | deepseek-v4-flash | Architecture/design: gRPC transport | MiniMax M3 |
 || PERF-05 | Connection pooling: HTTP keep-alive, multiplexing | LOW | 2 | — | performance,connection-pool | DeepSeek V4 Flash | Simple: connection pooling | — |
-|| MULTI-01 | Multiple harnesses simultaneously (per-session routing) | LOW | 3 | — | multi-tenant,routing | DeepSeek V4 Pro | Architecture/design: multi-tenant routing | MiniMax M3 |
-|| MULTI-02 | Harness isolation: one harness crash doesn't affect others | LOW | 3 | — | multi-tenant,isolation | MiniMax M3 | Feature: process isolation | DeepSeek V4 Pro |
-|| MULTI-03 | A/B testing: route X% of sessions to harness, rest to native | LOW | 3 | — | multi-tenant,ab-testing | MiniMax M3 | Feature: A/B testing | DeepSeek V4 Pro |
-|| MULTI-04 | Hot-reload: add/remove harnesses without restarting Hermes | LOW | 3 | — | multi-tenant,hot-reload | DeepSeek V4 Pro | Architecture/design: hot-reload mechanism | MiniMax M3 |
-|| COMPAT-01 | Cross-version test: Hermes vX with H3 protocol vY | LOW | 3 | — | compatibility,testing | Step 3.7 Flash | Testing/e2e: compatibility matrix testing | DeepSeek V4 Pro |
-|| COMPAT-02 | Protocol version negotiation on connect | LOW | 3 | — | compatibility,protocol | DeepSeek V4 Pro | Architecture/design: version negotiation | MiniMax M3 |
+|| MULTI-01 | Multiple harnesses simultaneously (per-session routing) | LOW | 3 | — | multi-tenant,routing | deepseek-v4-flash | Architecture/design: multi-tenant routing | MiniMax M3 |
+|| MULTI-02 | Harness isolation: one harness crash doesn't affect others | LOW | 3 | — | multi-tenant,isolation | MiniMax M3 | Feature: process isolation | deepseek-v4-flash |
+|| MULTI-03 | A/B testing: route X% of sessions to harness, rest to native | LOW | 3 | — | multi-tenant,ab-testing | MiniMax M3 | Feature: A/B testing | deepseek-v4-flash |
+|| MULTI-04 | Hot-reload: add/remove harnesses without restarting Hermes | LOW | 3 | — | multi-tenant,hot-reload | deepseek-v4-flash | Architecture/design: hot-reload mechanism | MiniMax M3 |
+|| COMPAT-01 | Cross-version test: Hermes vX with H3 protocol vY | LOW | 3 | — | compatibility,testing | Step 3.7 Flash | Testing/e2e: compatibility matrix testing | deepseek-v4-flash |
+|| COMPAT-02 | Protocol version negotiation on connect | LOW | 3 | — | compatibility,protocol | deepseek-v4-flash | Architecture/design: version negotiation | MiniMax M3 |
 || COMPAT-03 | Deprecation policy: N versions before breaking change | LOW | 2 | — | compatibility,policy,spec | GPT-5.6 Terra | Spec/doc writing: deprecation policy | — |
-|| COMPAT-04 | Backward compat: v1 harness works with v2 protocol | LOW | 3 | — | compatibility,backward | MiniMax M3 | Feature: backward compatibility | DeepSeek V4 Pro |
-|| COMPAT-05 | Migration tool: upgrade harness from v1 to v2 protocol | LOW | 3 | — | compatibility,migration | MiniMax M3 | Feature: migration tool | DeepSeek V4 Pro |
+|| COMPAT-04 | Backward compat: v1 harness works with v2 protocol | LOW | 3 | — | compatibility,backward | MiniMax M3 | Feature: backward compatibility | deepseek-v4-flash |
+|| COMPAT-05 | Migration tool: upgrade harness from v1 to v2 protocol | LOW | 3 | — | compatibility,migration | MiniMax M3 | Feature: migration tool | deepseek-v4-flash |
 || CERT-01 | Official "H3 Compliant" badge spec | LOW | 2 | — | certification,badge,spec | GPT-5.6 Terra | Spec/doc writing: certification spec | — |
 || CERT-02 | Badge generation from h3-test output | LOW | 2 | — | certification,badge | DeepSeek V4 Flash | Simple: badge generation | — |
 || CERT-03 | Verification endpoint: `h3.sh/verify?url=https://my-harness.com` | LOW | 3 | — | certification,verification | MiniMax M3 | Feature: verification endpoint | DeepSeek V4 Flash |
-|| CERT-04 | Conformance results registry: public dashboard of certified harnesses | LOW | 3 | — | certification,registry | MiniMax M3 | Feature: public registry | DeepSeek V4 Pro |
+|| CERT-04 | Conformance results registry: public dashboard of certified harnesses | LOW | 3 | — | certification,registry | MiniMax M3 | Feature: public registry | deepseek-v4-flash |
 || CHAOS-01 | Network partition: Hermes ↔ harness latency injection | LOW | 2 | — | chaos,network | DeepSeek V4 Flash | Simple: chaos test scenario | — |
 || CHAOS-02 | Harness returns malformed Decision → Hermes handles gracefully | LOW | 2 | — | chaos,validation | MiniMax M3 | Bug fix: malformed input handling | DeepSeek V4 Flash |
 || CHAOS-03 | Harness returns decisions out of expected sequence | LOW | 2 | — | chaos,sequence | MiniMax M3 | Bug fix: out-of-sequence handling | DeepSeek V4 Flash |
@@ -353,8 +354,8 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 || PERF-ND-01 | sdk-go: Zero Go benchmarks — add `Benchmark*` functions | LOW | 2 | — | performance,benchmark,go | DeepSeek V4 Flash | Simple: benchmark additions | — |
 || PERF-ND-02 | sdk-python: Zero performance benchmarks — add pytest-benchmark | LOW | 2 | — | performance,benchmark,python | DeepSeek V4 Flash | Simple: benchmark additions | — |
 || PERF-ND-03 | shim: Zero performance benchmarks — test battery latency tracking | LOW | 2 | — | performance,benchmark,shim | DeepSeek V4 Flash | Simple: benchmark additions | — |
-|| WIRING-01 | H3 plugin NOT installed into live Hermes (only exists in Docker image, container stopped). No session can route through H3. | HIGH | 2 | — | wiring,deployment | DeepSeek V4 Pro | Architecture/design: deployment wiring | DeepSeek V4 Flash |
-|| WIRING-02 | `hermes h3 install` CLI exists in code but never executed against running Hermes. Plugin registration untested. | HIGH | 2 | — | wiring,cli,testing | Step 3.7 Flash | Testing/e2e: CLI verification | DeepSeek V4 Pro |
+|| WIRING-01 | H3 plugin NOT installed into live Hermes (only exists in Docker image, container stopped). No session can route through H3. | HIGH | 2 | — | wiring,deployment | deepseek-v4-flash | Architecture/design: deployment wiring | DeepSeek V4 Flash |
+|| WIRING-02 | `hermes h3 install` CLI exists in code but never executed against running Hermes. Plugin registration untested. | HIGH | 2 | — | wiring,cli,testing | Step 3.7 Flash | Testing/e2e: CLI verification | deepseek-v4-flash |
 || SEC-IMPL-01 | Generate harness API key on `hermes h3 install` | HIGH | 2 | P4-01 | security,implementation | MiniMax M3 | Feature: API key generation | DeepSeek V4 Flash |
 || SEC-IMPL-02 | Validate API key on every /v1/process and /v1/result call | HIGH | 2 | SEC-IMPL-01 | security,middleware | MiniMax M3 | Feature: API key validation middleware | DeepSeek V4 Flash |
 || SEC-IMPL-03 | Add `Authorization` header to protocol spec | MEDIUM | 1 | — | security,spec,protocol | GPT-5.6 Terra | Spec/doc writing: protocol update | — |
@@ -372,7 +373,7 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 ||| INFRA-GR-06 | sdk-typescript: Missing Tier2 ai_eval pipeline stage — has tier1 only. Add `type: ai_eval` stage to pipeline. | HIGH | 1 | — | infra,gitreins,typescript | DeepSeek V4 Flash | ✅ Tick #37
 ||| INFRA-GR-07 | protocol: Missing Tier2 ai_eval pipeline stage — has tier1 only. Add `type: ai_eval` stage to pipeline. | HIGH | 1 | — | infra,gitreins,protocol | DeepSeek V4 Flash | ✅ Tick #37
 ||| NEVER-DONE
-||| NEVER-DONE | 11-point audit: spec alignment, doc coverage, test gaps, package upgrades, pitfall hunt, performance audit, endpoint verification, CI/CD health, DuckBrain sync, code quality, middle-out wiring. Run every 3-4 ticks. | LOW | 3 | — | audit,quality | DeepSeek V4 Pro | ✅ Tick #37: 11/11 PASS. All fleet healthy, DuckBrain populated, WIRING-01/02 remain open. | GLM-5.2 |
+||| NEVER-DONE | 11-point audit: spec alignment, doc coverage, test gaps, package upgrades, pitfall hunt, performance audit, endpoint verification, CI/CD health, DuckBrain sync, code quality, middle-out wiring. Run every 3-4 ticks. | LOW | 3 | — | audit,quality | deepseek-v4-flash | ✅ Tick #37: 11/11 PASS. All fleet healthy, DuckBrain populated, WIRING-01/02 remain open. | GLM-5.2 |
 ||| PYTHON-E2E-01 | ~~Python SDK: Context Pydantic model too strict — context.config.max_iterations and context.session_state.started_at are required but test battery sends empty context {}. Go/TS tolerate (zero-values), Python returns 422 — fix: add defaults~~ | ✅ Tick #30 | 2 | — | sdk,python,protocol | DeepSeek V4 Flash | ✅ Tick #30: Config.max_iterations=100, SessionState.started_at="", Context.config/session_state have defaults. 98/98 tests pass. | — |
 
   Tick #50 (2026-07-27 02:05): Fleet health: shim 225/225 ✅ (1.46s), sdk-go 5/5 ✅ (cached),
@@ -1956,3 +1957,49 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     No new gaps found. VERDICT: idle — maintenance mode.
     Cooldown 13668s (scheduler API ground truth — autoSlowdown drift from 2700).
     Next: NEVER-DONE ~#150, E2E-001 ~#149-154 window (Go loop live-verified tick #144).
+
+
+  Tick #148 (2026-07-31 16:03 UTC): IDLE — maintenance mode.
+    Fleet: shim 227/227 ✅ (4.05s .venv), sdk-go 3 pkgs all pass ✅ (cached),
+    sdk-python 106/106 ✅ (3.07s .venv), sdk-typescript 134/134 ✅ (6 files, 1.65s),
+    protocol valid (h3-protocol.yaml: 6 top-level keys, 5 paths
+    health/process/result/cancel/sessions, schemas dir present). Total: 470/470.
+    GitReins: JUDGE ✅ all 6 repos (deepseek-v4-flash, check-gitreins-judge.py PASS).
+    Guard ✅ umbrella (Tier 1 PASS: secrets clean, lint ok). All 6 repos git-clean
+    (verified per-repo; shim/sdk-go/sdk-typescript board files modified by their own
+    foremen — normal). 0 unpulled commits anywhere (git fetch per-repo).
+    E2E-001: last Go live-verified tick #144 (4 ticks ago — within 5-10 window,
+    not overdue).
+    Hilo=useful: h3 22e/5f fresh this tick (warm+stats — flat umbrella, expected).
+    Governance: 12/12 on h3 umbrella (LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md,
+    CHANGELOG.md, CODE_OF_CONDUCT.md, CONTRIBUTING.md, GOVERNANCE.md, NOTICE,
+    README.md, SUPPORT.md, TRADEMARK_POLICY.md) — unchanged since tick #132.
+    All 6 repos full governance (LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md) ✅.
+    NEVER-DONE audit skipped (tick #147 was 1 tick ago, due every 3-4 — next due #150).
+    Scheduler: CooldownS=900 (API ground truth — REVERTED from 13668 autoSlowdown
+    drift at tick #147; daemon restart re-loaded fleet.toml baseline. h3 NOT paused —
+    WIRING-01/02 remain HIGH open; self-pause guard respected). Enabled=true,
+    Weight=15, Priority=10.
+    Board hygiene: folded uncommitted normalization in tasks.md (BOARD-V2 P1 row +
+    Model column DeepSeek V4 Pro → deepseek-v4-flash, matching fleet-wide default
+    directive 2026-07-31) — left by timed-out sibling, validated PASS
+    (validate-board-format.py). BOARD-V2 itself remains open (tracked as scheduler
+    INFRA-006 — migration out of umbrella scope).
+    Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+    (shim + sdk-python, known tick #38+ — 110 ticks). Minor: shim annotated-doc
+    0.0.4→0.0.5, fastapi 0.140.13→0.141.1, ruff 0.16.0→0.16.1; sdk-typescript
+    hono 4.12.32→4.12.33, typescript 5.9.3→7.0.2 major deferred; sdk-go none.
+    M4 implicit-pending: 45 matrix tasks (6 HIGH: SEC-02/03, WIRING-01/02,
+    RES-01/02). All HIGH blocked on shim worker dispatch or Bane review.
+    39 LOW/MEDIUM post-MVP tasks.
+    External signals: gh CI all green (h3 + shim, last runs success), 0 open
+    issues in get-h3/h3. Off-by-One healthy (174h uptime).
+    Sub-repo foremen: shim (active), sdk-python (active, BOARD-V2 complete there),
+    sdk-typescript (active), sdk-go (idle, self-paused 43200). Protocol clean.
+    Host: load 13.77 (1m) — elevated (fleet-wide), 16.76 (5m). Memory: 49Gi/59Gi
+    available. Disk: 95% (88G free — trending up from 92% at tick #147).
+    Swap: 15Gi/31Gi. No GPU detected.
+    DuckBrain: read-path OK (list_keys worked, no sibling /tick/148 record —
+    no parallel tick). tick-148 record written.
+    No new gaps found. VERDICT: idle — maintenance mode.
+    Next: NEVER-DONE #150, E2E-001 ~#149-154 window (Go loop live-verified tick #144).
