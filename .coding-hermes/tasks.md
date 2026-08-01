@@ -2335,3 +2335,58 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
     dispatch/Bane review.
     Next: NEVER-DONE ~#156-157; E2E-001 due ~#159-164 window (Go loop
     last umbrella-verified THIS tick #154).
+
+  Tick #155 (2026-08-01 20:05 UTC): IDLE — maintenance mode.
+    Fleet: shim 242/242 ✅ (2.37s .venv), sdk-go 3 pkgs all pass ✅ (cached),
+    sdk-python 106/106 ✅ (2.83s, 1 warning — pytest benchmark outlier,
+    cosmetic), sdk-typescript 134/134 ✅ (520ms, 6 files), protocol valid
+    (h3-protocol.yaml: openapi 3.1.0, 5 paths health/process/result/cancel/
+    sessions/{session_id}, 11 schemas — script-verified this tick). Total:
+    485/485 (unchanged from tick #154).
+    GitReins: JUDGE ✅ h3 umbrella (deepseek-v4-flash, check-gitreins-judge.py
+    PASS). Guard not re-run (board-only tick, no code changed).
+    All 6 repos git-clean except: sdk-go untracked ELF build artifact
+    cmd/h3-consensus-adapter/h3-consensus-adapter (known since #151 —
+    gitignore pattern /h3-consensus-adapter only matches root, not cmd/ path;
+    sdk-go foreman idle, not umbrella's repo to touch), sdk-typescript board
+    file modified by its own foreman (normal).
+    E2E-001: NOT due — Go loop live-verified tick #154 (1 tick ago);
+    window #159-164.
+    Hilo=useful: h3 22e/5f fresh this tick (warm+stats, no edges.jsonl
+    delta — flat umbrella, expected).
+    Governance: 12/12 on h3 umbrella (unchanged since tick #132). All 6
+    repos full governance ✅.
+    NEVER-DONE audit skipped (tick #153 ran it 2 ticks ago, due every
+    3-4 — next due ~#156-157).
+    BOARD-V2: remains open — tracked as scheduler INFRA-006 (migration out
+    of umbrella scope; sdk-python already migrated its board).
+    Scheduler: CooldownS=900, Enabled=true, Weight=15, Priority=10 (API
+    ground truth via :9090 — no drift).
+    Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint
+    chain (shim + sdk-python, known tick #38+ — 117 ticks). Shim foreman
+    tick #155 re-verified live (pydantic-core 2.47.0 vs pydantic 2.13.4 pin
+    → pip resolves 2.46.4). No new critical updates.
+    M4 implicit-pending: 45 pending matrix tasks (6 HIGH: SEC-02/03,
+    WIRING-01/02, RES-01/02). All HIGH blocked on shim worker dispatch or
+    Bane review. 39 LOW/MEDIUM post-MVP tasks.
+    External signals: gh CI all green (h3 last 5 runs success — gh verified
+    this tick), 0 open issues in get-h3/h3. Remote in sync: h3 unpushed=0
+    (tick #154 pushed all). protocol 4 ahead + sdk-typescript 7 ahead —
+    their own foremen's unpushed commits (known since #154), not umbrella's
+    repo to push.
+    Sub-repo foremen: shim (active — tick #155 IDLE audit d81a070, 242/242,
+    guard PASS, E2E due ~#157), sdk-python (active, BOARD-V2 complete),
+    sdk-typescript (active — board update pending its commit), sdk-go (idle,
+    self-paused 43200). Protocol clean.
+    Host: load 7.70 (1m) — moderate (siblings: ring-runner kimi k3 workers
+    ×2, hivemind glm-5.2 worker, gitreins judge ac-080-daemon — none in
+    get-h3, no conflict). Disk: 83% (302G free — stable). Memory: ~45Gi
+    available. No GPU detected.
+    DuckBrain: read-path RECOVERED this tick (was down #154 — lock
+    contention). Shim foreman /tick/155 record present (17:00Z); umbrella
+    /tick/155 record appended with attribution (shared h3 namespace,
+    established pattern).
+    VERDICT: idle — maintenance mode. No new gaps found. No worker
+    needed — all HIGH blocked on shim dispatch/Bane review, E2E fresh.
+    Next: NEVER-DONE ~#156-157; E2E-001 due ~#159-164 window (Go loop
+    last umbrella-verified #154).
