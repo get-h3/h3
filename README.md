@@ -21,8 +21,9 @@ H3 (Hermes Harness Hooks) is an open protocol that lets external agent systems â
 The fastest way to see H3 in action:
 
 ```bash
-# Install the test battery
-pip install hermes-h3-shim
+# Install the test battery + CLI (source install â€” PyPI publishing pending, see P3-10)
+git clone https://github.com/get-h3/shim && cd shim
+pip install -e .
 
 # Start a Go echo harness (clone get-h3/sdk-go examples)
 cd sdk-go/examples/echo && go run .
@@ -36,10 +37,14 @@ h3-test --endpoint http://localhost:9191
 Or scaffold a new harness in 30 seconds:
 
 ```bash
-hermes h3 scaffold --lang go
-cd h3-harness && go run .
+hermes-h3 scaffold --lang go
+cd h3-harness-go && go run .
 h3-test --endpoint http://localhost:9191
 ```
+
+> The CLI is `hermes-h3` (standalone binary with `install`, `scaffold`, `test`,
+> `verify`, and more). The `hermes h3` plugin form requires H3 wired into a
+> live Hermes install (tracked as WIRING-01).
 
 ## Repositories
 

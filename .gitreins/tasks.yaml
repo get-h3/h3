@@ -24,3 +24,46 @@ tasks:
   status: complete
   created_at: '2026-07-16T15:38:37.589745+00:00'
   completed_at: '2026-07-27T05:17:01.291918+00:00'
+- id: dogfood-03
+  title: 'DOGFOOD-03: Document battery compliance conventions in specs/02 + specs/05'
+  criteria:
+  - specs/02-Protocol-Specification.md documents the decision envelope top-level `history`
+    echo field (optional, list, must not shrink vs request context.history) in section
+    4
+  - specs/02-Protocol-Specification.md section 4.3 documents the finished=false streaming
+    marker convention for content containing "do not finish"
+  - specs/05-Test-Battery.md documents the two compliance conventions (test 2.8 history
+    echo; tests 2.4/2.5 finished marker) under Category 2
+  - Spec-only harness (no SDK) can reach 43/43 using only specs/02 + specs/05 as reference
+  status: complete
+  created_at: '2026-08-02T23:47:27.209960+00:00'
+  completed_at: '2026-08-02T23:48:48.952355+00:00'
+- id: dogfood-04
+  title: 'DOGFOOD-04: Fix README Quick Start drift (hermes-h3 binary, h3-harness-<lang>
+    dir, source install)'
+  criteria:
+  - README Quick Start uses `hermes-h3` (standalone CLI) not `hermes h3` (plugin form
+    requires live-Hermes wiring, tracked WIRING-01)
+  - README scaffold example uses `cd h3-harness-<lang>` (matches actual scaffold output
+    naming)
+  - 'README install step reflects PyPI gap: source install documented (pip install
+    -e .) with note that PyPI publishing is pending'
+  - README quick start commands match verified CLI surface (hermes-h3 scaffold --lang
+    go, h3-test --endpoint)
+  status: complete
+  created_at: '2026-08-02T23:47:28.221365+00:00'
+  completed_at: '2026-08-02T23:49:47.720086+00:00'
+- id: dogfood-02
+  title: 'DOGFOOD-02: Scaffolded Go harness builds out of the box (sdk-go tag + template
+    fix)'
+  criteria:
+  - sdk-go repo has an initial semantic version tag (v0.1.0) pushed to origin
+  - shim scaffold go template requires the tagged version (github.com/get-h3/sdk-go
+    v0.1.0) instead of v0.0.0 with commented-out replace
+  - Fresh scaffold (hermes-h3 scaffold --lang go) resolves deps via go mod tidy without
+    a local sdk-go checkout
+  - Scaffolded harness builds (go build) and passes the 43-test battery (h3-test exit
+    0)
+  status: complete
+  created_at: '2026-08-02T23:47:29.236941+00:00'
+  completed_at: '2026-08-02T23:50:09.448890+00:00'

@@ -183,6 +183,14 @@ Hermes calls this when a new user message arrives. The harness receives full con
 
 The harness MUST return exactly ONE decision per response.
 
+**Decision envelope.** Every decision response shares a top-level envelope:
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `decision` | string | ✅ | One of `tool_call`, `llm_call`, `text`, `wait`, `delegate`, `end` |
+| `decision_id` | string | ✅ | Unique identifier for this decision |
+| `history` | array | ❌ | Echo of `context.history` from the request. REQUIRED for compliance (battery test 2.8): must be a list and must NOT shrink relative to the history sent in the request (equal or larger is accepted). Lets Hermes observe the harness's conversation state. |
+
 ### 4.1 `tool_call` — Execute a tool
 
 ```json
@@ -250,6 +258,13 @@ The harness MUST return exactly ONE decision per response.
 |---|---|---|
 | `content` | ✅ | Markdown-formatted text to send |
 | `finished` | ✅ | `true` = this is the final message, `false` = expect `/v1/result` with next decision |
+
+`finished` doubles as a **streaming marker**:
+
+- `finished: false` — this text is a partial/streaming message; the harness expects another `/v1/result` turn before the session ends.
+- `finished: true` — final message; the session may continue with a fresh `/v1/process` or end.
+
+Battery convention (tests 2.4/2.5): a message whose content contains the phrase **"do not finish"** (e.g. *"Just start a thought, do not finish it yet."*) must produce a `text` decision with `finished=false`; a message asking for a final answer (e.g. *"Give me the final answer in one short sentence."*) must produce `finished=true`.
 
 ### 4.4 `wait` — Pause for external signal
 

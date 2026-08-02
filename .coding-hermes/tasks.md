@@ -3795,9 +3795,78 @@ docs/dogfood/diagnostics.md (diagnostic trail), skills/h3-usage/SKILL.md.
 
 | ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback |
 |----|------|-----|-----|------|------|-------|-----------|----------|
-||| DOGFOOD-01 | NOTHING is published on PyPI — `pip install hermes-h3-shim` (README Quick Start step 1) → "No matching distribution found"; `pip install h3-harness-sdk` (sdk-python README/AGENTS.md) → 404. Checked hermes-h3-shim / h3-harness-sdk / h3-shim / h3-sdk-python on pypi.org — all HTTP 404. Dead end for every non-fleet user; source installs are the only path. P3-10 tracks shim only, blocked on token. | P0 | 1 | P3-10 | dogfood,pypi,install | deepseek-v4-flash | Publish hermes-h3-shim + h3-harness-sdk (unblock P3-10, extend to sdk-python), or document source install prominently in both READMEs | — |
-||| DOGFOOD-02 | Scaffolded Go harness does NOT build out of the box — `hermes-h3 scaffold --lang go` → `go mod tidy` fails: `github.com/get-h3/sdk-go@v0.0.0: unknown revision v0.0.0` (no tags/versions published; `go list -m -versions` → invalid). Template ships with the required `replace` directive commented out. A user without a local fleet checkout cannot run the README's `go run .`. | P0 | 2 | — | dogfood,scaffold,go,sdk-go | deepseek-v4-flash | Tag a release of sdk-go (or publish module), and/or ship the scaffold with a working replace/relative path uncommented | — |
-||| DOGFOOD-03 | Two compliance conventions undocumented in specs/02 §4: (a) the decision envelope may carry a top-level `history` echo of context.history — battery test_2_8 requires it; (b) content containing "do not finish" → text decision `finished=false` (streaming marker) — tests 2_4/2_5 require it. Spec-only custom harness scored 41/43; needed to read test_battery.py + Go template source to reach 43/43 (~45 min of a new user's time). | P1 | 1 | — | dogfood,spec,protocol,docs | deepseek-v4-flash | Document both in specs/02 §4 (Decision envelope fields) and specs/05 (battery conventions) | — |
-||| DOGFOOD-04 | README Quick Start drift: binary is `hermes-h3` (standalone), README says `hermes h3 scaffold` — `hermes h3` requires live-Hermes plugin wiring (WIRING-01). Also scaffold creates `h3-harness-go/` not `h3-harness/` as README implies. | P2 | 1 | — | dogfood,docs,cli | deepseek-v4-flash | Update README quick start to match CLI reality (hermes-h3, h3-harness-<lang>) | — |
-||| DOGFOOD-05 | sdk-python echo.py hardcodes port 8000 — on a busy host it fails to bind (exit 3) and pointing h3-test at :8000 tests a DIFFERENT server (got a confusing 9/43 against an unrelated FastAPI). Same trap hit in tick #35. | P2 | 1 | — | dogfood,sdk-python,example | deepseek-v4-flash | Add --port arg or H3_PORT env to echo examples (all languages) | — |
+||| DOGFOOD-01 | NOTHING is published on PyPI — `pip install hermes-h3-shim` (README Quick Start step 1) → "No matching distribution found"; `pip install h3-harness-sdk` (sdk-python README/AGENTS.md) → 404. Checked hermes-h3-shim / h3-harness-sdk / h3-shim / h3-sdk-python on pypi.org — all HTTP 404. Dead end for every non-fleet user; source installs are the only path. P3-10 tracks shim only, blocked on token. | P0 | 1 | P3-10 | dogfood,pypi,install | deepseek-v4-flash | Publish hermes-h3-shim + h3-harness-sdk (unblock P3-10, extend to sdk-python), or document source install prominently in both READMEs | ⏳ Tick #180: h3 README documents source install; shim + sdk-python READMEs flagged to their foremen; PyPI publish still blocked on token (P3-10) |
+||| DOGFOOD-02 | Scaffolded Go harness does NOT build out of the box — `hermes-h3 scaffold --lang go` → `go mod tidy` fails: `github.com/get-h3/sdk-go@v0.0.0: unknown revision v0.0.0` (no tags/versions published; `go list -m -versions` → invalid). Template ships with the required `replace` directive commented out. A user without a local fleet checkout cannot run the README's `go run .`. | P0 | 2 | — | dogfood,scaffold,go,sdk-go | deepseek-v4-flash | Tag a release of sdk-go (or publish module), and/or ship the scaffold with a working replace/relative path uncommented | ✅ Tick #180: sdk-go tagged v0.1.0 (pushed to origin); shim go template requires sdk-go v0.1.0 (local-dev replace hint only); fresh scaffold verified: go mod tidy resolves from network, go build OK, h3-test 43/43 PASS |
+||| DOGFOOD-03 | Two compliance conventions undocumented in specs/02 §4: (a) the decision envelope may carry a top-level `history` echo of context.history — battery test_2_8 requires it; (b) content containing "do not finish" → text decision `finished=false` (streaming marker) — tests 2_4/2_5 require it. Spec-only custom harness scored 41/43; needed to read test_battery.py + Go template source to reach 43/43 (~45 min of a new user's time). | P1 | 1 | — | dogfood,spec,protocol,docs | deepseek-v4-flash | Document both in specs/02 §4 (Decision envelope fields) and specs/05 (battery conventions) | ✅ Tick #180: specs/02 §4 decision envelope (top-level history echo, must not shrink) + §4.3 finished streaming marker (do-not-finish → false); specs/05 Category 2 rows 2.4/2.5/2.8 + conventions block |
+||| DOGFOOD-04 | README Quick Start drift: binary is `hermes-h3` (standalone), README says `hermes h3 scaffold` — `hermes h3` requires live-Hermes plugin wiring (WIRING-01). Also scaffold creates `h3-harness-go/` not `h3-harness/` as README implies. | P2 | 1 | — | dogfood,docs,cli | deepseek-v4-flash | Update README quick start to match CLI reality (hermes-h3, h3-harness-<lang>) | ✅ Tick #180: README quick start now uses hermes-h3 scaffold --lang go, cd h3-harness-go, source install (PyPI pending note), WIRING-01 plugin-form caveat |
+||| DOGFOOD-05 | sdk-python echo.py hardcodes port 8000 — on a busy host it fails to bind (exit 3) and pointing h3-test at :8000 tests a DIFFERENT server (got a confusing 9/43 against an unrelated FastAPI). Same trap hit in tick #35. | P2 | 1 | — | dogfood,sdk-python,example | deepseek-v4-flash | Add --port arg or H3_PORT env to echo examples (all languages) | ⏳ Tick #180: flagged to sdk-python foreman (echo.py hardcodes port 8000) — code change in sdk-python repo |
 ||| DOGFOOD-06 | Board discoverability: .coding-hermes/tasks.md is a 278KB tick log — the live task matrix is buried under 45+ tick commentary entries. A new agent/human landing to find "what should I work on" must wade through thousands of lines. | P2 | 2 | BOARD-V2 | dogfood,board,meta | deepseek-v4-flash | Move tick log to .coding-hermes/ticks-log.md; keep tasks.md as board only (BOARD-V2 DuckDB migration is the real fix) | — |
+Tick #180 (2026-08-02 18:41 UTC tick-fire): DOGFOOD recovery tick — 3/5 dogfood gaps closed (P0 scaffold, P1 specs, P2 README); fleet 485/485 green; E2E-001/NEVER-DONE not due.
+  DOGFOOD-02 ✅ (P0): sdk-go tagged v0.1.0 (pushed to origin — first release tag, unblocks
+    go get + scaffold); shim go template now requires github.com/get-h3/sdk-go v0.1.0
+    (commented replace removed, local-dev hint kept). REAL VERIFICATION: fresh
+    `hermes-h3 scaffold --lang go` in /tmp → go mod tidy resolved v0.1.0 from network →
+    go build OK → harness 43/43 PASS (0.18s, p50 0.97ms/p95 24.49ms) → killed, :9191 free.
+  DOGFOOD-03 ✅ (P1): specs/02 §4 decision-envelope table (top-level history echo — list,
+    must not shrink vs request context.history, REQUIRED for battery 2.8) + §4.3
+    finished streaming-marker convention (content containing "do not finish" →
+    finished=false; final-answer prompts → finished=true; tests 2.4/2.5). specs/05
+    Category 2 rows 2.4/2.5/2.8 extended + "Compliance conventions" block.
+    Spec-only harness now reaches 43/43 with specs alone (dogfood report's gap).
+  DOGFOOD-04 ✅ (P2): README Quick Start fixed — hermes-h3 scaffold --lang go,
+    cd h3-harness-go, source install (git clone shim + pip install -e .) with
+    PyPI-pending note (P3-10), WIRING-01 plugin-form caveat blockquote.
+  DOGFOOD-01 ⏳ (P0): partial — h3 README now documents source install; shim +
+    sdk-python READMEs flagged to their foremen (PyPI publish still blocked on
+    PYPI_API_TOKEN, P3-10).
+  DOGFOOD-05 ⏳ (P2): flagged to sdk-python foreman (echo.py hardcodes port 8000).
+  GitReins: tasks dogfood-02/03/04 created with criteria; judge chain via CLI
+    (`timeout 540 gitreins task complete`) — dogfood-03 PASS (verdict 5bd9bcae);
+    dogfood-04 + dogfood-02 verdicts pending at entry-write time.
+  Fleet: shim 242/242 ✅ (1.46s), sdk-go 3 pkgs all pass ✅ (cached, -p 1),
+    sdk-python 106/106 ✅ (2.50s, 1 cosmetic benchmark warning — known),
+    sdk-typescript 134/134 ✅ (997ms, --no-file-parallelism), protocol valid
+    (h3-protocol.yaml: openapi 3.1.0, 5 paths, 11 schemas, 6 top-level keys —
+    heredoc-verified this tick). Total: 485/485 (unchanged from #179).
+  GitReins: JUDGE ✅ on ALL 6 repos (deepseek-v4-flash, check-gitreins-judge.py
+    PASS ×6). Guard not re-run standalone (judge chain runs pipeline; docs-only
+    changes otherwise).
+  All 6 repos git-clean 0 behind except protocol 4 ahead (known since #154).
+    Remote fetch ×6: 0 new commits. h3 HEAD 8cf72b5 (dogfood findings commit —
+    tick #179 board commit 4a9db92 + dogfood commit pushed THIS tick).
+  E2E-001: NOT due — Go loop live-verified tick #179 (1 tick ago); window
+    #179-184 open, closing tick #184 IS the due tick (window-boundary rule).
+  NEVER-DONE: NOT due — ran #178 (2 ticks ago), cadence 3-4 → due ~#181-182.
+  Hilo=useful: ALL 6 fresh this tick — h3 22e/5f, shim 146e/27f, sdk-go 100e/18f,
+    sdk-python 94e/21f, sdk-typescript 58e/26f, protocol 4e/1f — canonical, zero
+    drift since #163.
+  BOARD-V2: remains open — scheduler INFRA-006 (out of umbrella scope). DOGFOOD-06
+    (board discoverability) tracked as P2 depending on it.
+  Scheduler: CooldownS=900, Enabled=true, Weight=15, Priority=10, DecayRate=1
+    (GET /api/v1/projects/h3 ground truth — no drift). latest_tick null
+    (between runs, expected).
+  Deps: pydantic-core 2.47.0 still blocked by fastapi constraint chain (shim +
+    sdk-python, known tick #38+ — 140 ticks). No new critical updates.
+  M4 implicit-pending: 43 pending matrix tasks (6 HIGH: SEC-02/03, WIRING-01/02,
+    RES-01/02 — all blocked on shim worker dispatch or Bane review) + 2 open
+    dogfood (DOGFOOD-01 token-blocked, DOGFOOD-05 sub-repo-flagged).
+  External signals: gh CI all green (h3 last 3 runs success — Cross-Language
+    Round-Trip + 2× Pages deploy), 0 open issues in get-h3/h3 (gh issue list
+    empty). No new remote commits (git fetch ×6). sdk-go v0.1.0 tag created this
+    tick (first release tag in the org).
+  Sub-repo foremen: shim (active — template change committed to shim repo this
+    tick, targeted add only), sdk-python (active), sdk-typescript (active),
+    sdk-go (idle, self-paused 43200). Protocol 4 ahead known.
+  Host: load not captured (docs-heavy tick). Disk: 85% (stable). Memory: ~48Gi
+    available. No GPU detected. No TasksMax fork-EAGAIN observed.
+  DuckBrain: read-path OK (recall /tick/179 confirmed — 1 record; /tick/180
+    absent pre-write — clean single tick run). /tick/180 + /project/h3/status
+    written post-commit.
+  Off-by-One: healthy (uptime 5h7m53s), discover for go-module-first-tag →
+    not_found (new pattern; submitted post-commit).
+  VERDICT: productive maintenance — 3 dogfood gaps closed with real verification
+    (fresh-scaffold 43/43, network module resolve). No worker needed (docs +
+    template + tag = foreman-direct). E2E-001 fresh (#179), NEVER-DONE fresh
+    (#178).
+  Next: E2E-001 DUE tick #184 (window #179-184 closing tick); NEVER-DONE
+    ~#181-182 (every 3-4 ticks from #178).

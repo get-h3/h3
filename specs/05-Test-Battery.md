@@ -73,11 +73,16 @@ Report: /home/kara/.hermes/cache/h3_test_report_20260712_223000.json
 | 2.1 | `process_returns_decision` | `POST /v1/process` returns a valid Decision object |
 | 2.2 | `process_decision_has_id` | Every Decision has a unique `decision_id` |
 | 2.3 | `process_decision_has_type` | Decision has a valid `decision` field |
-| 2.4 | `process_text_finished_false` | Text decision with `finished: false` → next call is `/v1/result` |
-| 2.5 | `process_text_finished_true` | Text decision with `finished: true` → harness accepts `/v1/result` with text_sent, returns `end` |
+| 2.4 | `process_text_finished_false` | Text decision with `finished: false` → next call is `/v1/result`. Convention: content containing **"do not finish"** (e.g. *"Just start a thought, do not finish it yet."*) must elicit `finished=false` | 
+| 2.5 | `process_text_finished_true` | Text decision with `finished: true` → harness accepts `/v1/result` with text_sent, returns `end`. Convention: a final-answer prompt (e.g. *"Give me the final answer in one short sentence."*) must elicit `finished=true` |
 | 2.6 | `process_multiple_turns` | Harness handles 10-turn conversation without state corruption |
 | 2.7 | `process_session_isolation` | Two different `session_id` values don't leak state |
-| 2.8 | `process_preserves_history` | Messages from prior turns appear in `context.history` |
+| 2.8 | `process_preserves_history` | Messages from prior turns appear in `context.history`. Convention: the **decision envelope must echo a top-level `history` list** that does not shrink relative to the request's `context.history` (equal or larger accepted) |
+
+**Compliance conventions (spec-only harnesses must implement these — documented in specs/02 §4):**
+
+1. **History echo** — every decision response MAY carry a top-level `history` field mirroring the harness's conversation state. The battery (2.8) requires it: a list whose length is >= the `context.history` sent in the request. The Go/Python/TS SDK echo examples implement this by echoing the request history.
+2. **Streaming marker** — a `text` decision with `finished=false` signals a partial message (more text follows via `/v1/result`). The battery (2.4/2.5) drives this from prompt phrasing: messages containing the phrase "do not finish" must return `finished=false`; final-answer prompts must return `finished=true`. Echo harnesses implement this as a substring check on the incoming message content.
 
 ### Category 3: Process — Decision Types (6 tests)
 
