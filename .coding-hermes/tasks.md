@@ -3781,3 +3781,23 @@ Tick #179 (2026-08-02 18:12 UTC tick-fire): E2E-001 ✅ Go echo full protocol lo
     all HIGH blocked on shim dispatch/Bane review, NEVER-DONE fresh (#178).
   Next: NEVER-DONE ~#182 (every 3-4 ticks from #178); E2E-001 due tick #184
     (window #179-184 closing tick — Go loop last umbrella-verified this tick).
+
+## Dogfood Findings (2026-08-02)
+
+Dogfood run (cron pick): spec hub field-tested by doing real user work —
+scaffolded a Go harness, built a custom harness from specs/02 alone (stdlib,
+no SDK), verified all three with the 43-test battery, exercised the
+hermes-h3 CLI (install/list/verify/test). Verdict: 🟡 PROMISING-BUT-ROUGH —
+the protocol + battery genuinely deliver (3× 43/43, battery ~0.2s), but
+documented onboarding is broken for anyone outside the fleet. Full evidence:
+docs/dogfood/2026-08-02-integration.md (integration report),
+docs/dogfood/diagnostics.md (diagnostic trail), skills/h3-usage/SKILL.md.
+
+| ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback |
+|----|------|-----|-----|------|------|-------|-----------|----------|
+||| DOGFOOD-01 | NOTHING is published on PyPI — `pip install hermes-h3-shim` (README Quick Start step 1) → "No matching distribution found"; `pip install h3-harness-sdk` (sdk-python README/AGENTS.md) → 404. Checked hermes-h3-shim / h3-harness-sdk / h3-shim / h3-sdk-python on pypi.org — all HTTP 404. Dead end for every non-fleet user; source installs are the only path. P3-10 tracks shim only, blocked on token. | P0 | 1 | P3-10 | dogfood,pypi,install | deepseek-v4-flash | Publish hermes-h3-shim + h3-harness-sdk (unblock P3-10, extend to sdk-python), or document source install prominently in both READMEs | — |
+||| DOGFOOD-02 | Scaffolded Go harness does NOT build out of the box — `hermes-h3 scaffold --lang go` → `go mod tidy` fails: `github.com/get-h3/sdk-go@v0.0.0: unknown revision v0.0.0` (no tags/versions published; `go list -m -versions` → invalid). Template ships with the required `replace` directive commented out. A user without a local fleet checkout cannot run the README's `go run .`. | P0 | 2 | — | dogfood,scaffold,go,sdk-go | deepseek-v4-flash | Tag a release of sdk-go (or publish module), and/or ship the scaffold with a working replace/relative path uncommented | — |
+||| DOGFOOD-03 | Two compliance conventions undocumented in specs/02 §4: (a) the decision envelope may carry a top-level `history` echo of context.history — battery test_2_8 requires it; (b) content containing "do not finish" → text decision `finished=false` (streaming marker) — tests 2_4/2_5 require it. Spec-only custom harness scored 41/43; needed to read test_battery.py + Go template source to reach 43/43 (~45 min of a new user's time). | P1 | 1 | — | dogfood,spec,protocol,docs | deepseek-v4-flash | Document both in specs/02 §4 (Decision envelope fields) and specs/05 (battery conventions) | — |
+||| DOGFOOD-04 | README Quick Start drift: binary is `hermes-h3` (standalone), README says `hermes h3 scaffold` — `hermes h3` requires live-Hermes plugin wiring (WIRING-01). Also scaffold creates `h3-harness-go/` not `h3-harness/` as README implies. | P2 | 1 | — | dogfood,docs,cli | deepseek-v4-flash | Update README quick start to match CLI reality (hermes-h3, h3-harness-<lang>) | — |
+||| DOGFOOD-05 | sdk-python echo.py hardcodes port 8000 — on a busy host it fails to bind (exit 3) and pointing h3-test at :8000 tests a DIFFERENT server (got a confusing 9/43 against an unrelated FastAPI). Same trap hit in tick #35. | P2 | 1 | — | dogfood,sdk-python,example | deepseek-v4-flash | Add --port arg or H3_PORT env to echo examples (all languages) | — |
+||| DOGFOOD-06 | Board discoverability: .coding-hermes/tasks.md is a 278KB tick log — the live task matrix is buried under 45+ tick commentary entries. A new agent/human landing to find "what should I work on" must wade through thousands of lines. | P2 | 2 | BOARD-V2 | dogfood,board,meta | deepseek-v4-flash | Move tick log to .coding-hermes/ticks-log.md; keep tasks.md as board only (BOARD-V2 DuckDB migration is the real fix) | — |
