@@ -3283,3 +3283,69 @@ Tick #170 (2026-08-02 05:27 UTC tick-fire): idle maintenance mode — fleet 485/
     (#169), NEVER-DONE fresh (#168).
   Next: NEVER-DONE ~#171-172; E2E-001 due ~#174-179 window (Go loop
     last umbrella-verified #169).
+Tick #171 (2026-08-02 06:47 UTC tick-fire): NEVER-DONE 11-point audit ✅ (3 ticks since #168 — due).
+  Fleet: shim 242/242 ✅ (5.10s .venv), sdk-go 3 pkgs all pass ✅ (-p 1),
+    sdk-python 106/106 ✅ (3.51s, 1 StarletteDeprecationWarning httpx→httpx2 —
+    cosmetic), sdk-typescript 134/134 ✅ (1.10s, 6 files, --no-file-parallelism),
+    protocol valid (h3-protocol.yaml: openapi 3.1.0, 5 paths health/process/
+    result/cancel/sessions/{session_id}, 11 schemas, 6 top-level keys —
+    heredoc-verified this tick). Total: 485/485 (unchanged from #170).
+  ⚠️ Host finding (NEW pitfall): hermes-gateway systemd TasksMax=2048 (drop-ins
+    50-TasksMax.conf + 99-tasks-max.conf) — pids.current 1836/2048 → intermittent
+    fork EAGAIN ("can't start new thread", "fork: retry: Resource temporarily
+    unavailable"), vitest non-unwinding panic, `go: error obtaining buildID`.
+    First combined run: sdk-python benchmark FAILED under contention (passed
+    isolated 1.29s — flake, NOT regression; same class as tick #53/#64).
+    Mitigation worked: sequential suites + reduced parallelism. Submitted to
+    Off-by-One (sub_b03561). Do NOT raise TasksMax (deliberate hardening).
+  11-point NEVER-DONE: spec alignment ✅ (27 specs, 13,849 lines; protocol
+    VALID), doc coverage ✅ (all 6 AGENTS.md; governance 12/12 files present),
+    test gaps ✅ (fleet 485/485), dep upgrades ⚠️ (pydantic-core 2.46.4→2.47.0
+    still blocked by fastapi chain — shim + sdk-python, known tick #38+, 133
+    ticks. fastapi 0.140.13→0.141.1 available shim. sdk-typescript typescript
+    5→7 major deferred. npm audit --prod 0 vulns), pitfall hunt ✅ (TasksMax
+    finding above; no other new), performance audit ⚠️ (PERF-ND-01/02/03
+    unresolved — LOW), endpoint verification ✅ (SDK tests exercise all
+    endpoints; last Cross-Language Round-Trip CI green), CI/CD health ✅
+    (GitReins JUDGE PASS ×6, deepseek-v4-flash; h3 CI 3/3 green, shim CI 3/3
+    green), DuckBrain sync ✅ (read-path: /tick/160-170 present, NO sibling
+    /tick/171 — clean run; /tick/171 + /project/h3/status written + confirmed),
+    code quality ✅ (Hilo=useful: h3 22e/5f, shim 146e/27f, sdk-go 100e/18f,
+    sdk-python 94e/21f, sdk-typescript 58e/26f, protocol 4e/1f — canonical,
+    stable since #163), middle-out wiring ⚠️ (WIRING-01/02 remain 82+ ticks —
+    need Bane review).
+  GitReins: JUDGE ✅ on ALL 6 repos (check-gitreins-judge.py PASS ×6).
+    Guard not re-run (board-only tick, no code changed).
+  All 6 repos git-clean, 0 behind. protocol 4 ahead (its foreman's unpushed,
+    known since #154); shim now SYNCED (0 ahead — its foreman pushed tick #170
+    e6b59d1; CI verified green). h3 HEAD 73e85a3 (tick #170 board commit).
+  E2E-001: NOT due — Go loop live-verified tick #169 (43/43); window #169-174
+    open, next re-verify ~#174-179. Shim foreman also runs E2E in its own
+    ticks (tick #170 committed, CI green).
+  Sub-repo foremen: shim (active — tick #170), sdk-python (active — tick #48),
+    sdk-typescript (active), sdk-go (idle, self-paused 43200). Protocol clean
+    (4 ahead known).
+  Scheduler: CooldownS=900, Enabled=true, Weight=15, Priority=10, DecayRate=1
+    (API ground truth via /tmp file + script — no drift). Latest tick ID
+    h3-2026-08-02-06-47-00 (this tick).
+  Deps: pydantic-core 2.46.4→2.47.0 still blocked by fastapi constraint chain
+    (known tick #38+). fastapi 0.140.13→0.141.1 (shim, minor — deferred).
+    No new critical updates. sdk-typescript npm audit --prod 0 vulns.
+  M4 implicit-pending: 45 pending matrix tasks (6 HIGH: SEC-02/03,
+    WIRING-01/02, RES-01/02). All HIGH blocked on shim worker dispatch or
+    Bane review. 39 LOW/MEDIUM post-MVP tasks.
+  External signals: gh CI all green (h3 3/3 success — Cross-Language
+    Round-Trip + 2× Pages deploy; shim 3/3 success incl. tick #170 commit),
+    0 open issues in get-h3/h3. No new remote commits on any repo
+    (git fetch ×6 this tick).
+  Host: load 5.78-12.36 (1m — fleet-wide, elevated; TasksMax=2048 constraint
+    confirmed as the fork-EAGAIN source). Disk: ~85% (stable). Memory: 48Gi
+    available. No GPU detected.
+  DuckBrain: read-path OK (list_keys verified — /tick/160-170 present, NO
+    sibling /tick/171 — clean single tick run). /tick/171 + /project/h3/status
+    written post-audit. Off-by-One: submitted sub_b03561 (TasksMax pitfall).
+  VERDICT: idle — maintenance mode. NEVER-DONE audit COMPLETE this tick
+    (due cycle #168→#171). No new gaps found. No worker needed — all HIGH
+    blocked on shim dispatch/Bane review, E2E fresh (#169), fleet 485/485.
+  Next: E2E-001 due ~#174-179 window (Go loop last umbrella-verified #169);
+    NEVER-DONE ~#175 (every 3-4 ticks from #171).
