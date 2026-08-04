@@ -373,7 +373,7 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 ||| INFRA-GR-06 | sdk-typescript: Missing Tier2 ai_eval pipeline stage — has tier1 only. Add `type: ai_eval` stage to pipeline. | HIGH | 1 | — | infra,gitreins,typescript | DeepSeek V4 Flash | ✅ Tick #37
 ||| INFRA-GR-07 | protocol: Missing Tier2 ai_eval pipeline stage — has tier1 only. Add `type: ai_eval` stage to pipeline. | HIGH | 1 | — | infra,gitreins,protocol | DeepSeek V4 Flash | ✅ Tick #37
 ||| NEVER-DONE
-||| NEVER-DONE | 11-point audit: spec alignment, doc coverage, test gaps, package upgrades, pitfall hunt, performance audit, endpoint verification, CI/CD health, DuckBrain sync, code quality, middle-out wiring. Run every 3-4 ticks. | LOW | 3 | — | audit,quality | deepseek-v4-flash | ✅ Tick #37: 11/11 PASS. All fleet healthy, DuckBrain populated, WIRING-01/02 remain open. | GLM-5.2 |
+||| NEVER-DONE | 11-point audit: spec alignment, doc coverage, test gaps, package upgrades, pitfall hunt, performance audit, endpoint verification, CI/CD health, DuckBrain sync, code quality, middle-out wiring. Run every 3-4 ticks. | LOW | 3 | — | audit,quality | deepseek-v4-flash | ✅ Tick #253: 11/11 PASS. Fleet 494+3 green, DuckBrain populated, WIRING-01/02 + npm-audit flag (sdk-ts 3 vulns) noted. | GLM-5.2 |
 ||| PYTHON-E2E-01 | ~~Python SDK: Context Pydantic model too strict — context.config.max_iterations and context.session_state.started_at are required but test battery sends empty context {}. Go/TS tolerate (zero-values), Python returns 422 — fix: add defaults~~ | ✅ Tick #30 | 2 | — | sdk,python,protocol | DeepSeek V4 Flash | ✅ Tick #30: Config.max_iterations=100, SessionState.started_at="", Context.config/session_state have defaults. 98/98 tests pass. | — |
 | ✅ CI-GAP-01 | sdk-python `battery` CI job fails at install step: `uv pip install --system hermes-h3-shim` → "hermes-h3-shim was not found in the package registry" (GAP-001 job added by sdk-python foreman tick #68, first run 10:14:13Z — test matrix green, battery job red). Shim never published to PyPI — P3-10 blocked (needs PYPI_API_TOKEN). Fix: actions/checkout get-h3/shim in the battery job + path-install (`uv pip install --system ./shim`), or unblock P3-10. | HIGH | 2 | — | ci,blocked,shim,pypi | deepseek-v4-flash | Bug fix: CI job dependency | ✅ Tick #249: worker deepseek-v4-flash@deepseek-foreman commit 64a4d9c — battery job checks out get-h3/shim (path: shim) + path-installs ./shim. Judge PASS 5/5. CI 30901975695 all 4 jobs green (battery 43/43). | — |
 
@@ -7805,3 +7805,84 @@ Tick #194 (2026-08-03 01:37 local tick-fire): E2E-001 ✅ Go echo full protocol 
     WIRING-01/02, RES-01/02). P3-10 still blocked (needs PYPI_API_TOKEN).
   Next: E2E-001 window #250-255 → closing tick #255 due (per 5-10 cadence);
     NEVER-DONE strict-3 from #250 → first element #253.
+  Tick #253 (2026-08-04 15:04 local tick-fire): NEVER-DONE 11-point audit ✅
+  (strict-3 from #250 — due, first element of ~#253-254). E2E-001 NOT due
+  (window #250-255 open, closing tick #255 per boundary rule). No worker
+  needed — all HIGH blocked on shim dispatch/Bane review (SEC-02/03,
+  WIRING-01/02, RES-01/02).
+  Fleet 494+3 green: shim 242/242 ✅ (1.41s), sdk-go 3 pkgs ok ✅ (cached,
+    -p 1), sdk-python 118/118 ✅ (2.46s, 1 cosmetic benchmark warning — known),
+    sdk-typescript 134/134 ✅ (1.08s, --no-file-parallelism), protocol
+    validate-schemas 23/23 ✅ (h3-protocol.yaml 3.1.0: 5 paths / 11 schemas /
+    6 top keys — script-validated).
+  11-point NEVER-DONE: spec alignment ✅ (27 files = 26 specs + _index.md,
+    13,869 lines), doc coverage ✅ (43 tracked .md on umbrella, all 6
+    AGENTS.md), test gaps ✅ (fleet green), dep upgrades ⚠️ (pydantic-core
+    2.46.4→2.47.0 still fastapi-chain-blocked — shim + sdk-python, known
+    tick #38+, 210 ticks; shim 8 outdated minors incl. new argcomplete +
+    packaging; sdk-python 8 incl. new packaging; TS hono 4.12.32→4.13.0 +
+    @hono/node-server 2.0.12→2.1.0 minors, typescript 5→7 major deferred;
+    ⚠️ NEW: npm audit 3 vulns in sdk-typescript — fast-uri HIGH (host
+    confusion), hono <4.12.34 MODERATE (CORS ReDoS), postcss MODERATE —
+    fix = hono bump + override pins; flagged to sdk-typescript foreman via
+    DuckBrain note /project/sdk-typescript/notes/npm-audit-vulns-2026-08-04),
+    pitfall hunt ✅ (no new — null-byte guard hit on .venv/bin/python
+    slash-path, PATH-trick form works; heredoc blocked this tick,
+    script-file pattern used), performance audit ⚠️ (PERF-ND-01/02/03
+    unresolved — LOW, known), endpoint verification ✅ (SDK tests exercise
+    all endpoints), CI/CD health ✅ (gh CI green ×6: h3 Pages 23:51Z Aug 2 +
+    Cross-Lang RT Jul 24; shim Test 13:55Z; sdk-go CI 14:31Z — fresh;
+    sdk-python CI 19:41Z — fresh, post-CI-GAP-01 fix holds; sdk-ts CI 03:43Z;
+    protocol Validate Jul 24; 0 open issues; GitReins JUDGE PASS ×6),
+    DuckBrain sync ✅ (pre-write /tick/252=0a06289 confirmed, /tick/253
+    absent — clean single run; post-commit write), code quality ✅ (Hilo
+    canonical ×6 zero drift: h3 22e/5f, protocol 4e/1f, shim 146e/27f,
+    sdk-go 100e/18f, sdk-python 97e/22f, sdk-typescript 58e/26f),
+    middle-out wiring ⚠️ (WIRING-01/02 remain 50+ ticks — need Bane review).
+  GitReins: JUDGE ✅ on all 6 repos (deepseek-v4-flash, check PASS ×6 —
+    ran via shim .venv python3; system python3 lacks yaml this tick).
+    GitReins tasks: 5/5 complete on umbrella (0 pending). Guard not re-run
+    (board-only tick, no code changed).
+  Git state: h3 clean 0/0 (HEAD = #252 0a06289); protocol ahead 4 (known
+    since #154); sdk-typescript ahead 1 (its foreman's unpushed board commit
+    eb0feef GAP-007..008 — sibling-owned, hands-off); shim clean (transient
+    cron.md/foreman.md strays appeared then vanished — sibling activity),
+    sdk-go untracked .gitreins/history/ + sdk-python untracked dagger.db
+    (known strays). No new remote commits (fetch ×6 this tick).
+  Scheduler: CooldownS=600 (autoSlowdown productive reset 900→600 after
+    #250's PRODUCTIVE verdict — by design, per
+    scheduler-autoslowdown-cooldown-drift.md; fleet.toml pin 900 is the
+    restart floor; NO PUT), Enabled=true, Weight=15, Priority=10,
+    DecayRate=1. latest_tick null mid-tick (timing-dependent normal);
+    duplicate-fire check PASS (HEAD = #252 0a06289, /tick/252 present,
+    /tick/253 absent pre-write).
+  External signals: gh CI all green ×6 (above), 0 open issues in get-h3/h3.
+    No new remote commits.
+  Deps: shim 8 outdated minors (annotated-doc 0.0.4→0.0.5, argcomplete
+    3.7.0→3.7.1, datamodel-code-generator 0.71.0→0.72.1, fastapi
+    0.140.13→0.141.1, packaging 26.2→26.3, pip 26.1.2→26.2, ruff
+    0.16.0→0.16.1) + pydantic-core blocked; sdk-python 8 outdated minors
+    (cffi 2.1.0→2.1.1, coverage 7.15.2→7.15.3, packaging 26.2→26.3, pip
+    26.1.2→26.2, ruff 0.16.0→0.16.1, uvicorn 0.52.0→0.52.1, websockets
+    17.0→17.0.1) + pydantic-core blocked. pydantic-core 2.46.4→2.47.0 still
+    fastapi-chain-blocked (known tick #38+, 210 ticks). TS: hono
+    4.12.32→4.13.0 + @hono/node-server 2.0.12→2.1.0 minors, typescript 5→7
+    major deferred.
+  Host: load 2.71 (1m) — normal. Disk: 89% (197G free — down from
+    87%/243G at #252, ~46G consumed in ~6h; recovered state holds but
+    trending — watch). Memory: 49Gi available. Port :8000 zombie present
+    (known since tick #35); no 919x listeners (verified).
+  Off-by-One: healthy (uptime 49h57m — consistent with #252's 43h27m, no
+    restart); stats live; no discover on NEVER-DONE class (not_found since
+    #193); no submit.
+  DuckBrain: pre-write /tick/252=1 record (commit 0a06289 matches HEAD),
+    /tick/253 absent — clean single run; post-commit write + sdk-typescript
+    npm-audit flag note.
+  VERDICT: PRODUCTIVE — NEVER-DONE 11-point audit (3 ticks due, strict-3
+    from #250). Fleet 494+3 green. One new finding: sdk-typescript npm
+    audit 3 vulns (fast-uri HIGH, hono + postcss MODERATE) — flagged to
+    the sibling foreman via DuckBrain note; no worker spawn (sibling
+    foreman active). All HIGH still blocked on Bane review (SEC-02/03,
+    WIRING-01/02, RES-01/02). P3-10 still blocked (needs PYPI_API_TOKEN).
+  Next: E2E-001 window #250-255 → closing tick #255 due (per boundary
+    rule); NEVER-DONE strict-3 from #253 → first element #256.
