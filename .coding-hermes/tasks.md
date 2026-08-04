@@ -375,7 +375,7 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 ||| NEVER-DONE
 ||| NEVER-DONE | 11-point audit: spec alignment, doc coverage, test gaps, package upgrades, pitfall hunt, performance audit, endpoint verification, CI/CD health, DuckBrain sync, code quality, middle-out wiring. Run every 3-4 ticks. | LOW | 3 | — | audit,quality | deepseek-v4-flash | ✅ Tick #37: 11/11 PASS. All fleet healthy, DuckBrain populated, WIRING-01/02 remain open. | GLM-5.2 |
 ||| PYTHON-E2E-01 | ~~Python SDK: Context Pydantic model too strict — context.config.max_iterations and context.session_state.started_at are required but test battery sends empty context {}. Go/TS tolerate (zero-values), Python returns 422 — fix: add defaults~~ | ✅ Tick #30 | 2 | — | sdk,python,protocol | DeepSeek V4 Flash | ✅ Tick #30: Config.max_iterations=100, SessionState.started_at="", Context.config/session_state have defaults. 98/98 tests pass. | — |
-| CI-GAP-01 | sdk-python `battery` CI job fails at install step: `uv pip install --system hermes-h3-shim` → "hermes-h3-shim was not found in the package registry" (GAP-001 job added by sdk-python foreman tick #68, first run 10:14:13Z — test matrix green, battery job red). Shim never published to PyPI — P3-10 blocked (needs PYPI_API_TOKEN). Fix: actions/checkout get-h3/shim in the battery job + path-install (`uv pip install --system ./shim`), or unblock P3-10. | HIGH | 2 | — | ci,blocked,shim,pypi | deepseek-v4-flash | Bug fix: CI job dependency | — |
+| ✅ CI-GAP-01 | sdk-python `battery` CI job fails at install step: `uv pip install --system hermes-h3-shim` → "hermes-h3-shim was not found in the package registry" (GAP-001 job added by sdk-python foreman tick #68, first run 10:14:13Z — test matrix green, battery job red). Shim never published to PyPI — P3-10 blocked (needs PYPI_API_TOKEN). Fix: actions/checkout get-h3/shim in the battery job + path-install (`uv pip install --system ./shim`), or unblock P3-10. | HIGH | 2 | — | ci,blocked,shim,pypi | deepseek-v4-flash | Bug fix: CI job dependency | ✅ Tick #249: worker deepseek-v4-flash@deepseek-foreman commit 64a4d9c — battery job checks out get-h3/shim (path: shim) + path-installs ./shim. Judge PASS 5/5. CI 30901975695 all 4 jobs green (battery 43/43). | — |
 
   Tick #50 (2026-07-27 02:05): Fleet health: shim 225/225 ✅ (1.46s), sdk-go 5/5 ✅ (cached),
     sdk-python 98/98 ✅ (0.35s, 1 StarletteDeprecationWarning httpx→httpx2 — cosmetic),
@@ -7586,3 +7586,52 @@ Tick #194 (2026-08-03 01:37 local tick-fire): E2E-001 ✅ Go echo full protocol 
   Next: E2E-001 window #245-250 → closing tick #250 due (per 5-10 cadence);
     NEVER-DONE strict-3 from #247 → first element #250 (~#250-251). Possible
     double-due at #250 — E2E boundary rule takes priority.
+
+  Tick #249 (2026-08-04 05:36 local tick-fire): PRODUCTIVE — CI-GAP-01 ✅ end-to-end
+  (worker fix + judge + live CI green). E2E-001 NOT due (window #245-250 open, closing tick
+  #250 due per boundary rule); NEVER-DONE NOT due (ran #247, strict-3 first element #250).
+  Possible double-due at #250 — E2E boundary rule takes priority.
+  CI-GAP-01 (HIGH, filed #248): worker deepseek-v4-flash@deepseek-foreman committed 64a4d9c
+  in sdk-python — battery job now checks out get-h3/shim (path: shim) + path-installs
+  `uv pip install --system ./shim` (was `hermes-h3-shim` from PyPI — package never published,
+  P3-10 blocked). Foreman verified: diff ci.yml-only (1 file, 8+/2-), YAML parse + structural
+  checks PASS, guard PASS, gitreins judge ci-gap-01 PASS (5/5 criteria, verdict saved), task
+  flipped complete. Pushed → CI 30901975695: battery -> success (43/43 gate) + test
+  3.10/3.11/3.12 all success (was failing at install step since the #68 push 10:14:13Z).
+  Fleet 489+3 green: shim 242/242 ✅ (1.48s), sdk-go 3 pkgs ✅ (cached), sdk-python 113/113 ✅
+  (2.45s, 1 cosmetic bench warning), sdk-typescript 134/134 ✅ (932ms), protocol
+  validate-schemas 23/23 ✅.
+  GitReins: JUDGE ✅ on all 6 repos (deepseek-v4-flash, check PASS ×6). GitReins tasks:
+  umbrella 5/5 complete (0 pending); sdk-python ci-gap-01 complete (verdict 5/5).
+  Hilo canonical ×6 zero drift: h3 22e/5f, protocol 4e/1f, shim 146e/27f, sdk-go 100e/18f,
+  sdk-python 97e/22f, sdk-typescript 58e/26f.
+  Git state: h3 clean 0/0 (HEAD = #248 1fb2640); sdk-python pushed 64a4d9c, 0 ahead/behind
+  (untracked dagger.db known stray); protocol ahead 4 (known since #154); shim/sdk-go/
+  sdk-typescript clean. No new remote commits (fetch ×6).
+  Scheduler: CooldownS=900, Enabled=true, Weight=15, Priority=10, DecayRate=1 (no drift —
+  ground truth via API). latest_tick null mid-tick (timing-dependent normal); duplicate-fire
+  check PASS (HEAD = #248 1fb2640, /tick/248 present, /tick/249 absent pre-write).
+  External signals: gh CI — sdk-python 30901975695 all green (fix push); shim Test 10:09Z
+  Aug 4; sdk-go CI 10:03Z Aug 4; sdk-ts CI 03:43Z Aug 4; h3 Pages 23:51Z Aug 2; protocol
+  Validate Jul 24. 0 open issues in get-h3/h3. No new remote commits.
+  Deps: shim 6 outdated minors (annotated-doc, datamodel-code-generator 0.72.0, fastapi
+  0.141.1, pip 26.2, ruff 0.16.1) + pydantic-core blocked; sdk-python 7 outdated minors
+  (cffi 2.1.1, coverage 7.15.3, pip 26.2, ruff 0.16.1, uvicorn 0.52.1, websockets 17.0.1) +
+  pydantic-core blocked. pydantic-core 2.46.4→2.47.0 still fastapi-chain-blocked (known tick
+  #38+, 207 ticks). TS: hono 4.13.0 + @hono/node-server 2.1.0 minors, typescript 5→7 major
+  deferred.
+  Host: load 9.54 (1m) — elevated, fleet sweep clean per #182/#191 rule. Disk: 84% (279G
+  free — recovered state holds). Memory: 49Gi available. Port :8000 zombie (known since
+  tick #35); no 919x listeners.
+  Off-by-One: healthy (uptime 40h1m); stats live (523 problems / 629 answers / queue 2 /
+  hit_rate 1); discover h3-umbrella-e2e-fixture-tick not_found (same as #245/#247/#248 —
+  no cached solution for the #250 closing-tick class); submitted h3-umbrella-ci-gap-fix
+  (sub_2858a9 — class previously not_found, now cached).
+  DuckBrain: pre-write /tick/248=1 record (commit 1fb2640 matches HEAD), /tick/249 absent —
+  clean single run; post-commit write.
+  VERDICT: PRODUCTIVE — CI-GAP-01 fixed end-to-end (worker 64a4d9c, judge 5/5, live CI
+  battery green). Fleet 489+3 green, no new gaps. Remaining HIGH still blocked on Bane
+  review (SEC-02/03, WIRING-01/02, RES-01/02). P3-10 still blocked (needs PYPI_API_TOKEN).
+  Next: E2E-001 closing tick #250 due (window #245-250, boundary rule); NEVER-DONE strict-3
+  from #247 → first element #250 (~#250-251). Double-due at #250 — E2E boundary rule takes
+  priority.
