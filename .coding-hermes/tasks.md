@@ -7626,7 +7626,7 @@ Tick #194 (2026-08-03 01:37 local tick-fire): E2E-001 ✅ Go echo full protocol 
   Off-by-One: healthy (uptime 40h1m); stats live (523 problems / 629 answers / queue 2 /
   hit_rate 1); discover h3-umbrella-e2e-fixture-tick not_found (same as #245/#247/#248 —
   no cached solution for the #250 closing-tick class); submitted h3-umbrella-ci-gap-fix
-  (sub_2858a9 — class previously not_found, now cached).
+  (sub_e83f12 — class previously not_found, now cached).
   DuckBrain: pre-write /tick/248=1 record (commit 1fb2640 matches HEAD), /tick/249 absent —
   clean single run; post-commit write.
   VERDICT: PRODUCTIVE — CI-GAP-01 fixed end-to-end (worker 64a4d9c, judge 5/5, live CI
