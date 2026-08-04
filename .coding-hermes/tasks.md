@@ -375,6 +375,7 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 ||| NEVER-DONE
 ||| NEVER-DONE | 11-point audit: spec alignment, doc coverage, test gaps, package upgrades, pitfall hunt, performance audit, endpoint verification, CI/CD health, DuckBrain sync, code quality, middle-out wiring. Run every 3-4 ticks. | LOW | 3 | — | audit,quality | deepseek-v4-flash | ✅ Tick #37: 11/11 PASS. All fleet healthy, DuckBrain populated, WIRING-01/02 remain open. | GLM-5.2 |
 ||| PYTHON-E2E-01 | ~~Python SDK: Context Pydantic model too strict — context.config.max_iterations and context.session_state.started_at are required but test battery sends empty context {}. Go/TS tolerate (zero-values), Python returns 422 — fix: add defaults~~ | ✅ Tick #30 | 2 | — | sdk,python,protocol | DeepSeek V4 Flash | ✅ Tick #30: Config.max_iterations=100, SessionState.started_at="", Context.config/session_state have defaults. 98/98 tests pass. | — |
+| CI-GAP-01 | sdk-python `battery` CI job fails at install step: `uv pip install --system hermes-h3-shim` → "hermes-h3-shim was not found in the package registry" (GAP-001 job added by sdk-python foreman tick #68, first run 10:14:13Z — test matrix green, battery job red). Shim never published to PyPI — P3-10 blocked (needs PYPI_API_TOKEN). Fix: actions/checkout get-h3/shim in the battery job + path-install (`uv pip install --system ./shim`), or unblock P3-10. | HIGH | 2 | — | ci,blocked,shim,pypi | deepseek-v4-flash | Bug fix: CI job dependency | — |
 
   Tick #50 (2026-07-27 02:05): Fleet health: shim 225/225 ✅ (1.46s), sdk-go 5/5 ✅ (cached),
     sdk-python 98/98 ✅ (0.35s, 1 StarletteDeprecationWarning httpx→httpx2 — cosmetic),
@@ -7521,6 +7522,67 @@ Tick #194 (2026-08-03 01:37 local tick-fire): E2E-001 ✅ Go echo full protocol 
     confirmation). Fleet 489+3 green, no new gaps, no worker needed — all
     HIGH blocked on shim dispatch/Bane review (SEC-02/03, WIRING-01/02,
     RES-01/02).
+  Next: E2E-001 window #245-250 → closing tick #250 due (per 5-10 cadence);
+    NEVER-DONE strict-3 from #247 → first element #250 (~#250-251). Possible
+    double-due at #250 — E2E boundary rule takes priority.
+  Tick #248 (2026-08-04 05:15 local tick-fire): plain idle maintenance —
+  E2E-001 NOT due (window #245-250 open, closing tick #250 due per boundary
+  rule); NEVER-DONE NOT due (ran #247, strict-3 first element #250). No worker
+  needed — all HIGH blocked on shim dispatch/Bane review (SEC-02/03,
+  WIRING-01/02, RES-01/02).
+  NEW SIGNAL: sdk-python `battery` CI job FAILED first run (10:14:13Z on the
+  #68 board push 0bbd7a2) — step "Install h3-test battery CLI" runs
+  `uv pip install --system hermes-h3-shim` → "hermes-h3-shim was not found in
+  the package registry". Root cause: shim never published to PyPI (P3-10
+  blocked, no PYPI_API_TOKEN). GAP-001 job itself is sound (43/43 gate on
+  canonical echo); only its install step assumes PyPI. Filed CI-GAP-01 (HIGH)
+  on this board — fix: checkout get-h3/shim in the battery job + path-install
+  (`uv pip install --system ./shim`), or unblock P3-10. sdk-python test matrix
+  3.10/3.11/3.12 all green.
+  Fleet 489+3 green: shim 242/242 ✅ (1.38s), sdk-go 3 pkgs ok ✅ (cached,
+    -p 1), sdk-python 113/113 ✅ (2.49s, 1 cosmetic benchmark warning — known),
+    sdk-typescript 134/134 ✅ (1.00s, --no-file-parallelism),
+    protocol validate-schemas 23/23 ✅ (h3-protocol.yaml, 3.1.0).
+  GitReins: JUDGE ✅ on ALL 6 repos (deepseek-v4-flash, check PASS ×6).
+    GitReins tasks: 5/5 complete on umbrella (0 pending). Guard not re-run
+    (board-only tick, no code changed).
+  Hilo canonical ×6 zero drift: h3 22e/5f, protocol 4e/1f, shim 146e/27f,
+    sdk-go 100e/18f, sdk-python 97e/22f, sdk-typescript 58e/26f.
+  Git state: h3 0 behind/0 ahead clean (HEAD = #247 0164211); protocol ahead
+    4 (known since #154); shim/sdk-go/sdk-python/sdk-typescript clean. No new
+    remote commits (fetch ×6 this tick).
+  Scheduler: CooldownS=900, Enabled=true, Weight=15, Priority=10,
+    DecayRate=1 (no drift — ground truth via API). latest_tick.ID =
+    h3-2026-08-04-05-15-00 SpawnedAt 05:15:00-05:00 status running — tick
+    identity matches fire ID, duplicate-fire check PASS (HEAD = #247 0164211,
+    /tick/247 present, /tick/248 absent pre-write).
+  External signals: gh CI — h3 Pages 23:51Z Aug 2 + Cross-Lang RT Jul 24;
+    shim Test 10:09Z Aug 4 (fresh since #247); sdk-go CI 10:03Z Aug 4 (fresh);
+    sdk-python CI 10:14Z Aug 4 FAILED battery job (CI-GAP-01, above); sdk-ts
+    CI 03:43Z Aug 4; protocol Validate Jul 24. 0 open issues in get-h3/h3.
+    No new remote commits.
+  Deps: shim 6 outdated minors (annotated-doc 0.0.4→0.0.5, datamodel-code-
+    generator 0.71.0→0.72.0, fastapi 0.140.13→0.141.1, pip 26.1.2→26.2,
+    ruff 0.16.0→0.16.1) + pydantic-core blocked; sdk-python 7 outdated
+    minors (cffi 2.1.0→2.1.1, coverage 7.15.2→7.15.3, pip 26.1.2→26.2,
+    ruff 0.16.0→0.16.1, uvicorn 0.52.0→0.52.1, websockets 17.0→17.0.1) +
+    pydantic-core blocked. pydantic-core 2.46.4→2.47.0 still fastapi-chain-
+    blocked (known tick #38+, 206 ticks). TS: hono 4.12.32→4.13.0 +
+    @hono/node-server 2.0.12→2.1.0 minors, typescript 5→7 major deferred.
+  Host: load 1.48 (1m) — normal. Disk: 84% (282G free — recovered state
+    holds). Memory: 50Gi available. Port :8000 zombie present (known since
+    tick #35); no 919x listeners (verified).
+  Off-by-One: healthy (uptime 39h34m — consistent with #247's 39h4m); stats
+    live (523 problems / 629 answers / queue 2 / hit_rate 1); discover
+    not_found for h3-umbrella-e2e-fixture-tick (same as #245/#247 — no cached
+    solution for the #250 closing-tick class); no submit (plain idle, nothing
+    solved).
+  DuckBrain: pre-write /tick/247=1 record (commit 0164211 matches HEAD),
+    /tick/248 absent — clean single run; post-commit write.
+  VERDICT: idle — maintenance mode, 1 new gap filed (CI-GAP-01 — sdk-python
+    battery CI PyPI dependency, actionable without Bane). Fleet 489+3 green,
+    no worker needed — all HIGH blocked on shim dispatch/Bane review
+    (SEC-02/03, WIRING-01/02, RES-01/02).
   Next: E2E-001 window #245-250 → closing tick #250 due (per 5-10 cadence);
     NEVER-DONE strict-3 from #247 → first element #250 (~#250-251). Possible
     double-due at #250 — E2E boundary rule takes priority.
