@@ -6906,3 +6906,36 @@ Tick #194 (2026-08-03 01:37 local tick-fire): E2E-001 ✅ Go echo full protocol 
   Next: E2E-001 window opens #235-240 → closing tick #240 due (per 5-10
     cadence; #240 alone — NEVER-DONE runs #238). NEVER-DONE strict-3 → next
     #238 (first element; single-due). No double-due before ~#240-241.
+  Tick #236 (2026-08-03 21:35 local tick-fire): plain idle maintenance —
+    E2E-001 fresh (#235, window #235-240 open, closing tick #240 due),
+    NEVER-DONE fresh (#235 — 0 ticks ago, next ~#238, first element #238).
+    Fleet 489+3 green: shim 242/242 ✅ (1.43s), sdk-go 3 pkgs ok ✅ (cached),
+    sdk-python 113/113 ✅ (2.55s, 1 cosmetic benchmark warning — known),
+    sdk-typescript 134/134 ✅ (1.11s), protocol validate-schemas 23/23 ✅
+    (openapi 3.1.0, 5 paths, 11 schemas).
+    GitReins JUDGE ✅ all 6 repos (deepseek-v4-flash, check-gitreins-judge.py
+    PASS ×6). Hilo canonical ×6 zero drift: h3 22e/5f, protocol 4e/1f,
+    shim 146e/27f, sdk-go 100e/18f, sdk-python 97e/22f, sdk-typescript 58e/26f.
+    Git state: h3 0 behind/0 ahead clean; protocol ahead 4 (its foreman's
+    unpushed commits, known); shim dirty 2 (board parquet mid-write by its
+    own concurrent foreman — hands-off); sdk-go untracked .gitreins/history/
+    (known, never committed).
+    Scheduler: CooldownS=900, Enabled=true, Weight=15, Priority=10,
+    DecayRate=1 (jq ground truth — no drift). latest_tick.ID null at check
+    (timing-dependent, known) — tick identity from cron fire ID
+    h3-2026-08-03-21-35-37, duplicate-fire check PASS (HEAD = #235, /tick/236
+    absent pre-write, single clean run).
+    External signals: gh CI all green ×6 (h3 Pages 23:51Z Aug 2; shim Test
+    01:54Z Aug 4; sdk-go CI 23:49Z Aug 3; sdk-python CI 01:23Z Aug 4;
+    sdk-typescript CI 19:02Z Aug 3; protocol Validate Jul 24), 0 open issues
+    in get-h3/h3. No new remote commits (fetch ×6 this tick).
+    Host: load 2.87 (1m) — low. Disk: 96% (74G free — slow bleed continuing
+    from 77G #235, watching not actionable). Memory: 51Gi available.
+    Off-by-One: healthy (uptime 31h59m).
+    DuckBrain: pre-write /tick/235=1 record (commit 28b012e matches HEAD),
+    /tick/236 absent — clean single run; post-commit write.
+    pydantic-core 2.46.4→2.47.0 still fastapi-chain-blocked (shim +
+    sdk-python, known tick #38+, 194 ticks). sdk-typescript typescript 5→7
+    major deferred.
+    WIRING-01/02 remain (35+ ticks — need Bane review). No new gaps found.
+    VERDICT: idle — maintenance mode.
