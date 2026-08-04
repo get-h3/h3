@@ -6829,3 +6829,80 @@ Tick #194 (2026-08-03 01:37 local tick-fire): E2E-001 ✅ Go echo full protocol 
     (E2E = live battery vs Go echo :9191, NEVER-DONE = 11-point desk audit,
     independent; precedent #184/#199/#205/#220). #235 must not defer either
     fixture.
+  Tick #235 (2026-08-03 21:10 local tick-fire): DOUBLE-DUE — E2E-001 (window
+  #230-235 CLOSING tick — Go loop last umbrella-verified #230) AND NEVER-DONE
+  (strict-3 cadence from #232, first element #235). Both ran, independent,
+  same tick (precedent #184/#199/#205/#220).
+  E2E-001 ✅: 43/43 live battery vs Go echo — Health 7/7, Process 8/8,
+    Decision 6/6, Result 7/7, Errors 10/10, Stress 5/5 — 0.35s, p50 1.23ms /
+    p95 54.82ms, exit 0. ⚠️ :9191 was ALREADY owned by echo-server pid
+    3453692 (started 20:45 local via gateway bash -lic wrapper — sibling
+    foreman/worker leftover, NOT tick-fire-concurrent) — left untouched per
+    port-conflict recipe; ran identical harness on alternate :9192 via sed
+    copy (/tmp/h3t235_echo_main_9192.go), killed + verified port free.
+  NEVER-DONE 11-point audit ✅ (11 checks):
+    1. spec alignment ✅ 27 specs, 13,869 lines (up 20 lines from #234 —
+       sibling spec edits, normal)
+    2. doc coverage ✅ governance 12/12 (LICENSE/SECURITY/CODEOWNERS/AGENTS/
+       CHANGELOG/CODE_OF_CONDUCT/CONTRIBUTING/GOVERNANCE/NOTICE/README/
+       SUPPORT/TRADEMARK_POLICY), all 6 AGENTS.md
+    3. test gaps ✅ fleet 489+3 green (below)
+    4. dep upgrades ⚠️ baseline unchanged: pydantic-core 2.46.4→2.47.0 still
+       fastapi-chain-blocked (shim + sdk-python, known tick #38+, 193 ticks).
+       Minors only: shim annotated-doc 0.0.4→0.0.5, datamodel-code-generator
+       0.71.0→0.72.0, fastapi 0.140.13→0.141.1, pip 26.1.2→26.2, ruff
+       0.16.0→0.16.1; sdk-python cffi 2.1.0→2.1.1, coverage 7.15.2→7.15.3,
+       pip 26.1.2→26.2, ruff 0.16.0→0.16.1, uvicorn 0.52.0→0.52.1,
+       websockets 17.0→17.0.1. sdk-typescript hono 4.12.32→4.13.0 minor,
+       typescript 5.9.3→7.0.2 major deferred. sdk-go: none.
+    5. pitfall hunt ✅ no new
+    6. performance audit ⚠️ PERF-ND-01/02/03 unresolved — LOW (known)
+    7. endpoint verification ✅ E2E live battery exercised all /v1/* paths
+       + protocol validate-schemas.sh 23/23
+    8. CI/CD health ✅ gh CI green ×6, GitReins JUDGE ✅ all 6 repos
+    9. DuckBrain sync ✅ pre-write /tick/234=1 record (commit aa5a6c0 matches
+       HEAD), /tick/235 absent — clean single run; post-commit write
+    10. code quality ✅ Hilo canonical ×6 zero drift: h3 22e/5f, protocol
+        4e/1f, shim 146e/27f, sdk-go 100e/18f, sdk-python 97e/22f,
+        sdk-typescript 58e/26f
+    11. middle-out wiring ⚠️ WIRING-01/02 remain 34+ ticks — need Bane review
+       (H3 plugin not installed in live Hermes)
+  Fleet: shim 242/242 ✅ (1.38s), sdk-go 3 pkgs ok ✅ (cached, -p 1),
+    sdk-python 113/113 ✅ (2.50s, 1 cosmetic benchmark warning — known),
+    sdk-typescript 134/134 ✅ (1.03s, --no-file-parallelism), protocol valid
+    (validate-schemas.sh 23/23 PASS: openapi 3.1.0, 5 paths /v1/health
+    /v1/process /v1/result /v1/cancel /v1/sessions/{session_id}, 11 schemas).
+    Total: 489 tests + 3 Go pkgs.
+  GitReins: JUDGE ✅ on ALL 6 repos (deepseek-v4-flash, check-gitreins-judge.py
+    PASS ×6). Guard not re-run (board-only tick, no code changed; pre-commit
+    hook runs it).
+  Git state: all 6 repos 0 behind on fetch; protocol [ahead 4] (its foreman's
+    unpushed commits, known since #154); sdk-go untracked .gitreins/history/
+    (known — never committed). No sibling commits mid-tick.
+  Scheduler: CooldownS=900, Enabled=true, Weight=15, Priority=10, DecayRate=1
+    (jq ground truth — no drift). latest_tick.ID null at check (timing-
+    dependent, known) — tick identity from cron fire ID
+    h3-2026-08-03-21-10-56, duplicate-fire check PASS (HEAD = #234, no
+    sibling board commit).
+  External signals: gh CI all green ×6 (h3 Pages 23:51Z Aug 2; shim Test
+    01:54Z Aug 4; sdk-go CI 23:49Z Aug 3; sdk-python CI 01:23Z Aug 4;
+    sdk-typescript CI 19:02Z Aug 3; protocol Validate Jul 24), 0 open issues
+    in get-h3/h3. No new remote commits (fetch ×6 this tick).
+    Port :8000 listener present (known zombie since tick #35); :9191 sibling
+    echo-server noted above (left untouched).
+  Host: load 1.91 (1m) — low. Disk: 96% (77G free — trended from 97G #229,
+    95G #230, 91G #231, 88G #232, 85G #233, 82G #234; slow bleed
+    continuing, watching not actionable). Memory: 50Gi available. Timezone
+    America/Bogota (UTC-5) — local 21:17 vs UTC 02:17 Aug 4. Off-by-One:
+    healthy (uptime 31h35m — consistent with #234's 30h43m; submission
+    sub_ba519c queued for h3-umbrella-double-due-tick class, discover
+    not_found — new class, no cached solution).
+  DuckBrain: read-path OK (recall /tick/234 confirmed — 1 record, commit
+    aa5a6c0; /tick/235 absent pre-write — clean single tick run). /tick/235 +
+    /project/h3/status written post-commit.
+  VERDICT: E2E-001 ✅ + NEVER-DONE ✅ — productive maintenance tick (fixture
+    double-due). Fleet 489+3 green, no new gaps, no worker needed — all HIGH
+    blocked on shim dispatch/Bane review (SEC-02/03, WIRING-01/02, RES-01/02).
+  Next: E2E-001 window opens #235-240 → closing tick #240 due (per 5-10
+    cadence; #240 alone — NEVER-DONE runs #238). NEVER-DONE strict-3 → next
+    #238 (first element; single-due). No double-due before ~#240-241.
