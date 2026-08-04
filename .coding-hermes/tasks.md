@@ -265,6 +265,14 @@ Tick #35 (2026-07-26): QV-E2E-04 ✅ Cross-harness test: Go 43/43, TS 43/43
 ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 ```
 
+## Active — Stand-In PM (2026-08-04)
+
+| ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback |
+|----|------|-----|-----|------|------|-------|-----------|----------|
+| H3-GAP-001 | External onboarding broken: `pip install hermes-h3-shim` fails ('No matching distribution found' — PyPI publish blocked on P3-10 token) AND sdk-go has zero release tags, so a scaffolded harness `go mod tidy` fails 'unknown revision v0.0.0'. Verified 2026-08-04 stand-in PM sweep (fresh scaffold in /tmp). | P0 | 3 | — | release,cli,onboarding | deepseek-v4-flash @ deepseek-foreman | Fix: tag sdk-go v0.1.0 (or fix scaffold template replace path), and add a from-source install path to README Quick Start so external users aren't blocked on PyPI (cross-ref P3-10) | deepseek-v4-flash |
+| H3-GAP-002 | README badge and prose claim '11/11 specs' but specs/ actually has 26 specs (S01-S26, all ✅ in _index.md, ~318 pages); CONTRIBUTING.md still references S01-S11. Verified 2026-08-04 stand-in PM sweep. | P1 | 1 | — | docs,specs | deepseek-v4-flash @ deepseek-foreman | Docs fix: update README badge to 26/26, prose, and CONTRIBUTING.md spec range | deepseek-v4-flash |
+| H3-GAP-003 | Zero-output idle ticks flood the board: 50+ ticks in 24h with Commits=0 FilesChanged=0 TokensIn=0 each append a full tick log; tasks.md grown to 7,888 lines / 580KB — task matrix buried under noise. Verified 2026-08-04 stand-in PM sweep. | P1 | 2 | — | board,scheduler | deepseek-v4-flash @ deepseek-foreman | Fix: for zero-output ticks append a one-line summary (or nothing) instead of a full tick log; raise idle cooldown (1800 → 21600) so idle foreman stops hammering | deepseek-v4-flash |
+
 ## Active — Quality Verification (QV)
 
 | ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback |
