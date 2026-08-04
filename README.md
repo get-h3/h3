@@ -1,6 +1,6 @@
 # H3 — Brain-Swap Protocol for AI Agents
 
-[![H3 Spec](https://img.shields.io/badge/specs-11/11-8b5cf6)](specs/)
+[![H3 Spec](https://img.shields.io/badge/specs-26/26-8b5cf6)](specs/)
 [![Go SDK](https://img.shields.io/badge/go-sdk-00ADD8)](https://github.com/get-h3/sdk-go)
 [![Python SDK](https://img.shields.io/badge/python-sdk-3776AB)](https://github.com/get-h3/sdk-python)
 [![TypeScript SDK](https://img.shields.io/badge/typescript-sdk-3178C6)](https://github.com/get-h3/sdk-typescript)
@@ -85,7 +85,7 @@ All SDKs generate their types from the same OpenAPI spec. A change to the protoc
 ## Documentation
 
 - **Website:** [h3.sh](https://h3.sh) — landing page, language picker, quickstart
-- **Specs:** [`specs/`](specs/) — 11 specs, ~97 pages covering architecture, protocol, SDKs, installer, test battery, release pipeline, website, and upgrade survival
+- **Specs:** [`specs/`](specs/) — 26 specs, ~320 pages covering architecture, protocol, SDKs, installer, test battery, release pipeline, website, and upgrade survival
 - **Protocol reference:** [`docs/protocol.html`](docs/protocol.html) — auto-generated from OpenAPI
 - **SDK reference:** [`docs/sdk.html`](docs/sdk.html) — auto-generated
 - **Build guide:** [`docs/guide.html`](docs/guide.html) — "Build Your First H3 Harness" tutorial

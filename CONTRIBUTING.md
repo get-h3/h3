@@ -33,7 +33,7 @@ This verifies Python → Go, Go → Python, and Go → TypeScript fixture consis
 
 ## Spec System
 
-Specs live in `specs/` and follow a numbered scheme (S01 through S11). They are the single source of truth — if behavior isn't in a spec, it doesn't exist.
+Specs live in `specs/` and follow a numbered scheme (S01 through S26). They are the single source of truth — if behavior isn't in a spec, it doesn't exist.
 
 ## Task Board
 

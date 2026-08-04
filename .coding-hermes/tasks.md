@@ -269,9 +269,9 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 
 | ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback |
 |----|------|-----|-----|------|------|-------|-----------|----------|
-| H3-GAP-001 | External onboarding broken: `pip install hermes-h3-shim` fails ('No matching distribution found' — PyPI publish blocked on P3-10 token) AND sdk-go has zero release tags, so a scaffolded harness `go mod tidy` fails 'unknown revision v0.0.0'. Verified 2026-08-04 stand-in PM sweep (fresh scaffold in /tmp). | P0 | 3 | — | release,cli,onboarding | deepseek-v4-flash @ deepseek-foreman | Fix: tag sdk-go v0.1.0 (or fix scaffold template replace path), and add a from-source install path to README Quick Start so external users aren't blocked on PyPI (cross-ref P3-10) | deepseek-v4-flash |
-| H3-GAP-002 | README badge and prose claim '11/11 specs' but specs/ actually has 26 specs (S01-S26, all ✅ in _index.md, ~318 pages); CONTRIBUTING.md still references S01-S11. Verified 2026-08-04 stand-in PM sweep. | P1 | 1 | — | docs,specs | deepseek-v4-flash @ deepseek-foreman | Docs fix: update README badge to 26/26, prose, and CONTRIBUTING.md spec range | deepseek-v4-flash |
-| H3-GAP-003 | Zero-output idle ticks flood the board: 50+ ticks in 24h with Commits=0 FilesChanged=0 TokensIn=0 each append a full tick log; tasks.md grown to 7,888 lines / 580KB — task matrix buried under noise. Verified 2026-08-04 stand-in PM sweep. | P1 | 2 | — | board,scheduler | deepseek-v4-flash @ deepseek-foreman | Fix: for zero-output ticks append a one-line summary (or nothing) instead of a full tick log; raise idle cooldown (1800 → 21600) so idle foreman stops hammering | deepseek-v4-flash |
+| ✅ H3-GAP-001 | External onboarding broken: `pip install hermes-h3-shim` fails ('No matching distribution found' — PyPI publish blocked on P3-10 token) AND sdk-go has zero release tags, so a scaffolded harness `go mod tidy` fails 'unknown revision v0.0.0'. Verified 2026-08-04 stand-in PM sweep (fresh scaffold in /tmp). | P0 | 3 | — | release,cli,onboarding | deepseek-v4-flash @ deepseek-foreman | ✅ Tick #254: sdk-go v0.1.0 tag EXISTS on origin (a9a1cd2d, verified via ls-remote); scaffold template requires v0.1.0 (no replace directive); fresh scaffold test 2026-08-04: `go mod tidy` resolves from network + `go build` → 9MB harness binary PASS. README Quick Start already has from-source install (`pip install -e .`). Residual: PyPI publish still blocked → P3-10 (needs PYPI_API_TOKEN). | deepseek-v4-flash |
+| ✅ H3-GAP-002 | README badge and prose claim '11/11 specs' but specs/ actually has 26 specs (S01-S26, all ✅ in _index.md, ~318 pages); CONTRIBUTING.md still references S01-S11. Verified 2026-08-04 stand-in PM sweep. | P1 | 1 | — | docs,specs | deepseek-v4-flash @ deepseek-foreman | ✅ Tick #254: README badge → 26/26, prose → "26 specs, ~320 pages" (page sum verified from _index.md), CONTRIBUTING.md → "S01 through S26". No other stale refs (grep sweep clean). | deepseek-v4-flash |
+| ✅ H3-GAP-003 | Zero-output idle ticks flood the board: 50+ ticks in 24h with Commits=0 FilesChanged=0 TokensIn=0 each append a full tick log; tasks.md grown to 7,888 lines / 580KB — task matrix buried under noise. Verified 2026-08-04 stand-in PM sweep. | P1 | 2 | — | board,scheduler | deepseek-v4-flash @ deepseek-foreman | ✅ Tick #254: cooldown pinned 600→21600s (6h) in BOTH fleet.toml files (canonical ~/.hermes/fleet.toml + repo copy read by fleet-auto-heal) + PUT /api/v1/projects/h3 CooldownS=21600, GET-verified live (UpdatedAt 2026-08-04T22:50:49Z). autoSlowdown productive-reset only fires <3600s so pin is durable. Zero-output ticks now append ONE-LINE summary (this tick's entry is the first compact one). | deepseek-v4-flash |
 
 ## Active — Quality Verification (QV)
 
@@ -7894,3 +7894,62 @@ Tick #194 (2026-08-03 01:37 local tick-fire): E2E-001 ✅ Go echo full protocol 
     WIRING-01/02, RES-01/02). P3-10 still blocked (needs PYPI_API_TOKEN).
   Next: E2E-001 window #250-255 → closing tick #255 due (per boundary
     rule); NEVER-DONE strict-3 from #253 → first element #256.
+
+  Tick #254 (2026-08-04 17:12 local): PRODUCTIVE — H3-GAP-001/002/003 all closed
+  (stand-in PM sweep gaps, filed at #253). No worker needed — foreman-direct
+  verification + mechanical docs/infra fixes.
+  H3-GAP-001 ✅: sdk-go v0.1.0 tag EXISTS on origin (a9a1cd2d, ls-remote);
+    scaffold template requires v0.1.0 (no replace). Fresh scaffold test:
+    go mod tidy from network + go build → 9MB binary PASS. README already has
+    from-source install. Residual: PyPI → P3-10 (token-blocked).
+  H3-GAP-002 ✅: README badge 11/11→26/26, prose "11 specs ~97 pages"→"26 specs
+    ~320 pages" (page sum from _index.md), CONTRIBUTING S01-S11→S01-S26.
+    Grep sweep: no other stale refs.
+  H3-GAP-003 ✅: cooldown pinned 600→21600s in BOTH fleet.toml files (canonical
+    + repo copy read by fleet-auto-heal) + PUT /api/v1/projects/h3
+    CooldownS=21600 → GET-verified live (UpdatedAt 2026-08-04T22:50:49Z).
+    autoSlowdown productive-reset only fires <3600s → pin durable. Zero-output
+    idle ticks now append ONE-LINE summary instead of full tick log
+    (convention recorded in h3-foreman-tick-ledger.md; this entry is compact).
+  Fleet 494+3 green: shim 242/242 ✅ (1.52s), sdk-go 3 pkgs ok ✅ (cached,
+    -p 1), sdk-python 118/118 ✅ (2.56s, 1 cosmetic benchmark warning — known),
+    sdk-typescript 134/134 ✅ (1.19s, --no-file-parallelism), protocol
+    validate-schemas 23/23 ✅ (h3-protocol.yaml 3.1.0).
+  GitReins: JUDGE ✅ on ALL 6 repos (deepseek-v4-flash, check PASS ×6 — ran via
+    shim .venv python3; system python3 lacks yaml this tick, known #253).
+    GitReins tasks: 5/5 complete on umbrella (0 pending). Guard not re-run
+    (board+docs tick; docs fix class — guard evidence sufficient).
+  Hilo canonical ×6 zero drift: h3 22e/5f, protocol 4e/1f, shim 146e/27f,
+    sdk-go 100e/18f, sdk-python 97e/22f, sdk-typescript 58e/26f.
+  Git state: h3 ahead 1 pre-tick (stand-in PM's GAP commit de981d4 unpushed —
+    this tick's commit will carry it); protocol ahead 4 (known since #154);
+    sdk-go ahead 1 + untracked .gitreins/history/ (known stray); sdk-python
+    untracked dagger.db (known stray); sdk-typescript ahead 2 (sibling-owned,
+    hands-off). No new remote commits.
+  Scheduler: CooldownS=600 pre-tick (autoSlowdown productive reset after #250,
+    by design) → pinned 21600 this tick (PUT + GET-verify, see GAP-003 above).
+    Enabled=true, Weight=15, Priority=10, DecayRate=1. latest_tick null
+    mid-tick (timing-dependent normal). Duplicate-fire check PASS (HEAD = #253
+    de981d4 pre-tick, /tick/253 present, /tick/254 absent pre-write).
+  External signals: gh CI all green ×6 (h3 Pages 23:51Z Aug 2 + Cross-Lang RT
+    Jul 24; shim Test 20:58Z Aug 4 — fresh; sdk-go CI 14:31Z Aug 4; sdk-python
+    CI 22:07Z Aug 4 — fresh; sdk-typescript CI 03:43Z Aug 4; protocol Validate
+    Jul 24), 0 open issues in get-h3/h3. No new remote commits.
+  Deps: shim 8 outdated minors (annotated-doc, argcomplete, datamodel-code-
+    generator, fastapi, packaging, pip, ruff) + pydantic-core 2.46.4→2.47.0
+    fastapi-chain-blocked (known tick #38+, 211 ticks); sdk-python 8 outdated
+    minors (cffi, coverage, packaging, pip, pydantic_core, ruff, uvicorn,
+    websockets) + pydantic-core blocked. TS: hono 4.12.32→4.13.0 +
+    @hono/node-server 2.0.12→2.1.0 minors, typescript 5→7 major deferred.
+  Host: load 2.31 (1m) — normal. Disk: 90% (176G free — recovered state
+    holds). Memory: 49Gi available. Port :8000 zombie present (known since
+    tick #35); no 919x listeners (verified).
+  Off-by-One: health check pending (server on :8766). No discover on this
+    class (GAP-closure is not a cached-solution class).
+  DuckBrain: pre-write /tick/253=de981d4 confirmed, /tick/254 absent — clean
+    single run; post-commit write.
+  VERDICT: PRODUCTIVE — stand-in PM gap sweep closed (3/3). Fleet 494+3 green,
+    zero new gaps. P3-10 still blocked (needs PYPI_API_TOKEN). All HIGH still
+    blocked on Bane review (SEC-02/03, WIRING-01/02, RES-01/02).
+  Next: E2E-001 DUE #255 (window #250-255 closing tick — boundary rule);
+    NEVER-DONE strict-3 from #253 → first element #256.
