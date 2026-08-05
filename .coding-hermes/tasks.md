@@ -273,6 +273,15 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 | ✅ H3-GAP-002 | README badge and prose claim '11/11 specs' but specs/ actually has 26 specs (S01-S26, all ✅ in _index.md, ~318 pages); CONTRIBUTING.md still references S01-S11. Verified 2026-08-04 stand-in PM sweep. | P1 | 1 | — | docs,specs | deepseek-v4-flash @ deepseek-foreman | ✅ Tick #254: README badge → 26/26, prose → "26 specs, ~320 pages" (page sum verified from _index.md), CONTRIBUTING.md → "S01 through S26". No other stale refs (grep sweep clean). | deepseek-v4-flash |
 | ✅ H3-GAP-003 | Zero-output idle ticks flood the board: 50+ ticks in 24h with Commits=0 FilesChanged=0 TokensIn=0 each append a full tick log; tasks.md grown to 7,888 lines / 580KB — task matrix buried under noise. Verified 2026-08-04 stand-in PM sweep. | P1 | 2 | — | board,scheduler | deepseek-v4-flash @ deepseek-foreman | ✅ Tick #254: cooldown pinned 600→21600s (6h) in BOTH fleet.toml files (canonical ~/.hermes/fleet.toml + repo copy read by fleet-auto-heal) + PUT /api/v1/projects/h3 CooldownS=21600, GET-verified live (UpdatedAt 2026-08-04T22:50:49Z). autoSlowdown productive-reset only fires <3600s so pin is durable. Zero-output ticks now append ONE-LINE summary (this tick's entry is the first compact one). | deepseek-v4-flash |
 
+## Active — Stand-In PM (2026-08-05)
+
+| ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback |
+|----|------|-----|-----|------|------|-------|-----------|----------|
+| H3-GAP-004 | Dead PyPI install refs in onboarding docs: AGENTS.md:47, CONTRIBUTING.md:56, docs/guide.html Step 4 (L596-597) all instruct `pip install hermes-h3-shim` → fresh venv gets "No matching distribution found" (PyPI publish blocked on P3-10 token; README Quick Start was already fixed to `git clone …/shim && pip install -e .`, these 3 files were missed — verified fresh venv 2026-08-05). Fix: replace with the source-install command in all 3 files (or unblock P3-10 and publish). PASS: fresh venv + the exact command from each of the 3 files yields `h3-test --help` usage; `grep -rn 'pip install hermes-h3-shim' AGENTS.md CONTRIBUTING.md docs/guide.html` = 0 matches. | P1 | 1 | — | docs,onboarding | deepseek-v4-flash @ deepseek-foreman | docs-vs-reality drift (H3-GAP-001 class, 2nd recurrence — README fixed, siblings missed) | deepseek-v4-flash |
+| H3-GAP-005 | docs/guide.html "Build Your First H3 Harness" Step 1 installs unpublished SDKs: Python tab `pip install h3-harness-sdk` (sdk-python name, never published to PyPI) and TS tab `npm install @get-h3/h3-harness-sdk` (never published to npm) both fail in fresh envs; only the Go path works (v0.1.0 tag exists). Verified 2026-08-05 (fresh-env checks + registry searches). Fix: add from-source fallbacks to the guide tabs (`pip install git+https://github.com/get-h3/sdk-python`, `npm install github:get-h3/sdk-typescript`) mirroring the shim pattern, or publish. PASS: copy-paste install command from each guide tab into a fresh env succeeds (or the tab documents a working from-source fallback). | P1 | 1 | — | docs,onboarding,release | deepseek-v4-flash @ deepseek-foreman | docs-vs-reality drift (unpublished-package class) | deepseek-v4-flash |
+
+ 50+ ticks in 24h with Commits=0 FilesChanged=0 TokensIn=0 each append a full tick log; tasks.md grown to 7,888 lines / 580KB — task matrix buried under noise. Verified 2026-08-04 stand-in PM sweep. | P1 | 2 | — | board,scheduler | deepseek-v4-flash @ deepseek-foreman | ✅ Tick #254: cooldown pinned 600→21600s (6h) in BOTH fleet.toml files (canonical ~/.hermes/fleet.toml + repo copy read by fleet-auto-heal) + PUT /api/v1/projects/h3 CooldownS=21600, GET-verified live (UpdatedAt 2026-08-04T22:50:49Z). autoSlowdown productive-reset only fires <3600s so pin is durable. Zero-output ticks now append ONE-LINE summary (this tick's entry is the first compact one). | deepseek-v4-flash |
+
 ## Active — Quality Verification (QV)
 
 | ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback |
@@ -7954,14 +7963,7 @@ Tick #194 (2026-08-03 01:37 local tick-fire): E2E-001 ✅ Go echo full protocol 
   Next: E2E-001 DUE #255 (window #250-255 closing tick — boundary rule);
     NEVER-DONE strict-3 from #253 → first element #256.
 
-  Tick #255 (2026-08-05 08:20 local tick-fire): E2E-001 due-cycle ✅ — window
-  #250-255 closing tick (boundary rule; ran #250 43/43). Battery 43/43 PASS vs
-  Go echo :9191 (prebuilt binary, 0.39s, p50 1.54ms / p95 63.87ms, exit 0).
-  :9191 free at fire (only :8000 zombie) + verified free post-run; harness
-  killed via bg session. NEVER-DONE not due (ran #253 → next #256).
-  Cooldown pin RESTORED: canonical ~/.hermes/fleet.toml was wiped to a 4-line
-  stub at 00:08 today (fleet-cooldown-policy.py --apply regeneration with
-  empty project list — ALL pins lost; daemon restart 07:12 → h3 reverted to
+### Foreman #255 — Productive Tick (2026-08-05, recovered by stand-in PM after patch-tool truncation; entry start lost, body preserved verbatim)
   7200 self-pause). Restored the h3 21600 block in canonical (matches repo
   copy read by fleet-auto-heal) + PUT /api/v1/projects/h3 CooldownS=21600 →
   GET-verified 21600 (updated_at 13:54:11Z). ⚠️ fleet-cooldown-policy.py
