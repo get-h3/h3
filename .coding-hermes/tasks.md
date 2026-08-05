@@ -7953,3 +7953,42 @@ Tick #194 (2026-08-03 01:37 local tick-fire): E2E-001 ✅ Go echo full protocol 
     blocked on Bane review (SEC-02/03, WIRING-01/02, RES-01/02).
   Next: E2E-001 DUE #255 (window #250-255 closing tick — boundary rule);
     NEVER-DONE strict-3 from #253 → first element #256.
+
+  Tick #255 (2026-08-05 08:20 local tick-fire): E2E-001 due-cycle ✅ — window
+  #250-255 closing tick (boundary rule; ran #250 43/43). Battery 43/43 PASS vs
+  Go echo :9191 (prebuilt binary, 0.39s, p50 1.54ms / p95 63.87ms, exit 0).
+  :9191 free at fire (only :8000 zombie) + verified free post-run; harness
+  killed via bg session. NEVER-DONE not due (ran #253 → next #256).
+  Cooldown pin RESTORED: canonical ~/.hermes/fleet.toml was wiped to a 4-line
+  stub at 00:08 today (fleet-cooldown-policy.py --apply regeneration with
+  empty project list — ALL pins lost; daemon restart 07:12 → h3 reverted to
+  7200 self-pause). Restored the h3 21600 block in canonical (matches repo
+  copy read by fleet-auto-heal) + PUT /api/v1/projects/h3 CooldownS=21600 →
+  GET-verified 21600 (updated_at 13:54:11Z). ⚠️ fleet-cooldown-policy.py
+  targets 7200 for 0-pending and only-reduces → next --apply run will clobber
+  the 21600 pin again; supervisor should whitelist h3 (flagged, not fixed —
+  fleet infra).
+  Fleet 494+3 green → 528 (up-drift): shim 242/242 (1.64s), sdk-go 3 pkgs ok
+  (cached), sdk-python 123/123 (2.63s, +1 cosmetic bench warning — known),
+  sdk-typescript 137/137 (1.20s), protocol validate-schemas 23/23. Judge PASS
+  ×6 (deepseek-v4-flash). Hilo: h3 22e/5f, protocol 4e/1f, shim 146e/27f,
+  sdk-go 100e/18f, sdk-python 106e/24f (drifted — sibling additions, moving
+  target), sdk-typescript 58e/26f. CI green ×6 (h3 Pages 23:51Z + Cross-Lang
+  RT; shim Test 08:41Z; sdk-python 13:04Z; sdk-go 11:05Z; sdk-ts 11:34Z;
+  protocol Jul 24), 0 open issues. Deps: minors only + pydantic-core
+  fastapi-blocked (212 ticks; shim 8 / sdk-python 9 outdated minors, starlette
+  1.4.0 newly visible both). Scheduler: CooldownS 21600 restored (see above),
+  P10/W15, latest_tick.ID = this fire (h3-2026-08-05-08-20-18, no duplicate).
+  Host: load 8.97 elevated (sweep clean per #182 rule), disk 99% / 23G free
+  (was 90%/176G at #254 — sharp drop, state.db likely; watching, flagging to
+  disk audit), memory 49Gi. Off-by-One healthy 67h8m (stats 523/629 queue 2
+  hit_rate 1; no discover on E2E class — not_found since #240-era).
+  Git state: h3 clean 0/0 pre-tick; protocol ahead 4 (known #154); sdk-go
+  ahead 1 + untracked .gitreins/history/ (sibling, hands-off); sdk-python
+  clean + untracked dagger.db (known stray); sdk-typescript ahead 1 + strays
+  (sibling-owned, hands-off). No new remote commits.
+  GitReins: 5/5 complete (0 pending); guard not re-run (board-only tick).
+  VERDICT: PRODUCTIVE — E2E-001 live battery 43/43 + cooldown pin restored.
+  No worker needed (fixture + config restore are foreman-direct).
+  Next: E2E-001 DUE #260 (window #255-260 closing tick); NEVER-DONE ~#256-257
+  (strict-3 from #253, first element #256).
