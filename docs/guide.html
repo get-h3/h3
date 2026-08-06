@@ -357,24 +357,24 @@ go get github.com/get-h3/sdk-go</textarea>
             <div class="code-shell">
               <pre><code>mkdir my-h3-harness && cd my-h3-harness
 python3 -m venv .venv && source .venv/bin/activate
-pip install h3-harness-sdk fastapi uvicorn</code></pre>
+pip install git+https://github.com/get-h3/sdk-python fastapi uvicorn</code></pre>
               <button class="copy-button" type="button" data-copy="setup-python-cmd">copy</button>
               <textarea id="setup-python-cmd" hidden>mkdir my-h3-harness && cd my-h3-harness
 python3 -m venv .venv && source .venv/bin/activate
-pip install h3-harness-sdk fastapi uvicorn</textarea>
+pip install git+https://github.com/get-h3/sdk-python fastapi uvicorn</textarea>
             </div>
           </div>
           <div class="tab-panel" data-panel="setup-typescript" hidden>
             <div class="code-shell">
               <pre><code>mkdir my-h3-harness && cd my-h3-harness
 npm init -y
-npm install @get-h3/h3-harness-sdk hono
-# or: bun install @get-h3/h3-harness-sdk hono</code></pre>
+npm install github:get-h3/sdk-typescript hono
+# or: bun install github:get-h3/sdk-typescript hono</code></pre>
               <button class="copy-button" type="button" data-copy="setup-typescript-cmd">copy</button>
               <textarea id="setup-typescript-cmd" hidden>mkdir my-h3-harness && cd my-h3-harness
 npm init -y
-npm install @get-h3/h3-harness-sdk hono
-# or: bun install @get-h3/h3-harness-sdk hono</textarea>
+npm install github:get-h3/sdk-typescript hono
+# or: bun install github:get-h3/sdk-typescript hono</textarea>
             </div>
           </div>
         </div>
@@ -593,10 +593,12 @@ const app = new Hono(); app.route("/", createH3Router(echo)); export default app
 
         <div class="card step-card">
           <div class="code-shell">
-            <pre><code>pip install hermes-h3-shim
+            <pre><code>git clone https://github.com/get-h3/shim && cd shim
+pip install -e .
 h3-test --endpoint http://localhost:9191</code></pre>
             <button class="copy-button" type="button" data-copy="test-run">copy</button>
-            <textarea id="test-run" hidden>pip install hermes-h3-shim
+            <textarea id="test-run" hidden>git clone https://github.com/get-h3/shim && cd shim
+pip install -e .
 h3-test --endpoint http://localhost:9191</textarea>
           </div>
           <p style="margin-top:10px;">The test battery runs in under 5 seconds. You'll see each test pass/fail with a final score out of 43.</p>

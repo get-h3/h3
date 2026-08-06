@@ -44,7 +44,8 @@ protocol/  (OpenAPI spec)
 The test battery (`shim/test_battery.py`) is the gate. It runs against ANY harness endpoint — no code changes needed:
 
 ```bash
-pip install hermes-h3-shim
+git clone https://github.com/get-h3/shim && cd shim
+pip install -e .
 h3-test --endpoint http://localhost:9191
 ```
 

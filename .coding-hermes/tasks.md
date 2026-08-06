@@ -277,8 +277,8 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 
 | ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback |
 |----|------|-----|-----|------|------|-------|-----------|----------|
-| H3-GAP-004 | Dead PyPI install refs in onboarding docs: AGENTS.md:47, CONTRIBUTING.md:56, docs/guide.html Step 4 (L596-597) all instruct `pip install hermes-h3-shim` → fresh venv gets "No matching distribution found" (PyPI publish blocked on P3-10 token; README Quick Start was already fixed to `git clone …/shim && pip install -e .`, these 3 files were missed — verified fresh venv 2026-08-05). Fix: replace with the source-install command in all 3 files (or unblock P3-10 and publish). PASS: fresh venv + the exact command from each of the 3 files yields `h3-test --help` usage; `grep -rn 'pip install hermes-h3-shim' AGENTS.md CONTRIBUTING.md docs/guide.html` = 0 matches. | P1 | 1 | — | docs,onboarding | deepseek-v4-flash @ deepseek-foreman | docs-vs-reality drift (H3-GAP-001 class, 2nd recurrence — README fixed, siblings missed) | deepseek-v4-flash |
-| H3-GAP-005 | docs/guide.html "Build Your First H3 Harness" Step 1 installs unpublished SDKs: Python tab `pip install h3-harness-sdk` (sdk-python name, never published to PyPI) and TS tab `npm install @get-h3/h3-harness-sdk` (never published to npm) both fail in fresh envs; only the Go path works (v0.1.0 tag exists). Verified 2026-08-05 (fresh-env checks + registry searches). Fix: add from-source fallbacks to the guide tabs (`pip install git+https://github.com/get-h3/sdk-python`, `npm install github:get-h3/sdk-typescript`) mirroring the shim pattern, or publish. PASS: copy-paste install command from each guide tab into a fresh env succeeds (or the tab documents a working from-source fallback). | P1 | 1 | — | docs,onboarding,release | deepseek-v4-flash @ deepseek-foreman | docs-vs-reality drift (unpublished-package class) | deepseek-v4-flash |
+| ✅ H3-GAP-004 | Dead PyPI install refs in onboarding docs: AGENTS.md:47, CONTRIBUTING.md:56, docs/guide.html Step 4 (L596-597) all instruct `pip install hermes-h3-shim` → fresh venv gets "No matching distribution found" (PyPI publish blocked on P3-10 token; README Quick Start was already fixed to `git clone …/shim && pip install -e .`, these 3 files were missed — verified fresh venv 2026-08-05). Fix: replace with the source-install command in all 3 files (or unblock P3-10 and publish). PASS: fresh venv + the exact command from each of the 3 files yields `h3-test --help` usage; `grep -rn 'pip install hermes-h3-shim' AGENTS.md CONTRIBUTING.md docs/guide.html` = 0 matches. | P1 | 1 | — | docs,onboarding | deepseek-v4-flash @ deepseek-foreman | docs-vs-reality drift (H3-GAP-001 class, 2nd recurrence — README fixed, siblings missed) | deepseek-v4-flash |
+| ✅ H3-GAP-005 | docs/guide.html "Build Your First H3 Harness" Step 1 installs unpublished SDKs: Python tab `pip install h3-harness-sdk` (sdk-python name, never published to PyPI) and TS tab `npm install @get-h3/h3-harness-sdk` (never published to npm) both fail in fresh envs; only the Go path works (v0.1.0 tag exists). Verified 2026-08-05 (fresh-env checks + registry searches). Fix: add from-source fallbacks to the guide tabs (`pip install git+https://github.com/get-h3/sdk-python`, `npm install github:get-h3/sdk-typescript`) mirroring the shim pattern, or publish. PASS: copy-paste install command from each guide tab into a fresh env succeeds (or the tab documents a working from-source fallback). | P1 | 1 | — | docs,onboarding,release | deepseek-v4-flash @ deepseek-foreman | docs-vs-reality drift (unpublished-package class) | deepseek-v4-flash |
 
  50+ ticks in 24h with Commits=0 FilesChanged=0 TokensIn=0 each append a full tick log; tasks.md grown to 7,888 lines / 580KB — task matrix buried under noise. Verified 2026-08-04 stand-in PM sweep. | P1 | 2 | — | board,scheduler | deepseek-v4-flash @ deepseek-foreman | ✅ Tick #254: cooldown pinned 600→21600s (6h) in BOTH fleet.toml files (canonical ~/.hermes/fleet.toml + repo copy read by fleet-auto-heal) + PUT /api/v1/projects/h3 CooldownS=21600, GET-verified live (UpdatedAt 2026-08-04T22:50:49Z). autoSlowdown productive-reset only fires <3600s so pin is durable. Zero-output ticks now append ONE-LINE summary (this tick's entry is the first compact one). | deepseek-v4-flash |
 
@@ -7994,3 +7994,66 @@ Tick #194 (2026-08-03 01:37 local tick-fire): E2E-001 ✅ Go echo full protocol 
   No worker needed (fixture + config restore are foreman-direct).
   Next: E2E-001 DUE #260 (window #255-260 closing tick); NEVER-DONE ~#256-257
   (strict-3 from #253, first element #256).
+
+  Tick #256 (2026-08-06 15:35 local tick-fire): PRODUCTIVE — NEVER-DONE 11-point audit ✅
+  (strict-3 from #253 — due, first element of ~#256-257) + H3-GAP-004/005 ✅ closed
+  (foreman-direct docs fixes, fresh-env verified) + cooldown pin restored (21600; live
+  was 900 at fire — policy-script clobber recurred exactly as #255 forward-flagged).
+  NEVER-DONE 11-point: spec alignment ✅ (27 files = 26 specs + _index.md), doc coverage
+  ✅ (43 tracked .md umbrella, all 6 AGENTS.md), test gaps ✅ (fleet 528 green: shim
+  242/242 1.40s, sdk-go 3 pkgs cached, sdk-python 123/123 2.65s + 1 cosmetic bench
+  warning, sdk-typescript 137/137 3.07s, protocol validate-schemas 23/23), dep upgrades
+  ⚠️ (minors only; pydantic-core 2.46.4→2.48.0 still fastapi-chain-blocked — 213 ticks;
+  shim 9 / sdk-python 8 outdated minors; TS hono 4.12.32→4.13.0 + @hono/node-server
+  2.0.12→2.1.0 minors, typescript 5→7 major deferred), pitfall hunt ✅ (no new),
+  performance audit ⚠️ (PERF-ND-01/02/03 LOW unresolved), endpoint verification ✅ (SDK
+  tests exercise all endpoints), CI/CD health ✅ (gh CI green: h3 Pages 23:51Z Aug 2 +
+  Cross-Lang RT Jul 24; shim Test ×3 latest 18:17Z Aug 5; 0 open issues), DuckBrain sync
+  ✅ (pre-write /tick/255 present, /tick/256 absent — clean; post-commit write), code
+  quality ✅ (Hilo: h3 22e/5f, protocol 4e/1f, shim 146e/27f, sdk-go 100e/18f, sdk-python
+  106e/24f + sdk-ts 59e/26f — sibling drift, moving targets), middle-out wiring ⚠️
+  (WIRING-01/02 need Bane review). Result: 8 PASS, 3 known-⚠️, no new gaps, no new tasks.
+  H3-GAP-004 ✅ (P1, docs): dead `pip install hermes-h3-shim` refs in AGENTS.md:47,
+  CONTRIBUTING.md:56, docs/guide.html Step 4 (pre + hidden textarea) replaced with the
+  README-proven source install (`git clone https://github.com/get-h3/shim && cd shim &&
+  pip install -e .`). Verified: grep = 0 dead refs across all 4 onboarding files AND a
+  fresh-venv round-trip from network (clone → pip install -e . → h3-test --help prints
+  usage). P3-10 note kept in CONTRIBUTING.
+  H3-GAP-005 ✅ (P1, docs): guide.html Step 1 tabs now install SDKs from source — Python
+  tab `pip install git+https://github.com/get-h3/sdk-python fastapi uvicorn`, TS tab
+  `npm install github:get-h3/sdk-typescript hono` (+ bun form updated). Verified fresh:
+  Python git-install → `import h3_harness` ok; npm github-install → require
+  ('@get-h3/h3-harness-sdk') ok (40 exports, 0 vulns).
+  Cooldown pin restored: live CooldownS read 900 at tick-fire and canonical
+  ~/.hermes/fleet.toml h3 block read 900 — fleet-cooldown-policy.py --apply clobbered
+  the #254/#255 21600 pin again (the flagged forward-conflict). Restored: cooldown_s=
+  21600 re-appended to canonical (repo copy coding-hermes-scheduler/.../fleet.toml
+  already 21600 — auto-heal source correct) + PUT /api/v1/projects/h3 CooldownS=21600
+  → GET-verified 21600 (updated_at 2026-08-06T20:39:50Z). ⚠️ STILL FLAGGED (fleet
+  infra): policy --apply will reduce again unless supervisor whitelists h3; watch next
+  tick.
+  GitReins: JUDGE ✅ PASS ×6 (deepseek-v4-flash). Tasks: 5/5 complete (0 pending).
+  Guard: pre-commit hook on commit (board+docs tick, #254 precedent).
+  Git state: h3 ahead 1 pre-tick (stand-in PM's 4c3f8eb GAP-004/005 filing — carried by
+  this push); protocol ahead 4 (known since #154); sdk-typescript ahead 1 + board
+  parquet D/M mid-write (sibling, hands-off); sdk-go untracked .gitreins/history/ +
+  sdk-python untracked board.db/dagger.db (known strays). No new remote commits
+  (fetch ×6).
+  Scheduler: CooldownS 900→21600 restored (above); Enabled=true, Weight=15,
+  Priority=10, DecayRate=1; latest_tick null mid-tick (timing-dependent normal);
+  duplicate-fire check PASS (HEAD 4c3f8eb pre-tick, /tick/255 present, /tick/256
+  absent pre-write).
+  Host: load 4.77 (1m) moderate; disk 62% (673G free — recovered state holds, no
+  bleed this tick); memory 48Gi available. Port :8000 zombie only (known since tick
+  #35); no 919x listeners (verified).
+  Off-by-One: healthy (uptime 97h58m — consistent with #255's 67h8m + ~31h, no
+  restart); stats 533/640 queue 2 hit_rate 1; no discover on NEVER-DONE class
+  (not_found since #193); no submit.
+  DuckBrain: pre-write /tick/255=1 record, /tick/256 absent — clean single run;
+  post-commit write (namespace h3 via HTTP :3000).
+  VERDICT: PRODUCTIVE — NEVER-DONE audit (due) + H3-GAP-004/005 closed (fresh-env
+  verified) + cooldown pin restored. Fleet 528 green, zero new gaps. No worker needed
+  (audit + docs class foreman-direct). P3-10 still blocked (needs PYPI_API_TOKEN). All
+  HIGH still blocked on Bane review (SEC-02/03, WIRING-01/02, RES-01/02).
+  Next: E2E-001 DUE #260 (window #255-260 closing tick — Go loop last umbrella-
+  verified #255); NEVER-DONE ~#259-260 (strict-3 from #256, first element #259).
