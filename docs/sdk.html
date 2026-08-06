@@ -646,7 +646,7 @@ func main() {
 
             <div class="install-block">
               <h4>Install</h4>
-              <code>pip install h3-harness-sdk</code>
+              <code>pip install git+https://github.com/get-h3/sdk-python</code>
               <div class="install-note">Requires <code>Python 3.10+</code>. Depends on Pydantic v2 and FastAPI.</div>
             </div>
 
@@ -730,7 +730,7 @@ class Echo(BaseHarness):
 app = FastAPI()
 app.include_router(create_router(Echo()))</textarea>
               </div>
-              <div class="run-row"><span>Run:</span><code>pip install h3-harness-sdk fastapi uvicorn &amp;&amp; uvicorn harness:app --host 0.0.0.0 --port 9191</code></div>
+              <div class="run-row"><span>Run:</span><code>pip install git+https://github.com/get-h3/sdk-python fastapi uvicorn &amp;&amp; uvicorn harness:app --host 0.0.0.0 --port 9191</code></div>
             </div>
 
             <div class="pkg-grid">
@@ -757,7 +757,7 @@ app.include_router(create_router(Echo()))</textarea>
 
             <div class="install-block">
               <h4>Install</h4>
-              <code>npm install @get-h3/h3-harness-sdk</code>
+              <code>npm install github:get-h3/sdk-typescript</code>
               <div class="install-note">Also available via <code>bun add @get-h3/h3-harness-sdk</code>. Works with Node, Bun, and Deno. Depends on Hono and Zod.</div>
             </div>
 
@@ -883,7 +883,7 @@ const app = new Hono();
 app.route("/", createH3Router(echo));
 export default app;</textarea>
               </div>
-              <div class="run-row"><span>Run:</span><code>npm install @get-h3/h3-harness-sdk hono &amp;&amp; npx tsx harness.ts</code></div>
+              <div class="run-row"><span>Run:</span><code>npm install github:get-h3/sdk-typescript hono &amp;&amp; npx tsx harness.ts</code></div>
             </div>
 
             <div class="pkg-grid">

@@ -437,12 +437,12 @@ func (h *MyHarness) OnProcess(
         </tr>
         <tr style="border-bottom:1px solid rgba(30,30,56,0.5);">
           <td style="padding:8px 12px;font-weight:700;">Python</td>
-          <td style="padding:8px 12px;"><code>pip install h3-harness-sdk</code></td>
+          <td style="padding:8px 12px;"><code>pip install git+https://github.com/get-h3/sdk-python</code></td>
           <td style="padding:8px 12px;">Quick prototypes, ML/AI, existing Python code</td>
         </tr>
         <tr>
           <td style="padding:8px 12px;font-weight:700;">TypeScript</td>
-          <td style="padding:8px 12px;"><code>npm install @get-h3/h3-harness-sdk</code></td>
+          <td style="padding:8px 12px;"><code>npm install github:get-h3/sdk-typescript</code></td>
           <td style="padding:8px 12px;">Web-native, Node.js, existing TS/JS infra</td>
         </tr>
       </tbody>
@@ -536,7 +536,8 @@ sessions:
     <div class="step-title"><span class="step-num">6</span> Run the Test Battery</div>
     <p>The H3 test battery validates 43 protocol behaviors. Run it against your harness to catch edge cases.</p>
 
-    <pre><code>pip install hermes-h3-shim
+    <pre><code>git clone https://github.com/get-h3/shim && cd shim
+pip install -e .
 h3-test --endpoint http://localhost:9191
 
 # Output:

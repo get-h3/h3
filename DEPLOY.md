@@ -21,7 +21,7 @@ Harness (the brain)
 - Hermes Agent (any version compatible per `protocol/versions.yaml`)
 - Python 3.11+ (for the shim)
 - Python, Go, or TypeScript runtime (for the harness — pick your SDK language)
-- `h3-test` (bundled with the shim, or `pip install hermes-h3-shim`)
+- `h3-test` (bundled with the shim; install from source: `git clone https://github.com/get-h3/shim && cd shim && pip install -e .`)
 
 ## Step 1: Install the H3 Shim
 
@@ -118,7 +118,7 @@ app.include_router(create_router(MyHarness()))
 ```
 
 ```bash
-pip install h3-harness-sdk
+pip install git+https://github.com/get-h3/sdk-python
 uvicorn main:app --port 9191
 ```
 
@@ -149,7 +149,7 @@ export default app;
 ```
 
 ```bash
-npm install @get-h3/h3-harness-sdk
+npm install github:get-h3/sdk-typescript
 npx tsx main.ts  # listens on :9191
 ```
 
@@ -159,12 +159,6 @@ The test battery is the gate. 43 tests across 6 regions. Exit code 0 = compliant
 
 ```bash
 h3-test --endpoint http://localhost:9191
-
-# HTML report
-h3-test --endpoint http://localhost:9191 --html > report.html
-
-# Smoke test (fast subset)
-h3-test --endpoint http://localhost:9191 --smoke
 ```
 
 All 43 must pass. No exceptions.
@@ -209,7 +203,7 @@ For production isolation or running on separate hosts.
 
 ```dockerfile
 FROM python:3.11-slim
-RUN pip install h3-harness-sdk
+RUN pip install git+https://github.com/get-h3/sdk-python
 COPY harness.py .
 EXPOSE 9191
 CMD ["python", "harness.py"]
@@ -266,7 +260,7 @@ Only the listed sessions use H3. All others continue with the native Hermes loop
 hermes h3 verify --harness my-harness
 
 # Test battery (periodic compliance)
-h3-test --endpoint http://localhost:9191 --smoke
+h3-test --endpoint http://localhost:9191
 
 # Harness logs — every request should log:
 # METHOD /v1/process STATUS DURATION_MS

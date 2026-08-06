@@ -98,10 +98,8 @@ A harness is H3-compliant when it passes all 43 tests in the [test battery](http
 | Language | Tests Passing |
 |----------|:------------:|
 | Go (echo) | 43/43 |
-| Python (echo) | ~15/43* |
+| Python (echo) | 43/43 |
 | TypeScript (echo) | 43/43 |
-
-*\*Python SDK has a Pydantic strictness issue with optional fields. [Tracked as QV-SDK-06.](.coding-hermes/tasks.md)*
 
 ## Development
 

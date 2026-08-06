@@ -584,7 +584,7 @@ func main() { fmt.Println("H3 harness listening on :9191"); http.ListenAndServe(
           </div>
 
           <div class="tab-panel" id="panel-python" role="tabpanel" aria-labelledby="tab-python" data-panel="python" hidden>
-            <div class="panel-head"><span class="panel-label">Python · FastAPI echo harness</span><span class="install">pip install h3-harness-sdk fastapi uvicorn</span></div>
+            <div class="panel-head"><span class="panel-label">Python · FastAPI echo harness</span><span class="install">pip install git+https://github.com/get-h3/sdk-python fastapi uvicorn</span></div>
             <div class="code-shell">
               <pre><code><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
 <span class="kw">from</span> h3_harness <span class="kw">import</span> BaseHarness, Decision, DecisionType, End, TextResponse, create_router
@@ -616,7 +616,7 @@ app.include_router(create_router(Echo()))</textarea>
           </div>
 
           <div class="tab-panel" id="panel-typescript" role="tabpanel" aria-labelledby="tab-typescript" data-panel="typescript" hidden>
-            <div class="panel-head"><span class="panel-label">TypeScript · Hono echo harness</span><span class="install">npm install @get-h3/h3-harness-sdk hono</span></div>
+            <div class="panel-head"><span class="panel-label">TypeScript · Hono echo harness</span><span class="install">npm install github:get-h3/sdk-typescript hono</span></div>
             <div class="code-shell">
               <pre><code><span class="kw">import</span> { Hono } <span class="kw">from</span> <span class="str">"hono"</span>;
 <span class="kw">import</span> { createH3Router } <span class="kw">from</span> <span class="str">"@get-h3/h3-harness-sdk"</span>;
@@ -645,7 +645,7 @@ const app = new Hono(); app.route("/", createH3Router(echo)); export default app
 
           <div class="test-callout">
             <div><strong>Run the compliance battery</strong><span>Validate any harness endpoint against the full H3 contract.</span></div>
-            <code>pip install hermes-h3-shim &amp;&amp; h3-test --endpoint http://localhost:9191</code>
+            <code>git clone https://github.com/get-h3/shim &amp;&amp; cd shim &amp;&amp; pip install -e . &amp;&amp; h3-test --endpoint http://localhost:9191</code>
           </div>
         </div>
       </div>
@@ -703,11 +703,13 @@ const app = new Hono(); app.route("/", createH3Router(echo)); export default app
         <div class="card quickstart-card">
           <div class="panel-head"><span class="panel-label">Step 1 · Verify your harness</span></div>
           <div class="code-shell">
-            <pre><code>pip install hermes-h3-shim
-h3-test --endpoint http://localhost:9191 --smoke</code></pre>
+            <pre><code>git clone https://github.com/get-h3/shim && cd shim
+pip install -e .
+h3-test --endpoint http://localhost:9191</code></pre>
             <button class="copy-button" type="button" data-copy="verify-cmd" aria-label="Copy verify command">copy</button>
-            <textarea id="verify-cmd" hidden>pip install hermes-h3-shim
-h3-test --endpoint http://localhost:9191 --smoke</textarea>
+            <textarea id="verify-cmd" hidden>git clone https://github.com/get-h3/shim && cd shim
+pip install -e .
+h3-test --endpoint http://localhost:9191</textarea>
           </div>
           <p style="margin:14px 0 6px;color:var(--muted);font-size:0.82rem;">✅ 43/43 → compliant &nbsp; ❌ any failure → not compliant &nbsp; — → haven't tested yet</p>
 
