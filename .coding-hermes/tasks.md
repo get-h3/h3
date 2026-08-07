@@ -8329,3 +8329,8 @@ Tick #194 (2026-08-03 01:37 local tick-fire): E2E-001 ✅ Go echo full protocol 
 **Cooldown pin clobber #11:** live + canonical read 7200 at fire (repo copy 21600, auto-heal correct). Restored canonical 7200→21600 + PUT → GET-verified 21600 ×2 (updated_at 2026-08-07T21:28:27Z). Supervisor whitelist remains the durable fix.
 
 **Fleet:** 531 green (shim 269/269 1.57s, sdk-go cached, sdk-python 124/124 2.43s +1 cosmetic bench warning, sdk-ts 138/138 336ms; protocol validate-schemas 23/23). Judge PASS ×6, gitreins 5/5 complete. Hilo ×6 canonical (shim 162e/29f sibling-drifted). CI green ×6, 0 open issues. Deps minors only + pydantic-core fastapi-blocked (221); npm audit 0. Host load 3.92, disk 69%/554G free, mem 47Gi. Off-by-One healthy 13h57m (stats 632/749 queue 7). Board: events.jsonl id=6, header 265/0, fixtures refreshed. No worker — double-due fixture tick foreman-direct.
+
+---
+## Tick #266 (2026-08-07) — PRODUCTIVE: H3-GAP-010/011 closed foreman-direct (docs class)
+
+GAP-010: /home/kara/get-h3/AGENTS.md:47 dead `pip install hermes-h3-shim` → source install (workspace root not a git repo — edited in place, no commit). GAP-011: '11/11' → '26/26' in 3 PRD HTMLs + 2 adjacent '11 specs (~97pp)' prose spots (partial-fix lesson). PASS greps = 0. Cooldown clobber #12 restored (PUT 21600, GET-verified). Fleet 531 green (shim 269/269, sdk-python 124/124, sdk-ts 138/138, protocol 23/23), judge PASS ×6, Hilo canonical ×6, CI green ×6, 0 open issues. Fixtures fresh: E2E-001 window #265-270 (closing #270 due), NEVER-DONE ~#268-269 (first element #268). Board: events id=7 tick 266, header 266/0 last_commit 3afd71c, GAP rows added complete.
