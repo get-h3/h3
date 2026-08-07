@@ -10,3 +10,7 @@
 # Cross-harness test artifacts
 .cross-harness-results/
 _run_cross_harness.sh
+
+# Board storage (Bane directive 08-07): JSONL is the git store; .db/parquet are rebuildable caches
+.coding-hermes/board/board.db
+.coding-hermes/board/*.parquet

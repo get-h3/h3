@@ -8222,3 +8222,76 @@ Tick #194 (2026-08-03 01:37 local tick-fire): E2E-001 ✅ Go echo full protocol 
   Next: E2E-001 DUE #260 (window #255-260 closing tick — Go loop last umbrella-verified #255;
     :9191 free again after helios-bin exit, verify at fire); NEVER-DONE ~#262-263 (strict-3
     from #259, first element #262).
+
+## ✅ JSONL-NORM-001 — Board storage: JSONL canonical (git-friendly), untrack board.db/parquet (Bane directive 08-07)
+  Board must be git-uploadable JSONL (duckdb-native), not .db files. PASS: git ls-files .coding-hermes/board/ lists no board.db/*.parquet (git rm --cached); tasks.jsonl+events.jsonl tracked & authoritative (duckdb COPY export if migrating); .gitignore covers board.db+*.parquet; parity probe MATCH; commit with co-author trailer.
+  | ✅ Tick #260: h3 board is tasks.md-only (git-tracked markdown = git-uploadable; BOARD-V2/INFRA-006 DuckDB migration is scheduler-tracked, OUT of umbrella scope per h3-foreman-ops — no migration attempted). No .coding-hermes/board/ dir exists: git ls-files .coding-hermes/board/ = empty (nothing to git rm --cached). .gitignore now covers .coding-hermes/board/board.db + *.parquet (defensive, committed this tick). JSONL export + parity probe N/A (no duckdb store exists; applies only if/when INFRA-006 lands). Committed with co-author trailer. | deepseek-v4-flash |
+  Tick #260 (2026-08-07 00:56 local tick-fire): E2E-001 ✅ Go echo full protocol loop 43/43
+  (window #255-260 closing tick — boundary rule held) + JSONL-NORM-001 ✅ closed + cooldown pin
+  restored (6th clobber). NEVER-DONE NOT due (ran #259, strict-3 first element #262). No worker
+  needed — fixture tick foreman-direct.
+  E2E-001 ✅ (43/43): ⚠️ :9191 held by FOREIGN process at tick-fire — sdk-typescript echo
+    (node/tsx src/examples/echo.ts, pid 2401219, started 00:52:58 = tick-fire-concurrent
+    SIBLING foreman E2E activity, parent npx tsx — left untouched per #179 protocol). Used the
+    alternate-port variant: sed'd :9191→:9192 copy of sdk-go/examples/echo/main.go
+    (/tmp/h3_20260807_echo_main_9192.go) + `go run` from sdk-go — listening in 1s, /v1/health
+    200 (status ok), /health 404 (expected). Battery: `cd shim && .venv/bin/h3-test
+    --endpoint http://localhost:9192` → 43/43 PASS (Health 7/7, Process 8/8, Decision 6/6,
+    Result 7/7, Errors 10/10, Stress 5/5), 0.20s, p50 0.70ms / p95 27.28ms, exit 0. Killed
+    bg session, :9192 verified FREE post-run; :9191 still sibling-held. New window #260-265
+    open — closing tick #265 due. (Port is incidental — same harness binary, #179 precedent.)
+  JSONL-NORM-001 ✅ (P1, board storage doctrine): h3 board is tasks.md-only — no
+    .coding-hermes/board/ dir, `git ls-files .coding-hermes/board/` = EMPTY (no board.db/
+    parquet to untrack — nothing tracked to git rm --cached). .gitignore now covers
+    .coding-hermes/board/board.db + *.parquet (defensive, future-proofs INFRA-006 migration).
+    No JSONL export / parity probe applicable (no duckdb store exists). Board remains
+    git-tracked markdown = git-uploadable ✓. No migration attempted (BOARD-V2/INFRA-006 is
+    scheduler-tracked, out of umbrella scope per h3-foreman-ops).
+  Cooldown pin: live cooldown_s read 7200 at tick-fire + canonical fleet.toml read 7200 —
+    fleet-cooldown-policy.py clobbered the #259 21600 restore again (6th recurrence of the
+    #255 forward-flag; supervisor whitelist still the durable fix). Restored: canonical
+    ~/.hermes/fleet.toml cooldown_s 21600 (repo copy coding-hermes-scheduler/.../fleet.toml
+    already 21600 — auto-heal source correct) + PUT /api/v1/projects/h3 CooldownS=21600 →
+    GET-verified 21600 (updated_at 2026-08-07T05:58:43Z).
+  Fleet 536 green: shim 248/248 (1.52s — sibling added tests, 242→248), sdk-go 3 pkgs ok
+    (cached), sdk-python 124/124 (2.69s, 1 cosmetic bench warning — known), sdk-typescript
+    138/138 (1.11s, 6 files), protocol validate-schemas 23/23 + YAML heredoc valid
+    (3.1.0 / 5 paths / 11 schemas / 6 keys).
+  ⚠️ shim CI: 2 consecutive Test workflow FAILURES (run 31148337223 04:44Z + 31150133160
+    05:17Z) — Lint step: ruff import-sort error (NotH3EndpointError multi-line import in a
+    test file). Shim foreman ALREADY filed CI-001 (commit adab73c on main = failing head,
+    board: supervisor inject) — sibling-owned, in-flight, hands-off; re-check next tick.
+    h3 umbrella CI green (Pages 01:21Z Aug 7 = #258 push deploy success, Cross-Lang RT
+    07-24), 0 open issues.
+  Judge PASS ×6 (deepseek-v4-flash). GitReins tasks 5/5 complete (0 pending).
+  Hilo: h3 22e/5f, protocol 4e/1f, shim 161e/29f (drifted — sibling additions), sdk-go
+    102e/18f, sdk-python 106e/24f, sdk-typescript 60e/26f.
+  Git state: h3 modified (tasks.md JSONL-NORM-001 row + this entry, .gitignore — this
+    commit); protocol ahead 4 (known #154); shim ahead 0 + board parquet M (sibling tick
+    in-flight — CI-001 era); sdk-go board parquet M (sibling); sdk-python untracked
+    board.db/dagger.db + sdk-typescript .gitreins/history/ (known strays, hands-off). No
+    new remote commits on h3 (fetch ×6).
+  Deps: shim 9 / sdk-python 9 outdated minors (incl. starlette 1.3.1→1.4.1, fastapi
+    0.140.13→0.141.1, ruff 0.16.0→0.16.1, uvicorn 0.52.0→0.52.1) + pydantic-core 2.46.4→2.48.0
+    fastapi-chain-blocked (216 ticks); TS hono/@hono/node-server minors + typescript 5→7
+    major deferred (never flag the major as actionable).
+  Host: load 7.33 (1m) elevated-moderate (falling from 16.69 15m), disk 65% (615G free —
+    recovered state holds), memory 47Gi available. :8000 zombie only + :9191 sibling-held
+    (above); :9192 free.
+  Off-by-One: healthy (uptime 2h11m — no drop since #259's 36s restart, consistent);
+    no discover on fixture-tick class (not_found since #193).
+  DuckBrain: pre-write bare /tick/259 present (id 8e2f08a-era, 1 record), bare /tick/260
+    ABSENT — clean single run (the /tick/260 grep hit was /project/h3-shim/tick/260, the
+    shim foreman's project-prefixed record in the shared h3 namespace — documented scheme);
+    post-commit write.
+  Scheduler: CooldownS 7200→21600 restored (above); Enabled=true, Weight=15, Priority=10,
+    DecayRate=1, consecutive_failures=0; latest_tick.ID h3-2026-08-07-00-56-39 = this fire
+    (identity confirmed, no duplicate).
+  VERDICT: PRODUCTIVE — E2E-001 due-cycle 43/43 (alternate-port variant, sibling conflict
+    handled per protocol) + JSONL-NORM-001 closed (P1 board doctrine, markdown-board
+    topology documented) + cooldown pin restored (6th). Fleet 536 green, zero new gaps,
+    no worker needed (fixture tick foreman-direct). P3-10 still blocked (PYPI_API_TOKEN).
+    All HIGH still blocked on Bane review (SEC-02/03, WIRING-01/02, RES-01/02).
+  Next: E2E-001 DUE #265 (window #260-265 closing tick; re-check :9191 sibling state —
+    TS foreman was mid-E2E this tick); NEVER-DONE ~#262-263 (strict-3 from #259, first
+    element #262); shim CI-001 sibling-in-flight (re-check green).
