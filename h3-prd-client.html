@@ -562,11 +562,11 @@ USER RECEIVES RESPONSE
     </tr>
     <tr>
       <td><strong>sdk-python</strong></td><td>Python</td><td>Pydantic v2, FastAPI, pytest</td>
-      <td><code>pip install h3-harness-sdk</code></td>
+      <td><code>pip install git+https://github.com/get-h3/sdk-python</code></td>
     </tr>
     <tr>
       <td><strong>sdk-typescript</strong></td><td>TypeScript</td><td>Zod, Hono, vitest</td>
-      <td><code>npm install @get-h3/h3-harness-sdk</code></td>
+      <td><code>npm install github:get-h3/sdk-typescript</code></td>
     </tr>
   </tbody>
 </table>
@@ -630,7 +630,7 @@ USER RECEIVES RESPONSE
 </div>
 
 <pre><span class="comment"># One command. Any harness. Instant compliance report.</span>
-$ pip install hermes-h3-shim
+$ git clone https://github.com/get-h3/shim && cd shim && pip install -e .
 $ h3-test --endpoint http://localhost:9191
 
 H3 Compliance Test Battery v1.0.0

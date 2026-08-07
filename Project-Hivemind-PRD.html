@@ -555,7 +555,7 @@ USER RECEIVES RESPONSE
 
 <div class="callout">
   <strong>Every test is fully specified.</strong> Implementation is Phase 3 of the roadmap. When built, harness developers run:<br><br>
-  <code style="display:inline-block;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm)">$ pip install hermes-h3-shim &amp;&amp; h3-test --endpoint http://localhost:9191</code><br><br>
+  <code style="display:inline-block;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm)">$ git clone https://github.com/get-h3/shim &amp;&amp; cd shim &amp;&amp; pip install -e . &amp;&amp; h3-test --endpoint http://localhost:9191</code><br><br>
   JSON report for CI. HTML report for humans. Smoke-test mode for fast feedback during development.
 </div>
 </div>
@@ -582,7 +582,7 @@ USER RECEIVES RESPONSE
   </div>
   <div class="card" style="border-top:3px solid var(--accent)">
     <h3>Python SDK</h3>
-    <p style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--accent);margin-bottom:0.5rem">pip install h3-harness-sdk</p>
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--accent);margin-bottom:0.5rem">pip install git+https://github.com/get-h3/sdk-python</p>
     <ul>
       <li>Pydantic v2 models from JSON Schema</li>
       <li>BaseHarness ABC + FastAPI router</li>
@@ -592,7 +592,7 @@ USER RECEIVES RESPONSE
   </div>
   <div class="card" style="border-top:3px solid var(--accent-2)">
     <h3>TypeScript SDK</h3>
-    <p style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--accent);margin-bottom:0.5rem">npm install @get-h3/h3-harness-sdk</p>
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--accent-2);margin-bottom:0.5rem">npm install github:get-h3/sdk-typescript</p>
     <ul>
       <li>Zod schemas + TypeScript interfaces</li>
       <li>Harness interface + Hono router</li>

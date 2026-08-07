@@ -782,8 +782,9 @@ Target: http://localhost:9191
     <h2>Build Your First Harness</h2>
     <p>Three endpoints. Any language. Full Hermes power.</p>
     <pre style="display:inline-block;text-align:left;font-size:0.85rem">
-# Install the test battery
-pip install hermes-h3-shim
+# Install the test battery (from source — not yet on PyPI, P3-10)
+git clone https://github.com/get-h3/shim && cd shim
+pip install -e .
 
 # Run compliance tests against your harness
 h3-test --endpoint http://localhost:9191</pre>

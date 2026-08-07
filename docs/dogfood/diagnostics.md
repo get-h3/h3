@@ -63,12 +63,14 @@ the umbrella `h3` repo holds the specs, the cross-repo board
 
 ## 3. Errors hit during the run, and the right way
 
-### E1. `pip install hermes-h3-shim` → "No matching distribution found"
+### E1. Installing the shim package → "No matching distribution found"
 **Why:** the package was never published to PyPI (P3-10 blocked on
-credentials). Same for `h3-harness-sdk`.
-**Right way:** install from source (`uv pip install -e <repo>`), or wait for
-the publish. This is the fleet's single biggest onboarding gap — every
-README starts with a dead command.
+credentials). Same for the Python SDK's PyPI name (`h3-harness-sdk`).
+**Right way:** install from source — shim: `git clone
+https://github.com/get-h3/shim && cd shim && pip install -e .`; SDKs:
+`pip install git+https://github.com/get-h3/sdk-python` /
+`npm install github:get-h3/sdk-typescript`. Or wait for the publish (P3-10).
+
 
 ### E2. `go mod tidy` → `unknown revision v0.0.0`
 **Why:** the scaffold template pins `github.com/get-h3/sdk-go v0.0.0`, a

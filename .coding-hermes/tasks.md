@@ -282,7 +282,7 @@ ID | Task | Pri | Cpx | Deps | Tags | Model | Reasoning | Fallback
 | H3-GAP-006 | README compliance table row for Python is stale: claims `~15/43*` with a footnote linking to non-existent board task QV-SDK-06; the Python SDK actually passes 43/43 since 2026-07-26 (tick #32: QV-E2E-02 verified `43/43 via h3-test against official EchoHarness`). Verified 2026-08-06 stand-in PM sweep. Fix: update the row to 43/43 and drop the QV-SDK-06 footnote (or point it at the real fix). PASS: `grep '~15/43' README.md` = 0 AND `grep 'QV-SDK-06' README.md` = 0 AND the Python (echo) row shows 43/43. | P2 | 1 | — | docs,claims | deepseek-v4-flash @ deepseek-foreman | docs-vs-reality drift (compliance table, stale-claims class) | deepseek-v4-flash |
 | H3-GAP-007 | docs/index.html (flagship landing page) dead install refs: `pip install hermes-h3-shim` (L648, L706-707), `pip install h3-harness-sdk` (L587), `npm install @get-h3/h3-harness-sdk` (L619) all 404 (H3-GAP-001/004/005 class — siblings missed) + phantom `--smoke` flag (L707) that h3-test --help does not support. Verified 2026-08-06 stand-in PM sweep. Fix: from-source installs (`git clone …/shim && pip install -e .`, `pip install git+https://github.com/get-h3/sdk-python`, `npm install github:get-h3/sdk-typescript`) + remove `--smoke`. PASS: `grep -n 'pip install hermes-h3-shim\|pip install h3-harness-sdk\|npm install @get-h3/h3-harness-sdk\|--smoke' docs/index.html` = 0. | P1 | 1 | — | docs,onboarding | deepseek-v4-flash @ deepseek-foreman | docs-vs-reality drift (dead install refs, 3rd file-class recurrence) | deepseek-v4-flash |
 | H3-GAP-008 | docs/migration.html (L539/440/445), docs/sdk.html (L649/733/760/886) and DEPLOY.md (L24/121/152/212) carry the same dead install refs (`pip install hermes-h3-shim`, `pip install h3-harness-sdk`, `npm install @get-h3/h3-harness-sdk`) PLUS phantom h3-test flags `--smoke` (DEPLOY.md L167/269) and `--html` (L164) that do not exist in h3-test --help. Verified 2026-08-06 stand-in PM sweep. Fix: same from-source replacements across all 3 files; remove or implement the phantom flags. PASS: `grep -rn 'pip install hermes-h3-shim\|pip install h3-harness-sdk\|npm install @get-h3/h3-harness-sdk\|--smoke\|--html' docs/migration.html docs/sdk.html DEPLOY.md` = 0. | P1 | 1 | — | docs,onboarding | deepseek-v4-flash @ deepseek-foreman | docs-vs-reality drift (dead install refs, 4th file-class recurrence) | deepseek-v4-flash |
-| H3-GAP-009 | Dead install refs remain in 12 more umbrella files: prd.html, h3-prd-client.html, H3-PRD-Spec-Summary.html, specs/03-Installer-Version-Compat.md, specs/08-Cross-Repo-Release-Pipeline.md, specs/09-Testing-Framework-Architecture.md, specs/10-Website-Docs.md, specs/25-Conformance-Certification.md, specs/26-Chaos-Engineering.md, docs/dogfood/diagnostics.md, docs/dogfood/2026-08-02-integration.md, Project-Hivemind-PRD.html, MusterFlow-PRD.html (same dead refs as GAP-006/007/008: `pip install hermes-h3-shim`, `pip install h3-harness-sdk`, `npm install @get-h3/h3-harness-sdk`; verified 2026-08-06 foreman repo-wide sweep after closing GAP-006/007/008). Sibling-owned AGENTS.md also carry dead refs (sdk-python `pip install h3-harness-sdk`, sdk-typescript `npm install @get-h3/h3-harness-sdk` — flagged for sibling foremen). Fix: same from-source replacements; specs/PRD/dogfood files are historical deliverables — review for historical-context handling, don't blind-replace. PASS: repo-wide grep (excl. .coding-hermes + specs) = 0 after review. | P2 | 1 | — | docs,onboarding | deepseek-v4-flash @ deepseek-foreman | docs-vs-reality drift (dead install refs, 5th file-class recurrence) | deepseek-v4-flash |
+| ✅ H3-GAP-009 | Dead install refs remain in 12 more umbrella files: prd.html, h3-prd-client.html, H3-PRD-Spec-Summary.html, specs/03-Installer-Version-Compat.md, specs/08-Cross-Repo-Release-Pipeline.md, specs/09-Testing-Framework-Architecture.md, specs/10-Website-Docs.md, specs/25-Conformance-Certification.md, specs/26-Chaos-Engineering.md, docs/dogfood/diagnostics.md, docs/dogfood/2026-08-02-integration.md, Project-Hivemind-PRD.html, MusterFlow-PRD.html (same dead refs as GAP-006/007/008: `pip install hermes-h3-shim`, `pip install h3-harness-sdk`, `npm install @get-h3/h3-harness-sdk`; verified 2026-08-06 foreman repo-wide sweep after closing GAP-006/007/008). Sibling-owned AGENTS.md also carry dead refs (sdk-python `pip install h3-harness-sdk`, sdk-typescript `npm install @get-h3/h3-harness-sdk` — flagged for sibling foremen). Fix: same from-source replacements; specs/PRD/dogfood files are historical deliverables — review for historical-context handling, don't blind-replace. PASS: repo-wide grep (excl. .coding-hermes + specs) = 0 after review. | P2 | 1 | — | docs,onboarding | deepseek-v4-flash @ deepseek-foreman | ✅ Tick #258: 13 spots fixed across 7 files (prd.html, h3-prd-client.html, H3-PRD-Spec-Summary.html, Project-Hivemind-PRD.html, MusterFlow-PRD.html, docs/dogfood ×2 — dogfood logs keep failure narrative in prose, dead literals removed). Specs ×6 KEPT after review: forward-looking design text (PyPI publish is the P3-10-gated end state; excluded from PASS grep). PASS grep = 0 (excl. .coding-hermes + specs). Sibling AGENTS.md refs flagged via DuckBrain notes (sdk-python bare PyPI cmd; sdk-ts has GitHub fallback). | deepseek-v4-flash |
 
  50+ ticks in 24h with Commits=0 FilesChanged=0 TokensIn=0 each append a full tick log; tasks.md grown to 7,888 lines / 580KB — task matrix buried under noise. Verified 2026-08-04 stand-in PM sweep. | P1 | 2 | — | board,scheduler | deepseek-v4-flash @ deepseek-foreman | ✅ Tick #254: cooldown pinned 600→21600s (6h) in BOTH fleet.toml files (canonical ~/.hermes/fleet.toml + repo copy read by fleet-auto-heal) + PUT /api/v1/projects/h3 CooldownS=21600, GET-verified live (UpdatedAt 2026-08-04T22:50:49Z). autoSlowdown productive-reset only fires <3600s so pin is durable. Zero-output ticks now append ONE-LINE summary (this tick's entry is the first compact one). | deepseek-v4-flash |
 
@@ -8116,3 +8116,63 @@ Tick #194 (2026-08-03 01:37 local tick-fire): E2E-001 ✅ Go echo full protocol 
   Next: E2E-001 DUE #260 (window #255-260 closing tick — Go loop last umbrella-verified
   #255); NEVER-DONE ~#259-260 (strict-3 from #256, first element #259); H3-GAP-009 pending
   (P2, 12 files + sibling flags).
+
+  Tick #258 (2026-08-06 20:14 local tick-fire): PRODUCTIVE — H3-GAP-009 ✅ closed
+  foreman-direct (docs class, #254/#256/#257 precedent). E2E-001 NOT due (window
+  #255-260 open, closing tick #260 per boundary rule); NEVER-DONE NOT due (ran #256,
+  strict-3 first element #259). No worker needed — docs class foreman-direct.
+  H3-GAP-009 ✅ (P2, docs): 13 dead-install-ref spots fixed across 7 files — prd.html
+    (1), h3-prd-client.html (3), H3-PRD-Spec-Summary.html (3), Project-Hivemind-PRD.html
+    (3), MusterFlow-PRD.html (3), docs/dogfood/diagnostics.md (E1 block — heading kept
+    diagnostic meaning without dead literal; "every README starts with a dead command"
+    claim dropped — stale since #254), docs/dogfood/2026-08-02-integration.md (2: promise
+    + §3.1 reproduction — failure narrative preserved in prose, error message retained,
+    working command shown). All to the established from-source forms (git+https sdk-python,
+    github:get-h3/sdk-typescript, clone+editable shim). Specs ×6 (03/08/09/10/25/26) KEPT
+    after review — forward-looking design text (PyPI publish is the P3-10-gated end state,
+    e.g. S03 version-pinned install + S25 certification CI), excluded from the PASS grep.
+    NOTE: filing listed "12 more" but enumerated 13 files (5 PRD HTML + 6 specs + 2 dogfood).
+    PASS: repo-wide grep (excl. .coding-hermes + specs) = 0 — verified live. Sibling
+    AGENTS.md refs still live (sdk-python:8 bare `pip install h3-harness-sdk`; sdk-typescript:11
+    registry route with GitHub fallback documented) — flagged via DuckBrain notes in their
+    namespaces (ids 6e2cfe45 / 27968fb0).
+  Cooldown pin: live cooldown_s read 900 at tick-fire + canonical fleet.toml read 900 —
+    fleet-cooldown-policy.py clobbered the #257 21600 restore again (4th recurrence of the
+    #255 forward-flag; supervisor whitelist still the durable fix). Restored: canonical
+    ~/.hermes/fleet.toml cooldown_s 21600 (repo copy coding-hermes-scheduler/.../fleet.toml
+    already 21600 — auto-heal source correct) + PUT /api/v1/projects/h3 CooldownS=21600 →
+    GET-verified 21600 (updated_at 2026-08-07T01:17:32Z).
+  Fleet 528 green: shim 242/242 (2.10s), sdk-go 3 pkgs ok (cached), sdk-python 123/123
+    (2.56s, 1 cosmetic bench warning — known), sdk-typescript 137/137 (1.17s), protocol
+    validate-schemas 23/23. Judge PASS ×6 (deepseek-v4-flash). GitReins: docs-only fixes →
+    manual criteria grep (judge exception class, #257 precedent).
+  Hilo: h3 22e/5f, protocol 4e/1f, shim 146e/27f, sdk-go 100e/18f, sdk-python 106e/24f,
+    sdk-typescript 60e/26f (sibling drift, moving targets).
+  Git state: h3 modified (7 docs files + board row — this commit); protocol ahead 4 (known
+    #154); shim clean; sdk-go untracked .gitreins/history/ + sdk-typescript .gitreins/history/
+    + dagger.db + sdk-python board.db/dagger.db (all known strays). No new remote commits
+    (fetch ×6).
+  CI: gh all green — h3 Pages 22:23Z Aug 6 (fresh — #257 push deploy), shim Test ×3 latest
+    00:48Z Aug 7, sdk-python CI 00:25Z Aug 7, 0 open issues.
+  Deps: shim 9 outdated minors (incl. starlette 1.3.1→1.4.1, argcomplete 3.7.0→3.7.2) +
+    pydantic-core 2.46.4→2.48.0 fastapi-chain-blocked (known tick #38+, 214 ticks); sdk-python
+    9 outdated minors + pydantic-core blocked. TS hono 4.12.32→4.13.0 + @hono/node-server
+    2.0.12→2.1.0 minors, typescript 5→7 major deferred.
+  Host: load 5.74 (1m) moderate, disk 64% (642G free — recovered state holds), memory 51Gi.
+    ⚠️ :9191 now held by helios-bin pid 2933635 (foreign process, NEW since #257's "no 919x
+    listeners") — E2E tick #260 must use the alternate-port variant (:9192) or resolve first.
+    :8000 zombie only otherwise.
+  Off-by-One: healthy (uptime 102h38m — no restart since #255's 67h8m + ~35h); stats live
+    (544/655, queue 4, hit_rate 1). No discover/submit on this class (docs gap closure; #257
+    already submitted docs-dead-install-refs sub_f177aa).
+  DuckBrain: pre-write /tick/257 present (id c83b5ad7), /tick/258 absent — clean single run;
+    post-commit write.
+  Scheduler: CooldownS 900→21600 restored (above); Enabled=true, Weight=15, Priority=10,
+    DecayRate=1; latest_tick null mid-tick (timing-dependent normal); duplicate-fire check
+    PASS (HEAD 65113cd = #257 pre-tick, /tick/257 present, /tick/258 absent).
+  VERDICT: PRODUCTIVE — H3-GAP-009 closed (13 spots / 7 files, PASS grep = 0) + cooldown pin
+    restored (4th). Fleet 528 green, zero new gaps, no worker needed (docs class foreman-direct).
+    P3-10 still blocked (needs PYPI_API_TOKEN). All HIGH still blocked on Bane review
+    (SEC-02/03, WIRING-01/02, RES-01/02).
+  Next: E2E-001 DUE #260 (window #255-260 closing tick — Go loop last umbrella-verified #255;
+    :9191 foreign-held, use :9192); NEVER-DONE ~#259-260 (strict-3 from #256, first element #259).

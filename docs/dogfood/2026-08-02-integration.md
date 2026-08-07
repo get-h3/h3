@@ -9,9 +9,10 @@ reproducible in ~30 minutes with the commands below).
 
 README Quick Start promises two paths to an H3-compliant harness:
 
-1. **Scaffold path:** `pip install hermes-h3-shim` → `hermes h3 scaffold
-   --lang go` → `cd h3-harness && go run .` → `h3-test --endpoint
-   http://localhost:9191` → 43/43.
+1. **Scaffold path** (install from source — the shim is not on PyPI, P3-10):
+   `git clone https://github.com/get-h3/shim && cd shim && pip install -e .`
+   → `hermes h3 scaffold --lang go` → `cd h3-harness && go run .` →
+   `h3-test --endpoint http://localhost:9191` → 43/43.
 2. **Custom-harness path:** "or your own custom harness" — implement the
    protocol from the spec and pass the same battery.
 
@@ -26,8 +27,10 @@ README Quick Start promises two paths to an H3-compliant harness:
 ### 3.1 Install the shim — ❌ FAILED (P0, DOGFOOD-01)
 
 ```bash
-pip install hermes-h3-shim
-# → ERROR: No matching distribution found for hermes-h3-shim
+# 2026-08-02: the PyPI install attempt failed (package unpublished — P3-10).
+# Working install (from source, per README):
+git clone https://github.com/get-h3/shim && cd shim && pip install -e .
+# → observed error: ERROR: No matching distribution found for hermes-h3-shim
 ```
 
 Also checked `h3-harness-sdk` (sdk-python docs), `h3-shim`, `h3-sdk-python`
