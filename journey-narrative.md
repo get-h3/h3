@@ -77,7 +77,7 @@ TICK FIRES
   │
   0. SELF-HEAL — git identity, pull, dependency fixes, transient cleanup
   │
-  1. READ BOARD — .coding-hermes/tasks.md, picks highest-priority task
+  1. READ BOARD — .coding-hermes/board/tasks.jsonl, picks highest-priority task
   │   └── Board empty? → 1.5 DISCOVERY SWEEP (build/vet/test/lint/vulns scan)
   │       ├── Found work? → create tasks → loop back
   │       └── Nothing + E2E passes? → self-pause (graduated: 3 idle ticks → longer interval → pause)

@@ -53,4 +53,4 @@ h3-test --endpoint http://localhost:9191
 
 ## Development
 
-All repos use coding-hermes foremen for spec-driven development. GitReins quality gate on every repo. Specs in `h3/specs/`, task boards in each repo's `.coding-hermes/tasks.md`.
+All repos use coding-hermes foremen for spec-driven development. GitReins quality gate on every repo. Specs in `h3/specs/`, task boards in each repo's `.coding-hermes/board/tasks.jsonl` (JSONL canonical).

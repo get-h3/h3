@@ -37,7 +37,7 @@ Specs live in `specs/` and follow a numbered scheme (S01 through S26). They are 
 
 ## Task Board
 
-The cross-repo task board is `.coding-hermes/tasks.md`. It tracks phases from spec completion through deployment. Each sub-repo has its own board.
+The cross-repo task board is `.coding-hermes/board/tasks.jsonl` (JSONL canonical). It tracks phases from spec completion through deployment. Each sub-repo has its own board.
 
 ## Quality Gates
 
