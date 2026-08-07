@@ -8313,3 +8313,17 @@ Tick #194 (2026-08-03 01:37 local tick-fire): E2E-001 ✅ Go echo full protocol 
 - Cooldown clobber #10 restored: live + canonical read 7200 → canonical patched 21600 + PUT → GET-verified 21600 ×2 (updated_at 19:18:21Z). Supervisor whitelist still the durable fix.
 - Deps minors only + pydantic-core fastapi-blocked (220 ticks); Off-by-One healthy 11h44m (622/739); host load 8.12, disk 68%/562G, mem 44Gi; :8000 zombie only, no :919x (E2E #265 port clean).
 - GitReins 5/5 complete (0 pending); DuckBrain /tick/264 + status written post-commit.
+
+---
+
+## Tick #265 — 2026-08-07 (DOUBLE-DUE: E2E-001 + NEVER-DONE)
+
+**Class:** productive maintenance (double-due per #264 forecast; precedent #184/#199/#205/#220/#235/#250).
+
+**E2E-001:** 43/43 PASS vs Go echo :9191 (canonical port — both :919x free at fire, only :8000 zombie). Go-build variant, 186.85ms, p50 0.67ms / p95 24.26ms / p99 77.87ms, exit 0. Server killed, port verified free. Window now #265-270, closing tick #270 due.
+
+**NEVER-DONE 11-point audit:** 8 PASS / 3 known-⚠️ — pydantic-core fastapi-blocked (221 ticks), PERF-ND-01/02/03 LOW, WIRING-01/02 need Bane review. No new gaps, no new tasks. Next ~#268-269 (first element #268).
+
+**Cooldown pin clobber #11:** live + canonical read 7200 at fire (repo copy 21600, auto-heal correct). Restored canonical 7200→21600 + PUT → GET-verified 21600 ×2 (updated_at 2026-08-07T21:28:27Z). Supervisor whitelist remains the durable fix.
+
+**Fleet:** 531 green (shim 269/269 1.57s, sdk-go cached, sdk-python 124/124 2.43s +1 cosmetic bench warning, sdk-ts 138/138 336ms; protocol validate-schemas 23/23). Judge PASS ×6, gitreins 5/5 complete. Hilo ×6 canonical (shim 162e/29f sibling-drifted). CI green ×6, 0 open issues. Deps minors only + pydantic-core fastapi-blocked (221); npm audit 0. Host load 3.92, disk 69%/554G free, mem 47Gi. Off-by-One healthy 13h57m (stats 632/749 queue 7). Board: events.jsonl id=6, header 265/0, fixtures refreshed. No worker — double-due fixture tick foreman-direct.
