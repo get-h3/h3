@@ -8376,3 +8376,18 @@ E2E-001 DUE (window #265-270 closing): 44/44 PASS vs Go echo :9191 (new baseline
 H3-GAP-013 (P1): 9 dead `pip install hermes-h3-shim` refs in 6 specs — KEPT by design per durable #258 decision (forward-looking design text gated on P3-10) but ANNOTATED at all 9 sites with the P3-10 gate note + source-install form to stop the 13th+ recurrence. H3-GAP-014 (P1): premise STALE — fresh scaffold test (template → go mod tidy from network [sdk-go v0.1.0 tag] → go build) = BUILD_RC 0, 9MB binary (#254 replicated); stale "REQUIRED FIX" note in skills/h3-usage/SKILL.md replaced with verified working-state guidance. H3-GAP-015 (P2): docs/sdk.html:754 npmjs 403 link removed (GitHub + `npm install github:get-h3/sdk-typescript` remain); adjacent `bun add` note fixed to github: form. H3-GAP-016 (P2): 43→44 in workspace-root AGENTS.md ×2 (in-place) + h3/AGENTS.md ×2 + h3/README.md ×5 + SKILL.md 43/43→44/44; shim/AGENTS.md ×2 sibling-owned flagged to shim foreman via DuckBrain; status-report.html (dated 2026-07-24 snapshot) + PRD files kept era-correct per #258 review class.
 
 Gates: fleet green (shim 286/286, sdk-go cached, sdk-python 126/126 +1 cosmetic bench warning, sdk-ts 140/140, protocol 23/23), judges 5/5 complete 0 pending, h3 CI green ×3, deps minors only + pydantic-core fastapi-blocked (228 ticks), npm audit 0. Cooldown clobber #18 restored (canonical + PUT → GET-verified 21600, 21:30:23Z — 18 consecutive, supervisor whitelist still the durable fix). sdk-ts #87 e2e-battery CI still red (sibling-owned, hands-off). E2E-001 DUE #275 (window #270-275 closing); NEVER-DONE ~#274-275 (first element #274).
+## Tick #273 (2026-08-08 18:43 scheduler) — plain idle #1
+
+Plain idle: both fixtures fresh (E2E-001 ran #270 44/44, window #270-275 open closing #275 due; NEVER-DONE ran #271, next ~#274-275 first element #274). No pending actionable tasks. Full gate all PASS, zero drift — detail in events.jsonl id=14.
+
+- Fleet green: shim 286/286 (2.39s), sdk-go 3 pkgs cached, sdk-python 126/126 (3.85s +1 cosmetic bench warning), sdk-typescript vitest 141/141 (sibling move 140→141) + tsc clean, protocol validate-schemas 23/23.
+- Hilo ×6 canonical: h3 22e/5f, protocol 4e/1f, shim 166e/30f, sdk-go 107e/18f, sdk-python 109e/24f (+3e sibling), sdk-ts 60e/26f.
+- CI green ×6: h3 Pages 21:32Z (#272 push deploy), shim Test 22:57Z (#277), sdk-go 23:32Z, sdk-python 22:45Z, sdk-ts 21:58Z (the #87 e2e-battery failure RESOLVED by sibling foreman), protocol Jul 24. 0 open issues.
+- gitreins 0 pending all 5 repos; judge verdicts present (h3 9, shim 8, sdk-go 11, sdk-python 177, sdk-ts 14 passed:true).
+- Deps: minors only + pydantic_core 2.46.4→2.48.0 fastapi-chain-blocked (229 ticks); TS typescript 5→7 major deferred; npm audit 0 vulns.
+- Cooldown pin clobber #19: live + canonical both read 7200 — restored 7200→21600 (canonical patch + PUT → GET-verified 21600 @ 23:44:30Z). 19 consecutive clobbers (#255→#273); supervisor whitelist remains the durable fix.
+- Off-by-one restarted (uptime 2h5m vs #272's 37h55m — flag the drop, not a fault); stats 728/853 queue 10 hit_rate 1.
+- Git: h3 clean 0/0 pre-tick (HEAD 85fb290 pushed); 0 remote-new commits; sibling states hands-off; :8000 zombie only, no :919x.
+- ticks_idle 0→1. Event id=14. No worker dispatch. Commit 85fb290..HEAD.
+
+Next: E2E-001 DUE #275 (window #270-275 closing tick — Go loop last umbrella-verified #270 on :9191; port state clean, re-verify at fire); NEVER-DONE ~#274-275 (strict-3 from #271, first element #274). No double-due before #274.
