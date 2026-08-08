@@ -550,6 +550,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run network partition experiments
         run: |
+          # Gated on P3-10 (PyPI publish); until then: git clone https://github.com/get-h3/shim && cd shim && pip install -e .
           pip install hermes-h3-shim
           hermes h3 chaos run --category network --json > chaos-network.json
       - name: Upload results
@@ -565,6 +566,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run malformed response experiments
         run: |
+          # Gated on P3-10 (PyPI publish); until then: git clone https://github.com/get-h3/shim && cd shim && pip install -e .
           pip install hermes-h3-shim
           hermes h3 chaos run --category malformed --json > chaos-malformed.json
 
@@ -575,6 +577,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run out-of-sequence experiments
         run: |
+          # Gated on P3-10 (PyPI publish); until then: git clone https://github.com/get-h3/shim && cd shim && pip install -e .
           pip install hermes-h3-shim
           hermes h3 chaos run --category sequence --json > chaos-sequence.json
 
@@ -585,6 +588,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run partial response experiments
         run: |
+          # Gated on P3-10 (PyPI publish); until then: git clone https://github.com/get-h3/shim && cd shim && pip install -e .
           pip install hermes-h3-shim
           hermes h3 chaos run --category partial --json > chaos-partial.json
 

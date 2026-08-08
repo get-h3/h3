@@ -55,13 +55,13 @@ Error shape: `{"error": {"code", "message", "details"}}` (codes in specs/02 §9)
 cd /tmp && hermes-h3 scaffold --lang go --output-dir /tmp
 # creates /tmp/h3-harness-go  (NOTE: dir is h3-harness-<lang>, README says h3-harness)
 
-# REQUIRED FIX — scaffold does not build out of the box:
-# in /tmp/h3-harness-go/go.mod, uncomment and point the replace:
-#   replace github.com/get-h3/sdk-go => /home/kara/get-h3/sdk-go
-# (relative ../../sdk-go works if the fleet is checked out as siblings)
+# Scaffold builds out of the box: go.mod requires github.com/get-h3/sdk-go v0.1.0
+# (published tag — go mod tidy fetches it from the network, no replace needed).
+# Add a replace directive ONLY for local SDK development:
+#   replace github.com/get-h3/sdk-go => /path/to/get-h3/sdk-go
 
 cd /tmp/h3-harness-go && go mod tidy && go build -o h3harness . && ./h3harness &
-h3-test --endpoint http://localhost:9191   # → 43/43
+h3-test --endpoint http://localhost:9191   # → 44/44
 ```
 
 ## Custom harness from the spec (Python, no SDK)

@@ -42,6 +42,7 @@ hermes h3 verify
 
 1. **Check Hermes version** — H3 shim is version-gated (see §3)
 2. **Install Python package** — `pip install hermes-h3-shim==<compatible_version>`
+   > **Gated on P3-10 (PyPI publish).** Until the shim is published, install from source: `git clone https://github.com/get-h3/shim && cd shim && pip install -e .`
 3. **Register plugin** — Add to `~/.hermes/profiles/<active>/config.yaml`:
    ```yaml
    plugins:

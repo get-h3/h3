@@ -32,7 +32,7 @@ cd sdk-go/examples/echo && go run .
 h3-test --endpoint http://localhost:9191
 ```
 
-43 tests — 6 categories — exit code 0 means your harness is H3-compliant.
+44 tests — 6 categories — exit code 0 means your harness is H3-compliant.
 
 Or scaffold a new harness in 30 seconds:
 
@@ -65,7 +65,7 @@ H3 follows a **spec-driven, protocol-first** architecture:
 protocol/  (OpenAPI 3.1 — single source of truth)
     │
     ├──► shim/           (Hermes-side plugin — Python)
-    │     └── test_battery.py  (43 compliance tests)
+    │     └── test_battery.py  (44 compliance tests)
     │
     ├──► sdk-go/         (Harness Go SDK — generated types)
     ├──► sdk-python/     (Harness Python SDK — generated types)
@@ -93,13 +93,13 @@ All SDKs generate their types from the same OpenAPI spec. A change to the protoc
 
 ## Compliance
 
-A harness is H3-compliant when it passes all 43 tests in the [test battery](https://github.com/get-h3/shim). Current compliance scores across SDK examples:
+A harness is H3-compliant when it passes all 44 tests in the [test battery](https://github.com/get-h3/shim). Current compliance scores across SDK examples:
 
 | Language | Tests Passing |
 |----------|:------------:|
-| Go (echo) | 43/43 |
-| Python (echo) | 43/43 |
-| TypeScript (echo) | 43/43 |
+| Go (echo) | 44/44 |
+| Python (echo) | 44/44 |
+| TypeScript (echo) | 44/44 |
 
 ## Development
 

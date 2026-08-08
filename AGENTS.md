@@ -21,7 +21,7 @@ H3 (Hermes Harness Hooks) — **brain-swap protocol**. External agent systems (O
 protocol/  (OpenAPI spec)
     │
     ├──► shim/          (Python plugin — generated types from OpenAPI)
-    │       └── test_battery.py (43 compliance tests — E2E region-style)
+    │       └── test_battery.py (44 compliance tests — E2E region-style)
     │
     ├──► sdk-go/        (generated types from OpenAPI)
     ├──► sdk-python/    (generated types from OpenAPI)
@@ -49,7 +49,7 @@ pip install -e .
 h3-test --endpoint http://localhost:9191
 ```
 
-43 tests across 6 categories. E2E region-style: each category tests a complete functional region (health, process flows, decision types, result handling, edge cases, stress). Exit code 0 = harness is H3-compliant.
+44 tests across 6 categories. E2E region-style: each category tests a complete functional region (health, process flows, decision types, result handling, edge cases, stress). Exit code 0 = harness is H3-compliant.
 
 ## Development
 
