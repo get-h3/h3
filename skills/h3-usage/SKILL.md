@@ -102,9 +102,10 @@ GET+DELETE), a `_decision_*` helper per type, error envelope per §9.
   gives 404 — that's fine).
 - **Verify command:** `hermes-h3 verify --harness <name>` (it takes
   `--harness`, not a positional).
-- **The board** (`.coding-hermes/tasks.md`) is a huge tick log; the live
-  task matrix is under the `## Active — ...` sections. New dogfood findings
-  live in the `## Dogfood Findings (YYYY-MM-DD)` section at the end.
+- **The board** is JSONL-canonical (`.coding-hermes/board/`): `tasks.jsonl`
+  holds the live task matrix, `events.jsonl` the tick log, `fixtures.jsonl`
+  the fixture windows. `tasks.md` remains only as a legacy tick-log mirror
+  for transition continuity.
 
 ## Verifying compliance
 

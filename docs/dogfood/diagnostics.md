@@ -29,7 +29,7 @@ PERF-04).
 
 **Fleet topology:** 6 repos, each with its own coding-hermes foreman cron;
 the umbrella `h3` repo holds the specs, the cross-repo board
-(`.coding-hermes/tasks.md`), and cross-language roundtrip fixtures
+(`.coding-hermes/board/`), and cross-language roundtrip fixtures
 (`integration/roundtrip/`). GitReins quality gate on every repo.
 
 ## 2. How the harness protocol works (the parts that matter)
