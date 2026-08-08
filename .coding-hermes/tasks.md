@@ -8334,3 +8334,10 @@ Tick #194 (2026-08-03 01:37 local tick-fire): E2E-001 ✅ Go echo full protocol 
 ## Tick #266 (2026-08-07) — PRODUCTIVE: H3-GAP-010/011 closed foreman-direct (docs class)
 
 GAP-010: /home/kara/get-h3/AGENTS.md:47 dead `pip install hermes-h3-shim` → source install (workspace root not a git repo — edited in place, no commit). GAP-011: '11/11' → '26/26' in 3 PRD HTMLs + 2 adjacent '11 specs (~97pp)' prose spots (partial-fix lesson). PASS greps = 0. Cooldown clobber #12 restored (PUT 21600, GET-verified). Fleet 531 green (shim 269/269, sdk-python 124/124, sdk-ts 138/138, protocol 23/23), judge PASS ×6, Hilo canonical ×6, CI green ×6, 0 open issues. Fixtures fresh: E2E-001 window #265-270 (closing #270 due), NEVER-DONE ~#268-269 (first element #268). Board: events id=7 tick 266, header 266/0 last_commit 3afd71c, GAP rows added complete.
+
+
+---
+
+### Tick #267 (2026-08-07) — plain idle #1 (JSONL-canonical board)
+
+Class: plain idle — E2E-001 NOT due (window #265-270 open, closing #270 due; ran #265 43/43 on :9191); NEVER-DONE NOT due (ran #265, next ~#268-269 first element #268). Full gate all PASS: fleet 531 green (shim 269/269 1.44s, sdk-go cached, sdk-python 124/124 .venv, sdk-ts vitest 138/138 + tsc clean, protocol validate-schemas 23/23); Hilo ×6 canonical (h3 22e/5f, protocol 4e/1f, shim 162e/29f sibling, sdk-go 102e/18f, sdk-python 106e/24f, sdk-ts 60e/26f); specs 27, docs 5 (live glob), governance 4/4, TODO/FIXME 0; CI green ×6; 0 open issues; deps minors only + pydantic_core fastapi-blocked (223 ticks); npm audit 0; gitreins 0 pending all repos; off-by-one :8766 uptime 16h34m stats 648/765; no :919x (E2E port state clean for #270); cooldown pin clobber #13 restored to 21600 (live + canonical; repo copy already 21600). ticks_idle 0→1, event id=8, header 267/1/690af93. No worker dispatch.
