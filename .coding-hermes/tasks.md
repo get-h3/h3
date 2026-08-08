@@ -8341,3 +8341,14 @@ GAP-010: /home/kara/get-h3/AGENTS.md:47 dead `pip install hermes-h3-shim` → so
 ### Tick #267 (2026-08-07) — plain idle #1 (JSONL-canonical board)
 
 Class: plain idle — E2E-001 NOT due (window #265-270 open, closing #270 due; ran #265 43/43 on :9191); NEVER-DONE NOT due (ran #265, next ~#268-269 first element #268). Full gate all PASS: fleet 531 green (shim 269/269 1.44s, sdk-go cached, sdk-python 124/124 .venv, sdk-ts vitest 138/138 + tsc clean, protocol validate-schemas 23/23); Hilo ×6 canonical (h3 22e/5f, protocol 4e/1f, shim 162e/29f sibling, sdk-go 102e/18f, sdk-python 106e/24f, sdk-ts 60e/26f); specs 27, docs 5 (live glob), governance 4/4, TODO/FIXME 0; CI green ×6; 0 open issues; deps minors only + pydantic_core fastapi-blocked (223 ticks); npm audit 0; gitreins 0 pending all repos; off-by-one :8766 uptime 16h34m stats 648/765; no :919x (E2E port state clean for #270); cooldown pin clobber #13 restored to 21600 (live + canonical; repo copy already 21600). ticks_idle 0→1, event id=8, header 267/1/690af93. No worker dispatch.
+
+---
+
+## Tick #268 (2026-08-08 00:10Z) — NEVER-DONE due-cycle, 24th strict-3 confirmation, cooldown clobber #14 restored
+
+- NEVER-DONE strict-3 cadence confirmed (24th consecutive: #253→#256→#259→#262→#265→#268). 11-point audit: 8 PASS / 3 known-⚠️ (pydantic-core fastapi-blocked 224 ticks, PERF-ND-01/02/03 LOW, WIRING-01/02 Bane review). No new gaps, no new tasks.
+- E2E-001 NOT due (window #265-270 open, closing #270 due — ran #265 43/43 on :9191). Port state clean (no :919x).
+- Cooldown clobber #14: live + canonical read 7200 → restored canonical 21600 (patch) + PUT → GET-verified 21600 (updated_at 2026-08-08T05:08:33Z). 14 consecutive clobbers (#255→#268); supervisor whitelist remains the durable fix.
+- Fleet 534 green (shim 286/286, sdk-go cached, sdk-python 124/124 +1 cosmetic bench warning, sdk-ts 140/140, protocol 23/23); Hilo canonical ×6 (shim 166e/30f sibling-drifted); CI green ×5; 0 open issues; deps minors + pydantic_core fastapi-blocked; npm audit 0 vulns; judge verdicts present ×5; gitreins 0 pending all repos; host load 6.37, disk 71%/511G, mem 49Gi; Off-by-One healthy 21h34m.
+- Scheduler identity confirmed (latest_tick.ID h3-2026-08-08-00-05-29). Board: events.jsonl id=9, header 268/0/6b237c0. No worker — fixture tick foreman-direct.
+- After #268: E2E-001 DUE #270 (window #265-270 closing — Go loop last umbrella-verified #265 on :9191); NEVER-DONE ~#271-272 (strict-3 from #268, first element #271). No double-due before #270.
