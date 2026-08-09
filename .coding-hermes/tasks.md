@@ -8391,3 +8391,7 @@ Plain idle: both fixtures fresh (E2E-001 ran #270 44/44, window #270-275 open cl
 - ticks_idle 0→1. Event id=14. No worker dispatch. Commit 85fb290..HEAD.
 
 Next: E2E-001 DUE #275 (window #270-275 closing tick — Go loop last umbrella-verified #270 on :9191; port state clean, re-verify at fire); NEVER-DONE ~#274-275 (strict-3 from #271, first element #274). No double-due before #274.
+
+## Tick #274 (2026-08-09) — umbrella NEVER-DONE due-cycle, 26th strict-3 confirmation, cooldown clobber #20 restored
+
+NEVER-DONE 11-point audit: 8 PASS / 3 known-warning (pydantic-core fastapi-blocked 230 ticks, PERF-ND-01/02/03 LOW, WIRING-01/02 Bane review). No new gaps, no new tasks. E2E-001 NOT due (window #270-275 open, closing #275 due; ran #270 44/44 on :9191). Fleet green: shim 291/291, sdk-go ok, sdk-python 126/126, sdk-ts 141/141, protocol 23/23. GitReins 0 pending ×5, judges present. CI green, 0 open issues. Cooldown clobber #20: live 7200 → PUT 21600 GET-verified (05:02:09Z), canonical re-pinned 21600. Hilo h3 22e/5f. Commit + push 0 ahead/behind. No worker — fixture tick foreman-direct.
