@@ -25,7 +25,8 @@ The fastest way to see H3 in action:
 git clone https://github.com/get-h3/shim && cd shim
 pip install -e .
 
-# Start a Go echo harness (clone get-h3/sdk-go examples)
+# Start a Go echo harness — clone the sibling sdk-go repo first (it is NOT part of shim/)
+git clone https://github.com/get-h3/sdk-go
 cd sdk-go/examples/echo && go run .
 
 # Run the compliance tests
@@ -52,7 +53,7 @@ h3-test --endpoint http://localhost:9191
 |------|---------|----------|
 | [h3](https://github.com/get-h3/h3) | **You are here.** Spec hub, task board, documentation website | Markdown |
 | [protocol](https://github.com/get-h3/protocol) | OpenAPI 3.1 spec + JSON Schema — single source of truth | YAML/JSON |
-| [shim](https://github.com/get-h3/shim) | Hermes plugin: shim loop, 43-test battery, CLI (`hermes h3`) | Python |
+| [shim](https://github.com/get-h3/shim) | Hermes plugin: shim loop, 44-test battery, CLI (`hermes h3`) | Python |
 | [sdk-go](https://github.com/get-h3/sdk-go) | Go SDK for building harnesses | Go |
 | [sdk-python](https://github.com/get-h3/sdk-python) | Python SDK for building harnesses | Python |
 | [sdk-typescript](https://github.com/get-h3/sdk-typescript) | TypeScript SDK for building harnesses | TypeScript |
@@ -84,7 +85,7 @@ All SDKs generate their types from the same OpenAPI spec. A change to the protoc
 
 ## Documentation
 
-- **Website:** [h3.sh](https://h3.sh) — landing page, language picker, quickstart
+- **Website:** [get-h3.github.io/h3/](https://get-h3.github.io/h3/) — landing page, language picker, quickstart (old marketing domain is dead — NXDOMAIN)
 - **Specs:** [`specs/`](specs/) — 26 specs, ~320 pages covering architecture, protocol, SDKs, installer, test battery, release pipeline, website, and upgrade survival
 - **Protocol reference:** [`docs/protocol.html`](docs/protocol.html) — auto-generated from OpenAPI
 - **SDK reference:** [`docs/sdk.html`](docs/sdk.html) — auto-generated

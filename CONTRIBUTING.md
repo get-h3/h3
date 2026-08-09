@@ -50,7 +50,7 @@ The cross-repo task board is `.coding-hermes/board/tasks.jsonl` (JSONL canonical
 
 Pick up a task from the board. If you're new to H3, start with:
 
-1. Read the [Protocol Spec](https://h3.sh/protocol)
-2. Read the [Quickstart](https://h3.sh/#quickstart)
+1. Read the [Protocol Spec](https://github.com/get-h3/h3/tree/main/specs)
+2. Read the [Quickstart](https://github.com/get-h3/h3#quick-start)
 3. Clone the umbrella and sub-repos: `git clone --recurse-submodules https://github.com/get-h3/h3.git`
 4. Run the test battery: `git clone https://github.com/get-h3/shim && cd shim && pip install -e . && h3-test --endpoint http://localhost:9191` (source install — PyPI publishing pending, see P3-10)

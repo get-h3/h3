@@ -62,8 +62,8 @@ go run .
 
 ### Step 5: Test it
 ```bash
-# Gated on P3-10 (PyPI publish); until then: git clone https://github.com/get-h3/shim && cd shim && pip install -e .
-pip install hermes-h3-shim
+# Gated on P3-10 (PyPI publish); source install until then:
+git clone https://github.com/get-h3/shim && cd shim && pip install -e .
 h3-test --endpoint http://localhost:9191
 ```
 
