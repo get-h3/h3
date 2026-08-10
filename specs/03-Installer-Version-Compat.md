@@ -29,7 +29,7 @@ hermes h3 install
 hermes h3 install --version 1.0.0
 
 # Install from local path (development)
-hermes h3 install --path /home/kara/h3/sdks/python
+hermes h3 install --path ~/h3/sdks/python
 
 # Install with gRPC support
 hermes h3 install --transport grpc

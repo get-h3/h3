@@ -39,7 +39,7 @@ Or scaffold a new harness in 30 seconds:
 
 ```bash
 hermes-h3 scaffold --lang go
-cd h3-harness-go && go run .
+cd h3-harness-go && go mod tidy && go run .
 h3-test --endpoint http://localhost:9191
 ```
 

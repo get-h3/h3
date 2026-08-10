@@ -186,8 +186,8 @@ Mode is set per harness in `.hermes/h3/harnesses/<id>.yaml`:
 harness_url: http://localhost:9191
 api_key: h3_kxDRTqP9...
 tls_mode: strict
-tls_ca_cert: /home/kara/.hermes/h3/ca/ca.crt
-tls_harness_cert: /home/kara/.hermes/h3/ca/harness-<id>.crt
+tls_ca_cert: ~/.hermes/h3/ca/ca.crt
+tls_harness_cert: ~/.hermes/h3/ca/harness-<id>.crt
 ```
 
 ### 4.4 TLS Handshake

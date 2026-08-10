@@ -42,12 +42,12 @@ Transport: REST
   Process - Basic Flows         8/8  ✅
   Process - Decision Types      6/6  ✅
   Result Handling               7/7  ✅
-  Error & Edge Cases           10/10 ✅
+  Error & Edge Cases           11/11 ✅
   Stress & Performance          5/5  ✅
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  TOTAL                        43/43 ✅  PASSED
+  TOTAL                        44/44 ✅  PASSED
 
-Report: /home/kara/.hermes/cache/h3_test_report_20260712_223000.json
+Report: ~/.hermes/cache/h3_test_report_20260712_223000.json
 ```
 
 ---

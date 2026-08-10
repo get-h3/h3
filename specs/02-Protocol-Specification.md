@@ -82,7 +82,7 @@ Hermes calls this when a new user message arrives. The harness receives full con
     "attachments": [
       {
         "type": "image",
-        "url": "file:///home/kara/.hermes/cache/img_abc.png",
+        "url": "file://$HOME/.hermes/cache/img_abc.png",
         "mime_type": "image/png"
       }
     ],
@@ -144,7 +144,7 @@ Hermes calls this when a new user message arrives. The harness receives full con
     "config": {
       "max_iterations": 50,
       "timeout_seconds": 600,
-      "project_dir": "/home/kara/helios",
+      "project_dir": "$HOME/helios",
       "max_tool_calls_per_turn": 1,
       "temperature": 0.7
     },
@@ -201,7 +201,7 @@ The harness MUST return exactly ONE decision per response.
     "name": "terminal",
     "params": {
       "command": "cd /app/auth && docker compose up -d",
-      "workdir": "/home/kara/helios",
+      "workdir": "$HOME/helios",
       "timeout": 120
     },
     "reasoning": "Deploying auth endpoint to staging via Docker Compose"
