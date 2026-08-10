@@ -13,7 +13,7 @@ H3 (Hermes Harness Hooks) is governed by the maintainers of the get-h3 GitHub or
 ## Maintainer Responsibilities
 
 - Review and merge pull requests
-- Ensure test battery passes (43/43 compliance)
+- Ensure test battery passes (44/44 compliance)
 - Maintain cross-repo compatibility across all SDKs
 - Keep documentation and specs current
 

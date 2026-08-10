@@ -115,7 +115,7 @@ fresh `running` row; check its age first.
 - Battery exit codes: 0 pass / 1 fail; `--json` report is schema-valid and
   includes per-test `passed/detail/duration_ms/category`.
 - Three independent implementations (Go scaffold, Python SDK, stdlib
-  spec-only) all reach 43/43 against the same battery — the gate is
+  spec-only) all reach 44/44 against the same battery — the gate is
   consistent and language-agnostic.
 - Spec-only implementability: 41/43 from `specs/02` alone (the 2 missing
   conventions are documented above).
@@ -132,4 +132,4 @@ fresh `running` row; check its age first.
    `task_complete`).
 4. `POST /v1/cancel` → `{cancelled: true}`; `GET|DELETE /v1/sessions/:id`.
 5. Errors as `{"error": {code, message, details}}` with the §9 codes.
-6. Run `h3-test --endpoint http://localhost:9191` until 43/43.
+6. Run `h3-test --endpoint http://localhost:9191` until 44/44.

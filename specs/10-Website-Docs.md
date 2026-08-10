@@ -1,4 +1,4 @@
-# S10 — h3.sh Website & Developer Docs
+# S10 — H3 Website & Developer Docs
 
 **Status:** Spec  
 **Version:** 1.0.0  
@@ -8,14 +8,14 @@
 
 ## 1. Purpose
 
-`h3.sh` is the public face of H3. A developer lands here, understands what H3 is in 10 seconds, picks their language, and has a working harness in under 30 minutes.
+The H3 website (`https://get-h3.github.io/h3/`; legacy `h3.sh` domain is dead — NXDOMAIN) is the public face of H3. A developer lands here, understands what H3 is in 10 seconds, picks their language, and has a working harness in under 30 minutes.
 
 ---
 
 ## 2. Site Structure
 
 ```
-h3.sh
+get-h3.github.io/h3
 ├── Hero                 ← "BYO harness. Keep the platform." + 3-line code example
 ├── What Is H3           ← Architecture diagram, Hermes/harness split
 ├── How It Works         ← Animated sequence: Telegram → Hermes → H3 → Your Harness
@@ -110,7 +110,7 @@ Your harness responds.
 ### Badge Format
 
 ```
-[![H3 Compliant](https://h3.sh/badge/v1.0/44-44.svg)](https://h3.sh/compliance)
+[![H3 Compliant](https://get-h3.github.io/h3/badge/compliant.svg)](https://get-h3.github.io/h3/#compliance)
 ```
 
 Badge URL encodes pass count. Anyone can verify by running `h3-test` against the harness endpoint.
@@ -118,14 +118,14 @@ Badge URL encodes pass count. Anyone can verify by running `h3-test` against the
 ### Verify Endpoint
 
 ```
-GET https://h3.sh/api/verify?repo=github.com/user/harness
+GET https://get-h3.github.io/h3/api/verify?repo=github.com/user/harness
 → {"compliant": true, "protocol_version": "1.0", "tests_passed": 44, "tests_total": 44, "last_verified": "2026-07-12T22:30:00Z"}
 ```
 
 ### Badge Generation
 
 ```
-GET https://h3.sh/badge/v1.0/44-44.svg
+GET https://get-h3.github.io/h3/badge/compliant.svg
 → SVG badge: "H3 v1.0 — 44/44 ✅"
 ```
 
@@ -136,8 +136,8 @@ GET https://h3.sh/badge/v1.0/44-44.svg
 - **Static site:** Next.js or Astro (SSG, fast, dark theme)
 - **Hosting:** Vercel or Cloudflare Pages
 - **API docs:** Redocly or Scalar (generated from `h3-protocol.yaml`)
-- **Domain:** `h3.sh` (already claimed, per h3.html footer)
-- **Repo:** `get-h3/h3.sh` (or served from `get-h3/h3/docs/`)
+- **Domain:** `get-h3.github.io/h3` (GitHub Pages; the legacy `h3.sh` domain is dead — NXDOMAIN)
+- **Repo:** `get-h3/h3` (served from `get-h3/h3/docs/` via GitHub Pages)
 
 ---
 

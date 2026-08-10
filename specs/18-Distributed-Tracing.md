@@ -38,6 +38,11 @@ S16 defines the `trace_id` and `span_id` fields on every log line — giving us 
 
 Every decision creates a trace. Each hop in the pipeline is a span:
 
+> **Note:** span names like `h3.shim.process` / `h3.shim.result` are telemetry
+> span identifiers (the `h3.shim.*` prefix names the H3 shim component) — they
+> are NOT references to the retired `h3.sh` website domain (dead — NXDOMAIN;
+> live site: https://get-h3.github.io/h3/).
+
 ```
 Trace: trace_id=abc123 (session S1, decision D42)
 

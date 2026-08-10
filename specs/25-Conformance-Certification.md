@@ -19,7 +19,7 @@ The H3 Conformance Certification program provides **public, verifiable proof** t
 | **No central authority** | Badge validity is cryptographic, not permission-based. Anyone can issue a self-signed badge; the registry lists badges others can choose to trust. |
 | **Test battery is the gate** | Badges are only issued for 44/44 pass on the exact tagged `h3-test` version. Partial passes or `--smoke` runs don't qualify. |
 | **Verifiable offline** | A badge carries enough information (test version, timestamp, harness endpoint, signature) to verify without calling home. |
-| **Opt-in registry** | Harness developers can optionally submit their badge to a public registry (`h3.sh/registry`) for discoverability. |
+| **Opt-in registry** | Harness developers can optionally submit their badge to a public registry (`get-h3.github.io/h3/registry`) for discoverability. |
 | **Revocable** | If a certified harness is later found non-compliant (via a protocol update), its badge is revoked and the registry is updated. |
 
 ---
@@ -27,7 +27,7 @@ The H3 Conformance Certification program provides **public, verifiable proof** t
 ## 2. Architecture
 
 ```
-Harness Developer                          Public (h3.sh)
+Harness Developer                          Public (get-h3.github.io/h3)
        │                                        │
        │ 1. Run h3-test --endpoint URL           │
        │    44/44 PASS                          │
@@ -40,7 +40,7 @@ Harness Developer                          Public (h3.sh)
        │                                        │
        │ 3. Submit (optional)                   │
        ├────────────────────────────────────────► Registry
-       │ HTTPS POST /api/badges                  │ h3.sh/registry
+       │ HTTPS POST /api/badges                  │ get-h3.github.io/h3/registry
        │                                        │
        │ 4. Verify (anyone)                     │
        │◄────────────────────────────────────────┤
@@ -48,7 +48,7 @@ Harness Developer                          Public (h3.sh)
        │                                        │
        ▼                                        ▼
   Self-hosted badge                         Public dashboard
-  (README.md, website)                     (h3.sh/certified)
+  (README.md, website)                     (get-h3.github.io/h3/certified)
 ```
 
 ### Components
@@ -56,9 +56,9 @@ Harness Developer                          Public (h3.sh)
 | Component | Role | Implementation |
 |-----------|------|----------------|
 | **Badge Generator** | Produces signed JSON badge + SVG image from `h3-test` results | `h3-test --badge` CLI flag |
-| **Verification Endpoint** | Validates a badge against stored test results | `h3.sh/verify?url=` |
-| **Registry API** | Accepts badge submissions, serves certified list | `h3.sh/api/badges` |
-| **Dashboard** | Public directory of all certified harnesses | `h3.sh/certified` |
+| **Verification Endpoint** | Validates a badge against stored test results | `get-h3.github.io/h3/verify?url=` |
+| **Registry API** | Accepts badge submissions, serves certified list | `get-h3.github.io/h3/api/badges` |
+| **Dashboard** | Public directory of all certified harnesses | `get-h3.github.io/h3/certified` |
 
 ---
 
@@ -124,7 +124,7 @@ Three badge variants:
 The SVG is self-contained (no external image assets) and fits in a README.md:
 
 ```markdown
-[![H3 Compliant](https://h3.sh/badges/v1/ {badge-hash} .svg)](https://h3.sh/verify/ {badge-hash})
+[![H3 Compliant](https://get-h3.github.io/h3/badges/v1/ {badge-hash} .svg)](https://get-h3.github.io/h3/verify/ {badge-hash})
 ```
 
 ### 3.3 Badge Lifecycle
@@ -168,8 +168,8 @@ h3-test --badge --format all         # JSON + SVG + markdown
 ├── badge.json             ← Signed JSON badge
 ├── h3-compliant.svg       ← Green badge (44/44)
 ├── h3-compliant-yellow.svg ← Yellow badge (expiring)
-├── verify.json            ← Verification payload (for h3.sh/verify)
-└── submit.json            ← Submission payload (for h3.sh/api/badges)
+├── verify.json            ← Verification payload (for get-h3.github.io/h3/verify)
+└── submit.json            ← Submission payload (for get-h3.github.io/h3/api/badges)
 ```
 
 ### 4.3 Signing
@@ -199,7 +199,7 @@ hermes-h3 badge --valid-versions
 
 ---
 
-## 5. Verification Endpoint (`h3.sh/verify`)
+## 5. Verification Endpoint (`get-h3.github.io/h3/verify`)
 
 ### 5.1 API
 
@@ -260,7 +260,7 @@ GET /verify/{badge-hash}
 
 ### 5.2 Verification Algorithm
 
-The `h3.sh/verify` endpoint performs these checks in order:
+The `get-h3.github.io/h3/verify` endpoint performs these checks in order:
 
 | Order | Check | Fails For |
 |-------|-------|-----------|
@@ -281,7 +281,7 @@ The `h3.sh/verify` endpoint performs these checks in order:
 | Mode | Behavior | Use Case |
 |------|----------|----------|
 | **Offline** | Verify signature + expiry only. No network calls to registry. | README badge, local CI |
-| **Online** | Full verification including registry revocation check + optional health probe. | h3.sh/verify endpoint |
+| **Online** | Full verification including registry revocation check + optional health probe. | get-h3.github.io/h3/verify endpoint |
 | **Deep** | Online + probe harness endpoint for `/v1/health`, verify protocol version in response. | Pre-production validation |
 
 ### 5.4 CLI Verification
@@ -327,8 +327,8 @@ Authorization: Bearer h3_hx_{hex64}
 {
   "id": "badge-a1b2c3d4",
   "status": "pending",
-  "verify_url": "https://h3.sh/verify/badge-a1b2c3d4",
-  "badge_markdown": "[![H3 Compliant](https://h3.sh/badges/v1/a1b2c3d4.svg)]..."
+  "verify_url": "https://get-h3.github.io/h3/verify/badge-a1b2c3d4",
+  "badge_markdown": "[![H3 Compliant](https://get-h3.github.io/h3/badges/v1/a1b2c3d4.svg)]..."
 }
 ```
 
@@ -406,7 +406,7 @@ Revocation reasons:
 
 ---
 
-## 7. Dashboard (`h3.sh/certified`)
+## 7. Dashboard (`get-h3.github.io/h3/certified`)
 
 ### 7.1 Page Layout
 
@@ -465,10 +465,10 @@ Badge Details
 │   Stress                ✅ 5/5           │
 │                                           │
 │ Verification URL:                         │
-│ https://h3.sh/verify/badge-a1b2c3d4       │
+│ https://get-h3.github.io/h3/verify/badge-a1b2c3d4       │
 │                                           │
 │ Markdown: [![H3 Compliant](...)](...)      │
-│ SVG:      https://h3.sh/badges/v1/...svg  │
+│ SVG:      https://get-h3.github.io/h3/badges/v1/...svg  │
 └─────────────────────────────────────────┘
 ```
 
@@ -527,7 +527,7 @@ CI pipelines can enforce certification as a gate:
 
 ```markdown
 <!-- Auto-updated by h3-test --badge --format markdown -->
-[![H3 Compliant](https://h3.sh/badges/v1/badge-a1b2c3d4.svg)](https://h3.sh/verify/badge-a1b2c3d4)
+[![H3 Compliant](https://get-h3.github.io/h3/badges/v1/badge-a1b2c3d4.svg)](https://get-h3.github.io/h3/verify/badge-a1b2c3d4)
 ```
 
 ---
@@ -548,7 +548,7 @@ hermes-h3 badge generate \
 
 # Verify a badge
 hermes-h3 badge verify badge.json
-hermes-h3 badge verify https://h3.sh/verify/badge-a1b2c3d4
+hermes-h3 badge verify https://get-h3.github.io/h3/verify/badge-a1b2c3d4
 hermes-h3 badge verify --deep --endpoint http://localhost:9191 badge.json
 
 # Submit badge to registry
@@ -591,8 +591,8 @@ hermes-h3 badge sign .badge/badge.json --key-file ~/.h3/signing-key.pem
 |----|------|----------|
 | CERT-I-01 | End-to-end: test→badge→verify loop | Full pipeline produces valid badge |
 | CERT-I-02 | Registry submit then list | Submitted badge appears in list response |
-| CERT-I-03 | Registry submit then verify | `h3.sh/verify/{id}` returns valid |
-| CERT-I-04 | Revoke badge then verify | `h3.sh/verify/{id}` returns revoked=true |
+| CERT-I-03 | Registry submit then verify | `get-h3.github.io/h3/verify/{id}` returns valid |
+| CERT-I-04 | Revoke badge then verify | `get-h3.github.io/h3/verify/{id}` returns revoked=true |
 | CERT-I-05 | Expired badge auto-detection | Badge with past expires_at handled correctly |
 | CERT-I-06 | Multi-language certification | Go/Python/TS harnesses all produce valid badges |
 | CERT-I-07 | CI badge gate enforcement | CI step fails when badge is expired/revoked |
@@ -646,7 +646,7 @@ hermes-h3 badge sign .badge/badge.json --key-file ~/.h3/signing-key.pem
 | 2.4 | Add expiration detection + yellow SVG variant | Expiring badges correctly flagged |
 | **Gate** | Full verification loop: generate → sign → verify | End-to-end pass with 44/44 test battery |
 
-### Phase 3: Registry Server (h3.sh)
+### Phase 3: Registry Server (get-h3.github.io/h3)
 
 | Step | Description | Acceptance |
 |------|-------------|------------|
@@ -657,11 +657,11 @@ hermes-h3 badge sign .badge/badge.json --key-file ~/.h3/signing-key.pem
 | 3.5 | Add authentication for submission + revocation | h3_hx token required |
 | **Gate** | Full registry CRUD cycle works | Submit → list → verify → revoke → verify |
 
-### Phase 4: Dashboard (h3.sh)
+### Phase 4: Dashboard (get-h3.github.io/h3)
 
 | Step | Description | Acceptance |
 |------|-------------|------------|
-| 4.1 | Build `h3.sh/certified` dashboard page | Renders badge cards from registry API |
+| 4.1 | Build `get-h3.github.io/h3/certified` dashboard page | Renders badge cards from registry API |
 | 4.2 | Add filter (language, status) + search | Filtered results match selection |
 | 4.3 | Add badge detail page | Full badge info, verification URL, SVG embed |
 | 4.4 | Add stats bar + trend chart | Stats match registry aggregate counts |
@@ -674,7 +674,7 @@ hermes-h3 badge sign .badge/badge.json --key-file ~/.h3/signing-key.pem
 | 5.1 | Write CI workflow template (GitHub Actions) | Workflow runs in <5 min |
 | 5.2 | Add badge submit step to CI template | Badge auto-submitted to registry |
 | 5.3 | Add badge gate to CI template | Deploy blocked if badge invalid |
-| 5.4 | Document CI setup in h3.sh | External developers can set up CI certification |
+| 5.4 | Document CI setup in get-h3.github.io/h3 | External developers can set up CI certification |
 
 ---
 
@@ -684,7 +684,7 @@ hermes-h3 badge sign .badge/badge.json --key-file ~/.h3/signing-key.pem
 |------|---------|-------------|
 | S02 — Protocol Specification | §3 (Endpoints) | Registry API extends protocol |
 | S05 — Shim Test Battery | §2 (Test Runner) | `h3-test` is badge generator runtime |
-| S10 — Website & Developer Docs | all | Dashboard + verify endpoint are h3.sh features |
+| S10 — Website & Developer Docs | all | Dashboard + verify endpoint are get-h3.github.io/h3 features |
 | S12 — Security & Authentication | §3 (API Key Format) | Badge auth uses h3_hx tokens |
 | S13 — Token Rotation & Revocation | §4 (Revocation) | Badge revocation follows same pattern |
 | S14 — TLS Enforcement | all | Registry and verify endpoint must use TLS |

@@ -36,6 +36,10 @@ Every log line across all H3 components MUST include these fields when available
 |-------|------|----------|--------|-------------|
 | `timestamp` | RFC3339Nano | ✅ Always | Logger | When the event occurred |
 | `level` | string | ✅ Always | Logger | `debug`, `info`, `warn`, `error`, `critical` |
+> **Note:** `h3.shim`, `h3.harness.go` etc. are logger component
+> identifiers (telemetry naming) — NOT references to the retired `h3.sh`
+> website domain (dead — NXDOMAIN; live site: https://get-h3.github.io/h3/).
+
 | `logger` | string | ✅ Always | Logger | Component name: `h3.shim`, `h3.harness.go`, `h3.harness.py`, `h3.harness.ts` |
 | `session_id` | string | ✅ Always | Protocol | H3 session ID — `uuid4` or `uuid7` (time-ordered) |
 | `decision_id` | string | When available | Protocol | H3 decision ID — present on process/result paths, absent on health/startup |

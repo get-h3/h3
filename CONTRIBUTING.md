@@ -20,7 +20,7 @@ This repo (get-h3/h3) is the **umbrella coordination hub** — specs, cross-repo
 2. **Protocol update** — change OpenAPI/JSON Schema in the protocol repo
 3. **SDK regeneration** — each SDK has a sync-protocol workflow triggered by protocol tags
 4. **Test cascade** — run `integration/roundtrip/roundtrip.sh` to verify cross-language wire consistency
-5. **Test battery** — `h3-test --endpoint <harness>` must pass 43/43
+5. **Test battery** — `h3-test --endpoint <harness>` must pass 44/44
 
 ## Running the Round-Trip Verification
 

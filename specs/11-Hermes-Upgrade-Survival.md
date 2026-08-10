@@ -237,4 +237,4 @@ This file is the **single source of truth** for compatibility. It feeds:
 - `hermes h3 install` version resolution
 - `hermes update` pre-flight check
 - CI compatibility matrix
-- h3.sh version picker
+- get-h3.github.io/h3 version picker

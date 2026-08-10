@@ -150,7 +150,7 @@ For major/minor releases, a human must:
 1. [ ] Protocol: tag pushed, schemas validated, GitHub Release created
 2. [ ] Each SDK: regenerated types committed, compliance tests pass
 3. [ ] Shim: regenerated protocol.py, test battery passes against all SDK examples
-4. [ ] h3.sh docs: updated version matrix, examples, changelog
+4. [ ] get-h3.github.io/h3 docs: updated version matrix, examples, changelog
 5. [ ] DuckBrain: `/spec/h3/` entries updated with new version info
 6. [ ] Announcement: Discord, X, Hermes changelog
 

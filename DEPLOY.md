@@ -279,7 +279,7 @@ GET  /health      200 1ms
 
 ## Production Checklist
 
-- [ ] `h3-test --endpoint <url>` passes 43/43
+- [ ] `h3-test --endpoint <url>` passes 44/44
 - [ ] Harness logs every request with METHOD, path, status, duration
 - [ ] Health endpoint returns `{"status": "ok", "version": "...", "capabilities": [...]}`
 - [ ] Harness runs behind a process manager (systemd, Docker restart policy, k8s)

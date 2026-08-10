@@ -28,7 +28,7 @@
 | 07 | [OpenAPI & JSON Schema Design](07-OpenAPI-JSON-Schema.md) | ✅ | ~8 |
 | 08 | [Cross-Repo Release Pipeline](08-Cross-Repo-Release-Pipeline.md) | ✅ | ~6 |
 | 09 | [Testing Framework Architecture](09-Testing-Framework-Architecture.md) | ✅ | ~10 |
-| 10 | [h3.sh Website & Developer Docs](10-Website-Docs.md) | ✅ | ~5 |
+| 10 | [H3 Website & Developer Docs](10-Website-Docs.md) | ✅ | ~5 |
 | 11 | [Hermes Upgrade Survival](11-Hermes-Upgrade-Survival.md) | ✅ | ~8 |
 | 12 | [Security & Authentication](12-Security-Authentication.md) | ✅ | ~14 |
 | 13 | [Token Rotation & Revocation](13-Token-Rotation-Revocation.md) | ✅ | ~15 |

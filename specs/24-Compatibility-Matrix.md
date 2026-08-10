@@ -209,7 +209,7 @@ Deprecation notices MUST be published on ALL channels simultaneously:
 
 1. **Changelog** — `CHANGELOG.md` entry with deprecation date and removal date
 2. **Release notes** — GitHub/GitLab release description
-3. **h3.sh** — Version compatibility table on website
+3. **Website (get-h3.github.io/h3)** — Version compatibility table
 4. **Shim startup** — Log warning on first connect with deprecated version
 5. **`h3-test`** — `--compat-check` flag that warns on deprecated versions
 
@@ -371,7 +371,7 @@ jobs:
 A GitHub badge in every repo README shows the current compatibility status:
 
 ```
-[![Compatibility](https://img.shields.io/endpoint?url=https://h3.sh/api/compat-badge/h3)](https://h3.sh/compat)
+[![Compatibility](https://img.shields.io/endpoint?url=https://get-h3.github.io/h3/api/compat-badge/h3)](https://get-h3.github.io/h3/#compat)
 ```
 
 The badge is generated from the latest CI compat-matrix run.
@@ -600,7 +600,7 @@ Phase 6: Cleanup (after sunset)
 
 ## 15. Open Questions / Future Work
 
-1. **Protocol version discovery from h3.sh:** Should h3.sh serve a `/versions.json` endpoint that lists all supported protocol versions and their release dates?
+1. **Protocol version discovery from the website:** Should get-h3.github.io/h3 serve a `/versions.json` endpoint that lists all supported protocol versions and their release dates?
 2. **API key version binding:** When a harness registers an API key (SEC-02), should the key be bound to a specific protocol version?
 3. **Automatic SDK downgrade on incompatible harness:** Should the shim auto-detect that the harness only supports v1 and downgrade SDK calls transparently?
 4. **Performance test baseline:** The CI compat matrix will need a baseline run time. First pass with all-empty adapters should measure <5s per combination.

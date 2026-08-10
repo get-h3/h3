@@ -469,5 +469,5 @@ Git tag push (v1.0.0)
   ├─► Go: Tag triggers Go module proxy caching
   ├─► Python: CI publishes to PyPI via trusted publisher
   ├─► TypeScript: CI publishes to npm via OIDC token
-  └─► OpenAPI spec: Published to docs.h3.sh
+  └─► OpenAPI spec: Published to get-h3.github.io/h3 (docs/)
 ```
