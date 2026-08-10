@@ -41,15 +41,15 @@ Error shape: `{"error": {"code", "message", "details"}}` (codes in specs/02 §9)
   hermes-h3-shim` FAILS. Install from source:
   ```bash
   uv venv .venv
-  uv pip install --python .venv/bin/python -e /home/kara/get-h3/shim
+  uv pip install --python .venv/bin/python -e $HOME/get-h3/shim
   # → gives you h3-test and hermes-h3
   ```
 - The CLI binary is **`hermes-h3`**, not `hermes h3` (that form needs the
   plugin wired into live Hermes — WIRING-01, still open).
-- sdk-python installs with `-e /home/kara/get-h3/sdk-python` (package name
+- sdk-python installs with `-e $HOME/get-h3/sdk-python` (package name
   `h3-harness-sdk` — also not on PyPI).
 
-## Fastest verified path to 43/43 (Go)
+## Fastest verified path to 44/44 (Go)
 
 ```bash
 cd /tmp && hermes-h3 scaffold --lang go --output-dir /tmp
@@ -66,8 +66,8 @@ h3-test --endpoint http://localhost:9191   # → 44/44
 
 ## Custom harness from the spec (Python, no SDK)
 
-Read `specs/02-Protocol-Specification.md` — it is sufficient for ~41/43
-immediately. To reach 43/43 you need TWO conventions that are only in SDK
+Read `specs/02-Protocol-Specification.md` — it is sufficient for ~41/44
+immediately. To reach 44/44 you need TWO conventions that are only in SDK
 example code (see docs/dogfood/2026-08-02-integration.md):
 
 1. **History echo:** include a top-level `history` in the decision response,
@@ -82,7 +82,7 @@ example code (see docs/dogfood/2026-08-02-integration.md):
    finished = "do not finish" not in content
    ```
 
-Minimal stdlib skeleton (proven 43/43): one handler per endpoint
+Minimal stdlib skeleton (proven 44/44): one handler per endpoint
 (`/v1/health`, `/v1/process`, `/v1/result`, `/v1/cancel`, `/v1/sessions/:id`
 GET+DELETE), a `_decision_*` helper per type, error envelope per §9.
 ~130 lines total.
@@ -92,10 +92,11 @@ GET+DELETE), a `_decision_*` helper per type, error envelope per §9.
 - **Port collisions are silent killers.** `h3-test` tests whatever listens
   on the port. The Python echo example hardcodes `:8000`; if it fails to
   bind (exit 3), the battery tests the WRONG server (looks like a baffling
-  9/43 with `{"detail":"Not Found"}` health). Always `curl
+  9/44 with `{"detail":"Not Found"}` health). Always `curl
   <endpoint>/v1/health` first, and use `ss -tlnp` to confirm ownership.
-- **`go run .` fails with `unknown revision v0.0.0`** → the sdk-go replace
-  fix above. There are no published sdk-go tags.
+- **`go run .` fails with `unknown revision v0.0.0`** → stale local go.mod;
+  sdk-go v0.1.0+ is published, so `go mod tidy` fetches it — add a
+  `replace` directive only for local SDK dev.
 - **`hermes-h3` config path:** use `--config <file>` explicitly;
   `HERMES_H3_CONFIG` env is not honored by all subcommands.
 - **Health path is `/v1/health`**, not `/health` (a plain `curl /health`
