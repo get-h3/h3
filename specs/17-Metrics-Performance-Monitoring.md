@@ -446,7 +446,7 @@ Region 1: Health & Protocol   — 7/7 PASS, 1.2ms avg, 0 errors
 Region 2: Process Flows       — 8/8 PASS, 18.5ms avg, 0 errors
 Region 3: Decision Types      — 6/6 PASS, 15.3ms avg, 0 errors
 ...
-Total: 43/43 PASS, 12.8ms avg, 0 errors
+Total: 44/44 PASS, 12.8ms avg, 0 errors
 ```
 
 ---

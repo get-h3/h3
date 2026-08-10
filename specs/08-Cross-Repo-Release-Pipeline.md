@@ -191,7 +191,7 @@ Every SDK repo displays a badge showing protocol version and compliance status:
 
 ```
 [![H3 Protocol v1.0](https://img.shields.io/badge/H3-v1.0-8b5cf6)](https://github.com/get-h3/protocol)
-[![Compliance](https://img.shields.io/badge/compliance-43%2F43-brightgreen)](https://github.com/get-h3/shim)
+[![Compliance](https://img.shields.io/badge/compliance-44%2F44-brightgreen)](https://github.com/get-h3/shim)
 ```
 
 Badges update automatically via the release pipeline.

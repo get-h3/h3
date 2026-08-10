@@ -523,7 +523,7 @@ h3 migrate dry-run                          # Validate plan without executing
 | ID | Test | Description |
 |----|------|-------------|
 | COMPAT-E2E-01 | compat_matrix_all_green | Full CI matrix passes for all supported combos |
-| COMPAT-E2E-02 | cross_version_test_battery | h3-test 43/43 on v1 AND v2 harnesses |
+| COMPAT-E2E-02 | cross_version_test_battery | h3-test 44/44 on v1 AND v2 harnesses |
 | COMPAT-E2E-03 | migration_blue_green | Blue v1, Green v2, migrate, rollback, verify |
 
 ---
