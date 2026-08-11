@@ -661,7 +661,7 @@ Add to `protocol/schemas/v1/error.json`:
 | RL-I-05 | CLI `rate-limit set` takes effect immediately | Next request uses new rate |
 | RL-I-06 | Session termination on turn limit | Harness receives `finished=true` + `error=SESSION_TURN_LIMIT` |
 | RL-I-07 | Session termination on cost limit | Harness receives `finished=true` + `error=SESSION_COST_LIMIT` |
-| RL-I-08 | `h3-test` runs at elevated rate (100/sec) | All 43 tests pass without 429 |
+| RL-I-08 | `h3-test` runs at elevated rate (100/sec) | All 44 tests pass without 429 |
 | RL-I-09 | Rate limit disabled → no enforcement | `enabled: false` → all requests pass |
 
 ### 10.3 Performance Benchmarks

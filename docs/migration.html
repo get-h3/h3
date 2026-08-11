@@ -589,7 +589,7 @@ h3-test --endpoint http://localhost:9191
 
   <div class="card">
     <h3>After Hermes updates</h3>
-    <pre><code>hermes h3 verify
+    <pre><code>hermes-h3 verify
 # Checks: shim imports OK, plugin registered, harnesses healthy,
 #         test battery passes, config schema migrated, version matrix OK</code></pre>
   </div>
@@ -598,10 +598,10 @@ h3-test --endpoint http://localhost:9191
     <h3>If something breaks</h3>
     <pre><code>hermes downgrade --version 0.18.0
 cp ~/.hermes/backups/h3-config-*.yaml ~/.hermes/profiles/default/config.yaml
-hermes h3 verify</code></pre>
+hermes-h3 verify</code></pre>
     <p style="margin:10px 0 0;color:var(--muted);font-size:0.88rem;">
       H3 configs are automatically backed up to <code>~/.hermes/backups/</code> before every
-      <code>hermes update</code> and every <code>hermes h3 install</code>.
+      <code>hermes update</code> and every <code>hermes-h3 install</code>.
     </p>
   </div>
 </section>

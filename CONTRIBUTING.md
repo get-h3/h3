@@ -42,7 +42,7 @@ The cross-repo task board is `.coding-hermes/board/tasks.jsonl` (JSONL canonical
 ## Quality Gates
 
 - **GitReins** — git-native guard pipeline on every repo
-- **h3-test** — 43-test compliance battery across 6 categories
+- **h3-test** — 44-test compliance battery across 6 categories
 - **roundtrip.sh** — cross-language wire format verification
 - **redocly lint** — OpenAPI schema validation
 

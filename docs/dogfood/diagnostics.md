@@ -9,7 +9,7 @@ from the perspective of someone who used the system, not built it.
 ```
 protocol/  (OpenAPI 3.1 h3-protocol.yaml — single source of truth)
     │   generates Pydantic/Zod/Go types into the SDKs
-    ├──► shim/          Python: client, loader, shim_loop, test_battery (43 tests)
+    ├──► shim/          Python: client, loader, shim_loop, test_battery (44 tests)
     │        │          exposes: h3-test, hermes-h3 (CLI)
     │        └── templates/ (go/py/ts scaffold generators)
     ├──► sdk-go/        Go harness SDK (protocol/ + harness/ packages)
@@ -22,7 +22,7 @@ context) → harness returns a Decision (`tool_call` / `llm_call` / `text` /
 `wait` / `delegate` / `end`) → Hermes executes → `POST /v1/result` →
 harness returns the next Decision → ... → `end`.
 
-**The gate:** `h3-test --endpoint URL` runs 43 tests in 6 categories
+**The gate:** `h3-test --endpoint URL` runs 44 tests in 6 categories
 (health, process flows, decision types, result handling, errors, stress).
 Exit 0 = compliant. The battery is transport-agnostic (REST today; gRPC is
 PERF-04).
@@ -96,10 +96,10 @@ silently tests whatever IS on the port. Same trap as the fleet's own tick
 `curl <endpoint>/v1/health` and check `ss -tlnp`; use a free port for
 examples (`port=8001`).
 
-### E5. `hermes h3 scaffold` vs `hermes-h3 scaffold`
-**Why:** the README documents the in-Hermes plugin form (`hermes h3`);
-standalone the binary is `hermes-h3`. `hermes h3` exists only once
-WIRING-01/02 land (plugin wired into a live Hermes).
+### E5. `hermes-h3 scaffold` vs the plugin's space-form subcommand
+**Why:** the README documents the in-Hermes plugin form (the `hermes h3`
+command group); standalone the binary is `hermes-h3`. The space form
+exists only once WIRING-01/02 land (plugin wired into a live Hermes).
 **Right way:** use `hermes-h3` for CLI work today; the commands are
 identical.
 
