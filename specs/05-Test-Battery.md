@@ -151,25 +151,57 @@ hermes h3 test --endpoint http://localhost:9191 --json
 
 ### 4.2 Hermes-Side Code Structure
 
-```python
-# hermes_cli/agent/shims/h3/test_battery.py
+Condensed structure of the real battery (`src/h3_shim/test_battery.py` in get-h3/shim —
+fully async: `httpx.AsyncClient`, `await` on every request):
 
+```python
 class H3TestBattery:
-    def __init__(self, endpoint: str, transport: str = "rest", config: TestConfig = None):
-        self.client = H3Client(endpoint, transport)
-        self.config = config or TestConfig()
+    """Black-box HTTP probe exercising every public protocol endpoint."""
+
+    #: Hard ceiling on any single network round-trip.
+    PER_TEST_TIMEOUT_S: float = 10.0
+
+    def __init__(
+        self,
+        endpoint: str,
+        transport: str = "rest",
+        config: dict | None = None,
+    ):
+        self.endpoint = endpoint.rstrip("/")
+        self.transport = transport
+        self.config = config or {}
+        self.client = httpx.AsyncClient(
+            base_url=self.endpoint, timeout=self.PER_TEST_TIMEOUT_S
+        )
         self.results: list[TestResult] = []
 
-    def run_all(self) -> TestReport:
-        self._run_category("Health & Protocol", self.category_health())
-        self._run_category("Process - Basic Flows", self.category_process_basic())
-        self._run_category("Process - Decision Types", self.category_decision_types())
-        self._run_category("Result Handling", self.category_result_handling())
-        self._run_category("Error & Edge Cases", self.category_edge_cases())
-        self._run_category("Stress & Performance", self.category_stress())
-        return TestReport(results=self.results)
+    async def probe(self) -> None:
+        """Pre-flight: GET /v1/health must look like an H3 endpoint."""
 
-    # Each test returns TestResult(passed: bool, name: str, detail: str, duration_ms: float)
+    async def run_all(self) -> TestReport:
+        """Run every category sequentially; assemble a TestReport."""
+        await self.probe()
+        results: list[TestResult] = []
+        for category in (
+            self.category_1_health,
+            self.category_2_process,
+            self.category_3_decisions,
+            self.category_4_results,
+            self.category_5_errors,
+            self.category_6_stress,
+        ):
+            results.extend(await category())
+        # ... builds TestReport(results, total, passed, failed, duration_ms, timestamp)
+
+    async def close(self):
+        """Tear down the underlying httpx client."""
+        await self.client.aclose()
+
+    async def category_1_health(self) -> list[TestResult]:
+        return [await self.test_1_1_health_ok(), ...]
+
+    # Each test is `async def test_N_M_<name>(self) -> TestResult` and talks
+    # to the harness via `await self.client.<verb>("/v1/...")` (see 4.4).
 ```
 
 ### 4.3 Test Result Schema
@@ -185,12 +217,12 @@ class TestResult:
 
 @dataclass
 class TestReport:
-    results: list[TestResult]
-    total: int
-    passed: int
-    failed: int
-    duration_ms: float
-    timestamp: str
+    results: list[TestResult] = field(default_factory=list)
+    total: int = 0
+    passed: int = 0
+    failed: int = 0
+    duration_ms: float = 0.0
+    timestamp: str = ""
 
     @property
     def all_passing(self) -> bool:
@@ -199,24 +231,28 @@ class TestReport:
 
 ### 4.4 Sample Test Implementation
 
+Mirrors the async pattern of `src/h3_shim/test_battery.py`: every request goes
+through `await self.client.<verb>(...)`; `_timed` and `_safe_call` are battery
+helpers that time each assertion and catch transport errors.
+
 ```python
-def test_health_ok(self) -> TestResult:
-    """GET /v1/health returns 200 with status 'ok'"""
-    start = time.time()
+async def test_1_1_health_ok(self) -> TestResult:
+    """GET /v1/health → 200 with status='ok'."""
+    cat = CATEGORIES["health"]
+    done = self._timed("health_ok", cat)
     try:
-        resp = self.client.get("/v1/health")
+        resp, err = await self._safe_call(self.client.get("/v1/health"))
+        if err is not None or resp is None:
+            return done(False, f"Exception: {err}")
         if resp.status_code != 200:
-            return TestResult("health_ok", False,
-                f"Expected 200, got {resp.status_code}", time.time() - start, "Health & Protocol")
+            return done(False, f"Expected 200, got {resp.status_code}")
         body = resp.json()
-        if body.get("status") != "ok":
-            return TestResult("health_ok", False,
-                f"Expected status 'ok', got '{body.get('status')}'", time.time() - start, "Health & Protocol")
-        return TestResult("health_ok", True,
-            f"200 OK, status={body['status']}", time.time() - start, "Health & Protocol")
-    except Exception as e:
-        return TestResult("health_ok", False,
-            f"Exception: {e}", time.time() - start, "Health & Protocol")
+        status = body.get("status")
+        if status != "ok":
+            return done(False, f"Expected status 'ok', got '{status}'")
+        return done(True, f"200 OK, status={status}")
+    except Exception as exc:  # noqa: BLE001
+        return done(False, f"Exception: {exc}")
 ```
 
 ---
