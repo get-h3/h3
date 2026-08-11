@@ -17,7 +17,7 @@ The H3 Conformance Certification program provides **public, verifiable proof** t
 | Principle | Rationale |
 |-----------|-----------|
 | **No central authority** | Badge validity is cryptographic, not permission-based. Anyone can issue a self-signed badge; the registry lists badges others can choose to trust. |
-| **Test battery is the gate** | Badges are only issued for 44/44 pass on the exact tagged `h3-test` version. Partial passes or `--smoke` runs don't qualify. |
+| **Test battery is the gate** | Badges are only issued for 44/44 pass on the exact tagged `h3-test` version. Partial passes don't qualify. |
 | **Verifiable offline** | A badge carries enough information (test version, timestamp, harness endpoint, signature) to verify without calling home. |
 | **Opt-in registry** | Harness developers can optionally submit their badge to a public registry (`get-h3.github.io/h3/registry`) for discoverability. |
 | **Revocable** | If a certified harness is later found non-compliant (via a protocol update), its badge is revoked and the registry is updated. |
@@ -35,7 +35,7 @@ Harness Developer                          Public (get-h3.github.io/h3)
        ▼                                        │
   ┌─────────┐    2. Generate badge              │
   │ h3-test ├─────────► JSON + SVG badge        │
-  │ --badge │                                   │
+  │ (json)  │      (planned extension)          │
   └─────────┘                                   │
        │                                        │
        │ 3. Submit (optional)                   │
@@ -55,7 +55,7 @@ Harness Developer                          Public (get-h3.github.io/h3)
 
 | Component | Role | Implementation |
 |-----------|------|----------------|
-| **Badge Generator** | Produces signed JSON badge + SVG image from `h3-test` results | `h3-test --badge` CLI flag |
+| **Badge Generator** | Produces signed JSON badge + SVG image from `h3-test` results | Planned `hermes-h3 badge` CLI (not in current `h3-test` — see §9) |
 | **Verification Endpoint** | Validates a badge against stored test results | `get-h3.github.io/h3/verify?url=` |
 | **Registry API** | Accepts badge submissions, serves certified list | `get-h3.github.io/h3/api/badges` |
 | **Dashboard** | Public directory of all certified harnesses | `get-h3.github.io/h3/certified` |
@@ -139,26 +139,21 @@ The SVG is self-contained (no external image assets) and fits in a README.md:
 
 ---
 
-## 4. Badge Generation (`h3-test --badge`)
+## 4. Badge Generation (planned — `hermes-h3 badge`)
 
 ### 4.1 CLI Interface
 
+> ⚠️ Badge generation is a PLANNED extension. The current `h3-test` CLI ships only
+> `--endpoint`, `--json`, and `--categories` — the `--badge`/`--format`/`--from-results`
+> flags below do NOT exist yet. The intended surface is the `hermes-h3 badge` command
+> family (§9).
+
 ```bash
-# Generate badge from latest test run
-h3-test --endpoint http://localhost:9191 --badge
+# Generate a compliance report (current h3-test CLI)
+h3-test --endpoint http://localhost:9191 --json > report.json
 
-# Generate badge from saved JSON results
-h3-test --badge --from-results results.json
-
-# Generate badge with custom harness metadata
-h3-test --badge --harness-name "My Harness" --harness-version 1.0.0 \
-  --harness-language go --endpoint https://my-harness.com:9191
-
-# Output formats
-h3-test --badge --format json        # Signed JSON (default)
-h3-test --badge --format svg         # SVG image only
-h3-test --badge --format markdown    # Markdown embed code
-h3-test --badge --format all         # JSON + SVG + markdown
+# Planned badge generation (once hermes-h3 badge ships — see §9)
+#   hermes-h3 badge generate report.json
 ```
 
 ### 4.2 Output Files
@@ -229,7 +224,7 @@ GET /verify/{badge-hash}
   "valid": false,
   "status": "expired",
   "expired_at": "2026-10-22T12:00:00Z",
-  "reason": "Badge expired 2026-10-22. Re-run h3-test --badge to re-certify."
+  "reason": "Badge expired 2026-10-22. Re-run h3-test to re-certify."
 }
 ```
 
@@ -498,7 +493,8 @@ jobs:
         run: pip install hermes-h3-shim  # gated on P3-10 (PyPI publish); until then: git clone https://github.com/get-h3/shim && cd shim && pip install -e .
       - name: Run certification
         run: |
-          h3-test --endpoint http://localhost:9191 --badge --format all
+          h3-test --endpoint http://localhost:9191 --json > report.json
+          # Badge generation is a planned extension (hermes-h3 badge, §9)
       - name: Submit badge
         env:
           H3_BADGE_TOKEN: ${{ secrets.H3_BADGE_TOKEN }}
@@ -526,7 +522,7 @@ CI pipelines can enforce certification as a gate:
 ### 8.3 Badge in README
 
 ```markdown
-<!-- Auto-updated by h3-test --badge --format markdown -->
+<!-- Auto-updated by the badge generator (planned hermes-h3 badge CLI) -->
 [![H3 Compliant](https://get-h3.github.io/h3/badges/v1/badge-a1b2c3d4.svg)](https://get-h3.github.io/h3/verify/badge-a1b2c3d4)
 ```
 
@@ -535,6 +531,8 @@ CI pipelines can enforce certification as a gate:
 ## 9. CLI Surface
 
 ```bash
+# PLANNED CLI (design reference — hermes-h3 badge is NOT implemented;
+# current h3-test ships only --endpoint/--json/--categories)
 # Badge generation
 hermes-h3 badge [generate|verify|submit|revoke|list]
 
@@ -544,7 +542,7 @@ hermes-h3 badge generate \
   --name "My Harness" \
   --version 1.0.0 \
   --language go \
-  --format all
+  --output all
 
 # Verify a badge
 hermes-h3 badge verify badge.json
@@ -573,14 +571,14 @@ hermes-h3 badge sign .badge/badge.json --key-file ~/.h3/signing-key.pem
 | ID | Test | Verifies |
 |----|------|----------|
 | CERT-01-01 | Generate badge from 44/44 results | Badge JSON has correct structure, all fields populated |
-| CERT-01-02 | Generate badge from partial results (40/44) | `h3-test --badge` rejects with error for <44/44 |
+| CERT-01-02 | Generate badge from partial results (40/44) | Badge generation rejects with error for <44/44 |
 | CERT-01-03 | Sign badge with Ed25519 | Signature is valid and verifiable |
 | CERT-01-04 | Verify self-signed badge | Self-signed badge validates with embedded pubkey |
 | CERT-01-05 | Reject tampered badge | Test fails after modifying a single field |
 | CERT-01-06 | Reject expired badge | `expires_at` in past → invalid |
 | CERT-01-07 | SVG badge generation | SVG file matches expected shields.io style |
 | CERT-01-08 | Badge expiry calculation | 90 days from creation, yellow at 60d |
-| CERT-01-09 | Multiple badge format output | `--format all` produces json+svg+markdown |
+| CERT-01-09 | Multiple badge format output | All-format output produces json+svg+markdown |
 | CERT-01-10 | Badge version compatibility | `badge_version: "0.9"` rejected by current verifier |
 | CERT-01-11 | Self-signing key generation | `hermes-h3 badge keygen` produces Ed25519 pair |
 | CERT-01-12 | Badge hash is deterministic | Same inputs → same badge hash |
@@ -627,6 +625,9 @@ hermes-h3 badge sign .badge/badge.json --key-file ~/.h3/signing-key.pem
 
 ### Phase 1: Badge Generator (Shim)
 
+> Roadmap — every badge CLI flag below is PLANNED; the current `h3-test` ships only
+> `--endpoint`/`--json`/`--categories`.
+
 | Step | Description | Acceptance |
 |------|-------------|------------|
 | 1.1 | Add `--badge` flag to `h3-test` CLI | `h3-test --badge` produces badge.json |
@@ -634,7 +635,7 @@ hermes-h3 badge sign .badge/badge.json --key-file ~/.h3/signing-key.pem
 | 1.3 | Add SVG badge output | SVG matches shields.io style |
 | 1.4 | Add `--format all` output | JSON + SVG + markdown in `.badge/` |
 | 1.5 | Add `hermes-h3 badge` CLI commands | generate, verify, list, sign, submit, revoke |
-| **Gate** | `h3-test --badge --format all` produces all 3 files | Self-signed badge passes offline verify |
+| **Gate** | Badge CLI produces all 3 files | Self-signed badge passes offline verify |
 
 ### Phase 2: Badge Verification (Shim)
 

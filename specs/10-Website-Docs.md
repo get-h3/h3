@@ -47,7 +47,7 @@ go get github.com/get-h3/sdk-go
 pip install h3-harness-sdk
 
 # TypeScript
-npm install @get-h3/h3-harness-sdk
+npm install github:get-h3/sdk-typescript
 ```
 
 ### Step 3: Copy-paste the echo harness

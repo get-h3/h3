@@ -23,7 +23,7 @@ Test Battery (hermes_cli/agent/shims/h3/test_battery.py)
   │
   │── HTTP client ──► Harness Endpoint (localhost:9191)
   │
-  │── Runs 50+ tests across 6 categories
+  │── Runs 44 tests across 6 categories
   │── Produces JSON report + terminal output
   │── Exit code 0 = all passing, non-zero = failures
 ```
@@ -145,14 +145,8 @@ hermes h3 test --endpoint http://localhost:9191
 # Specific categories
 hermes h3 test --endpoint http://localhost:9191 --categories health,process
 
-# Quick smoke test (categories 1-2 only)
-hermes h3 test --endpoint http://localhost:9191 --smoke
-
 # Output JSON only (for CI)
 hermes h3 test --endpoint http://localhost:9191 --json
-
-# With custom config
-hermes h3 test --endpoint http://localhost:9191 --max-iterations 10 --timeout 30
 ```
 
 ### 4.2 Hermes-Side Code Structure
@@ -331,7 +325,7 @@ echo "Running H3 compliance tests..."
 go run . &
 PID=$!
 sleep 2
-hermes h3 test --endpoint http://localhost:9191 --smoke
+h3-test --endpoint http://localhost:9191
 RESULT=$?
 kill $PID 2>/dev/null
 if [ $RESULT -ne 0 ]; then

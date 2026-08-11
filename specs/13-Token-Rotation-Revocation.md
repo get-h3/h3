@@ -774,7 +774,7 @@ TS-CLI-01: rotate-key --json output matches schema
   Assert: exit code 0
 
 TS-CLI-02: revoke-key terminates sessions
-  Given: 3 active sessions via h3-test --smoke
+  Given: 3 active sessions (harness warmed by a full h3-test run)
   Run: hermes h3 revoke-key --harness-url http://localhost:9191 --force --json
   Assert: sessions_terminated >= 3
   Assert: subsequent h3-test returns auth errors

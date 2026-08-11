@@ -67,7 +67,7 @@
 | `/spec/h3/protocol` | Endpoint contracts, decision types, error codes |
 | `/spec/h3/installer` | Install flow, version matrix, compatibility |
 | `/spec/h3/sdks` | Go/Python/TS SDKs, code generation |
-| `/spec/h3/test-battery` | 43 compliance tests, CI integration, region-style |
+| `/spec/h3/test-battery` | 44 compliance tests, CI integration, region-style |
 | `/spec/h3/shim` | Hermes-side code structure, integration points |
 
 ---

@@ -163,7 +163,7 @@ For major/minor releases, a human must:
 | shim | PyPI | `hermes-h3-shim` | Tag push + compliance pass |
 | sdk-go | Go Module Proxy | `github.com/get-h3/sdk-go` | Tag push (auto) |
 | sdk-python | PyPI | `h3-harness-sdk` | Tag push + compliance pass |
-| sdk-typescript | npm | `@get-h3/h3-harness-sdk` | Tag push + compliance pass |
+| sdk-typescript | npm | `@get-h3/h3-harness-sdk` (planned publish; install via `github:get-h3/sdk-typescript` until then — see specs/10) | Tag push + compliance pass |
 
 ### PyPI Trusted Publisher (shim + sdk-python)
 
