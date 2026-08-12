@@ -53,7 +53,7 @@ Error shape: `{"error": {"code", "message", "details"}}` (codes in specs/02 §9)
 
 ```bash
 cd /tmp && hermes-h3 scaffold --lang go --output-dir /tmp
-# creates /tmp/h3-harness-go  (NOTE: dir is h3-harness-<lang>, README says h3-harness)
+# creates /tmp/h3-harness-go
 
 # Scaffold builds out of the box: go.mod requires github.com/get-h3/sdk-go v0.1.0
 # (published tag — go mod tidy fetches it from the network, no replace needed).

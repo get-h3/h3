@@ -129,16 +129,19 @@ cannot spin forever, and propagates cancellation through `/v1/cancel`.
 
 ## 5. Step 4 — prove compliance: `h3-test`
 
-Install the shim (one command, from source — the package is not on PyPI
-yet):
+Install the shim from source (the package is not on PyPI yet). Use a
+virtual environment — required on PEP 668-managed Pythons (Ubuntu 24.04+,
+Debian 12+), where a bare `pip install` fails with
+externally-managed-environment:
 
 ```bash
+python3 -m venv .venv && source .venv/bin/activate
 pip install git+https://github.com/get-h3/shim
 ```
 
-Then run the 44-test compliance battery (6 categories: health, process,
-decision types, result handling, error & edge cases, stress) against your
-harness:
+Then run the 44-test compliance battery (6 categories — exact
+`--categories` names: health, process, decisions, results, errors, stress)
+against your harness:
 
 ```bash
 h3-test --endpoint http://localhost:9191          # human-readable
