@@ -23,6 +23,7 @@ The fastest way to see H3 in action:
 ```bash
 # Install the test battery + CLI (source install — PyPI publishing pending, see P3-10)
 git clone https://github.com/get-h3/shim && cd shim
+python3 -m venv .venv && source .venv/bin/activate
 pip install -e .
 
 # Start a Go echo harness — clone the sibling sdk-go repo first (it is NOT part of shim/)
