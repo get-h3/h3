@@ -376,7 +376,13 @@ class NativeH3Harness:
 
 ## 8. CLI Commands
 
+> **CURRENT STATE (WIRING-01):** the `hermes h3 <cmd>` space-form below is the planned
+> Hermes Core integration surface — it requires H3 wired into a live Hermes install and
+> is NOT yet shipped. The working standalone CLI is `hermes-h3` (same subcommands,
+> installed with the shim); use it until WIRING-01 lands.
+
 ```bash
+# Hermes Core integration surface (WIRING-01-gated — NOT yet shipped)
 hermes h3 install              # Install H3 plugin
 hermes h3 uninstall            # Remove H3 plugin
 hermes h3 verify               # Verify installation + compatibility
@@ -388,6 +394,21 @@ hermes h3 route [session]      # Show which harness a session routes to
 # Session-level overrides
 hermes h3 use consensus        # Route current session to Consensus
 hermes h3 use native           # Route current session to native Hermes
+```
+
+```bash
+# Shipped standalone CLI — `hermes-h3` equivalents (works today)
+hermes-h3 install              # Register a harness in the config
+hermes-h3 uninstall            # Remove a harness from the config
+hermes-h3 verify               # Health-check a harness (defaults to default_harness)
+hermes-h3 list                 # List harnesses known to the config
+hermes-h3 test --endpoint URL  # Run compliance test battery
+hermes-h3 scaffold --lang go   # Generate harness template
+hermes-h3 route                # Show the session → harness routing table
+
+# Default-harness overrides
+hermes-h3 use consensus        # Set default harness
+hermes-h3 use native           # Set default harness
 ```
 
 ---

@@ -23,20 +23,24 @@ Harness (the brain)
 - Python, Go, or TypeScript runtime (for the harness — pick your SDK language)
 - `h3-test` (bundled with the shim; install from source: `git clone https://github.com/get-h3/shim && cd shim && pip install -e .`)
 
+> **CLI note (WIRING-01):** the shipped standalone CLI is `hermes-h3` (subcommands:
+> `install`, `list`, `pre-update-check`, `route`, `scaffold`, `test`, `uninstall`,
+> `use`, `verify`). The `hermes h3` plugin space-form requires H3 wired into a live
+> Hermes install (tracked as [WIRING-01](specs/06-Hermes-Core-Integration.md)) and is
+> NOT yet available — this guide uses the working `hermes-h3` forms throughout.
+
 ## Step 1: Install the H3 Shim
 
 ```bash
-# Install from PyPI
-hermes h3 install
+# Install the shim from source (PyPI publishing pending — tracked as P3-10)
+git clone https://github.com/get-h3/shim && cd shim && pip install -e .
 
-# Or from local development path
-hermes h3 install --path /path/to/h3/shim
-
-# Verify
-hermes h3 verify
+# Verify the CLI installed
+hermes-h3 --help
 ```
 
-This registers the plugin in `~/.hermes/profiles/<active>/config.yaml` and makes H3 tools available in agent sessions.
+This installs the `hermes-h3` CLI and the `h3-test` battery. The Hermes-side plugin
+registration (the `hermes h3` plugin form) is WIRING-01-gated and not yet shipped.
 
 ## Step 2: Build a Harness
 
@@ -46,15 +50,15 @@ Choose your language. The scaffold command generates a working harness project t
 
 ```bash
 # Generate a Go harness
-hermes h3 scaffold --lang go --output-dir ./my-harnesses
+hermes-h3 scaffold --lang go --output-dir ./my-harnesses
 cd ./my-harnesses/h3-harness-go
 
 # Generate a Python harness
-hermes h3 scaffold --lang py --output-dir ./my-harnesses
+hermes-h3 scaffold --lang py --output-dir ./my-harnesses
 cd ./my-harnesses/h3-harness-py
 
 # Generate a TypeScript harness
-hermes h3 scaffold --lang ts --output-dir ./my-harnesses
+hermes-h3 scaffold --lang ts --output-dir ./my-harnesses
 cd ./my-harnesses/h3-harness-ts
 ```
 
@@ -96,7 +100,7 @@ func main() {
 go run .
 ```
 
-**Python** — `h3-harness-sdk`
+**Python** — `github.com/get-h3/sdk-python` (PyPI publishing pending — install from source)
 
 ```python
 from h3_harness import (
@@ -122,7 +126,7 @@ pip install git+https://github.com/get-h3/sdk-python
 uvicorn main:app --port 9191
 ```
 
-**TypeScript** — `@get-h3/h3-harness-sdk`
+**TypeScript** — `github.com/get-h3/sdk-typescript` (npm publishing pending — install from source; imports use the package name `@get-h3/h3-harness-sdk`)
 
 ```typescript
 import { Hono } from 'hono';
@@ -155,28 +159,28 @@ npx tsx main.ts  # listens on :9191
 
 ## Step 3: Test the Harness
 
-The test battery is the gate. 43 tests across 6 regions. Exit code 0 = compliant.
+The test battery is the gate. 44 tests across 6 categories. Exit code 0 = compliant.
 
 ```bash
 h3-test --endpoint http://localhost:9191
 ```
 
-All 43 must pass. No exceptions.
+All 44 must pass. No exceptions.
 
 ## Step 4: Register the Harness
 
 ```bash
 # Register with Hermes
-hermes h3 install --harness my-harness --endpoint http://localhost:9191
+hermes-h3 install my-harness --endpoint http://localhost:9191
 
 # Set as default
-hermes h3 install --harness my-harness --endpoint http://localhost:9191 --default
+hermes-h3 install my-harness --endpoint http://localhost:9191 --set-default
 
 # List registered harnesses
-hermes h3 route
+hermes-h3 list
 
 # Health check
-hermes h3 verify --harness my-harness
+hermes-h3 verify --harness my-harness
 ```
 
 Config lives at `~/.hermes/h3/config.yaml`:
@@ -233,7 +237,7 @@ ENTRYPOINT ["/harness"]
 ### Then register
 
 ```bash
-hermes h3 install --harness my-harness --endpoint http://h3-harness:9191
+hermes-h3 install my-harness --endpoint http://h3-harness:9191
 ```
 
 ## Step 6: Route Sessions Through H3
@@ -241,14 +245,13 @@ hermes h3 install --harness my-harness --endpoint http://h3-harness:9191
 To swap a session's agent loop to your harness:
 
 ```bash
-# Route a specific Telegram session
-hermes h3 session set telegram:-1001234567890:17585 my-harness
-
-# Route a Matrix room
-hermes h3 session set matrix:!roomid:server my-harness
+# Route a specific session — edit ~/.hermes/h3/config.yaml:
+#   sessions:
+#     telegram:-1001234567890:17585: my-harness
+#     matrix:!roomid:server: my-harness
 
 # Show routing table
-hermes h3 route
+hermes-h3 route
 ```
 
 Only the listed sessions use H3. All others continue with the native Hermes loop. This is gradual cutover — never big-bang swap every session.
@@ -257,7 +260,7 @@ Only the listed sessions use H3. All others continue with the native Hermes loop
 
 ```bash
 # Health check (run in cron or monitoring)
-hermes h3 verify --harness my-harness
+hermes-h3 verify --harness my-harness
 
 # Test battery (periodic compliance)
 h3-test --endpoint http://localhost:9191
@@ -287,40 +290,40 @@ GET  /health      200 1ms
 - [ ] Fallback tested: if harness is unreachable, sessions fall back to native Hermes loop
 - [ ] Harness API keys configured (TLS if over public network)
 - [ ] Harness deployed on same network as Hermes (< 5ms latency)
-- [ ] `hermes h3 verify` responds within 10s
+- [ ] `hermes-h3 verify` responds within 10s
 - [ ] `versions.yaml` checked — Hermes and H3 versions are compatible
 
 ## Upgrade Flow
 
 ```bash
 # 1. Check compatibility
-hermes h3 pre-update-check 0.19.0
+hermes-h3 pre-update-check 0.19.0
 
-# 2. Upgrade shim
-hermes h3 install --version 1.1.0
+# 2. Upgrade shim (source install)
+cd shim && git pull && pip install -e .
 
 # 3. Upgrade SDK in harness
 # Go:  go get github.com/get-h3/sdk-go@latest
-# Python: pip install --upgrade h3-harness-sdk
-# TS:   npm update @get-h3/h3-harness-sdk@latest
+# Python: pip install --upgrade git+https://github.com/get-h3/sdk-python
+# TS:   npm install github:get-h3/sdk-typescript@latest
 
 # 4. Rerun test battery
 h3-test --endpoint http://localhost:9191
 
 # 5. Verify
-hermes h3 verify --harness my-harness
+hermes-h3 verify --harness my-harness
 ```
 
 ## Troubleshooting
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `hermes h3 install` fails | Python 3.11+ not found | Install Python 3.11 via pyenv |
-| Plugin loads but no harness config | Config not created | `hermes h3 scaffold` to regenerate config |
+| `hermes-h3 install my-harness` fails | Shim not installed | `pip install -e .` from the shim checkout (Step 1) |
+| Plugin loads but no harness config | Config not created | `hermes-h3 scaffold` to regenerate config |
 | "Protocol version mismatch" | SDK too old/new | Install matching SDK version (check `versions.yaml`) |
-| Health check timeout | Harness not running | `hermes h3 scaffold --lang go` then `go run .` |
+| Health check timeout | Harness not running | `hermes-h3 scaffold --lang go` then `go run .` |
 | `h3-test` returns non-zero | Harness doesn't implement full protocol | Check failed test region for missing handlers |
-| Session not routing through harness | Session not in routing table | `hermes h3 session set <session-id> <harness-name>` |
+| Session not routing through harness | Session not in routing table | Add the session to `sessions` in `~/.hermes/h3/config.yaml` |
 | 422 on /v1/process | Pydantic models too strict | Update to latest sdk-python (lenient defaults) or pass all optional fields |
 | Hermes falls back to native loop | Harness unreachable | Check harness is running: `curl http://localhost:9191/health` |
 
@@ -330,7 +333,7 @@ hermes h3 verify --harness my-harness
 |---|---|
 | `get-h3/h3` | Spec hub, cross-repo task board, this guide |
 | `get-h3/protocol` | OpenAPI 3.1 spec + JSON Schema |
-| `get-h3/shim` | Hermes plugin (`hermes h3` CLI, test battery) |
+| `get-h3/shim` | Hermes plugin (`hermes-h3` CLI, test battery) |
 | `get-h3/sdk-go` | Go SDK for harness developers |
 | `get-h3/sdk-python` | Python SDK for harness developers |
 | `get-h3/sdk-typescript` | TypeScript SDK for harness developers |

@@ -31,7 +31,7 @@ Test Battery (hermes_cli/agent/shims/h3/test_battery.py)
 ### Output Format
 
 ```
-$ hermes h3 test --endpoint http://localhost:9191
+$ h3-test --endpoint http://localhost:9191
 
 H3 Compliance Test Battery v1.0.0
 Target: http://localhost:9191
@@ -140,13 +140,13 @@ Report: ~/.hermes/cache/h3_test_report_20260712_223000.json
 
 ```bash
 # Full suite
-hermes h3 test --endpoint http://localhost:9191
+h3-test --endpoint http://localhost:9191
 
 # Specific categories
-hermes h3 test --endpoint http://localhost:9191 --categories health,process
+h3-test --endpoint http://localhost:9191 --categories health,process
 
 # Output JSON only (for CI)
-hermes h3 test --endpoint http://localhost:9191 --json
+h3-test --endpoint http://localhost:9191 --json
 ```
 
 ### 4.2 Hermes-Side Code Structure
@@ -339,7 +339,7 @@ jobs:
           sleep 3
       - name: Run H3 test battery
         run: |
-          pip install hermes-h3-test-battery
+          git clone https://github.com/get-h3/shim && cd shim && pip install -e .
           h3-test --endpoint http://localhost:9191 --json > report.json
       - name: Check results
         run: |

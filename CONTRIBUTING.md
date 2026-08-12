@@ -52,5 +52,13 @@ Pick up a task from the board. If you're new to H3, start with:
 
 1. Read the [Protocol Spec](https://github.com/get-h3/h3/tree/main/specs)
 2. Read the [Quickstart](https://github.com/get-h3/h3#quick-start)
-3. Clone the umbrella and sub-repos: `git clone --recurse-submodules https://github.com/get-h3/h3.git`
+3. Clone the umbrella and sibling repos (independent repos — the umbrella has no submodules):
+   ```bash
+   git clone https://github.com/get-h3/h3.git
+   git clone https://github.com/get-h3/protocol.git
+   git clone https://github.com/get-h3/shim.git
+   git clone https://github.com/get-h3/sdk-go.git
+   git clone https://github.com/get-h3/sdk-python.git
+   git clone https://github.com/get-h3/sdk-typescript.git
+   ```
 4. Run the test battery: `git clone https://github.com/get-h3/shim && cd shim && pip install -e . && h3-test --endpoint http://localhost:9191` (source install — PyPI publishing pending, see P3-10)
