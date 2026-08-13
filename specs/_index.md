@@ -54,7 +54,7 @@
 
 | Job ID | Name | Schedule | Status |
 |---|---|---|---|
-| `291a17144cf2` | h3-coding-hermes-foreman | every 30m | ✅ Running |
+| `291a17144cf2` | h3-coding-hermes-foreman | every 6h (21600s cooldown) | ✅ Running |
 | `05b5a3276fdc` | h3-duckbrain-sync | every 1h | ✅ Running |
 
 ---

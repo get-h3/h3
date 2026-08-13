@@ -21,7 +21,7 @@ H3 (Hermes Harness Hooks) is an open protocol that lets external agent systems �
 The fastest way to see H3 in action:
 
 ```bash
-# Install the test battery + CLI (source install — PyPI publishing pending, see P3-10)
+# Install the test battery + CLI (source install — hermes-h3-shim not on PyPI yet, see P3-10; h3-harness-sdk IS published)
 git clone https://github.com/get-h3/shim && cd shim
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e .
@@ -54,7 +54,7 @@ h3-test --endpoint http://localhost:9191
 |------|---------|----------|
 | [h3](https://github.com/get-h3/h3) | **You are here.** Spec hub, task board, documentation website | Markdown |
 | [protocol](https://github.com/get-h3/protocol) | OpenAPI 3.1 spec + JSON Schema — single source of truth | YAML/JSON |
-| [shim](https://github.com/get-h3/shim) | Hermes plugin: shim loop, 44-test battery, CLI (`hermes h3`) | Python |
+| [shim](https://github.com/get-h3/shim) | Hermes plugin: shim loop, 44-test battery, CLI (`hermes-h3`; `hermes h3` plugin form is WIRING-01-gated) | Python |
 | [sdk-go](https://github.com/get-h3/sdk-go) | Go SDK for building harnesses | Go |
 | [sdk-python](https://github.com/get-h3/sdk-python) | Python SDK for building harnesses | Python |
 | [sdk-typescript](https://github.com/get-h3/sdk-typescript) | TypeScript SDK for building harnesses | TypeScript |
@@ -92,6 +92,7 @@ All SDKs generate their types from the same OpenAPI spec. A change to the protoc
 - **SDK reference:** [`docs/sdk.html`](docs/sdk.html) — auto-generated
 - **Build guide:** [`docs/guide.html`](docs/guide.html) — "Build Your First H3 Harness" tutorial
 - **Migration guide:** [`docs/migration.html`](docs/migration.html) — migrating from native Hermes to H3
+- **Integration guide:** [`docs/integration.md`](docs/integration.md) — for external harness developers (OpenCode, Consensus, CrewAI, LangChain) wiring H3 into their own systems
 
 ## Compliance
 
@@ -109,14 +110,18 @@ This project uses **coding-hermes** foremen for spec-driven autonomous developme
 
 | Foreman | Watches | Cadence |
 |---------|---------|---------|
-| h3-foreman | Coordination, task board, docs | Every 30m |
-| protocol-foreman | OpenAPI spec, JSON Schema | Every 30m |
-| shim-foreman | Python plugin, test battery | Every 30m |
-| sdk-go-foreman | Go SDK | Every 2h |
-| sdk-python-foreman | Python SDK | Every 2h |
-| sdk-typescript-foreman | TypeScript SDK | Every 2h |
+| h3-foreman | Coordination, task board, docs | Every 6h (21600s cooldown) |
+| protocol-foreman | OpenAPI spec, JSON Schema | Every 30m (cron-managed) |
+| shim-foreman | Python plugin, test battery | Every 2h (7200s cooldown) |
+| sdk-go-foreman | Go SDK | Every 2h (7200s cooldown) |
+| sdk-python-foreman | Python SDK | Every 2h (7200s cooldown) |
+| sdk-typescript-foreman | TypeScript SDK | Every 15m (900s cooldown) |
+
+> Cadence = scheduler `cooldown_s` per project (verified live 2026-08-13). The h3 foreman's 21600s was raised deliberately after the idle-tick-flood fix (H3-GAP-003); it self-restores to 21600s after stand-in-PM wake cycles (cooldown-policy pin).
 
 **Quality gates:** GitReins on every repo (secrets scan, lint, tests). GitHub Actions CI on protocol (redocly lint) and shim (pytest).
+
+**Contributing:** see [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow, code of conduct, and governance.
 
 ## License
 
