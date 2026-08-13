@@ -21,7 +21,7 @@ H3 (Hermes Harness Hooks) — **brain-swap protocol**. External agent systems (O
 protocol/  (OpenAPI spec)
     │
     ├──► shim/          (Python plugin — generated types from OpenAPI)
-    │       └── test_battery.py (44 compliance tests — E2E region-style)
+    │       └── src/h3_shim/test_battery.py (44 compliance tests — E2E region-style)
     │
     ├──► sdk-go/        (generated types from OpenAPI)
     ├──► sdk-python/    (generated types from OpenAPI)
@@ -41,7 +41,7 @@ protocol/  (OpenAPI spec)
 
 ## The Tester
 
-The test battery (`shim/test_battery.py`) is the gate. It runs against ANY harness endpoint — no code changes needed:
+The test battery (`shim/src/h3_shim/test_battery.py`) is the gate. It runs against ANY harness endpoint — no code changes needed:
 
 ```bash
 git clone https://github.com/get-h3/shim && cd shim

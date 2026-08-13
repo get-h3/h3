@@ -19,7 +19,7 @@ The H3 Test Battery is a **compliance suite** that verifies a harness correctly 
 ## 2. Test Battery Architecture
 
 ```
-Test Battery (hermes_cli/agent/shims/h3/test_battery.py)
+Test Battery (src/h3_shim/test_battery.py)
   │
   │── HTTP client ──► Harness Endpoint (localhost:9191)
   │
