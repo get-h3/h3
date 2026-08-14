@@ -379,7 +379,7 @@ To add a new test:
 1. Add method to `H3TestBattery` class in `test_battery.py`
 2. Method returns `TestResult`
 3. Register in appropriate `category_*()` method
-4. Open PR to `github.com/coding-herms/h3`
+4. Open PR to `github.com/get-h3/h3`
 
 New tests MUST:
 - Be deterministic (same input → same expected output)

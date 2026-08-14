@@ -37,8 +37,11 @@ Error shape: `{"error": {"code", "message", "details"}}` (codes in specs/02 §9)
 
 ## Setup (IMPORTANT — read first)
 
-- **Nothing is on PyPI yet** (as of 2026-08-02). `pip install
-  hermes-h3-shim` FAILS. Install from source:
+- The Python SDK **`h3-harness-sdk` IS on PyPI** (0.1.2, published
+  2026-08-08): `pip install h3-harness-sdk` works.
+- The shim package `hermes-h3-shim` is NOT yet on PyPI (blocked P3-10 -
+  PYPI_API_TOKEN). `pip install hermes-h3-shim` FAILS. Install the shim
+  from source:
   ```bash
   uv venv .venv
   uv pip install --python .venv/bin/python -e $HOME/get-h3/shim
@@ -46,8 +49,8 @@ Error shape: `{"error": {"code", "message", "details"}}` (codes in specs/02 §9)
   ```
 - The CLI binary is **`hermes-h3`**, not `hermes h3` (that form needs the
   plugin wired into live Hermes — WIRING-01, still open).
-- sdk-python installs with `-e $HOME/get-h3/sdk-python` (package name
-  `h3-harness-sdk` — also not on PyPI).
+- Local SDK development only: editable install with
+  `uv pip install --python .venv/bin/python -e $HOME/get-h3/sdk-python`.
 
 ## Fastest verified path to 44/44 (Go)
 

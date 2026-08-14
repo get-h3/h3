@@ -24,7 +24,7 @@ All SDKs share the same JSON wire format. The SDK's job is idiomatic language bi
 
 ---
 
-## 2. Go SDK (`github.com/coding-herms/h3-sdk-go`)
+## 2. Go SDK (`github.com/get-h3/sdk-go`)
 
 ### 2.1 Package Structure
 
@@ -286,7 +286,7 @@ app.include_router(create_router(MyHarness()))
 
 ---
 
-## 4. TypeScript SDK (`@coding-herms/h3-harness-sdk`)
+## 4. TypeScript SDK (`@get-h3/h3-harness-sdk`)
 
 ### 4.1 Package Structure
 

@@ -238,7 +238,7 @@ sessions:
 
 | Property | Value |
 |---|---|
-| **Repo** | `github.com/coding-herms/h3` |
+| **Repo** | `github.com/get-h3/h3` |
 | **Language** | Python (shim lives in Hermes Core), polyglot SDKs |
 | **Namespace** | `h3` (DuckBrain) |
 | **Spec prefix** | `/spec/h3/` |

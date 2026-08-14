@@ -128,11 +128,14 @@ Hermes starts
 ### 4.1 Go
 
 ```bash
-go get github.com/coding-herms/h3-sdk-go@v1.0.0
+go get github.com/get-h3/sdk-go@v0.1.1
 ```
 
+The `@v1.0.0` line in earlier drafts was aspirational - the latest
+published tag is `v0.1.1` (`git ls-remote --tags https://github.com/get-h3/sdk-go`).
+
 ```go
-import "github.com/coding-herms/h3-sdk-go/harness"
+import "github.com/get-h3/sdk-go/harness"
 ```
 
 ### 4.2 Python
@@ -147,14 +150,18 @@ from h3_harness import Harness, Decision, DecisionType
 
 ### 4.3 TypeScript
 
+The `@get-h3/h3-harness-sdk` npm package is **planned but not yet
+published** - `npm install @get-h3/h3-harness-sdk` returns 404 today.
+Install from GitHub until it ships (see specs/08):
+
 ```bash
-npm install @coding-herms/h3-harness-sdk
+npm install github:get-h3/sdk-typescript
 # or
-bun add @coding-herms/h3-harness-sdk
+bun add github:get-h3/sdk-typescript
 ```
 
 ```typescript
-import { Harness, Decision, DecisionType } from '@coding-herms/h3-harness-sdk';
+import { Harness, Decision, DecisionType } from '@get-h3/h3-harness-sdk';
 ```
 
 ---
@@ -203,7 +210,7 @@ import (
     "encoding/json"
     "net/http"
 
-    "github.com/coding-herms/h3-sdk-go/harness"
+    "github.com/get-h3/sdk-go/harness"
 )
 
 func main() {
