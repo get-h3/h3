@@ -36,3 +36,37 @@ answers: "does this project actually work for a real user, and is it worth it?"
 - **Foreman:** healthy — enabled, 900s cooldown, decay=1, regular completed
   ticks (17:13/17:38/18:13 on run day); no wake/speed-up needed. No
   destructive actions taken; scratch work in /tmp/dogfood-h3.
+
+## 2026-08-14 — Verdict: 🟡 PROMISING-BUT-ROUGH (2nd run)
+
+- **Promise:** "Swap your agent's brain" — a developer can (a) follow the
+  README Quick Start and verify an H3-compliant harness in minutes, and (b)
+  scaffold a new harness in 30 seconds (`hermes-h3 scaffold --lang go`) whose
+  output is H3-compliant (exit 0 = compliant, README L34-45).
+- **Reality:** The Quick Start path now works end-to-end (fresh GitHub clones,
+  fresh venv: shim source install → Go echo example → **44/44 in 0.22s**,
+  exit 0) and all three SDK echo examples pass 44/44 (Go/Python/TS verified
+  live). BUT the flagship scaffold path is broken in ALL 3 languages: go
+  scaffold 43/44 (template pins sdk-go v0.1.0; 404-on-cancel fix only in
+  v0.1.1), py scaffold 43/44 (same test; template on_cancel never 404s), ts
+  scaffold cannot install (`npm E404 @get-h3/h3-harness-sdk`). The README's
+  "scaffold in 30 seconds" promise produces a NON-compliant harness in every
+  language. Regression shipped 2026-08-08 and survived 8 days — no gate runs
+  the battery against scaffold output, only against SDK examples.
+- **Top 3 findings:** DOGFOOD-07 (go scaffold 43/44, v0.1.0 pin), DOGFOOD-08
+  (py scaffold 43/44, no 404 on cancel), DOGFOOD-09 (ts scaffold uninstallable
+  — unpublished npm dep in template). Plus DOGFOOD-10 (no scaffold-compliance
+  release gate) and DOGFOOD-11 (verify CLI positional-name inconsistency).
+- **Time-to-first-success:** ~3 min (README Quick Start path, fresh env).
+- **Friction count:** 4 (go scaffold non-compliant, py scaffold
+  non-compliant, ts scaffold uninstallable, verify positional-name trap).
+- **What passed:** README Quick Start (fixed since 2026-08-02: source install,
+  venv step, sdk-go tags), h3-test CLI (help/exit codes/JSON report), SDK echo
+  examples ×3 (44/44), hermes-h3 install/list/verify/test management flow,
+  error-envelope discipline, battery speed (0.2-0.5s).
+- **Artifacts:** docs/dogfood/2026-08-14-integration.md (integration report),
+  docs/dogfood/diagnostics.md (E7-E9 appended), skills/h3-usage/SKILL.md
+  (scaffold pitfalls + stale 44/44 claim corrected). Board: DOGFOOD-07..11.
+- **Foreman:** healthy — enabled, 21600s cooldown (deliberate GAP-003 pin),
+  decay=1, last tick completed 2026-08-14 17:16. Woken via PUT CooldownS=900
+  after board write (dogfood tasks added); auto-heal restores 21600.

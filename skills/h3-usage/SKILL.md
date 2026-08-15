@@ -3,10 +3,10 @@ name: h3-usage
 description: >-
   How to USE the get-h3 fleet (Hermes Harness Hooks — brain-swap protocol).
   Entry points, run commands, pitfalls, and the right-way patterns, learned
-  from a real dogfood run (2026-08-02). Load this before working with any
-  get-h3 repo: h3 (spec hub), protocol, shim, sdk-go, sdk-python,
-  sdk-typescript.
-version: 1.0.0
+  from real dogfood runs (2026-08-02, refreshed 2026-08-14). Load this
+  before working with any get-h3 repo: h3 (spec hub), protocol, shim,
+  sdk-go, sdk-python, sdk-typescript.
+version: 1.1.0
 category: software-development
 ---
 
@@ -58,13 +58,32 @@ Error shape: `{"error": {"code", "message", "details"}}` (codes in specs/02 §9)
 cd /tmp && hermes-h3 scaffold --lang go --output-dir /tmp
 # creates /tmp/h3-harness-go
 
-# Scaffold builds out of the box: go.mod requires github.com/get-h3/sdk-go v0.1.0
-# (published tag — go mod tidy fetches it from the network, no replace needed).
-# Add a replace directive ONLY for local SDK development:
-#   replace github.com/get-h3/sdk-go => /path/to/get-h3/sdk-go
+# ⚠️ 2026-08-14: the scaffold is NOT battery-clean as shipped (DOGFOOD-07/08/09
+# on the board). go scaffold pins sdk-go v0.1.0 → 43/44 (cancel_unknown_session
+# "Expected 404, got 200"; the fix is in v0.1.1). py scaffold → 43/44 (same
+# test; on_cancel never 404s). ts scaffold CANNOT install (npm E404
+# @get-h3/h3-harness-sdk — unpublished). Until those land, the reliable 44/44
+# paths are the SDK echo examples (below) or a spec-built harness.
+# Once the template bumps to sdk-go v0.1.1+:
+#   cd /tmp/h3-harness-go && go mod tidy && go run . &
+#   h3-test --endpoint http://localhost:9191   # expect 44/44
+```
 
-cd /tmp/h3-harness-go && go mod tidy && go build -o h3harness . && ./h3harness &
-h3-test --endpoint http://localhost:9191   # → 44/44
+## Fastest verified 44/44 paths right now (SDK examples, not the scaffold)
+
+```bash
+# Go (sdk-go main has the 404 fix):
+git clone https://github.com/get-h3/sdk-go && cd sdk-go/examples/echo && go run . &
+h3-test --endpoint http://localhost:9191   # 44/44, exit 0
+
+# Python:
+cd sdk-python && python3 -m venv .venv && . .venv/bin/activate && pip install -e .
+python src/h3_harness/examples/echo.py &   # (script runner — NOT `uvicorn ...:app`)
+h3-test --endpoint http://localhost:9191   # 44/44
+
+# TypeScript:
+cd sdk-typescript && npx tsx src/examples/echo.ts &
+h3-test --endpoint http://localhost:9191   # 44/44
 ```
 
 ## Custom harness from the spec (Python, no SDK)
@@ -100,6 +119,17 @@ GET+DELETE), a `_decision_*` helper per type, error envelope per §9.
 - **`go run .` fails with `unknown revision v0.0.0`** → stale local go.mod;
   sdk-go v0.1.0+ is published, so `go mod tidy` fetches it — add a
   `replace` directive only for local SDK dev.
+- **Scaffold output is NOT 44/44 as of 2026-08-14** (DOGFOOD-07/08/09):
+  `hermes-h3 scaffold --lang go` pins sdk-go v0.1.0 → 43/44
+  (`cancel_unknown_session`); `--lang py` → 43/44 (same); `--lang ts` →
+  `npm install` E404 (dep on unpublished `@get-h3/h3-harness-sdk`). Until the
+  template fixes land, use the SDK echo examples for a guaranteed-compliant
+  harness, and after scaffolding ALWAYS run `h3-test` — don't trust "it
+  builds".
+- **`POST /v1/cancel` on an unknown session must return 404**
+  `SESSION_NOT_FOUND` (battery `cancel_unknown_session`); returning
+  200 `{cancelled: true}` unconditionally fails the battery. Track sessions
+  and check existence in the cancel route.
 - **`hermes-h3` config path:** use `--config <file>` explicitly;
   `HERMES_H3_CONFIG` env is not honored by all subcommands.
 - **Health path is `/v1/health`**, not `/health` (a plain `curl /health`

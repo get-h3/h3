@@ -133,3 +133,57 @@ fresh `running` row; check its age first.
 4. `POST /v1/cancel` → `{cancelled: true}`; `GET|DELETE /v1/sessions/:id`.
 5. Errors as `{"error": {code, message, details}}` with the §9 codes.
 6. Run `h3-test --endpoint http://localhost:9191` until 44/44.
+
+## 6. 2026-08-14 run — what changed, new errors, the right way
+
+Second dogfood run (fresh clones, fresh venv, network-resolved deps). The
+2026-08-02 blockers are GONE: shim installs from source, sdk-go has release
+tags (v0.1.0/v0.1.1), README Quick Start works end-to-end (44/44 in 0.22s).
+New findings below.
+
+### E7. Scaffolded Go harness → 43/44, `cancel_unknown_session` "Expected 404, got 200"
+**Why:** `templates/go/go.mod` pins `sdk-go v0.1.0`. The 404-on-unknown-cancel
+fix (`addb017`, GAP-DOG-002) landed 2026-08-08 and is only in **v0.1.1**.
+The SDK's own `examples/echo` compiles against sdk-go `main` (fixed), so the
+fleet's E2E ticks kept passing 44/44 while every fresh scaffold resolved the
+broken v0.1.0 from the module proxy. **Right way:** template must require
+v0.1.1+ (one-line bump, DOGFOOD-07); more broadly, verify scaffold output per
+release, not just SDK examples (DOGFOOD-10).
+
+### E8. Scaffolded Python harness → 43/44, same test
+**Why:** `templates/py/main.py` `on_cancel` (L265) always returns
+`CancelResponse(cancelled=True)` — no session lookup, so `/v1/cancel` never
+404s. The sdk-python `BaseHarness` (44/44 example) tracks sessions and 404s;
+the template doesn't use that pattern. **Right way:** session check + 404
+`SESSION_NOT_FOUND` in the template's cancel route (DOGFOOD-08).
+
+### E9. Scaffolded TS harness → `npm install` E404
+**Why:** `templates/ts/package.json` depends on `@get-h3/h3-harness-sdk@^0.1.0`
+— never published to npm (verified live). The sdk-typescript AGENTS.md
+documents the working fallback `github:get-h3/sdk-typescript`; the template
+ships the dead ref (same class as GAP-005/007/008, which fixed the docs but
+not the template). **Right way:** template dep → `github:get-h3/sdk-typescript`
+until published (DOGFOOD-09).
+
+### E10. Why the 43/44 regression survived 8 days (process lesson)
+sdk-go v0.1.1 tagged 2026-08-08; E2E ticks #280-#305 all ran the battery
+against `examples/echo` (compiles against main) — never a fresh scaffold. The
+single "scaffold verified" tick (#254) stopped at `go build`. **Right way:**
+the compliance gate must run `h3-test` against a *fresh scaffold*, per
+release, in CI (DOGFOOD-10). This is the premature-completion pattern again:
+L2 (it runs) was mistaken for L3 (it works for a user).
+
+### E11. (Minor) `hermes-h3 verify` positional-name trap
+**Why:** `verify` takes `-h/--harness NAME` while `install`/`list`/`uninstall`
+take positional NAME — `hermes-h3 verify ts-echo` → "Got unexpected extra
+argument". **Right way:** accept an optional positional (DOGFOOD-11).
+
+## 7. Updated trust anchors (2026-08-14)
+
+- README Quick Start: ✅ works end-to-end from fresh clones (~3 min to 44/44).
+- SDK echo examples: ✅ 44/44 in Go, Python, TypeScript (all verified live).
+- Scaffold path: ❌ 43/44 / 43/44 / uninstallable (DOGFOOD-07/08/09) — the
+  README's "30 seconds" claim does NOT hold as of 2026-08-14.
+- Battery speed/exit-code discipline: ✅ unchanged (0.2-0.5s, exit 0/1/2).
+- h3-harness-sdk 0.1.2 IS on PyPI (2026-08-08) — `pip install h3-harness-sdk`
+  works; `hermes-h3-shim` still not published (P3-10).
