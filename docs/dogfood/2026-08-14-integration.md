@@ -5,6 +5,14 @@ hand in a scratch environment (`/tmp/dogfood-h3-20260814`) as a fresh external
 developer: `git clone` from GitHub, fresh venv, network-resolved dependencies,
 documented commands only. No internal helpers, no local fleet checkout.
 
+> **RESOLVED 2026-08-17 (GAP-054):** the scaffold failures in this report are
+> fixed. DOGFOOD-07 bumped the go scaffold template to sdk-go v0.1.1 (the
+> cancel-404 fix, addb017, is in v0.1.1+); DOGFOOD-08 fixed the py scaffold
+> cancel-404; DOGFOOD-09 fixed the ts scaffold npm E404 (github dependency).
+> Fresh `hermes-h3 scaffold --lang go` and `--lang py` verified **44/44,
+> exit 0** on 2026-08-17 (h3 tick #317). Rows below are the point-in-time
+> record of the 2026-08-14 state.
+
 ## 1. The promise (null hypothesis)
 
 > "Swap your agent's brain." A developer can (a) follow the README Quick

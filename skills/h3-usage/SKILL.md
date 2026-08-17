@@ -58,18 +58,16 @@ Error shape: `{"error": {"code", "message", "details"}}` (codes in specs/02 §9)
 cd /tmp && hermes-h3 scaffold --lang go --output-dir /tmp
 # creates /tmp/h3-harness-go
 
-# ⚠️ 2026-08-14: the scaffold is NOT battery-clean as shipped (DOGFOOD-07/08/09
-# on the board). go scaffold pins sdk-go v0.1.0 → 43/44 (cancel_unknown_session
-# "Expected 404, got 200"; the fix is in v0.1.1). py scaffold → 43/44 (same
-# test; on_cancel never 404s). ts scaffold CANNOT install (npm E404
-# @get-h3/h3-harness-sdk — unpublished). Until those land, the reliable 44/44
-# paths are the SDK echo examples (below) or a spec-built harness.
-# Once the template bumps to sdk-go v0.1.1+:
+# ✅ Verified 2026-08-17 (GAP-054): the scaffold IS battery-clean as shipped
+# (DOGFOOD-07/08/09 landed). go scaffold pins sdk-go v0.1.1 (cancel-404 fix
+# addb017 is in v0.1.1+); py scaffold 404s on unknown-session cancel; ts
+# scaffold installs via github:get-h3/sdk-typescript (npm E404 workaround).
+# Fresh go + py scaffolds verified 44/44, exit 0 on 2026-08-17 (tick #317):
 #   cd /tmp/h3-harness-go && go mod tidy && go run . &
-#   h3-test --endpoint http://localhost:9191   # expect 44/44
+#   h3-test --endpoint http://localhost:9191   # 44/44, exit 0
 ```
 
-## Fastest verified 44/44 paths right now (SDK examples, not the scaffold)
+## Verified 44/44 paths (SDK examples)
 
 ```bash
 # Go (sdk-go main has the 404 fix):
