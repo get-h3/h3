@@ -117,13 +117,11 @@ GET+DELETE), a `_decision_*` helper per type, error envelope per §9.
 - **`go run .` fails with `unknown revision v0.0.0`** → stale local go.mod;
   sdk-go v0.1.0+ is published, so `go mod tidy` fetches it — add a
   `replace` directive only for local SDK dev.
-- **Scaffold output is NOT 44/44 as of 2026-08-14** (DOGFOOD-07/08/09):
-  `hermes-h3 scaffold --lang go` pins sdk-go v0.1.0 → 43/44
-  (`cancel_unknown_session`); `--lang py` → 43/44 (same); `--lang ts` →
-  `npm install` E404 (dep on unpublished `@get-h3/h3-harness-sdk`). Until the
-  template fixes land, use the SDK echo examples for a guaranteed-compliant
-  harness, and after scaffolding ALWAYS run `h3-test` — don't trust "it
-  builds".
+- **Scaffolds are battery-clean since DOGFOOD-07/08/09 landed** (verified
+  go + py 44/44, exit 0 on 2026-08-17, tick #317): go template pins sdk-go
+  v0.1.1 (cancel-404 fix); py scaffold 404s unknown-session cancel; ts
+  scaffold installs via github:get-h3/sdk-typescript (npm E404 workaround).
+  Still, after scaffolding ALWAYS run `h3-test` — don't trust "it builds".
 - **`POST /v1/cancel` on an unknown session must return 404**
   `SESSION_NOT_FOUND` (battery `cancel_unknown_session`); returning
   200 `{cancelled: true}` unconditionally fails the battery. Track sessions
