@@ -18,6 +18,23 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
+# GAP-055: require the sibling SDK repos — a fresh clone of h3/ alone cannot
+# round-trip (each SDK dir is resolved as a sibling of the umbrella root).
+MISSING_SIBLINGS=""
+for sdk in sdk-python sdk-go sdk-typescript; do
+    if [ ! -d "${UMBRELLA_DIR}/${sdk}" ]; then
+        MISSING_SIBLINGS="${MISSING_SIBLINGS} ${sdk}"
+    fi
+done
+if [ -n "${MISSING_SIBLINGS}" ]; then
+    echo -e "${RED}ERROR${NC}: round-trip verification requires the sibling SDK repos, which are missing:${MISSING_SIBLINGS}"
+    echo "Clone them into ${UMBRELLA_DIR} before running this script:"
+    echo "  git clone https://github.com/get-h3/sdk-python.git"
+    echo "  git clone https://github.com/get-h3/sdk-go.git"
+    echo "  git clone https://github.com/get-h3/sdk-typescript.git"
+    exit 1
+fi
+
 pass_count=0
 fail_count=0
 

@@ -121,6 +121,8 @@ This project uses **coding-hermes** foremen for spec-driven autonomous developme
 
 **Quality gates:** GitReins on every repo (secrets scan, lint, tests). GitHub Actions CI on protocol (redocly lint) and shim (pytest).
 
+**Verification:** this repo is self-checking — `make verify` (docs-link + spec-index checks, zero dependencies) runs from a fresh clone, and `integration/roundtrip/roundtrip.sh` verifies cross-language wire consistency across the Python, Go, and TypeScript SDKs (requires the sibling repos; see CONTRIBUTING.md).
+
 **Contributing:** see [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow, code of conduct, and governance.
 
 ## License

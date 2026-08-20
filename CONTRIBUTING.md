@@ -24,6 +24,12 @@ This repo (get-h3/h3) is the **umbrella coordination hub** — specs, cross-repo
 
 ## Running the Round-Trip Verification
 
+> **Prerequisite:** the sibling SDK repos (`sdk-python`, `sdk-go`, `sdk-typescript`)
+> must exist next to this repo on disk — `roundtrip.sh` resolves them as siblings
+> of the umbrella directory (e.g. `../sdk-python`). A standalone clone of `h3/`
+> alone cannot run it; clone the SDKs from the repo table above first. The script
+> exits 1 with a clear message if any sibling is missing.
+
 ```bash
 cd integration/roundtrip
 ./roundtrip.sh
