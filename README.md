@@ -21,7 +21,7 @@ H3 (Hermes Harness Hooks) is an open protocol that lets external agent systems �
 The fastest way to see H3 in action:
 
 ```bash
-# Install the test battery + CLI (source install — hermes-h3-shim not on PyPI yet, see P3-10; h3-harness-sdk IS published)
+# Install the test battery + CLI (source install — hermes-h3-shim is not on PyPI yet; install from source per docs/integration.md. h3-harness-sdk IS published: pip install h3-harness-sdk)
 git clone https://github.com/get-h3/shim && cd shim
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e .
