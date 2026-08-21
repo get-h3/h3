@@ -67,3 +67,20 @@ tasks:
   status: complete
   created_at: '2026-08-02T23:47:29.236941+00:00'
   completed_at: '2026-08-02T23:50:09.448890+00:00'
+- id: GAP-059
+  title: 'GAP-059: post-fix dogfood field report for scaffold onboarding'
+  criteria:
+  - docs/dogfood/ contains a report dated 2026-08-17 or later showing a fresh scaffold
+    to h3-test run at 44/44 exit 0, and the 2026-08-14 report is unchanged from its
+    original content
+  status: complete
+  created_at: '2026-08-21T04:10:29.258362+00:00'
+  completed_at: '2026-08-21T04:12:18.228593+00:00'
+- id: GAP-060
+  title: 'GAP-060: README P3-10 reference replaced with plain-language PyPI status'
+  criteria:
+  - 'README states the hermes-h3-shim PyPI status in plain language with no board-JSONL
+    lookup required: grep ''P3-10'' README.md returns 0 matches'
+  status: complete
+  created_at: '2026-08-21T04:10:29.737851+00:00'
+  completed_at: '2026-08-21T04:12:55.600543+00:00'
