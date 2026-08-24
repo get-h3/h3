@@ -1,6 +1,6 @@
 # H3 — Brain-Swap Protocol for AI Agents
 
-[![H3 Spec](https://img.shields.io/badge/specs-26/26-8b5cf6)](specs/)
+[![H3 Spec](https://img.shields.io/badge/specs-26%20specs-8b5cf6)](specs/)
 [![Go SDK](https://img.shields.io/badge/go-sdk-00ADD8)](https://github.com/get-h3/sdk-go)
 [![Python SDK](https://img.shields.io/badge/python-sdk-3776AB)](https://github.com/get-h3/sdk-python)
 [![TypeScript SDK](https://img.shields.io/badge/typescript-sdk-3178C6)](https://github.com/get-h3/sdk-typescript)
@@ -96,13 +96,15 @@ All SDKs generate their types from the same OpenAPI spec. A change to the protoc
 
 ## Compliance
 
-A harness is H3-compliant when it passes all 44 tests in the [test battery](https://github.com/get-h3/shim). Current compliance scores across SDK examples:
+A harness is H3-compliant when it passes all 44 tests in the [test battery](https://github.com/get-h3/shim). Current compliance status across SDK examples:
 
-| Language | Tests Passing |
-|----------|:------------:|
-| Go (echo) | 44/44 |
-| Python (echo) | 44/44 |
-| TypeScript (echo) | 44/44 |
+| Language | Evidence | CI-verified | Published |
+|----------|----------|:-----------:|-----------|
+| Go (echo) | 44/44 — foreman E2E tick #340 ran the battery against the Go echo harness on :9191 (p50 0.60ms / p95 19.66ms) | ✅ | source (`go get github.com/get-h3/sdk-go`) |
+| Python (echo) | 44/44 — local battery run | — | PyPI: `pip install h3-harness-sdk` |
+| TypeScript (echo) | 44/44 — local battery run | — | **not published on npm** (`npm view @get-h3/h3-harness-sdk` → E404) — install from source (GitHub dependency) |
+
+**CI-verified** means the run is captured in repo CI or a foreman E2E tick; Go is currently the only SDK with in-repo E2E evidence (tick #340 on :9191). Python and TypeScript pass locally but have no in-repo runnable CI evidence yet.
 
 ## Development
 

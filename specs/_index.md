@@ -15,7 +15,7 @@
 
 ---
 
-## Specs — All 26 Complete ✅
+## Specs — 26 Specifications
 
 | # | Spec | Status | Pages |
 |---|---|---|---|
@@ -47,6 +47,18 @@
 | 26 | [Chaos Engineering](26-Chaos-Engineering.md) | ✅ | ~16 |
 
 **Total: 26 specs, ~318 pages.**
+
+---
+
+## Implementation Audit (2026-08-24)
+
+Spec headers are the source of truth for per-spec status, and they are NOT all "Complete":
+
+- 23/26 specs are design-level `**Status:** Spec` — specification documents, not implemented guarantees.
+- 3/26 marked Complete (S22/S23/S24: 22-Performance-Architecture, 23-Multi-Tenancy-Architecture, 24-Compatibility-Matrix).
+- S20/S25/S26 have no implementation artifacts: S20 Operational Dashboard, S25 Conformance Certification, and S26 Chaos Engineering currently have zero implementation artifacts anywhere in fleet sources — treat them as forward-looking specifications.
+
+The ✅ marks in the table above mean *document exists*, not *implementation complete*. The README badge reflects the spec count (26 specs), not a completion claim. Any future "specs complete" claim must cite per-spec header status, not the table.
 
 ---
 
