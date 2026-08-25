@@ -57,7 +57,7 @@ h3-test --endpoint http://localhost:9191
 | [shim](https://github.com/get-h3/shim) | Hermes plugin: shim loop, 44-test battery, CLI (`hermes-h3`; `hermes h3` plugin form is WIRING-01-gated) | Python |
 | [sdk-go](https://github.com/get-h3/sdk-go) | Go SDK for building harnesses | Go |
 | [sdk-python](https://github.com/get-h3/sdk-python) | Python SDK for building harnesses | Python |
-| [sdk-typescript](https://github.com/get-h3/sdk-typescript) | TypeScript SDK for building harnesses | TypeScript |
+| [sdk-typescript](https://github.com/get-h3/sdk-typescript) | TypeScript SDK for building harnesses — **not on npm** (GitHub dependency) | TypeScript |
 
 ## Architecture
 
