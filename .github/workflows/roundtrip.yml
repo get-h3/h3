@@ -5,19 +5,14 @@ on:
     branches: [main]
     paths:
       - "integration/roundtrip/**"
-      - "../sdk-go/protocol/**"
-      - "../sdk-python/src/h3_harness/protocol.py"
-      - "../sdk-typescript/src/protocol.ts"
   pull_request:
     branches: [main]
     paths:
       - "integration/roundtrip/**"
-      - "../sdk-go/protocol/**"
-      - "../sdk-python/src/h3_harness/protocol.py"
-      - "../sdk-typescript/src/protocol.ts"
   workflow_dispatch:
   repository_dispatch:
     types: [protocol-updated]
+  workflow_call:
 
 jobs:
   roundtrip:

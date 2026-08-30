@@ -183,3 +183,40 @@ routing, and type generation are handled for you.
 - **Specs**: `get-h3/h3` → `specs/02-Protocol-Specification.md`, `specs/04-SDK-Libraries.md`, `specs/05-Test-Battery.md`, `specs/06-Hermes-Core-Integration.md`
 - **Hermes-side wiring** (config, session routing, circuit breaker): shim `docs/integration.md`
 - **Live example end to end**: `docs/dogfood/2026-08-02-integration.md`
+
+## 8. Cross-repo round-trip CI (protocol-updated)
+
+The umbrella's cross-language round-trip verification runs when the protocol
+changes, and now also when an SDK repo is touched via its own sync workflow.
+
+**Trigger chain.** The protocol repo sends a `repository_dispatch` event to
+each SDK repo (and to `get-h3/h3` directly) when the OpenAPI spec changes.
+Each SDK's `sync-protocol.yml` runs its sync/regenerate job, then a
+`roundtrip` job that calls
+`get-h3/h3/.github/workflows/roundtrip.yml@main` via a reusable workflow
+(`workflow_call` — no secrets or PAT required). The h3 workflow itself can
+also be run manually via `workflow_dispatch`, or directly dispatched with
+`repository_dispatch` types `[protocol-updated]`. On `push`/`pull_request`
+it fires only for in-repo changes under `integration/roundtrip/**`.
+
+**Removed `../` path limitation.** The h3 round-trip workflow previously
+listed `../` path filters (`../sdk-go/protocol/**`,
+`../sdk-python/src/h3_harness/protocol.py`,
+`../sdk-typescript/src/protocol.ts`) intending to trigger on SDK changes.
+GitHub Actions path filters are repo-scoped — `../` patterns silently never
+match — so the workflow never fired on SDK changes. Those filters are
+removed; SDK-side triggers now come from each repo's own sync workflow
+calling the reusable workflow instead.
+
+**Sibling callers.** Each SDK repo's `sync-protocol.yml` ends with a
+`roundtrip` job calling `get-h3/h3/.github/workflows/roundtrip.yml@main`:
+
+| SDK repo | Caller job | Depends on |
+|----------|------------|------------|
+| sdk-go | `roundtrip` | `sync` |
+| sdk-python | `roundtrip` | `regenerate` |
+| sdk-typescript | `roundtrip` | `check-schema-alignment` |
+
+`sdk-typescript` deliberately depends on `check-schema-alignment` (not
+`release`, which is gated to `workflow_dispatch` only) so the round-trip
+runs on both `repository_dispatch` and `workflow_dispatch` triggers.
