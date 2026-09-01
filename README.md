@@ -88,6 +88,7 @@ All SDKs generate their types from the same OpenAPI spec. A change to the protoc
 
 - **Website:** [get-h3.github.io/h3/](https://get-h3.github.io/h3/) — landing page, language picker, quickstart (old marketing domain is dead — NXDOMAIN)
 - **Specs:** [`specs/`](specs/) — 26 specs, ~320 pages covering architecture, protocol, SDKs, installer, test battery, release pipeline, website, and upgrade survival
+- **PRD:** [`prd.html`](prd.html) — the product requirements document (canonical)
 - **Protocol reference:** [`docs/protocol.html`](docs/protocol.html) — auto-generated from OpenAPI
 - **SDK reference:** [`docs/sdk.html`](docs/sdk.html) — auto-generated
 - **Build guide:** [`docs/guide.html`](docs/guide.html) — "Build Your First H3 Harness" tutorial
