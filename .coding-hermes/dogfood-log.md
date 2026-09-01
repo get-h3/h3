@@ -70,3 +70,4 @@ answers: "does this project actually work for a real user, and is it worth it?"
 - **Foreman:** healthy — enabled, 21600s cooldown (deliberate GAP-003 pin),
   decay=1, last tick completed 2026-08-14 17:16. Woken via PUT CooldownS=900
   after board write (dogfood tasks added); auto-heal restores 21600.
+2026-09-01 | SHIPPABLE | 37s t2fs | friction 6 | 5 findings
