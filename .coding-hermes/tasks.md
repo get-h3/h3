@@ -8477,3 +8477,13 @@ Promise: {"entry_point":"Spec/documentation hub (Markdown repo; no binary in thi
 - [P2] Documented '44 tests' is stale — battery actually runs 45/45 — README.md and AGENTS.md both say 44 tests across 6 categories, but h3-test reported 45/45 PASS against both the echo harness and a freshly scaffolded one. This is the only broken promise.
 - [P2] :9191 port collision between the two quick-start paths is undocumented — Both examples/echo and a scaffolded harness bind :9191; starting the scaffold while the echo example runs fails to bind, with no doc note telling the user to stop the first.
 - [P2] h3-test/hermes-h3 only exist inside the activated venv — new shell gets 'command not found' — Both CLIs install into the quick-start venv; any fresh terminal needs the venv re-sourced first, which the README never mentions.
+
+## Dogfood Findings (2026-09-04)
+Verdict: SHIPPABLE
+Promise: {"entry_point":"Spec/docs hub repo (Markdown only — no binary here); the protocol's runtime entry point is the harness HTTP endpoint (e.g. http://localhost:9191) tested by the h3-test CLI from the shim repo; repo self-verification entry point is `make verify`","promise":"H3 (Hermes Harness Hooks) is
+
+- [P1] Quickstart has no example ProcessRequest body — hand-rolled curl fails twice — Reproduced live: POST /v1/process with minimal body → 400 {"error":{"code":"INVALID_REQUEST","message":"identity.platform is required"}}; Identity schema (protocol/schemas/v1/common.json) requires pla
+- [P2] Test count drift: docs say 44, battery runs 45 — README.md (lines 37, 57, 70, 100, 104-106) and AGENTS.md say '44 tests / 6 categories', but src/h3_shim/test_battery.py has EXPECTED_TEST_COUNT=45 and 45 test_* functions (test_5_9b_cancel_unknown_ses
+- [P2] hermes-h3 install rejects --name (NAME is positional) — cli.py: install uses @click.argument('name') — 'hermes-h3 install --name scout-harness' → 'No such option --name'. Help text documents the positional form; judge guessed the flag.
+- [P2] hermes-h3 route has no --session flag — cli.py route() takes no arguments and only pretty-prints the config's sessions map ('no sessions configured' when empty). Help text 'Show the session → harness routing table' is accurate but there is 
+- [P2] 'Stale baked-in config path' friction is a judge-environment artifact, not a defect — cli.py:50 CONFIG_PATH = Path.home() / '.hermes' / 'h3' / 'config.yaml' — user-owned and correct. The /tmp/dj-judge/run2/.hermes/h3/config.yaml the judge saw came from the judge run's sandboxed HOME, n
