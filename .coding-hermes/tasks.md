@@ -8487,3 +8487,13 @@ Promise: {"entry_point":"Spec/docs hub repo (Markdown only — no binary here); 
 - [P2] hermes-h3 install rejects --name (NAME is positional) — cli.py: install uses @click.argument('name') — 'hermes-h3 install --name scout-harness' → 'No such option --name'. Help text documents the positional form; judge guessed the flag.
 - [P2] hermes-h3 route has no --session flag — cli.py route() takes no arguments and only pretty-prints the config's sessions map ('no sessions configured' when empty). Help text 'Show the session → harness routing table' is accurate but there is 
 - [P2] 'Stale baked-in config path' friction is a judge-environment artifact, not a defect — cli.py:50 CONFIG_PATH = Path.home() / '.hermes' / 'h3' / 'config.yaml' — user-owned and correct. The /tmp/dj-judge/run2/.hermes/h3/config.yaml the judge saw came from the judge run's sandboxed HOME, n
+
+## Dogfood Findings (2026-09-07)
+Verdict: SHIPPABLE
+Promise: {"entry_point":"Spec hub / documentation repo (Markdown + static HTML) — no binary of its own; the runnable entry points are the hermes-h3 CLI and h3-test compliance battery (from get-h3/shim) and the harness HTTP server (e.g. Go echo harness on :9191); this repo's own self-check is `make verify`",""
+
+- [P1] HERMES_H3_CONFIG env var silently ignored — install writes to real ~/.hermes/h3/config.yaml — grep of src/h3_shim/ finds 0 references to HERMES_H3_CONFIG; cli.py:50 hardcodes CONFIG_PATH = Path.home()/'.hermes'/'h3'/'config.yaml' with only the --config flag as override. A user setting the env 
+- [P1] Stale 44-test count in every doc — battery is 46 — test_battery.py has EXPECTED_TEST_COUNT=46 and 46 async def test_* fns (Error & Edge Cases = 13/13); live run reports 46/46. README.md:37/57/70/100/104-106, AGENTS.md:24/52, docs/integration.md:12/142
+- [P2] :9191 port collision between scaffold and echo example, undocumented — sdk-go/examples/echo main.go does http.ListenAndServe(":9191") and the scaffold Go template hardcodes addr := ":9191" (templates/go/main.go:148); py template defaults PORT=9191. Following README quick
+- [P2] Two install forms for the same shim package — README quick start uses 'pip install -e .' (line 27) while docs/integration.md:139 uses 'pip install git+https://github.com/get-h3/shim' — inconsistent instructions for one package.
+- [P2] No worked example of the live session round-trip — docs/integration.md describes the loop conceptually (steps 1-4) but no curl example; the battery never GETs /v1/sessions/{id} (uses synthetic _sid ids only), so new users can't see process → session G

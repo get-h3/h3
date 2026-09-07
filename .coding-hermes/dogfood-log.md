@@ -72,3 +72,4 @@ answers: "does this project actually work for a real user, and is it worth it?"
   after board write (dogfood tasks added); auto-heal restores 21600.
 2026-09-01 | SHIPPABLE | 37s t2fs | friction 6 | 5 findings
 2026-09-04 | SHIPPABLE | 40s t2fs | friction 8 | 5 findings
+2026-09-07 | SHIPPABLE | 20s t2fs | friction 6 | 5 findings
