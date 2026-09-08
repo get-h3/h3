@@ -52,7 +52,9 @@ Error shape: `{"error": {"code", "message", "details"}}` (codes in specs/02 §9)
 - Local SDK development only: editable install with
   `uv pip install --python .venv/bin/python -e $HOME/get-h3/sdk-python`.
 
-## Fastest verified path to 44/44 (Go)
+## Fastest verified path to 46/46 (Go)
+
+# Battery count is 46 as of 2026-09-08 (GAP-045 wave); "44" anywhere = stale.
 
 ```bash
 cd /tmp && hermes-h3 scaffold --lang go --output-dir /tmp
@@ -109,6 +111,42 @@ GET+DELETE), a `_decision_*` helper per type, error envelope per §9.
 
 ## Common pitfalls
 
+### Pitfall: decision_id must be a UUID in the TypeScript SDK (DF-H3-6)
+`createH3Router` (TS) validates `decision_id` with a UUID Zod schema —
+`"echo-001"` style ids 500 with `INVALID_DECISION`. The Go example ships
+non-UUID ids and passes (Go validation is lenient). **Use
+`crypto.randomUUID()` in every TS/Node harness.** Contract drift is filed
+as DF-H3-6; until it's pinned in the protocol spec, treat UUID as the safe
+form everywhere.
+
+### Pitfall: the battery has undocumented trigger phrases (DF-H3-7)
+`h3-test` sends messages containing "do not finish", "start a thought",
+"...", "incomplete", "partial" and expects `finished:false` (continuation);
+a harness that always sets `finished:true` fails ~15/46 with confusing
+detail lines, and `end.reason` must be the schema enum (`task_complete`,
+NOT "completed"). **Read the echo example for your SDK before writing
+onProcess/onResult — the example IS the spec for the battery.**
+
+### Pitfall: fresh Debian has no venv/ensurepip (DF-H3-8)
+On stock Debian (docker/cloud images, rootless agents), `python3 -m venv`
+dies asking for `apt install python3.13-venv`. Working no-sudo fallback:
+```bash
+python3 -m venv --without-pip .venv
+curl -sS https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
+.venv/bin/python /tmp/get-pip.py && .venv/bin/pip install -e .
+```
+
+### Pitfall: Go example and Go scaffold ignore PORT (DF-H3-9)
+`sdk-go/examples/echo` and the Go scaffold hardcode `:9191` (main.go:100 /
+scaffold main.go:148). `PORT=9291` is silently ignored. Use a
+non-default port only via source edit for Go targets; TS/py honor PORT.
+
+- **Round-trip with curl (verified live 2026-09-08):** the working process
+  shape needs the full envelope — `session_id`, `message{role,content,timestamp}`,
+  `identity{user_id,platform,chat_id,user_name}`, `context{}` — and the
+  result route is FLAT `POST /v1/result` (not `/v1/sessions/{id}/result`).
+  The error messages walk you in one field at a time; the full working
+  curl pair is in `docs/dogfood/2026-09-08-integration.md`.
 - **Port collisions are silent killers.** `h3-test` tests whatever listens
   on the port. The Python echo example hardcodes `:8000`; if it fails to
   bind (exit 3), the battery tests the WRONG server (looks like a baffling

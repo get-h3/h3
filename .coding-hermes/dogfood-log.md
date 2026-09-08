@@ -73,3 +73,22 @@ answers: "does this project actually work for a real user, and is it worth it?"
 2026-09-01 | SHIPPABLE | 37s t2fs | friction 6 | 5 findings
 2026-09-04 | SHIPPABLE | 40s t2fs | friction 8 | 5 findings
 2026-09-07 | SHIPPABLE | 20s t2fs | friction 6 | 5 findings
+2026-09-08 | SHIPPABLE | ~35s t2fs | friction 6 | 5 findings
+- Promise: user scaffolds/runs an H3 harness; h3-test gates compliance (exit 0).
+- Reality: HELD. 46/46 on five distinct endpoints: Go echo, Go scaffold,
+  PyPI h3-harness-sdk 0.1.5 echo (:9192), TS SDK custom consumer (:9292),
+  py scaffold in bunker. Battery 0.27-0.63s, exit codes honest.
+- New findings: DF-H3-6 (decision_id UUID vs free-form: TS rejects what Go
+  ships and docs show), DF-H3-7 (battery hidden trigger phrases
+  'do not finish'/... → a correct-by-docs harness fails 15/46),
+  DF-H3-8 (bunker fresh install: python3-venv/ensurepip missing, no-sudo
+  bootstrap workaround, 13s), DF-H3-9 (Go echo+scaffold ignore PORT env),
+  SKIPPED-install-bunker (bunker-las-03 offline ~1d; leg ran on las-04,
+  agent be304d58 destroyed clean).
+- Prior DF-H3-1..5 all re-verified as real (HERMES_H3_CONFIG grep=0 refs;
+  battery live count 46 vs docs 44; scaffold :9191 hardcode; two install
+  forms; no curl round-trip doc — friction trail reproduced 1:1).
+- Artifacts: docs/dogfood/2026-09-08-integration.md; diagnostics.md E12-E14
+  + trust anchors; skills/h3-usage/SKILL.md 4 new pitfalls + 46-count fix.
+- Foreman: h3 enabled, 43200s cooldown; woken via PUT CooldownS=900 after
+  5 new board rows (self-restores per cooldown-policy pin).

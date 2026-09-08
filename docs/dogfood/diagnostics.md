@@ -187,3 +187,58 @@ argument". **Right way:** accept an optional positional (DOGFOOD-11).
 - Battery speed/exit-code discipline: ✅ unchanged (0.2-0.5s, exit 0/1/2).
 - h3-harness-sdk 0.1.2 IS on PyPI (2026-08-08) — `pip install h3-harness-sdk`
   works; `hermes-h3-shim` still not published (P3-10).
+
+## 8. 2026-09-08 dogfood additions (E12-E14)
+
+### E12. Why the same harness passes in Go and 500s in TypeScript
+**What happened:** a from-scratch TS consumer (text-stats harness, no example
+copied) returned `decision_id: "stats-<sid>-<ts>"` and got
+`500 INVALID_DECISION: Invalid UUID` from `createH3Router`'s Zod validation.
+The Go echo example ships `"echo-001"` and passes 46/46. **Why:** the TS SDK
+routes every Decision through generated Zod schemas where `decision_id` is a
+UUID string; the Go SDK's server-side validation is hand-rolled and lenient.
+Both are "correct" per their own code, so nothing in CI catches the drift —
+the protocol spec doesn't pin the decision_id format. **Right way:** pick one
+contract (UUID everywhere, or free-form everywhere), write it into
+`specs/02-Protocol-Specification.md`, and add a cross-SDK conformance test
+(`integration/roundtrip` is the natural home). Until then, TS consumers must
+`crypto.randomUUID()` — file DF-H3-6.
+
+### E13. The battery is a contract tester, not a courtesy checker — its
+### hidden trigger phrases are part of the protocol
+**What happened:** a logically-correct TS harness (always `finished:true` on
+complete answers, `end.reason:"completed"`) scored 37/46. Failures read
+`Expected finished=false, got True`, `result_tool_success … status=500`.
+**Why:** `test_battery.py` simulates how Hermes actually drives a harness:
+it sends messages containing "do not finish" / "start a thought" /
+trailing "..." / "incomplete" / "partial" and expects `finished:false`
+(streaming continuation), then drives multi-turn result loops and every
+`ResultPayload` type through `onResult`. A harness that is "obviously right"
+per the integration doc fails 15 tests, because the doc never states the
+convention — the echo examples embody it. **Right way:** read
+`examples/echo` in your SDK *as part of the spec* before writing onProcess;
+or grep `test_battery.py` for the trigger literals. Long-term fix is
+documentation + an explicit conformance mode (DF-H3-7). Note this bit a
+maintainer-grade consumer, not a typo — it is the sharpest L3 (works-for-a-
+user) gap found this cycle.
+
+### E14. Fresh-machine install fails at venv on stock Debian (no sudo)
+**What happened:** the bunker fresh-user agent (Debian 13, Python 3.13.5,
+rootless) died on the README's literal first command: `python3 -m venv`
+→ `ensurepip is not available … apt install python3.13-venv` (needs sudo).
+**Why:** Debian splits venv/ensurepip out of python3-minimal; docker and
+cloud images routinely ship without it. **Right way (survived, 13s total):**
+`python3 -m venv --without-pip .venv && curl -sS
+https://bootstrap.pypa.io/get-pip.py -o /tmp/g.py && .venv/bin/python /tmp/g.py`
+then `pip install -e .`. Quickstart should carry this fallback (DF-H3-8).
+
+### Trust anchors update (2026-09-08)
+
+- Battery: **46/46** is the live count (46 since GAP-045/DOGFOOD-002 wave;
+  any "44" in docs is stale — DF-H3-2 still open).
+- Verified compliant on 2026-09-08: Go echo, Go scaffold, PyPI
+  h3-harness-sdk 0.1.5 echo, TS SDK custom consumer, py scaffold in bunker
+  — five distinct endpoints, all exit 0, 0.27-0.63s per run.
+- Install: works from source on clean machines AFTER the venv bootstrap
+  workaround (E14); bunker-las-03 (default dogfood host) offline ~1d —
+  install leg ran on bunker-las-04.
