@@ -76,10 +76,9 @@ h3-test --endpoint http://localhost:9191
 > **Run one harness at a time — both quick-start paths bind `:9191`.** The Go
 > echo example and a freshly scaffolded harness use the same default port, so
 > stop the running one (Ctrl-C) before starting the other; otherwise the second
-> exits with `listen tcp :9191: bind: address already in use`. The Python and
-> TypeScript scaffolds honor `PORT` (`PORT=9291 python main.py`, `PORT=9291 npm
-> run dev`); the Go echo example and the Go scaffold hardcode `:9191` today
-> (tracked as DF-H3-9), so there stop the first harness or edit the address line.
+> exits with `listen tcp :9191: bind: address already in use`. All four targets
+> honor `PORT` (`PORT=9291 python main.py`, `PORT=9291 npm run dev`, `PORT=9291
+> go run .`), so stop the first harness or give the second one a different port.
 
 > The CLI is `hermes-h3` (standalone binary with `install`, `scaffold`, `test`,
 > `verify`, and more). The `hermes h3` plugin form requires H3 wired into a
@@ -87,7 +86,7 @@ h3-test --endpoint http://localhost:9191
 
 ## Make your first call
 
-A harness exposes five REST endpoints:
+A harness exposes six REST endpoints:
 
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
@@ -95,6 +94,7 @@ A harness exposes five REST endpoints:
 | `/v1/process` | POST | Send a user message; the harness answers with a `Decision` |
 | `/v1/result` | POST | Report the outcome of the previous decision |
 | `/v1/cancel` | POST | Abort a running session |
+| `/v1/sessions/{session_id}` | GET | Session metadata (`session_id`, `started_at`, `last_active`, `turn_count`, `status`); 404 for an unknown session |
 | `/v1/sessions/{session_id}` | DELETE | Tear down a session's server-side state |
 
 With a harness on `:9191` (see Quick Start), this is a complete first call. All
