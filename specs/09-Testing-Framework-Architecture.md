@@ -2,7 +2,7 @@
 
 **Status:** Spec  
 **Version:** 1.0.0  
-**Last Updated:** 2026-07-12
+**Last Updated:** 2026-09-18
 
 ---
 
@@ -43,16 +43,21 @@ h3-test CLI
   │     Latency checks
   │
   └── ReportGenerator     ← Produces output
-        Terminal (colorized, progress bars)
-        JSON (machine-readable, CI-friendly)
-        HTML (shareable report)
+        Terminal (per-category pass/fail + duration + latency)
+        JSON (machine-readable, CI-friendly)   ← the only machine format shipped
+        HTML (shareable report)                ← planned, not implemented (no --html flag)
 ```
 
 ---
 
 ## 3. Test Regions (E2E Style)
 
-Each region tests a complete functional area end-to-end:
+Each region tests a complete functional area end-to-end. The regions are a
+*view* over one flat results list: every test in the shipped report carries its
+own `category` (see §5), and the CLI uses the canonical labels
+`Health & Protocol`, `Process Basic Flows`, `Decision Types`, `Result Handling`,
+`Error & Edge Cases`, `Stress & Performance`. The headings below are prose names
+for the same regions.
 
 ### Region 1: Health & Protocol (7 tests)
 Tests the health endpoint and protocol handshake. No session state.
@@ -137,6 +142,10 @@ memory_stable          → Memory doesn't grow over 100 turns
 
 ## 4. Runner Implementation
 
+Shipped class: `H3TestBattery` in `shim/src/h3_shim/test_battery.py`, wrapped by the
+`h3-test` CLI. The sketch below shows the intended runner shape; the part that matters
+to consumers is the report it returns — the flat `TestReport` documented in §5.
+
 ```python
 class TestRunner:
     def __init__(self, endpoint: str, config: TestConfig):
@@ -160,11 +169,17 @@ class TestRunner:
             self.results.append(result)
             self._print_region_result(result)
 
+        # Flat report: one entry per test, each carrying its own `category`.
+        # `TestReport` takes no `regions=` argument (see §5).
+        results = [t for r in self.results for t in r.tests]
+        passed = sum(1 for t in results if t.passed)
         return TestReport(
-            regions=self.results,
-            total=sum(r.total for r in self.results),
-            passed=sum(r.passed for r in self.results),
-            failed=sum(r.failed for r in self.results),
+            results=results,
+            total=len(results),
+            passed=passed,
+            failed=len(results) - passed,
+            duration_ms=sum(r.duration_ms for r in self.results),
+            timestamp=datetime.now(timezone.utc).isoformat(),
         )
 ```
 
@@ -174,57 +189,109 @@ class TestRunner:
 
 ### Terminal (default)
 
+Verbatim output of `h3-test --endpoint http://localhost:9191` against the Go echo
+example — a plain per-category table, no color and no progress bars. `v0.1.0` is the
+installed `hermes-h3-shim` package version. A region with failing tests prints
+`❌ FAILED` on its row, and the `TOTAL` row prints `PASSED`/`FAILED` without an icon.
+
 ```
-H3 Compliance Test Battery v1.0.0
+
+H3 Compliance Test Battery v0.1.0
 Target: http://localhost:9191
-Protocol: v1.0
+Transport: REST
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Health & Protocol             7/7  ✅
-  Process Flows                 8/8  ✅
-  Decision Types                6/6  ✅
-  Result Handling               7/7  ✅
-  Edge Cases                  13/13 ✅
-  Stress                        5/5  ✅
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  TOTAL                        46/46 ✅  PASSED
-
-Report saved: h3-report-20260712-223000.json
+  Health & Protocol                   7/7  ✅ PASSED
+  Process Basic Flows                 8/8  ✅ PASSED
+  Decision Types                      6/6  ✅ PASSED
+  Result Handling                     7/7  ✅ PASSED
+  Error & Edge Cases                  13/13  ✅ PASSED
+  Stress & Performance                5/5  ✅ PASSED
+  TOTAL                               46/46  PASSED
+  Duration                            0.38s
+  Latency p50/p95                     0.97ms / 57.84ms
 ```
+
+Nothing is written to disk by default — the report goes to stdout. Redirect it
+(`h3-test ... > report.txt`) or use `--json` and keep the JSON.
 
 ### JSON (--json flag)
 
+The whole payload is `dataclasses.asdict(TestReport)` plus two fields the CLI adds
+(`all_passing`, `latency`). Captured verbatim from a live run against the Go echo
+example (46/46, exit code 0), trimmed in the middle:
+
 ```json
 {
-  "protocol_version": "1.0",
-  "harness_endpoint": "http://localhost:9191",
-  "timestamp": "2026-07-12T22:30:00Z",
-  "summary": {
-    "total": 46,
-    "passed": 46,
-    "failed": 0,
-    "pass_rate": 1.0,
-    "duration_ms": 2843
-  },
-  "regions": [
+  "timestamp": "2026-09-18T09:58:16.120158+00:00",
+  "total": 46,
+  "passed": 46,
+  "failed": 0,
+  "duration_ms": 319.6196659700945,
+  "all_passing": true,
+  "results": [
     {
-      "name": "Health & Protocol",
-      "total": 7,
-      "passed": 7,
-      "failed": 0,
-      "tests": [
-        {"name": "health_ok", "passed": true, "duration_ms": 12, "detail": "200 OK, status=ok"},
-        ...
-      ]
+      "name": "health_ok",
+      "passed": true,
+      "detail": "200 OK, status=ok",
+      "duration_ms": 0.9074170375242829,
+      "category": "Health & Protocol"
+    },
+    {
+      "name": "health_version",
+      "passed": true,
+      "detail": "version='1.0.0', protocol_version='1.0'",
+      "duration_ms": 0.9577800519764423,
+      "category": "Health & Protocol"
     },
     ...
-  ]
+  ],
+  "latency": {
+    "min_ms": 0.74,
+    "p50_ms": 1.42,
+    "p90_ms": 8.49,
+    "p95_ms": 39.0,
+    "p99_ms": 113.46,
+    "max_ms": 113.46,
+    "mean_ms": 6.73
+  }
 }
 ```
 
-### HTML (--html flag)
+| Key | Type | Notes |
+|---|---|---|
+| `timestamp` | string | ISO-8601 UTC, stamped when the run finishes |
+| `total` / `passed` / `failed` | int | `total == passed + failed` |
+| `duration_ms` | float | wall time for the whole run |
+| `all_passing` | bool | `true` iff `failed == 0` |
+| `results[]` | array | one object per test: `name`, `passed`, `detail`, `duration_ms`, `category` |
+| `latency` | object | `min_ms`, `p50_ms`, `p90_ms`, `p95_ms`, `p99_ms`, `max_ms`, `mean_ms` over `results[].duration_ms` |
 
-Dark-themed, mobile-first report page. Shows per-region pass/fail with expandable test details. Suitable for sharing.
+**⚠️ Keys documented by earlier revisions that the CLI does NOT emit.** A previous
+version of this spec showed a top-level `summary: {total, passed, failed, pass_rate,
+duration_ms}` object, a top-level `regions: [...]` array, and top-level
+`protocol_version` / `harness_endpoint` fields. The shipped CLI emits **none of
+them**. The grouped per-region roll-up, `pass_rate` and `harness_endpoint` are
+**planned** (design intent, no implementation artifact yet) — as is the `--html`
+format below. Never gate on the planned keys: `jq '.summary.failed'` returns
+`null`, `[ "null" != "0" ]` is TRUE, so a gate copied from the old text reports
+failure on a clean 46/46 run. The endpoint is not in the payload either — it is
+passed to `--endpoint` and echoed only in the terminal form.
+
+For a grouped, human-readable region view, fold the flat list yourself:
+
+```bash
+jq -r '.results | group_by(.category)[]
+       | "\(.[0].category)\t\(map(select(.passed)) | length)/\(length)"' report.json
+```
+
+That is a display helper only. Gate on `.failed` (see §6).
+
+### HTML (`--html` flag)
+
+**Planned — not implemented.** No `--html` flag exists: `h3-test --help` lists only
+`--endpoint`, `--json`, `--categories` and `--version`. The intended artifact is a
+dark-themed, mobile-first page with per-region pass/fail and expandable test details.
+Until it ships, build shareable output from the `--json` report.
 
 ---
 
@@ -248,9 +315,12 @@ jobs:
           h3-test --endpoint http://localhost:9191 --json > report.json
       - name: Verify
         run: |
-          if [ "$(jq '.summary.failed' report.json)" != "0" ]; then
+          # The report is FLAT: `.failed` is a top-level integer and every test is
+          # an entry in `.results[]` with its own `.passed` boolean. There is no
+          # `.summary` object and no `.regions` array — see "JSON (--json flag)".
+          if [ "$(jq -r '.failed' report.json)" != "0" ]; then
             echo "❌ Compliance failed"
-            jq '.regions[] | select(.failed > 0)' report.json
+            jq '.results[] | select(.passed == false)' report.json
             exit 1
           fi
           echo "✅ All tests passed"
@@ -260,6 +330,13 @@ jobs:
           name: h3-compliance-report
           path: report.json
 ```
+
+`h3-test` itself already exits `1` on a compliance failure and `2` when the target is
+not an H3 endpoint (which fails the "Run compliance" step under GitHub's default
+`bash -e`), so the `Verify` step is a second pair of eyes that also *names* the failed
+tests. For a target-independent belt, assert `jq -e '.all_passing == true' report.json`
+as well: a non-H3 target prints `"failed": 0` alongside `"all_passing": false`, so a
+`.failed`-only gate reads green on a report that carries no test results at all.
 
 ---
 
