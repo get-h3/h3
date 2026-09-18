@@ -10,10 +10,14 @@
 # permissions. The commit message was the only variable.
 #
 # A board-only commit legitimately produces no run: pages.yml triggers on
-# docs/**, specs/**, scripts/** and **.md, roundtrip.yml only on
+# docs/**, scripts/** and top-level *.md, roundtrip.yml only on
 # integration/roundtrip/**, so .coding-hermes/** is excluded by the workflows'
 # paths filters. That is by design. To keep a workflow from running, use its paths
 # filter — never a message token.
+#
+# (pages.yml dropped specs/** and narrowed **.md to *.md in H3-PM-007: specs are
+# never published, so a specs-only push only redeployed an unchanged artifact, and
+# '**' crosses '/' while '*' does not.)
 #
 # Checks:
 #   a. default              — the message of HEAD carries no skip directive

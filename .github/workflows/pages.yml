@@ -4,10 +4,26 @@ on:
   push:
     branches: [main]
     paths:
+      # The uploaded artifact is docs/ — only these three patterns can change it.
       - 'docs/**'
-      - 'specs/**'
+      # scripts/ holds the count guard's single source (scripts/test-count.txt) and the
+      # guard script itself, so a change there re-runs the gate that validates the badge.
       - 'scripts/**'
-      - '**.md'
+      # Top-level markdown (README.md, AGENTS.md, CONTRIBUTING.md, ...) is swept by the
+      # same count guard. Spelled '*.md', NOT '**.md': per GitHub's filter pattern cheat
+      # sheet '**' matches zero or more of ANY character (including '/') while '*' does
+      # not match '/'. So '**.md' could match specs/*.md — reopening the specs hole this
+      # change closes — and it already matched nested non-published markdown in practice
+      # (the 2026-09-18 push whose only non-board change was skills/h3-usage/SKILL.md
+      # started this workflow). '*.md' cannot fire on anything under specs/ or docs/.
+      - '*.md'
+      # NOTE: 'specs/**' was removed (H3-PM-007). Specs are never published — the artifact
+      # is docs/, and /h3/specs/... 404s — yet every specs-only push redeployed a
+      # byte-identical artifact. Proven from this repo's own run history: the pushes whose
+      # head commits 9d573d5, 4e45e7d, cd13c90 and b1a46e3 changed only specs/*.md and each
+      # produced a pages.yml run + deploy. Trade-off, recorded on purpose: the count guard
+      # no longer re-runs on a specs-only change in CI. `make verify` runs the same script
+      # locally, and the guard still runs whenever docs/, scripts/ or a top-level doc changes.
   workflow_dispatch:
 
 permissions:

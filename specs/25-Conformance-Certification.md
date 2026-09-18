@@ -19,7 +19,7 @@ The H3 Conformance Certification program provides **public, verifiable proof** t
 | **No central authority** | Badge validity is cryptographic, not permission-based. Anyone can issue a self-signed badge; the registry lists badges others can choose to trust. |
 | **Test battery is the gate** | Badges are only issued for 46/46 pass on the exact tagged `h3-test` version. Partial passes don't qualify. |
 | **Verifiable offline** | A badge carries enough information (test version, timestamp, harness endpoint, signature) to verify without calling home. |
-| **Opt-in registry** | Harness developers can optionally submit their badge to a public registry (`get-h3.github.io/h3/registry`) for discoverability. |
+| **Opt-in registry** | Harness developers can optionally submit their badge to a public registry (`get-h3.github.io/h3/registry`) for discoverability. **Planned — not implemented**: the published site has no `/registry` path (HTTP 404 today). |
 | **Revocable** | If a certified harness is later found non-compliant (via a protocol update), its badge is revoked and the registry is updated. |
 
 ---
@@ -51,14 +51,20 @@ Harness Developer                          Public (get-h3.github.io/h3)
   (README.md, website)                     (get-h3.github.io/h3/certified)
 ```
 
+> **Implementation status (2026-09-18): every website surface in this diagram is planned —
+> not implemented.** The umbrella repo publishes only `docs/` (static HTML plus the three
+> static conformance SVGs in `docs/badge/`). On `get-h3.github.io/h3` there is no `/verify`,
+> `/api/badges`, `/registry` or `/certified` path — each returns HTTP 404. §5, §6 and §7 below
+> are design intent for Phase 3–4 of §12, not descriptions of live endpoints.
+
 ### Components
 
 | Component | Role | Implementation |
 |-----------|------|----------------|
 | **Badge Generator** | Produces signed JSON badge + SVG image from `h3-test` results | Planned `hermes-h3 badge` CLI (not in current `h3-test` — see §9) |
-| **Verification Endpoint** | Validates a badge against stored test results | `get-h3.github.io/h3/verify?url=` |
-| **Registry API** | Accepts badge submissions, serves certified list | `get-h3.github.io/h3/api/badges` |
-| **Dashboard** | Public directory of all certified harnesses | `get-h3.github.io/h3/certified` |
+| **Verification Endpoint** | Validates a badge against stored test results | `get-h3.github.io/h3/verify?url=` — **planned, not implemented** (no such path is published; HTTP 404 today) |
+| **Registry API** | Accepts badge submissions, serves certified list | `get-h3.github.io/h3/api/badges` — **planned, not implemented** (no such path is published; HTTP 404 today) |
+| **Dashboard** | Public directory of all certified harnesses | `get-h3.github.io/h3/certified` — **planned, not implemented** (no such path is published; HTTP 404 today) |
 
 ---
 
@@ -121,9 +127,13 @@ Three badge variants:
 | `h3-compliant-yellow` | 🟡 Yellow | 46/46 pass, badge expired |
 | `h3-unverified-lightgrey` | ⚫ Grey | Not tested / no badge |
 
-The SVG is self-contained (no external image assets) and fits in a README.md:
+The SVG is self-contained (no external image assets) and fits in a README.md **once a badge
+exists**: the `/h3/badges/v1/...` and `/h3/verify/...` paths in the snippet are **planned —
+not implemented** (neither is published; both HTTP 404 today), so the image below renders
+broken until Phase 3 of §12 ships — do not paste it into a README yet:
 
 ```markdown
+<!-- PLANNED — /badges/v1/<hash>.svg and /verify/<hash> do not exist on get-h3.github.io/h3 -->
 [![H3 Compliant](https://get-h3.github.io/h3/badges/v1/ {badge-hash} .svg)](https://get-h3.github.io/h3/verify/ {badge-hash})
 ```
 
@@ -163,8 +173,8 @@ h3-test --endpoint http://localhost:9191 --json > report.json
 ├── badge.json             ← Signed JSON badge
 ├── h3-compliant.svg       ← Green badge (46/46)
 ├── h3-compliant-yellow.svg ← Yellow badge (expiring)
-├── verify.json            ← Verification payload (for get-h3.github.io/h3/verify)
-└── submit.json            ← Submission payload (for get-h3.github.io/h3/api/badges)
+├── verify.json            ← Verification payload (for get-h3.github.io/h3/verify — planned, not published)
+└── submit.json            ← Submission payload (for get-h3.github.io/h3/api/badges — planned, not published)
 ```
 
 ### 4.3 Signing
@@ -194,11 +204,15 @@ hermes-h3 badge --valid-versions
 
 ---
 
-## 5. Verification Endpoint (`get-h3.github.io/h3/verify`)
+## 5. Verification Endpoint (`get-h3.github.io/h3/verify`) — planned, not implemented
+
+> **Status: planned — not implemented.** Nothing in §5 is routed today: the published site has
+> no `/verify` path (HTTP 404). The checks below are the design for Phase 3 of §12.
 
 ### 5.1 API
 
 ```http
+# PLANNED — /verify is not published on get-h3.github.io/h3 (HTTP 404 today)
 GET /verify?url=https://my-harness.com/badge.json
 GET /verify/{badge-hash}
 ```
@@ -255,7 +269,7 @@ GET /verify/{badge-hash}
 
 ### 5.2 Verification Algorithm
 
-The `get-h3.github.io/h3/verify` endpoint performs these checks in order:
+The `get-h3.github.io/h3/verify` endpoint (**planned — not implemented**; no such path is published, HTTP 404 today) performs these checks in order:
 
 | Order | Check | Fails For |
 |-------|-------|-----------|
@@ -276,7 +290,7 @@ The `get-h3.github.io/h3/verify` endpoint performs these checks in order:
 | Mode | Behavior | Use Case |
 |------|----------|----------|
 | **Offline** | Verify signature + expiry only. No network calls to registry. | README badge, local CI |
-| **Online** | Full verification including registry revocation check + optional health probe. | get-h3.github.io/h3/verify endpoint |
+| **Online** | Full verification including registry revocation check + optional health probe. | get-h3.github.io/h3/verify endpoint (**planned — not implemented**) |
 | **Deep** | Online + probe harness endpoint for `/v1/health`, verify protocol version in response. | Pre-production validation |
 
 ### 5.4 CLI Verification
@@ -297,9 +311,12 @@ hermes-h3 verify --verbose badge.json
 
 ---
 
-## 6. Registry API
+## 6. Registry API — planned, not implemented
 
-### 6.1 Submit Badge
+> **Status: planned — not implemented.** No `/api/badges` path is published (HTTP 404 today);
+> the registry is Phase 3 of §12. The payloads below define the intended contract.
+
+### 6.1 Submit Badge (planned — not implemented)
 
 ```http
 POST /api/badges
@@ -316,8 +333,9 @@ Authorization: Bearer h3_hx_{hex64}
 }
 ```
 
-**Response (201 — Accepted):**
-
+**Response (201 — Accepted) — planned surface:** the `verify_url` and `badge_markdown` fields
+below point at the planned `/h3/verify/badge-…` and `/h3/badges/v1/…svg` paths; neither is
+published (HTTP 404 today), so this is the intended contract, not a live response:
 ```json
 {
   "id": "badge-a1b2c3d4",
@@ -336,7 +354,7 @@ Authorization: Bearer h3_hx_{hex64}
 }
 ```
 
-### 6.2 List Certified
+### 6.2 List Certified (planned — not implemented)
 
 ```http
 GET /api/badges
@@ -401,10 +419,17 @@ Revocation reasons:
 
 ---
 
-## 7. Dashboard (`get-h3.github.io/h3/certified`)
+## 7. Dashboard (`get-h3.github.io/h3/certified`) — planned, not implemented
 
-### 7.1 Page Layout
+> **Status: planned — not implemented.** The dashboard page is not built: `get-h3.github.io/h3/certified`
+> returns HTTP 404, and its data source (the §6 registry API) does not exist either. This is
+> Phase 4 of §12.
 
+### 7.1 Page Layout (planned — not implemented)
+
+**Planned surface — not rendered today.** The mock below shows `Verification URL:` and `SVG:`
+values on `get-h3.github.io/h3` (`/verify/...`, `/badges/v1/...`); neither path is published —
+this dashboard is **planned — not implemented** (HTTP 404 today):
 ```
 ┌──────────────────────────────────────────────────┐
 │ H3 Conformance Registry                          │
@@ -436,10 +461,11 @@ The dashboard displays aggregate statistics:
 - **By version:** Active protocol versions in the field
 - **Trend:** New certifications per week
 
-### 7.3 Badge Details Page
+### 7.3 Badge Details Page (planned — not implemented)
 
-Clicking a badge entry shows:
-
+Clicking a badge entry shows — **planned surface, not rendered today**: the `Verification URL`
+and `SVG` lines below point at `/h3/verify/...` and `/h3/badges/v1/...`, neither of which is
+published (HTTP 404 today):
 ```
 Badge Details
 ┌─────────────────────────────────────────┐
@@ -522,7 +548,7 @@ CI pipelines can enforce certification as a gate:
 ### 8.3 Badge in README
 
 ```markdown
-<!-- Auto-updated by the badge generator (planned hermes-h3 badge CLI) -->
+<!-- PLANNED — auto-updated by the badge generator (planned hermes-h3 badge CLI); the /badges/v1/ and /verify/ paths below are not published (HTTP 404 today) -->
 [![H3 Compliant](https://get-h3.github.io/h3/badges/v1/badge-a1b2c3d4.svg)](https://get-h3.github.io/h3/verify/badge-a1b2c3d4)
 ```
 
@@ -546,6 +572,7 @@ hermes-h3 badge generate \
 
 # Verify a badge
 hermes-h3 badge verify badge.json
+# PLANNED — /verify/<id> is not published on get-h3.github.io/h3 (HTTP 404 today)
 hermes-h3 badge verify https://get-h3.github.io/h3/verify/badge-a1b2c3d4
 hermes-h3 badge verify --deep --endpoint http://localhost:9191 badge.json
 
@@ -585,6 +612,10 @@ hermes-h3 badge sign .badge/badge.json --key-file ~/.h3/signing-key.pem
 
 ### 10.2 Integration Tests (8 tests)
 
+> CERT-I-03 and CERT-I-04 below assert against `get-h3.github.io/h3/verify/{id}`, a **planned —
+> not implemented** endpoint (no such path is published; HTTP 404 today), so they can only pass
+> once Phase 3 of §12 ships.
+
 | ID | Test | Verifies |
 |----|------|----------|
 | CERT-I-01 | End-to-end: test→badge→verify loop | Full pipeline produces valid badge |
@@ -623,6 +654,10 @@ hermes-h3 badge sign .badge/badge.json --key-file ~/.h3/signing-key.pem
 
 ## 12. Migration & Deployment
 
+> **Status: all five phases are planned — no part of this section is implemented.** Phases 3–4
+> add site surfaces (`/api/badges`, `/verify`, `/certified`) that do not exist on
+> `get-h3.github.io/h3` today (HTTP 404).
+
 ### Phase 1: Badge Generator (Shim)
 
 > Roadmap — every badge CLI flag below is PLANNED; the current `h3-test` ships only
@@ -647,7 +682,7 @@ hermes-h3 badge sign .badge/badge.json --key-file ~/.h3/signing-key.pem
 | 2.4 | Add expiration detection + yellow SVG variant | Expiring badges correctly flagged |
 | **Gate** | Full verification loop: generate → sign → verify | End-to-end pass with 46/46 test battery |
 
-### Phase 3: Registry Server (get-h3.github.io/h3)
+### Phase 3: Registry Server (get-h3.github.io/h3) — planned, not implemented
 
 | Step | Description | Acceptance |
 |------|-------------|------------|
@@ -658,7 +693,7 @@ hermes-h3 badge sign .badge/badge.json --key-file ~/.h3/signing-key.pem
 | 3.5 | Add authentication for submission + revocation | h3_hx token required |
 | **Gate** | Full registry CRUD cycle works | Submit → list → verify → revoke → verify |
 
-### Phase 4: Dashboard (get-h3.github.io/h3)
+### Phase 4: Dashboard (get-h3.github.io/h3) — planned, not implemented
 
 | Step | Description | Acceptance |
 |------|-------------|------------|
@@ -685,7 +720,7 @@ hermes-h3 badge sign .badge/badge.json --key-file ~/.h3/signing-key.pem
 |------|---------|-------------|
 | S02 — Protocol Specification | §3 (Endpoints) | Registry API extends protocol |
 | S05 — Shim Test Battery | §2 (Test Runner) | `h3-test` is badge generator runtime |
-| S10 — Website & Developer Docs | all | Dashboard + verify endpoint are get-h3.github.io/h3 features |
+| S10 — Website & Developer Docs | all | Dashboard + verify endpoint are get-h3.github.io/h3 features (planned — §12 Phase 3–4) |
 | S12 — Security & Authentication | §3 (API Key Format) | Badge auth uses h3_hx tokens |
 | S13 — Token Rotation & Revocation | §4 (Revocation) | Badge revocation follows same pattern |
 | S14 — TLS Enforcement | all | Registry and verify endpoint must use TLS |

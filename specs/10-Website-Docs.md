@@ -10,6 +10,8 @@
 
 The H3 website (`https://get-h3.github.io/h3/`; legacy `h3.sh` domain is dead — NXDOMAIN) is the public face of H3. A developer lands here, understands what H3 is in 10 seconds, picks their language, and has a working harness in under 30 minutes.
 
+**Implementation status (2026-09-18):** the site ships as a static GitHub Pages deploy of this repo's `docs/` tree. Live today: `/` (`docs/index.html`), `/guide.html`, `/protocol.html`, `/sdk.html`, `/migration.html`, `/integration.md` and the three static conformance SVGs under `/badge/`. Everything else this spec names — the `/docs/...` route set in §4, the verify endpoint in §5, and the registry/dashboard of S25 — is **planned — not implemented**: the published tree has no `api/`, `verify/`, `certified/` or `specs/` path, and each of those 404s.
+
 ---
 
 ## 2. Site Structure
@@ -87,25 +89,35 @@ Your harness responds.
 
 ## 4. Docs Pages
 
-| Page | Content |
-|---|---|
-| `/` | Landing + Quickstart |
-| `/docs/protocol` | Full protocol reference (generated from OpenAPI) |
-| `/docs/protocol/decisions` | Deep dive: each decision type with examples |
-| `/docs/protocol/errors` | Error catalog |
-| `/docs/sdk/go` | Go SDK reference |
-| `/docs/sdk/python` | Python SDK reference |
-| `/docs/sdk/typescript` | TypeScript SDK reference |
-| `/docs/testing` | Test battery guide |
-| `/docs/hermes-config` | How to configure Hermes for H3 |
-| `/docs/migration` | Native → H3 migration guide |
-| `/docs/examples` | Example harnesses: echo, RAG agent, code reviewer |
-| `/docs/faq` | FAQ |
-| `/compliance` | Compliance badge registry, verify badge endpoint |
+**Status (2026-09-18):** nothing under `/docs/` is published — GitHub Pages serves the `docs/`
+tree at the site root, so the routes below are design intent and the live equivalent is named
+where one exists. `✅ published` = served today; `⚠️ planned` = no such path exists in the
+published tree (HTTP 404), i.e. **planned — not implemented**.
+
+| Page | Content | Status |
+|---|---|---|
+| `/` | Landing + Quickstart | ✅ published (`docs/index.html`) |
+| `/docs/protocol` | Full protocol reference (generated from OpenAPI) | ⚠️ planned — published today as `/protocol.html` (hand-written; OpenAPI generation is not wired) |
+| `/docs/protocol/decisions` | Deep dive: each decision type with examples | ⚠️ planned — covered today by `/protocol.html` (Decisions) |
+| `/docs/protocol/errors` | Error catalog | ⚠️ planned — covered today by `/protocol.html` (Error Codes) |
+| `/docs/sdk/go` | Go SDK reference | ⚠️ planned — published today as `/sdk.html` (one page, all three languages) |
+| `/docs/sdk/python` | Python SDK reference | ⚠️ planned — published today as `/sdk.html` |
+| `/docs/sdk/typescript` | TypeScript SDK reference | ⚠️ planned — published today as `/sdk.html` |
+| `/docs/testing` | Test battery guide | ⚠️ planned — published today as `/guide.html` (Run the compliance test battery) |
+| `/docs/hermes-config` | How to configure Hermes for H3 | ⚠️ planned — not published |
+| `/docs/migration` | Native → H3 migration guide | ⚠️ planned — published today as `/migration.html` |
+| `/docs/examples` | Example harnesses: echo, RAG agent, code reviewer | ⚠️ planned — not published; `/integration.md` covers wiring an existing agent system and the per-language examples live in the SDK repos |
+| `/docs/faq` | FAQ | ⚠️ planned — not published |
+| `/compliance` | Compliance badge registry, verify badge endpoint | ⚠️ planned — not published; the registry is specified in S25 §6–§7, while the static badges under `/badge/*.svg` are live |
 
 ---
 
 ## 5. Compliance Badge System
+
+**Status (2026-09-18):** the three static SVGs under `/badge/` are published and served
+(`/badge/compliant.svg` → HTTP 200, reading `H3 | 46/46 ✓ | Compliant v1.0`). The verify
+endpoint in §5 below and per-harness badge generation are **planned — not implemented**:
+`/api/verify` and `/badges/v1/...` return HTTP 404.
 
 ### Badge Format
 
@@ -113,16 +125,26 @@ Your harness responds.
 [![H3 Compliant](https://get-h3.github.io/h3/badge/compliant.svg)](https://get-h3.github.io/h3/#compliance)
 ```
 
-Badge URL encodes pass count. Anyone can verify by running `h3-test` against the harness endpoint.
+The published badge URL is a static asset (the SVG is rendered in-repo, not per request);
+it carries the current battery result rather than a per-harness pass count. Anyone can verify a
+harness by running `h3-test` against its endpoint — encoding a per-harness count in a generated
+badge URL is **planned — not implemented**.
 
-### Verify Endpoint
+### Verify Endpoint (planned — not implemented)
+
+The request below is design intent: `/api/verify` is not routed in the published tree and
+returns HTTP 404 today, so the JSON is the intended response shape, not a live one.
 
 ```
+# PLANNED — /api/verify is not routed on get-h3.github.io/h3 yet (HTTP 404 today)
 GET https://get-h3.github.io/h3/api/verify?repo=github.com/user/harness
 → {"compliant": true, "protocol_version": "1.0", "tests_passed": 46, "tests_total": 46, "last_verified": "2026-07-12T22:30:00Z"}
 ```
 
 ### Badge Generation
+
+Served today as the static asset `docs/badge/compliant.svg` (HTTP 200); generating a badge
+per harness on demand is **planned — not implemented**.
 
 ```
 GET https://get-h3.github.io/h3/badge/compliant.svg
