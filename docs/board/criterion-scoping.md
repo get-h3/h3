@@ -156,3 +156,58 @@ rows under one id with different fingerprints are two findings wearing one id.
 
 Re-id map applied (old -> new): DF-H3-1 -> DF-H3-18; DF-H3-2 -> DF-H3-19, DF-H3-20;
 DF-H3-3 -> DF-H3-21, DF-H3-22; QA-H3-1 -> QA-H3-10, QA-H3-11; QA-H3-2 -> QA-H3-12, QA-H3-13.
+
+## The json-fence "not valid JSON" class
+
+Rule: when a verifier says a documented JSON block "is not valid JSON", treat the payload as a
+hypothesis and the extractor as the suspect. Extract the block BY LINE NUMBERS — the opening
+`json` fence line through its closing fence — and run `json.loads` over the payload lines
+(open+1 .. close-1). If that parses, the payload is valid, and the defect is in the extraction
+or in the fence, never in the payload. Rewriting a payload that already parsed deletes real
+specification content to satisfy a broken tool.
+
+Why the class exists: row `H3-GAP-083` claimed the `llm_call` example in `specs/02` section 4.2
+"is not valid JSON". Extracting `specs/02-Protocol-Specification.md` lines 222-234 and running
+`json.loads` returns `["decision","decision_id","llm_call"]` — the payload was valid JSON, both
+before and after the fix. What was true: the block embedded a Go snippet whose opening fence
+sequence sat MID-LINE inside the `content` string value, so a naive non-greedy extractor — one
+that consumes text up to the NEXT fence sequence anywhere in the file (a `re` non-greedy match, a
+`sed -n` range extract, any "find the next fence" helper) — truncated the block at that sequence,
+and the truncated text then failed with `Unterminated string starting at: line 8 column 35`. The
+example is the canonical `llm_call` payload a harness author copies, so the FENCE was made
+extractor-safe (the embedded snippet is now described in words:
+`[Go snippet: func AuthMiddleware...]`) and no payload member was touched.
+
+(a) **Measure by line numbers before believing a validity claim.** A block's payload is the text
+between its fences, taken at known file lines; that is the only reading that matches what a
+reader sees. An extractor that scans for the next fence sequence instead of the next FENCE LINE
+reports the payload as broken when it only broke its own reading.
+
+(b) **A fence sequence inside a JSON string value is not a markdown fence.** CommonMark closes a
+block only on a line whose first non-space run is >= the opening fence char count, with no info
+string; a triple-backtick sequence that sits mid-line — e.g. inside a `content` string value that
+embeds a Go sample — is content and the block renders whole. It is nevertheless extractor-hostile,
+so do not write one: describe an embedded snippet in words, or keep the marker off line-initial
+positions.
+
+(c) **The abbreviated blocks are allowed and must not be rewritten.** Four `json` blocks fail
+`json.loads` on purpose, each because it abbreviates the payload instead of spelling out every
+member, and each says so ON ITS FAILING LINE:
+
+- `specs/15-Rate-Limiting.md` 9.1 — `...existing codes...,` inside the `error_codes` array
+- `specs/15-Rate-Limiting.md` 9.2 — a bare `...` member line in the health response
+- `specs/19-Health-Check-v2.md` — `"models": [...]`, `"dependencies": {...}`, `"resources": {...}`
+- `specs/25-Conformance-Certification.md` — `"badge": { /* signed badge JSON */ }`
+
+Abbreviation is a legitimate documentation form: it shows the shape without implying completeness.
+A failing line carrying one of the placeholder tokens (`...`, `{...}`, `[...]`, `/*`, `*/`) is
+reported `ALLOWED (abbreviated)`; "fixing" one of these by inventing members is a defect.
+
+(d) **`scripts/check-json-fences.sh` is the guard for this class and runs from `make verify`.**
+It extracts every `json` fence from the tracked markdown (`README.md`, `specs/*.md`, `docs/**/*.md`)
+with `git ls-files`, feeds each payload to `python3 -c 'import json,sys;json.load(sys.stdin)'`
+(structural fallback when python3 is absent), applies the (c) allowlist, and reports
+`file:line` for anything else — including an unclosed fence. `sh scripts/check-json-fences.sh
+--self-test` asserts its own exit codes against fixtures. It is a fence/payload guard only: it is
+not a markdown renderer and not a schema validator.
+

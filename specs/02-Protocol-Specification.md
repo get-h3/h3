@@ -226,7 +226,7 @@ The harness MUST return exactly ONE decision per response.
     "model": "deepseek-v4-pro",
     "system_prompt": "You are an expert Go developer reviewing auth middleware.",
     "messages": [
-      {"role": "user", "content": "Review this auth middleware for security issues:\n```go\nfunc AuthMiddleware..."}
+      {"role": "user", "content": "Review this auth middleware for security issues:\n[Go snippet: func AuthMiddleware...]"}
     ],
     "temperature": 0.3,
     "max_tokens": 4000

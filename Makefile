@@ -13,7 +13,14 @@
 #                       single source of truth: the sibling battery's
 #                       EXPECTED_TEST_COUNT must match it and no current-state doc
 #                       may still quote a retired count (GAP-072).
-#   4. commit-msg     — the HEAD commit message carries no GitHub workflow-skip
+#   4. json-fences    — every ```json fenced block in the tracked markdown
+#                       (README.md, specs/*.md, docs/**/*.md) must parse as JSON, and
+#                       a payload that is deliberately abbreviated (`...`) must say
+#                       so on the failing line (H3-GAP-083). This pins the class a
+#                       board row mis-reported as "not valid JSON": the payload was
+#                       fine, a non-greedy extractor truncated it at a mid-line ```
+#                       inside a string value. The guard also fails an unclosed fence.
+#   5. commit-msg     — the HEAD commit message carries no GitHub workflow-skip
 #                       directive (H3-CI-001). GitHub matches one ANYWHERE in the
 #                       message of the pushed head commit — prose included — so a
 #                       board subject that merely mentions it ("NO [ci skip]: ...")
@@ -22,9 +29,9 @@
 #                       Kept LAST: it inspects HEAD, so it passes only after the
 #                       commit that carries it has landed.
 
-.PHONY: verify verify-docs verify-specs verify-count verify-commit-msg
+.PHONY: verify verify-docs verify-specs verify-count verify-json-fences verify-commit-msg
 
-verify: verify-docs verify-specs verify-count verify-commit-msg
+verify: verify-docs verify-specs verify-count verify-json-fences verify-commit-msg
 	@echo "make verify: ALL PASS — umbrella repo is self-consistent"
 
 verify-docs:
@@ -58,6 +65,10 @@ verify-specs:
 verify-count:
 	@echo "make verify: compliance-test count guard"
 	@sh scripts/check-test-count.sh
+
+verify-json-fences:
+	@echo "make verify: json-fence payload guard"
+	@sh scripts/check-json-fences.sh
 
 verify-commit-msg:
 	@echo "make verify: commit-message skip-directive guard (HEAD)"
