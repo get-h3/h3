@@ -31,9 +31,36 @@ This repo (get-h3/h3) is the **umbrella coordination hub** — specs, cross-repo
 > exits 1 with a clear message if any sibling is missing.
 
 ```bash
+# Canonical invocation — from the repo root:
+make verify-roundtrip
+
+# Equivalent, if you are already in the directory:
 cd integration/roundtrip
 ./roundtrip.sh
 ```
+
+`make verify-roundtrip` is the advertised entry point for code-level
+verification and propagates the script's exit code — a failed round-trip fails
+the make target. It also requires `go`, `node` and `npx` on `PATH` (the
+TypeScript phase runs through `npx tsx`).
+
+### What `make verify` does *not* cover
+
+`make verify` (the zero-dependency target that runs on a fresh clone) is a
+docs + repo-consistency check only: docs-link resolution, spec-index vs. files,
+the canonical compliance-test count, json-fence payloads, and the
+commit-message skip-directive guard. It executes **no SDK code** — a green
+`make verify` on a bare clone exercises none of the round-trip suite above. Use
+`make verify-all` when you want both in one command.
+
+### Why CI only runs this on `integration/roundtrip/**`
+
+`.github/workflows/roundtrip.yml` is path-filtered to `integration/roundtrip/**`
+on purpose: the round-trip needs the sibling SDK repos and the Go/Node
+toolchains, so it is gated to pushes that actually change it rather than run on
+every docs edit. The consequence is that a docs-only push gets green CI without
+any code having executed there — which is exactly why the local targets above
+are named so the difference is visible.
 
 This verifies Python → Go, Go → Python, and Go → TypeScript fixture consistency. All three language pairs must pass.
 

@@ -184,7 +184,12 @@ This project uses **coding-hermes** foremen for spec-driven autonomous developme
 
 **Quality gates:** GitReins on every repo (secrets scan, lint, tests). GitHub Actions CI on protocol (redocly lint) and shim (pytest).
 
-**Verification:** this repo is self-checking — `make verify` (docs-link + spec-index checks, zero dependencies) runs from a fresh clone, and `integration/roundtrip/roundtrip.sh` verifies cross-language wire consistency across the Python, Go, and TypeScript SDKs (requires the sibling repos; see CONTRIBUTING.md).
+**Verification:** the scope is deliberately split in two.
+
+- `make verify` — docs + repo-consistency guards **only** (docs-link, spec-index-vs-files, compliance-test count, json-fence payload, commit-message skip-directive). Zero dependencies, so it runs on a fresh clone, and it **executes no SDK code**.
+- `make verify-roundtrip` — the cross-language round-trip **code** suite (Python → Go, Go → Python, Go → TypeScript). Requires the sibling SDK repos (`sdk-python`, `sdk-go`, `sdk-typescript`) on disk next to this one, plus `go`/`node`/`npx`; see [CONTRIBUTING.md](CONTRIBUTING.md).
+- `make verify-all` — both, in order.
+- CI runs the round-trip only via `.github/workflows/roundtrip.yml`, which is **path-filtered to `integration/roundtrip/**`** — so a docs-only push gets green CI that never executed that suite. A green check is not by itself proof that code ran; check which workflow actually fired.
 
 **Contributing:** see [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow, code of conduct, and governance.
 

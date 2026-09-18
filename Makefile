@@ -28,11 +28,32 @@
 #                       workflow's paths filter, never a message token.
 #                       Kept LAST: it inspects HEAD, so it passes only after the
 #                       commit that carries it has landed.
+#
+# SCOPE (QA-H3-7): every check above is a docs/consistency guard — `make verify`
+# never executes SDK code. That is deliberate: it must keep working on a bare
+# fresh clone with zero deps (POSIX shell + coreutils) and zero siblings.
+# The repo's only executable verification is the cross-language round-trip
+# suite in integration/roundtrip/, exposed here as:
+#
+#   make verify-roundtrip — runs bash integration/roundtrip/roundtrip.sh from the
+#                       repo root and PROPAGATES its exit code (no `|| true`).
+#                       It needs the sibling SDK repos next to this one on disk
+#                       (../sdk-python, ../sdk-go, ../sdk-typescript) plus
+#                       go/node/npx; when a sibling is missing the script's own
+#                       "requires the sibling SDK repos, which are missing: ..."
+#                       message reaches the user unchanged.
+#   make verify-all   — verify verify-roundtrip (composite: docs guards + code).
+#
+# CI runs the round-trip only through .github/workflows/roundtrip.yml, which is
+# path-filtered to integration/roundtrip/** — so a docs-only push gets green CI
+# that never executed code. That filter is a deliberate design, not an accident;
+# the naming above is what makes the difference visible. See CONTRIBUTING.md.
 
-.PHONY: verify verify-docs verify-specs verify-count verify-json-fences verify-commit-msg
+.PHONY: verify verify-docs verify-specs verify-count verify-json-fences verify-commit-msg verify-roundtrip verify-all
 
 verify: verify-docs verify-specs verify-count verify-json-fences verify-commit-msg
 	@echo "make verify: ALL PASS — umbrella repo is self-consistent"
+	@echo "make verify: SCOPE — docs + repo-consistency checks only (no code executed); code-level verification is 'make verify-roundtrip' (CI: roundtrip.yml)."
 
 verify-docs:
 	@echo "make verify: docs-link check"
@@ -73,3 +94,9 @@ verify-json-fences:
 verify-commit-msg:
 	@echo "make verify: commit-message skip-directive guard (HEAD)"
 	@sh scripts/check-ci-skip-tokens.sh
+
+verify-roundtrip:
+	@echo "make verify-roundtrip: cross-language round-trip code suite (needs the sibling SDK repos)"
+	bash integration/roundtrip/roundtrip.sh
+
+verify-all: verify verify-roundtrip
