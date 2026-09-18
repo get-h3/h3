@@ -101,11 +101,11 @@ A harness is H3-compliant when it passes all 46 tests in the [test battery](http
 
 | Language | Evidence | CI-verified | Published |
 |----------|----------|:-----------:|-----------|
-| Go (echo) | 46/46 — local battery run against the Go echo harness on :9191 | ✅ | source (`go get github.com/get-h3/sdk-go`) |
+| Go (echo) | 46/46 — foreman E2E tick #355 ran the battery against the Go echo harness on :9191 (p50 1.31ms / p95 45.93ms) | ✅ | source (`go get github.com/get-h3/sdk-go`) |
 | Python (echo) | 46/46 — local battery run | — | PyPI: `pip install h3-harness-sdk` |
 | TypeScript (echo) | 46/46 — local battery run | — | **not published on npm** (`npm view @get-h3/h3-harness-sdk` → E404) — install from source (GitHub dependency) |
 
-**CI-verified** means the run is captured in repo CI or a foreman E2E tick; Go is currently the only SDK with in-repo E2E evidence (tick #340 on :9191). Python and TypeScript pass locally but have no in-repo runnable CI evidence yet.
+**CI-verified** means the run is captured in repo CI or a foreman E2E tick; Go is currently the only SDK with in-repo E2E evidence (tick #355 on :9191). Python and TypeScript pass locally but have no in-repo runnable CI evidence yet.
 
 ## Development
 
