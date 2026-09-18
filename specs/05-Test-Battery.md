@@ -23,7 +23,7 @@ Test Battery (src/h3_shim/test_battery.py)
   │
   │── HTTP client ──► Harness Endpoint (localhost:9191)
   │
-  │── Runs 44 tests across 6 categories
+  │── Runs 46 tests across 6 categories
   │── Produces JSON report + terminal output
   │── Exit code 0 = all passing, non-zero = failures
 ```
@@ -42,10 +42,10 @@ Transport: REST
   Process - Basic Flows         8/8  ✅
   Process - Decision Types      6/6  ✅
   Result Handling               7/7  ✅
-  Error & Edge Cases           11/11 ✅
+  Error & Edge Cases           13/13 ✅
   Stress & Performance          5/5  ✅
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  TOTAL                        44/44 ✅  PASSED
+  TOTAL                        46/46 ✅  PASSED
 
 Report: ~/.hermes/cache/h3_test_report_20260712_223000.json
 ```
@@ -107,7 +107,7 @@ Report: ~/.hermes/cache/h3_test_report_20260712_223000.json
 | 4.6 | `result_error` | Harness handles `result.type: "error"` gracefully |
 | 4.7 | `result_wait_timeout` | Harness handles `result.type: "wait_timeout"` |
 
-### Category 5: Error & Edge Cases (10 tests)
+### Category 5: Error & Edge Cases (13 tests)
 
 | # | Test | What It Verifies |
 |---|---|---|
@@ -120,7 +120,10 @@ Report: ~/.hermes/cache/h3_test_report_20260712_223000.json
 | 5.7 | `no_tools_available` | `context.tools: []` — harness doesn't return `tool_call` |
 | 5.8 | `no_models_available` | `context.models: []` — harness doesn't return `llm_call` |
 | 5.9 | `cancel_mid_processing` | `POST /v1/cancel` returns 200, harness stops processing |
+| 5.9b | `cancel_unknown_session` | `POST /v1/cancel` for a nonexistent session returns 404 (any 4xx accepted) |
 | 5.10 | `session_not_found` | `GET /v1/sessions/nonexistent` returns 404 |
+| 5.11 | `session_status_completed` | A finished session reports `status: "completed"` (not `"active"`); asserted only when the harness both ends the session and emits a status |
+| 5.12 | `session_get_after_process` | `GET /v1/sessions/{id}` exists for a session that just accepted a process call: 200, echoed `session_id`, ISO-8601 `started_at` |
 
 ### Category 6: Stress & Performance (5 tests)
 

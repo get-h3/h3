@@ -9,7 +9,7 @@ to your agent over plain HTTP.
 This guide is for integrators who already HAVE an agent system and want to
 wire it into Hermes. It covers the harness side: exposing your agent as an
 H3 endpoint, translating its decisions into H3's Decision envelope, and
-proving compliance with the 44-test battery.
+proving compliance with the 46-test battery.
 
 If you instead want to install and manage the Hermes side (registering
 harnesses, routing sessions, the `hermes-h3` CLI), see the shim's own
@@ -139,7 +139,7 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install git+https://github.com/get-h3/shim
 ```
 
-Then run the 44-test compliance battery (6 categories — exact
+Then run the 46-test compliance battery (6 categories — exact
 `--categories` names: health, process, decisions, results, errors, stress)
 against your harness:
 
@@ -150,7 +150,7 @@ h3-test --endpoint http://localhost:9191 --json   # machine-readable
 
 | Exit | Meaning |
 |------|---------|
-| `0` | Compliant — the target is an H3 endpoint and all 44 checks passed. |
+| `0` | Compliant — the target is an H3 endpoint and all 46 checks passed. |
 | `1` | Compliance failure — the target answered `/v1/health` correctly but some protocol checks failed. Fix the harness (run with `--json` for per-test detail). |
 | `2` | NOT an H3 endpoint — connection refused, non-JSON body, HTTP ≥ 400, or a `/v1/health` payload missing required fields. This is not a protocol regression: check the URL and that the harness is running. |
 
@@ -159,7 +159,7 @@ your harness fails a check, diff your payloads against theirs.
 
 ## 6. SDKs and scaffolding
 
-| SDK | Install | Echo example (reference, passes 44/44) |
+| SDK | Install | Echo example (reference, passes 46/46) |
 |-----|---------|----------------------------------------|
 | Go | `go get github.com/get-h3/sdk-go` | `sdk-go/examples/echo` → `go run .` on :9191 |
 | Python | `pip install git+https://github.com/get-h3/sdk-python` | `sdk-python/src/h3_harness/examples/echo.py` |

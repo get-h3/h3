@@ -6,6 +6,8 @@ on:
     paths:
       - 'docs/**'
       - 'specs/**'
+      - 'scripts/**'
+      - '**.md'
   workflow_dispatch:
 
 permissions:
@@ -18,7 +20,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # GAP-072 — the compliance-test count has exactly ONE home (scripts/test-count.txt).
+  # This job fails the workflow when a current-state doc still quotes a retired
+  # count, or when the sibling battery's EXPECTED_TEST_COUNT drifts away from the
+  # canonical number, so a drifting count can never reach the published
+  # docs/badge. Gated before deploy on purpose: the badge IS the public contract.
+  count-guard:
+    name: Compliance-test count guard
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout umbrella repo
+        uses: actions/checkout@v4
+
+      # Best-effort, so the umbrella never blocks on a sibling's availability:
+      # enables the sibling-drift half of the guard (46 -> 47). If the checkout
+      # fails, the guard still runs the doc sweep and reports parity as skipped.
+      - name: Checkout sibling shim battery (parity source)
+        id: shim
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: get-h3/shim
+          path: .sibling-shim
+
+      - name: Verify the compliance-test count is single-sourced and current
+        env:
+          H3_SHIM_BATTERY: ${{ steps.shim.outcome == 'success' && '.sibling-shim/src/h3_shim/test_battery.py' || '' }}
+        run: sh scripts/check-test-count.sh
+
   deploy:
+    needs: count-guard
     runs-on: ubuntu-latest
     environment:
       name: github-pages

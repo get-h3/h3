@@ -9,10 +9,14 @@
 #                       resolves to a file that exists in the repo.
 #   2. spec-index     — every spec file under specs/ is listed in specs/_index.md,
 #                       and every spec listed in the index resolves to a real file.
+#   3. count          — the compliance-test count in scripts/test-count.txt is the
+#                       single source of truth: the sibling battery's
+#                       EXPECTED_TEST_COUNT must match it and no current-state doc
+#                       may still quote a retired count (GAP-072).
 
-.PHONY: verify verify-docs verify-specs
+.PHONY: verify verify-docs verify-specs verify-count
 
-verify: verify-docs verify-specs
+verify: verify-docs verify-specs verify-count
 	@echo "make verify: ALL PASS — umbrella repo is self-consistent"
 
 verify-docs:
@@ -42,3 +46,7 @@ verify-specs:
 	done; \
 	[ $$rc -eq 0 ] && echo "make verify: spec-index-vs-files check PASS"; \
 	exit $$rc
+
+verify-count:
+	@echo "make verify: compliance-test count guard"
+	@sh scripts/check-test-count.sh

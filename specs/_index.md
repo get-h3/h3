@@ -81,7 +81,7 @@ The table's Status column mirrors each spec's own header (`Spec` / `Complete`), 
 | `/spec/h3/protocol` | Endpoint contracts, decision types, error codes |
 | `/spec/h3/installer` | Install flow, version matrix, compatibility |
 | `/spec/h3/sdks` | Go/Python/TS SDKs, code generation |
-| `/spec/h3/test-battery` | 44 compliance tests, CI integration, region-style |
+| `/spec/h3/test-battery` | 46 compliance tests, CI integration, region-style |
 | `/spec/h3/shim` | Hermes-side code structure, integration points |
 
 ---

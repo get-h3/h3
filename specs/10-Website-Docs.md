@@ -21,7 +21,7 @@ get-h3.github.io/h3
 ├── How It Works         ← Animated sequence: Telegram → Hermes → H3 → Your Harness
 ├── Quickstart           ← Language picker (Go | Python | TypeScript) → copy-paste code
 ├── Protocol Reference   ← Full API docs (generated from OpenAPI)
-├── Test Battery         ← "Run 44 tests against your harness in 5 seconds"
+├── Test Battery         ← "Run 46 tests against your harness in 5 seconds"
 ├── SDKs                 ← Links to each SDK repo + npm/PyPI/Go badges
 ├── Compliance Badges    ← "Put this in your README to show you're H3-compliant"
 └── Community            ← Discord, GitHub discussions, X
@@ -119,14 +119,14 @@ Badge URL encodes pass count. Anyone can verify by running `h3-test` against the
 
 ```
 GET https://get-h3.github.io/h3/api/verify?repo=github.com/user/harness
-→ {"compliant": true, "protocol_version": "1.0", "tests_passed": 44, "tests_total": 44, "last_verified": "2026-07-12T22:30:00Z"}
+→ {"compliant": true, "protocol_version": "1.0", "tests_passed": 46, "tests_total": 46, "last_verified": "2026-07-12T22:30:00Z"}
 ```
 
 ### Badge Generation
 
 ```
 GET https://get-h3.github.io/h3/badge/compliant.svg
-→ SVG badge: "H3 v1.0 — 44/44 ✅"
+→ SVG badge: "H3 v1.0 — 46/46 ✅"
 ```
 
 ---

@@ -118,7 +118,7 @@ On request:
 |---|---|---|
 | `rate` | 10 decisions/sec | One human types ~0.3 messages/sec. 10/sec covers 30× burst headroom for tool-call loops |
 | `burst` | 30 | Three seconds of burst at default rate. Covers `delegate_task` fan-out (10+ concurrent decisions) |
-| `rate` (testing) | 100 | `h3-test` runs 43 decisions in <0.5s. 100/sec ensures no false-positive rate limiting during CI |
+| `rate` (testing) | 100 | `h3-test` runs 46 decisions in <0.5s. 100/sec ensures no false-positive rate limiting during CI |
 
 ### 3.3 Edge Cases
 
@@ -661,7 +661,7 @@ Add to `protocol/schemas/v1/error.json`:
 | RL-I-05 | CLI `rate-limit set` takes effect immediately | Next request uses new rate |
 | RL-I-06 | Session termination on turn limit | Harness receives `finished=true` + `error=SESSION_TURN_LIMIT` |
 | RL-I-07 | Session termination on cost limit | Harness receives `finished=true` + `error=SESSION_COST_LIMIT` |
-| RL-I-08 | `h3-test` runs at elevated rate (100/sec) | All 44 tests pass without 429 |
+| RL-I-08 | `h3-test` runs at elevated rate (100/sec) | All 46 tests pass without 429 |
 | RL-I-09 | Rate limit disabled → no enforcement | `enabled: false` → all requests pass |
 
 ### 10.3 Performance Benchmarks

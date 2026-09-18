@@ -159,13 +159,13 @@ npx tsx main.ts  # listens on :9191
 
 ## Step 3: Test the Harness
 
-The test battery is the gate. 44 tests across 6 categories. Exit code 0 = compliant.
+The test battery is the gate. 46 tests across 6 categories. Exit code 0 = compliant.
 
 ```bash
 h3-test --endpoint http://localhost:9191
 ```
 
-All 44 must pass. No exceptions.
+All 46 must pass. No exceptions.
 
 ## Step 4: Register the Harness
 
@@ -282,7 +282,7 @@ GET  /health      200 1ms
 
 ## Production Checklist
 
-- [ ] `h3-test --endpoint <url>` passes 44/44
+- [ ] `h3-test --endpoint <url>` passes 46/46
 - [ ] Harness logs every request with METHOD, path, status, duration
 - [ ] Health endpoint returns `{"status": "ok", "version": "...", "capabilities": [...]}`
 - [ ] Harness runs behind a process manager (systemd, Docker restart policy, k8s)

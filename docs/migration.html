@@ -534,7 +534,7 @@ sessions:
 <section class="block">
   <div class="card">
     <div class="step-title"><span class="step-num">6</span> Run the Test Battery</div>
-    <p>The H3 test battery validates 43 protocol behaviors. Run it against your harness to catch edge cases.</p>
+    <p>The H3 test battery validates 46 protocol behaviors. Run it against your harness to catch edge cases.</p>
 
     <pre><code>git clone https://github.com/get-h3/shim && cd shim
 pip install -e .
@@ -545,13 +545,13 @@ h3-test --endpoint http://localhost:9191
 # ✅ Process Flows ........... 8/8
 # ✅ Decision Types .......... 6/6
 # ✅ Result Handling ......... 7/7
-# ✅ Edge Cases .............. 11/11
+# ✅ Edge Cases .............. 13/13
 # ✅ Stress .................. 5/5
 # ─────────────────────────────
-# Score: 44/44</code></pre>
+# Score: 46/46</code></pre>
 
     <div class="callout">
-      <strong>Aim for 44/44 before going live.</strong> Each gap is a production edge case waiting to surface.
+      <strong>Aim for 46/46 before going live.</strong> Each gap is a production edge case waiting to surface.
       The test battery runs in &lt;5 seconds and catches protocol-level issues that manual testing misses.
     </div>
   </div>

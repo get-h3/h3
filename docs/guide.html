@@ -589,7 +589,7 @@ const app = new Hono(); app.route("/", createH3Router(echo)); export default app
         <div class="section-heading">
           <p class="section-kicker">Step 4</p>
           <h2>Run the compliance test battery</h2>
-          <p>The H3 test battery exercises 43 scenarios across 6 functional regions. Point it at your harness to verify protocol compliance.</p>
+          <p>The H3 test battery exercises 46 scenarios across 6 functional regions. Point it at your harness to verify protocol compliance.</p>
         </div>
 
         <div class="card step-card">
@@ -602,11 +602,11 @@ h3-test --endpoint http://localhost:9191</code></pre>
 pip install -e .
 h3-test --endpoint http://localhost:9191</textarea>
           </div>
-          <p style="margin-top:10px;">The test battery runs in under 5 seconds. You'll see each test pass/fail with a final score out of 43.</p>
+          <p style="margin-top:10px;">The test battery runs in under 5 seconds. You'll see each test pass/fail with a final score out of 46.</p>
         </div>
 
         <div class="callout">
-          <strong>Scoring 44/44?</strong>
+          <strong>Scoring 46/46?</strong>
           <span>Your harness is fully H3-compliant. Add the badge to your README and you're ready to swap brains. See <a href="index.html#compliance" style="color:#d5caff;">the compliance section</a> for badge URLs.</span>
         </div>
       </div>
@@ -651,7 +651,7 @@ hermes-h3 verify</textarea>
           <div class="check-item"><span class="icon">📖</span><span><strong>Read the protocol reference</strong> — every decision type, error code, and contract detail at <a href="protocol.html" style="color:#d5caff;">protocol.html</a></span></div>
           <div class="check-item"><span class="icon">🧠</span><span><strong>Add agent logic</strong> — replace the echo with <code>tool_call</code> decisions, <code>wait</code> loops, or <code>delegate</code> chains</span></div>
           <div class="check-item"><span class="icon">🔍</span><span><strong>Explore the SDK docs</strong> — Go <code>harness.Middleware</code>, Python <code>BaseHarness</code> hooks, TypeScript middleware at <a href="sdk.html" style="color:#d5caff;">sdk.html</a></span></div>
-          <div class="check-item"><span class="icon">🏷️</span><span><strong>Add a compliance badge</strong> — when you pass 44/44, show it at <a href="index.html#compliance" style="color:#d5caff;">H3#compliance</a></span></div>
+          <div class="check-item"><span class="icon">🏷️</span><span><strong>Add a compliance badge</strong> — when you pass 46/46, show it at <a href="index.html#compliance" style="color:#d5caff;">H3#compliance</a></span></div>
           <div class="check-item"><span class="icon">🔄</span><span><strong>Swap frameworks behind the harness</strong> — same H3 boundary, different agent runtime underneath</span></div>
         </div>
       </div>
