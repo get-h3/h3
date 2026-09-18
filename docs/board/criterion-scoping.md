@@ -142,3 +142,17 @@ make verify
 git show --stat HEAD
 # -> exactly 1 file changed: docs/board/criterion-scoping.md
 ```
+
+## Board id-reuse repair (tick #374, DF-H3PM-02)
+
+Rule: a board id holds exactly ONE finding. An id with more than one row may have at most one row
+whose `status` is not `duplicate`; every archived duplicate of a *different* finding gets a fresh id
+in its own family (`<PREFIX>-H3-<next free>`) and keeps `superseded_by` pointing at the surviving
+canonical row. `superseded_by` must never equal the row's own id.
+
+Detection: fingerprint each row by normalised `title` + `detail` — hex shas and digits stripped,
+whitespace collapsed, lowercased — and never by the bare id, which is exactly what collides. Two
+rows under one id with different fingerprints are two findings wearing one id.
+
+Re-id map applied (old -> new): DF-H3-1 -> DF-H3-18; DF-H3-2 -> DF-H3-19, DF-H3-20;
+DF-H3-3 -> DF-H3-21, DF-H3-22; QA-H3-1 -> QA-H3-10, QA-H3-11; QA-H3-2 -> QA-H3-12, QA-H3-13.
