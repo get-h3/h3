@@ -23,7 +23,7 @@ user message ──► Hermes (body) ──► shim loop ──► YOUR AGENT (b
                      └────── result/tools ──────────┘
 ```
 
-Your agent exposes five REST endpoints (OpenAPI source of truth:
+Your agent exposes six REST endpoints (OpenAPI source of truth:
 `get-h3/protocol` → `h3-protocol.yaml`):
 
 | Endpoint | Method | Purpose |
@@ -32,6 +32,7 @@ Your agent exposes five REST endpoints (OpenAPI source of truth:
 | `/v1/process` | POST | Give the agent a user message + context; it returns a `Decision`. |
 | `/v1/result` | POST | Report the outcome of the previous decision (tool output, LLM text). |
 | `/v1/cancel` | POST | Abort a running session. |
+| `/v1/sessions/{session_id}` | GET | Session metadata (`session_id`, `started_at`, `last_active`, `turn_count`, `status`); 404 for an unknown session. |
 | `/v1/sessions/{session_id}` | DELETE | Tear down a session's server-side state. |
 
 Any language works. The protocol is JSON over HTTP; the SDKs below generate
@@ -139,6 +140,84 @@ The shim drives the loop; your agent just answers it:
 
 The loop enforces a hard iteration cap (default 50) so a misbehaving harness
 cannot spin forever, and propagates cancellation through `/v1/cancel`.
+
+### 4.1 Worked example — the live round trip (curl)
+
+The transcript below was captured against the Go reference harness
+(`sdk-go/examples/echo`), so every response is copied verbatim and the field
+names are exactly what an integrator sees. The echo harness ends a session once
+it has seen two `/v1/result` calls, so the session fetched below — after one
+process turn and one result — is still `active`. The battery's own assertions on
+the same lifecycle, including the 404 for an unknown session, are in §5.1.
+
+Start the reference harness (`:9191`; `PORT` overrides the address) and wait for
+its log line:
+
+```bash
+cd sdk-go/examples/echo && go run .
+# h3 echo harness listening on :9191 (set PORT to override)
+```
+
+Liveness (`GET /v1/health`) — the payload doubles as the capability declaration
+described in §2:
+
+```bash
+curl -s http://localhost:9191/v1/health
+{"status":"ok","version":"1.0.0","transport":"rest","protocol_version":"1.0","capabilities":["text"]}
+```
+
+First turn (`POST /v1/process`) — carries the user message and returns a
+`Decision` (§3), here a `text` decision:
+
+```bash
+curl -s -X POST http://localhost:9191/v1/process \
+  -H 'Content-Type: application/json' \
+  -d '{"session_id":"s_walkthrough_01","message":{"role":"user","content":"hello from the integration guide","timestamp":"2026-09-18T14:00:00Z"},"identity":{"platform":"cli","chat_id":"local"},"context":{"history":[],"tools":[],"models":[],"config":{"max_iterations":50,"timeout_seconds":600},"session_state":{"turn_count":0,"total_tool_calls":0,"total_llm_calls":0,"cost_so_far":0,"started_at":"2026-09-18T14:00:00Z"}}}'
+{"decision":"text","decision_id":"echo-001","text":{"content":"Echo: hello from the integration guide","finished":true}}
+```
+
+Report the outcome (`POST /v1/result`) — the decision the harness returned is
+keyed by `decision_id`, and the response is itself the next decision:
+
+```bash
+curl -s -X POST http://localhost:9191/v1/result \
+  -H 'Content-Type: application/json' \
+  -d '{"session_id":"s_walkthrough_01","decision_id":"echo-001","result":{"type":"text_sent","success":true}}'
+{"decision":"text","decision_id":"echo-002","text":{"content":"Result received: echo-001","finished":true}}
+```
+
+Session metadata (`GET /v1/sessions/{session_id}`) — `turn_count` counts the
+process and result turns, and `current_decision` is the decision awaiting
+delivery:
+
+```bash
+curl -s http://localhost:9191/v1/sessions/s_walkthrough_01
+{"session_id":"s_walkthrough_01","started_at":"2026-09-18T17:18:59-05:00","last_active":"2026-09-18T17:18:59-05:00","turn_count":2,"status":"active","current_decision":"echo-002","current_decision_type":"text"}
+```
+
+Teardown (`DELETE /v1/sessions/{session_id}`) — what the shim sends when a
+session ends; the session's server-side state is gone afterwards:
+
+```bash
+curl -s -X DELETE http://localhost:9191/v1/sessions/s_walkthrough_01
+{"terminated":true,"session_id":"s_walkthrough_01"}
+```
+
+Unknown session — a `GET` for a session that never existed, and for the one
+deleted above, answers the same 404 with a machine-readable error code:
+
+```bash
+curl -s -i http://localhost:9191/v1/sessions/no-such-session
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+Date: Fri, 18 Sep 2026 22:18:59 GMT
+Content-Length: 86
+
+{"error":{"code":"SESSION_NOT_FOUND","message":"session not found: no-such-session"}}
+```
+
+Stop the harness (Ctrl-C) when the walkthrough is done — killing the process
+frees `:9191` for the `h3-test` run in §5.
 
 ## 5. Step 4 — prove compliance: `h3-test`
 
