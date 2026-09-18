@@ -39,8 +39,8 @@ Transport: REST
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   Health & Protocol             7/7  ✅
-  Process - Basic Flows         8/8  ✅
-  Process - Decision Types      6/6  ✅
+  Process Basic Flows           8/8  ✅
+  Decision Types                6/6  ✅
   Result Handling               7/7  ✅
   Error & Edge Cases           13/13 ✅
   Stress & Performance          5/5  ✅
@@ -73,8 +73,8 @@ Report: ~/.hermes/cache/h3_test_report_20260712_223000.json
 | 2.1 | `process_returns_decision` | `POST /v1/process` returns a valid Decision object |
 | 2.2 | `process_decision_has_id` | Every Decision has a unique `decision_id` |
 | 2.3 | `process_decision_has_type` | Decision has a valid `decision` field |
-| 2.4 | `process_text_finished_false` | Text decision with `finished: false` → next call is `/v1/result`. Convention: content containing **"do not finish"** (e.g. *"Just start a thought, do not finish it yet."*) must elicit `finished=false` | 
-| 2.5 | `process_text_finished_true` | Text decision with `finished: true` → harness accepts `/v1/result` with text_sent, returns `end`. Convention: a final-answer prompt (e.g. *"Give me the final answer in one short sentence."*) must elicit `finished=true` |
+| 2.4 | `process_text_finished_false` | Convention: content containing **"do not finish"** (the battery sends *"Just start a thought, do not finish it yet."*) must elicit a `text` decision with `finished=false` — the protocol's next call for that unfinished decision is `/v1/result`. The battery itself sends **no** `/v1/result` for this turn, and it passes (skipped) when the harness answers with a non-`text` decision |
+| 2.5 | `process_text_finished_true` | Convention: a final-answer prompt (the battery sends *"Give me the final answer in one short sentence."*) must elicit a `text` decision with `finished=true`. The battery sends no `/v1/result` for this turn and does not expect `end`; it passes (skipped) on a non-`text` decision |
 | 2.6 | `process_multiple_turns` | Harness handles 10-turn conversation without state corruption |
 | 2.7 | `process_session_isolation` | Two different `session_id` values don't leak state |
 | 2.8 | `process_preserves_history` | Messages from prior turns appear in `context.history`. Convention: the **decision envelope must echo a top-level `history` list** that does not shrink relative to the request's `context.history` (equal or larger accepted) |
@@ -83,6 +83,8 @@ Report: ~/.hermes/cache/h3_test_report_20260712_223000.json
 
 1. **History echo** — every decision response MAY carry a top-level `history` field mirroring the harness's conversation state. The battery (2.8) requires it: a list whose length is >= the `context.history` sent in the request. The Go/Python/TS SDK echo examples implement this by echoing the request history.
 2. **Streaming marker** — a `text` decision with `finished=false` signals a partial message (more text follows via `/v1/result`). The battery (2.4/2.5) drives this from prompt phrasing: messages containing the phrase "do not finish" must return `finished=false`; final-answer prompts must return `finished=true`. Echo harnesses implement this as a substring check on the incoming message content.
+
+> **Integrator view.** The harness-side reading of both conventions — the exact trigger strings, the skip behaviour on a non-`text` answer, the multi-turn / cancel contract, the per-category counts and the `h3-test` exit codes, each quoted to a `test_battery.py` / `cli.py` line — is in [`../docs/integration.md`](../docs/integration.md) §5.1 ("Conventions the battery enforces").
 
 ### Category 3: Process — Decision Types (6 tests)
 
@@ -119,7 +121,7 @@ Report: ~/.hermes/cache/h3_test_report_20260712_223000.json
 | 5.6 | `unicode_message` | Unicode/emoji content handled correctly |
 | 5.7 | `no_tools_available` | `context.tools: []` — harness doesn't return `tool_call` |
 | 5.8 | `no_models_available` | `context.models: []` — harness doesn't return `llm_call` |
-| 5.9 | `cancel_mid_processing` | `POST /v1/cancel` returns 200, harness stops processing |
+| 5.9 | `cancel_mid_processing` | `POST /v1/cancel` returns 200 for a session created by an unfinished-text turn (the battery opens the session with the *"do not finish"* prompt so it is still in flight, then cancels it). An unknown session must 404 — see 5.9b |
 | 5.9b | `cancel_unknown_session` | `POST /v1/cancel` for a nonexistent session returns 404 (any 4xx accepted) |
 | 5.10 | `session_not_found` | `GET /v1/sessions/nonexistent` returns 404 |
 | 5.11 | `session_status_completed` | A finished session reports `status: "completed"` (not `"active"`); asserted only when the harness both ends the session and emits a status |
