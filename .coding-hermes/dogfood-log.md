@@ -92,3 +92,11 @@ answers: "does this project actually work for a real user, and is it worth it?"
   + trust anchors; skills/h3-usage/SKILL.md 4 new pitfalls + 46-count fix.
 - Foreman: h3 enabled, 43200s cooldown; woken via PUT CooldownS=900 after
   5 new board rows (self-restores per cooldown-policy pin).
+
+## 2026-09-18 — dogfood tick h3-dogfood-2026-09-18-06-16-03
+- Verdict: SHIPPABLE (re-run of documented paths; prior 09-08 verdict holds).
+- Promise: fresh user can install shim from source, run an H3 harness, and pass the compliance battery per README quick start — HELD.
+- Real use: echo harness battery 46/46 exit 0 (p50 1.12ms); h3-test exit codes verified (0 compliant / 2 not-an-endpoint); scaffold --lang go + battery 46/46 with holder-attribution proof; scaffold --lang py on bunker 46/46 exit 0.
+- Bunker install: clone 4.0s, pip -e 17.4s, smoke 46/46 exit 0 (agent 7520803b, destroyed clean).
+- Friction (3): :9191 EADDRINUSE first-run on shared host (DF-H3-15); doc count drift 44/45/46 re-offense (DF-H3-16); first go mod tidy proxy fetch minutes (DF-H3-17 note).
+- New rows: DF-H3-15, DF-H3-16, DF-H3-17.
