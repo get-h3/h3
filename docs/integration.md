@@ -63,7 +63,8 @@ minimal compliant harness is `["text"]`.
 ```json
 {
   "session_id": "s_abc123",
-  "message": {"role": "user", "content": "Deploy the auth endpoint to staging"},
+  "message": {"role": "user", "content": "Deploy the auth endpoint to staging",
+              "timestamp": "2026-09-18T14:00:00Z"},
   "identity": {"platform": "telegram", "chat_id": "-1003310984808",
                "thread_id": "84802", "user_name": "Bane", "user_id": "6849342682"},
   "context": {
@@ -71,10 +72,17 @@ minimal compliant harness is `["text"]`.
     "tools": [{"name": "terminal", "description": "Execute shell commands", "parameters": {}}],
     "models": [{"name": "deepseek-v4-pro", "provider": "deepseek-foreman", "context_window": 128000}],
     "memory": "Last deployment used Docker Compose.",
-    "config": {"max_iterations": 50, "timeout_seconds": 600}
+    "config": {"max_iterations": 50, "timeout_seconds": 600},
+    "session_state": {"turn_count": 4, "total_tool_calls": 3, "total_llm_calls": 2,
+                      "cost_so_far": 0.0156, "started_at": "2026-09-18T13:55:00Z"}
   }
 }
 ```
+
+Every field list above is enforced by the JSON Schemas in `get-h3/protocol`
+→ `schemas/v1/` (`process-request.json` + `common.json`); this example is
+validated against them, and a payload missing any required field is rejected
+with a 400.
 
 Your agent replies with a `Decision` — a discriminator + `decision_id`
 (both REQUIRED) plus the type-specific payload:

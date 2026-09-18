@@ -48,6 +48,56 @@ h3-test --endpoint http://localhost:9191
 > `verify`, and more). The `hermes h3` plugin form requires H3 wired into a
 > live Hermes install (tracked as WIRING-01).
 
+## Make your first call
+
+A harness exposes five REST endpoints:
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/v1/health` | GET | Liveness + capabilities |
+| `/v1/process` | POST | Send a user message; the harness answers with a `Decision` |
+| `/v1/result` | POST | Report the outcome of the previous decision |
+| `/v1/cancel` | POST | Abort a running session |
+| `/v1/sessions/{session_id}` | DELETE | Tear down a session's server-side state |
+
+With a harness on `:9191` (see Quick Start), this is a complete first call. All
+four top-level objects are REQUIRED, `message.timestamp` is REQUIRED, and
+`context.session_state` must carry its five fields — a payload missing any of
+them is rejected with a 400:
+
+```bash
+curl -s http://localhost:9191/v1/process \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "session_id": "s_abc123",
+  "message": {"role": "user", "content": "Deploy the auth endpoint to staging",
+              "timestamp": "2026-09-18T14:00:00Z"},
+  "identity": {"platform": "telegram", "chat_id": "-1003310984808",
+               "thread_id": "84802", "user_name": "Bane", "user_id": "6849342682"},
+  "context": {
+    "history": [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}],
+    "tools": [{"name": "terminal", "description": "Execute shell commands", "parameters": {}}],
+    "models": [{"name": "deepseek-v4-pro", "provider": "deepseek-foreman", "context_window": 128000}],
+    "memory": "Last deployment used Docker Compose.",
+    "config": {"max_iterations": 50, "timeout_seconds": 600},
+    "session_state": {"turn_count": 4, "total_tool_calls": 3, "total_llm_calls": 2,
+                      "cost_so_far": 0.0156, "started_at": "2026-09-18T13:55:00Z"}
+  }
+}'
+```
+
+The harness answers with a `Decision` — verbatim body (HTTP 200) captured from
+the Go echo example on `:9191`:
+
+```json
+{"decision":"text","decision_id":"echo-001","history":[{"role":"user","content":"..."},{"role":"assistant","content":"..."}],"text":{"content":"Echo: Deploy the auth endpoint to staging","finished":true}}
+```
+
+The full contract — every endpoint, every field — lives in
+[`docs/integration.md`](docs/integration.md); the JSON Schemas in
+[get-h3/protocol](https://github.com/get-h3/protocol) are the single source of
+truth, and the examples in these docs are validated against them.
+
 ## Repositories
 
 | Repo | Purpose | Language |
