@@ -3,6 +3,16 @@ guards:
   lint: true
   tests: false         # umbrella repo — no test suite
   test_mode: diff
+  # gitreins 0.14.0 makes a zero-work diff (board-only commits, and the judge's
+  # pre-eval tier1 step which always runs against a clean index) a DEGRADED PASS
+  # that exits 2. With tier1 `on_fail: block` that both refused board-only
+  # commits and marked every judged verdict tier1 FAIL even when tier2 passed.
+  # This is the umbrella's normal commit shape — its tracked content is markdown
+  # plus the JSONL board, so "no Python files staged" is expected, not a defect.
+  # allow_skips is the engine's documented opt-in (what `gitreins init` writes
+  # for fresh repos); skipped gates stay named in the summary and the guard log.
+  # Same fix already landed in the sibling repos (shim DF3-H3-SHIM-5, sdk-python).
+  allow_skips: true
 
 pipeline:
   stages:
