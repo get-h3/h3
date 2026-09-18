@@ -3,6 +3,14 @@
 .vfs/graph/graph.db.wal
 .vfs/graph/graph.duckdb
 .vfs/graph/.last_warm
+.vfs/graph/.last_reconcile
+.vfs/graph/.parse_cache.json
+.vfs/.dirty
+
+# Dagger MCP runtime state (never commit — recreated by worker sessions)
+dagger.db
+dagger.db-shm
+dagger.db-wal
 
 # GitReins MCP runtime state (never commit)
 .gitreins/history/
