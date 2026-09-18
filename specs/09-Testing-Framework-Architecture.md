@@ -27,7 +27,7 @@ h3-test CLI
   │     ├── Region: Process Flows (8 tests)
   │     ├── Region: Decision Types (6 tests)
   │     ├── Region: Result Handling (7 tests)
-  │     ├── Region: Edge Cases (10 tests)
+  │     ├── Region: Error & Edge Cases (13 tests)
   │     └── Region: Stress (5 tests)
   │
   ├── H3Client            ← HTTP client → harness endpoint
@@ -111,20 +111,23 @@ result_error           → Handles result.type="error" gracefully
 result_wait_timeout    → Handles result.type="wait_timeout"
 ```
 
-### Region 5: Edge Cases (10 tests)
+### Region 5: Error & Edge Cases (13 tests)
 Tests error handling and boundary conditions.
 
 ```
-malformed_json         → 400 on bad JSON
-missing_session_id     → 400 when session_id missing
-unknown_decision_type  → Handles bad decision gracefully
-empty_message          → Empty content doesn't crash
-very_long_message      → 100KB message doesn't crash
-unicode_message        → Emoji/Unicode handled
-no_tools_available     → context.tools=[] → no tool_call returned
-no_models_available    → context.models=[] → no llm_call returned
-cancel_mid_processing  → POST /v1/cancel returns 200
-session_not_found      → GET nonexistent session → 404
+malformed_json           → 400 on bad JSON
+missing_session_id       → 400 when session_id missing
+unknown_decision_type    → Handles bad decision gracefully
+empty_message            → Empty content doesn't crash
+very_long_message        → 100KB message doesn't crash
+unicode_message          → Emoji/Unicode handled
+no_tools_available       → context.tools=[] → no tool_call returned
+no_models_available      → context.models=[] → no llm_call returned
+cancel_mid_processing    → POST /v1/cancel returns 200
+cancel_unknown_session   → cancel with unknown session_id → 404
+session_not_found        → GET nonexistent session → 404
+session_status_completed → session reports status='completed'
+session_get_after_process → GET session after process → 200 with session_id + started_at
 ```
 
 ### Region 6: Stress (5 tests)
@@ -218,7 +221,8 @@ Nothing is written to disk by default — the report goes to stdout. Redirect it
 
 The whole payload is `dataclasses.asdict(TestReport)` plus two fields the CLI adds
 (`all_passing`, `latency`). Captured verbatim from a live run against the Go echo
-example (46/46, exit code 0), trimmed in the middle:
+example (46/46, exit code 0); the `results` array is shortened to its first two
+entries so the block parses as JSON:
 
 ```json
 {
@@ -242,8 +246,7 @@ example (46/46, exit code 0), trimmed in the middle:
       "detail": "version='1.0.0', protocol_version='1.0'",
       "duration_ms": 0.9577800519764423,
       "category": "Health & Protocol"
-    },
-    ...
+    }
   ],
   "latency": {
     "min_ms": 0.74,
