@@ -142,17 +142,19 @@ cannot spin forever, and propagates cancellation through `/v1/cancel`.
 
 ## 5. Step 4 — prove compliance: `h3-test`
 
-Install the shim from source (the package is not on PyPI yet). Use a
-virtual environment — required on PEP 668-managed Pythons (Ubuntu 24.04+,
+Install the shim from source (the package is not on PyPI yet): clone the
+repository and install the checkout in editable mode. Use a virtual
+environment — required on PEP 668-managed Pythons (Ubuntu 24.04+,
 Debian 12+), where a bare `pip install` fails with
 externally-managed-environment:
 
 ```bash
+git clone https://github.com/get-h3/shim && cd shim
 python3 -m venv .venv && source .venv/bin/activate
-pip install git+https://github.com/get-h3/shim
+pip install -e .
 ```
 
-`pip install` (either form) writes the two console scripts — `h3-test` and
+`pip install -e .` writes the two console scripts — `h3-test` and
 `hermes-h3` — into that venv's `bin/`. Activation is **shell-local**: it adds
 them to PATH for the current shell only, so a fresh terminal (or a shell opened
 before the install) has neither and fails with `h3-test: command not found`.
