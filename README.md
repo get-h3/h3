@@ -204,8 +204,9 @@ This project uses **coding-hermes** foremen for spec-driven autonomous developme
 
 **Verification:** the scope is deliberately split in two.
 
-- `make verify` — docs + repo-consistency guards **only** (docs-link, spec-index-vs-files, compliance-test count, json-fence payload, commit-message skip-directive). Zero dependencies, so it runs on a fresh clone, and it **executes no SDK code**.
+- `make verify` — docs + repo-consistency guards **only** (docs-link, spec-index-vs-files, compliance-test count, json-fence payload, QA-target contract, commit-message skip-directive). Zero dependencies, so it runs on a fresh clone, and it **executes no SDK code**.
 - `make verify-roundtrip` — the cross-language round-trip **code** suite (Python → Go, Go → Python, Go → TypeScript). Requires the sibling SDK repos (`sdk-python`, `sdk-go`, `sdk-typescript`) on disk next to this one, plus `go`/`node`/`npx`; see [CONTRIBUTING.md](CONTRIBUTING.md).
+- `make verify-qa-target` — asserts the QA/verification **target** is a real checkout of this repo, and takes a candidate directory as an argument so a runner can pre-flight its own target. A target path that does not exist, is not a git work tree, or is a sibling repo fails with a non-zero exit instead of degrading into an empty result that reads as clean — zero cells is UNVERIFIED, never a pass. Runs as part of `make verify`; its negative proof is `make verify-qa-target-selftest`; the contract is [docs/qa-target-contract.md](docs/qa-target-contract.md).
 - `make verify-all` — both, in order.
 - CI runs the round-trip only via `.github/workflows/roundtrip.yml`, which is **path-filtered to `integration/roundtrip/**`** — so a docs-only push gets green CI that never executed that suite. A green check is not by itself proof that code ran; check which workflow actually fired.
 

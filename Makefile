@@ -20,7 +20,15 @@
 #                       board row mis-reported as "not valid JSON": the payload was
 #                       fine, a non-greedy extractor truncated it at a mid-line ```
 #                       inside a string value. The guard also fails an unclosed fence.
-#   5. commit-msg     — the HEAD commit message carries no GitHub workflow-skip
+#   5. qa-target      — the QA/verification target of this umbrella must be a
+#                       real checkout of THIS repo (QA-H3-1). A path that does
+#                       not exist, is not a work tree, or is a sibling repo
+#                       fails here instead of degrading into an empty result
+#                       that reads as clean: zero cells is UNVERIFIED, never a
+#                       pass. The guard also takes a candidate directory as an
+#                       argument, so a runner can pre-flight its own target.
+#                       Negative proof: make verify-qa-target-selftest.
+#   6. commit-msg     — the HEAD commit message carries no GitHub workflow-skip
 #                       directive (H3-CI-001). GitHub matches one ANYWHERE in the
 #                       message of the pushed head commit — prose included — so a
 #                       board subject that merely mentions it ("NO [ci skip]: ...")
@@ -29,9 +37,11 @@
 #                       Kept LAST: it inspects HEAD, so it passes only after the
 #                       commit that carries it has landed.
 #
-# SCOPE (QA-H3-7): every check above is a docs/consistency guard — `make verify`
-# never executes SDK code. That is deliberate: it must keep working on a bare
-# fresh clone with zero deps (POSIX shell + coreutils) and zero siblings.
+# SCOPE (QA-H3-7): every check above is a docs/repo-consistency guard — `make
+# verify` never executes SDK code (the qa-target check inspects the checkout's
+# identity, not its code). That is deliberate: it must keep working on a bare
+# fresh clone with zero deps (POSIX shell + coreutils + git — which the
+# commit-msg guard already required) and zero siblings.
 # The repo's only executable verification is the cross-language round-trip
 # suite in integration/roundtrip/, exposed here as:
 #
@@ -49,9 +59,9 @@
 # that never executed code. That filter is a deliberate design, not an accident;
 # the naming above is what makes the difference visible. See CONTRIBUTING.md.
 
-.PHONY: verify verify-docs verify-specs verify-count verify-json-fences verify-commit-msg verify-roundtrip verify-all
+.PHONY: verify verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-qa-target-selftest verify-commit-msg verify-roundtrip verify-all
 
-verify: verify-docs verify-specs verify-count verify-json-fences verify-commit-msg
+verify: verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-commit-msg
 	@echo "make verify: ALL PASS — umbrella repo is self-consistent"
 	@echo "make verify: SCOPE — docs + repo-consistency checks only (no code executed); code-level verification is 'make verify-roundtrip' (CI: roundtrip.yml)."
 
@@ -90,6 +100,14 @@ verify-count:
 verify-json-fences:
 	@echo "make verify: json-fence payload guard"
 	@sh scripts/check-json-fences.sh
+
+verify-qa-target:
+	@echo "make verify: QA target contract guard (QA-H3-1)"
+	@sh scripts/check-qa-target.sh
+
+verify-qa-target-selftest:
+	@echo "make verify-qa-target-selftest: negative proof for the QA target guard (QA-H3-1)"
+	@sh scripts/check-qa-target-selftest.sh
 
 verify-commit-msg:
 	@echo "make verify: commit-message skip-directive guard (HEAD)"

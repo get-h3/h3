@@ -48,10 +48,10 @@ TypeScript phase runs through `npx tsx`).
 
 `make verify` (the zero-dependency target that runs on a fresh clone) is a
 docs + repo-consistency check only: docs-link resolution, spec-index vs. files,
-the canonical compliance-test count, json-fence payloads, and the
-commit-message skip-directive guard. It executes **no SDK code** — a green
-`make verify` on a bare clone exercises none of the round-trip suite above. Use
-`make verify-all` when you want both in one command.
+the canonical compliance-test count, json-fence payloads, the QA-target
+contract guard, and the commit-message skip-directive guard. It executes **no
+SDK code** — a green `make verify` on a bare clone exercises none of the
+round-trip suite above. Use `make verify-all` when you want both in one command.
 
 ### Why CI only runs this on `integration/roundtrip/**`
 
@@ -78,6 +78,25 @@ The cross-repo task board is `.coding-hermes/board/tasks.jsonl` (JSONL canonical
 - **h3-test** — 46-test compliance battery across 6 categories
 - **roundtrip.sh** — cross-language wire format verification
 - **redocly lint** — OpenAPI schema validation
+
+### Targeting this repo for QA / verification
+
+The QA/verification target of the `h3` project is **this repository**. Resolve
+it from the checkout itself (`git rev-parse --show-toplevel`) or from the
+owning row's `workdir` in `~/.hermes/coding-hermes/scheduler.db` — never by
+turning a project name into `/home/<user>/<project>`, which is how a QA battery
+once targeted a path that does not exist and drove zero cells (row `QA-H3-1`).
+
+Validate a target before recording any QA cell:
+
+```bash
+sh scripts/check-qa-target.sh <candidate-dir>   # 0 = this repo; non-zero = not a valid target
+make verify-qa-target                           # same check against this checkout
+```
+
+An empty, no-cell QA result is **UNVERIFIED — never a pass**. Full contract and
+the reproducible real-target verification commands:
+[docs/qa-target-contract.md](docs/qa-target-contract.md).
 
 ## Commit messages and CI
 
