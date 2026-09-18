@@ -84,3 +84,12 @@ tasks:
   status: complete
   created_at: '2026-08-21T04:10:29.737851+00:00'
   completed_at: '2026-08-21T04:12:55.600543+00:00'
+- id: h3-pm-003-commit-repo
+  title: Add commit_repo provenance to cross-repo board rows
+  criteria:
+  - Add commit_repo to the board schema and backfill the six identified cross-repo
+    rows with shim; preserve all untouched JSONL lines; verify every referenced hash
+    resolves in get-h3/shim and make verify passes
+  status: complete
+  created_at: '2026-09-18T12:55:35.313410+00:00'
+  completed_at: '2026-09-18T13:01:05.884366+00:00'
