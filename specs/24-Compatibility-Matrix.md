@@ -53,6 +53,27 @@ This spec defines the compatibility matrix architecture: version negotiation on 
 | SDK TypeScript | sdk-typescript npm package | `package.json` |
 | Harness | User-written code | Self-describes via `/v1/health` |
 
+### 1.3 Implementation Status
+
+The compatibility tooling this spec names is **not implemented**. Verified against the
+six `get-h3` repositories on 2026-09-18:
+
+| Artifact | Section | Status |
+|----------|---------|--------|
+| `h3-test --compat` / `--compat-check` flag | §4.4, §6.1 | ❌ Not implemented — the shipped CLI accepts only `--endpoint`, `--json`, `--categories`, `--version` |
+| `h3 migrate` / `h3 compatibility` command families | §6.2, §9, §12 | ❌ Not implemented — the `hermes-h3` group ships `test`, `list`, `install`, `uninstall`, `verify`, `scaffold`, `route`, `pre-update-check`, `set-default` |
+| Compatibility CI workflow (`compat-matrix`) | §5.3, §7.1 | ❌ Not implemented — no workflow in any of the six repos runs a multi-version matrix |
+| `scripts/build-compat.sh` | §7.1 | ❌ Not implemented — no such path in any of the six repos |
+| Compatibility badge | §7.2 | ❌ Not implemented — no compatibility badge and no badge endpoint (the repo ships only the static conformance SVGs in `docs/badge/`) |
+| `scripts/check-compat.sh --block-on-failure` gate | §7.3 | ❌ Not implemented — `protocol/.github/workflows/release.yml` has no compatibility step |
+| SDK `CheckCompatibility` helpers | §8 | ❌ Not implemented — no such symbol in sdk-go, sdk-python or sdk-typescript |
+
+Everything in the table is **planned design intent** for the protocol-v2 migration —
+specified here so the work can be scoped, not a description of shipped CI. Each section
+that names one of those artifacts carries the same marker inline (§4.4, §5.3, §6.1, §6.2,
+§7.1–§7.3, §8, §9, §12). What CI actually gates on today is the single-version
+compliance battery — `h3-test --endpoint <url>`, 46 tests (specs/09 §6).
+
 ---
 
 ## 2. Versioning Scheme
@@ -211,7 +232,7 @@ Deprecation notices MUST be published on ALL channels simultaneously:
 2. **Release notes** — GitHub/GitLab release description
 3. **Website (get-h3.github.io/h3)** — Version compatibility table
 4. **Shim startup** — Log warning on first connect with deprecated version
-5. **`h3-test`** — `--compat-check` flag that warns on deprecated versions
+5. **`h3-test`** — a `--compat-check` flag that warns on deprecated versions is **planned, not implemented** (§6.1); the shipped CLI has no such flag
 
 ---
 
@@ -239,11 +260,15 @@ Deprecation notices MUST be published on ALL channels simultaneously:
 | v1 SDK → v2 protocol | ✅ Full backward compat | SDK types unchanged; adapter on shim side |
 | v2 SDK ↔ v1 harness | ❌ Not supported | Both sides must speak v1 or shim must adapt |
 
-### 5.3 Test Matrix
+### 5.3 Test Matrix (planned — not implemented)
 
-Every release MUST pass the full compatibility test matrix:
+No release currently runs this matrix: the workflow that would consume it does not exist
+(§7.1), so it is **design intent** for the protocol-v2 migration rather than a release
+condition.
 
 ```yaml
+# PLANNED — design reference only. No workflow loads this file, no release is gated on
+# it, and the gate CI runs today is the 46-test compliance battery (specs/09 §6).
 # compat-matrix.yml — GitHub Actions matrix strategy
 compat_matrix:
   protocol_versions: [v1, v2]
@@ -264,24 +289,36 @@ compat_matrix:
 
 ## 6. Migration Tooling
 
-### 6.1 `h3-test --compat` Command
+### 6.1 `h3-test --compat` Command (planned — not implemented)
 
-Extended `h3-test` with compatibility mode:
+> ⚠️ **Planned — not implemented.** No `--compat` flag exists: `h3-test --help` lists only
+> `--endpoint`, `--json`, `--categories` and `--version`. Every form below is **design
+> intent** and fails today with `unrecognized arguments`. Nothing in CI, and no release,
+> may depend on it until it ships (§7).
 
 ```bash
+# PLANNED — the --compat forms below do not exist; kept as the intended surface.
+
 # Test against a specific protocol version
-h3-test --endpoint http://localhost:9191 --compat --protocol v1
+#   h3-test --endpoint http://localhost:9191 --compat --protocol v1
 
 # Test all compatible combinations
-h3-test --endpoint http://localhost:9191 --compat --all-versions
+#   h3-test --endpoint http://localhost:9191 --compat --all-versions
 
 # Generate compatibility report
-h3-test --compat --report compat-report.json
+#   h3-test --compat --report compat-report.json
+
+# Runnable today — the shipped CLI's machine-readable report (specs/09 §5):
+h3-test --endpoint http://localhost:9191 --json > report.json
 ```
 
-### 6.2 Migration CLI (`h3 migrate`)
+### 6.2 Migration CLI (`h3 migrate`) — planned, not implemented
+
+> ⚠️ **Planned — not implemented.** There is no `migrate` command in the `hermes-h3`
+> group (see §1.3). The surface below is the intended shape, not a runnable CLI.
 
 ```
+# PLANNED — no `h3 migrate` command exists yet
 h3 migrate check           # Check current version compatibility status
 h3 migrate plan v1→v2      # Generate migration plan
 h3 migrate apply plan      # Apply migration plan
@@ -334,11 +371,22 @@ When a migration is rolled back, the shim must gracefully downgrade active sessi
 
 ## 7. CI Integration
 
-### 7.1 Compatibility CI Workflow
+> ⚠️ **Nothing in this section is implemented.** No repository under the `get-h3`
+> organisation has a compatibility workflow, a `scripts/build-compat.sh`, a
+> `scripts/check-compat.sh`, a compatibility badge, or a release step that consults a
+> compatibility run (verified 2026-09-18). Section 7 is design intent for the protocol-v2
+> migration: read every command below as a plan, not as something to run.
 
-A dedicated GitHub Actions workflow runs the full compatibility matrix on every protocol release:
+What runs today is the single-version compliance battery — `h3-test --endpoint <url>`
+(46 tests, specs/09 §6) — in the SDK and shim CI workflows.
+
+### 7.1 Compatibility CI Workflow (planned — not implemented)
+
+A dedicated GitHub Actions workflow is planned to run the full compatibility matrix on every protocol release. No such workflow exists in any repo yet:
 
 ```yaml
+# PLANNED — design reference only. Do not add this file to a repository until the
+# surface in §6.1 ships: it invokes a script and a CLI flag that do not exist.
 name: H3 Compatibility Matrix
 on:
   release:
@@ -355,10 +403,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build compatible versions
+        # PLANNED — ./scripts/build-compat.sh does not exist in any get-h3 repo
         run: ./scripts/build-compat.sh ${{ matrix.protocol }} ${{ matrix.shim }}
       - name: Run compatibility tests
+        # PLANNED — no --compat flag in the shipped h3-test (§6.1)
         run: h3-test --endpoint http://localhost:9191 --compat --protocol ${{ matrix.protocol }}
       - name: Generate report
+        # PLANNED — same missing --compat flag
         run: h3-test --compat --report compat-report-${{ matrix.protocol }}.json
       - uses: actions/upload-artifact@v4
         with:
@@ -366,27 +417,48 @@ jobs:
           path: compat-report-*.json
 ```
 
-### 7.2 Compatibility Badge
+### 7.2 Compatibility Badge (planned — not implemented)
 
-A GitHub badge in every repo README shows the current compatibility status:
+A GitHub badge in every repo README is planned to show the current compatibility status.
+**No compatibility badge and no badge endpoint exist today**: the umbrella repo ships
+only the static conformance SVGs in `docs/badge/` (specs/25), and there is no `docs/api/`
+path for shields.io to read, so the snippet below renders nothing — do not paste it into
+a README yet:
 
 ```
+# PLANNED — the /api/compat-badge/h3 endpoint does not exist
 [![Compatibility](https://img.shields.io/endpoint?url=https://get-h3.github.io/h3/api/compat-badge/h3)](https://get-h3.github.io/h3/#compat)
 ```
 
-The badge is generated from the latest CI compat-matrix run.
+Once §7.1 ships, the badge would be generated from the latest CI compat-matrix run.
 
-### 7.3 Pre-Release Gate
+### 7.3 Pre-Release Gate (planned — not implemented)
 
-No protocol release may proceed with a RED compatibility status. The release workflow checks the latest compat CI run before publishing:
+**Planned — not implemented. No release is gated on compatibility today.**
+`protocol/.github/workflows/release.yml` contains no compatibility step (it validates the
+schemas, runs the round-trip suite, publishes the GitHub release and dispatches the SDK
+updates), and `./scripts/check-compat.sh` exists in none of the six repos — the command
+below fails with `No such file or directory`. The intended gate, once §7.1 ships:
 
 ```bash
+# PLANNED — ./scripts/check-compat.sh does not exist and is not wired into any release
+# workflow. Do not add this line to a release checklist yet.
 ./scripts/check-compat.sh --block-on-failure
 ```
+
+Until then a protocol release is gated on schema validation and the round-trip suite
+(`protocol/.github/workflows/release.yml`); the SDK repos are separately gated by their
+own CI running the compliance battery. Neither is a multi-version compatibility gate.
 
 ---
 
 ## 8. SDK Contracts
+
+> ⚠️ **Planned — not implemented.** None of the three helpers below exists in the SDKs
+> today: there is no `CheckCompatibility`, `check_compatibility` or
+> `checkCompatibility` symbol in sdk-go, sdk-python or sdk-typescript, and the
+> negotiation headers they read (§3.1) are not emitted by any shipped component. They
+> describe the intended shape once the compatibility surface ships.
 
 ### 8.1 Go — Compatibility Check
 
@@ -453,18 +525,25 @@ async function checkCompatibility(
 
 ## 9. CLI Surface
 
-### 9.1 `h3 compatibility` Command
+> ⚠️ **Planned — not implemented.** The `hermes-h3` group ships `test`, `list`,
+> `install`, `uninstall`, `verify`, `scaffold`, `route`, `pre-update-check` and
+> `set-default`. Neither `h3 compatibility` nor `h3 migrate` exists yet — every command
+> below is design intent (§1.3).
+
+### 9.1 `h3 compatibility` Command (planned)
 
 ```
+# PLANNED — not implemented
 h3 compatibility check [--endpoint URL]     # Check harness protocol version
 h3 compatibility matrix                     # Show full version support table
 h3 compatibility policy                     # Show deprecation policy
 h3 compatibility report                     # Generate compatibility report
 ```
 
-### 9.2 `h3 migrate` Command (detailed)
+### 9.2 `h3 migrate` Command (detailed — planned)
 
 ```
+# PLANNED — not implemented
 h3 migrate check                            # Show current+latest versions
 h3 migrate plan [--from v1] [--to v2]       # Generate migration plan
 h3 migrate apply <plan-file>                # Execute migration plan
@@ -533,6 +612,7 @@ h3 migrate dry-run                          # Validate plan without executing
 ### 12.1 v1 → v2 Migration Steps
 
 ```
+# PLANNED — the `h3 migrate` commands this guide calls are not implemented (§6.2, §9.2)
 Phase 1: Audit
   └── h3 migrate check → verify current version
   └── h3 migrate plan v1→v2 → review breaking changes
@@ -566,6 +646,9 @@ Phase 6: Cleanup (after sunset)
 ### 12.2 Rollback Procedure (v2 → v1)
 
 ```
+# PLANNED — none of the commands below exists yet (`--protocol` is not an h3-test flag;
+# `h3 migrate` and `h3 compatibility` are unimplemented — §6.2, §9.2). Verify with the
+# shipped surface instead: h3-test --endpoint http://localhost:9191 --json
 1. h3 migrate rollback
 2. Verify: h3-test --endpoint http://localhost:9191 --protocol v1
 3. Verify: h3 compatibility check --endpoint http://localhost:9191
@@ -593,7 +676,7 @@ Phase 6: Cleanup (after sunset)
 | Version negotiation | <5ms | Time from connect to negotiated version selected |
 | Adapter (upgrade) | <1ms | v1→v2 field transformation |
 | Adapter (downgrade) | <1ms | v2→v1 field stripping |
-| Compat CI matrix (full) | <30m | All supported combinations |
+| Compat CI matrix (full) — planned, §7.1 | <30m | All supported combinations |
 | Migration plan generation | <10s | Scanning all components |
 
 ---
