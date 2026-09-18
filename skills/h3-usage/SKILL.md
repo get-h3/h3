@@ -45,8 +45,20 @@ Error shape: `{"error": {"code", "message", "details"}}` (codes in specs/02 §9)
   ```bash
   uv venv .venv
   uv pip install --python .venv/bin/python -e $HOME/get-h3/shim
-  # → gives you h3-test and hermes-h3
+  # → installs h3-test + hermes-h3 into ./.venv/bin — NOT your global PATH
   ```
+- **`h3-test` / `hermes-h3` are venv console scripts, and activation is
+  shell-local (DF-H3-5).** `uv venv` (or `python3 -m venv`) plus the install
+  above puts both scripts in the venv's `bin/`; nothing is installed globally
+  (`hermes-h3-shim` is not on PyPI). A **new terminal has neither** — it fails
+  with `h3-test: command not found`. In a fresh shell pick one, all equivalent:
+  ```bash
+  source .venv/bin/activate                 # re-activate (run from the venv's directory)
+  export PATH="$PWD/.venv/bin:$PATH"        # or export the venv bin dir once per shell
+  .venv/bin/h3-test --endpoint http://localhost:9191   # or call the script by explicit path
+  ```
+  Every bare `h3-test` / `hermes-h3` in this skill assumes one of those is in
+  effect for the current shell.
 - The CLI binary is **`hermes-h3`**, not `hermes h3` (that form needs the
   plugin wired into live Hermes — WIRING-01, still open).
 - Local SDK development only: editable install with

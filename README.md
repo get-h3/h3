@@ -34,6 +34,24 @@ cd sdk-go/examples/echo && go run .
 h3-test --endpoint http://localhost:9191
 ```
 
+> **`h3-test` and `hermes-h3` live inside `shim/.venv/bin` — a new terminal does
+> not have them.** `pip install` puts both console scripts in that venv and
+> `source .venv/bin/activate` adds them to PATH **for that shell only**; there is
+> no global install (the package is not on PyPI). So in a fresh shell — or any
+> shell that has since changed directory — pick one; the paths below are
+> absolute, so they work from anywhere:
+>
+> ```bash
+> source /path/to/shim/.venv/bin/activate               # re-activate (the shim checkout you cloned)
+> export PATH="/path/to/shim/.venv/bin:$PATH"           # or put the venv on PATH, no activation
+> /path/to/shim/.venv/bin/h3-test --endpoint http://localhost:9191   # or call the script by path
+> ```
+>
+> All three are equivalent; the exported PATH and the explicit path work from
+> every directory and need no activation. The scaffold block below still needs
+> the CLI on PATH (it runs `hermes-h3`, then `h3-test` from inside the generated
+> `h3-harness-go/`):
+
 46 tests — 6 categories — exit code 0 means your harness is H3-compliant.
 
 Or scaffold a new harness in 30 seconds:

@@ -152,6 +152,19 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install git+https://github.com/get-h3/shim
 ```
 
+`pip install` (either form) writes the two console scripts — `h3-test` and
+`hermes-h3` — into that venv's `bin/`. Activation is **shell-local**: it adds
+them to PATH for the current shell only, so a fresh terminal (or a shell opened
+before the install) has neither and fails with `h3-test: command not found`.
+There is no global install — the package is not on PyPI. In a new shell pick one
+of the three, all equivalent:
+
+```bash
+source .venv/bin/activate                            # re-activate (run from the venv's directory)
+export PATH="/path/to/shim/.venv/bin:$PATH"          # or export the venv's bin dir once per shell
+/path/to/shim/.venv/bin/h3-test --endpoint http://localhost:9191   # or call the script by path
+```
+
 Then run the 46-test compliance battery (6 categories — exact
 `--categories` names: health, process, decisions, results, errors, stress)
 against your harness:
@@ -290,6 +303,10 @@ Or scaffold a fresh harness project:
 hermes-h3 scaffold --lang go     # or py / ts
 cd h3-harness-go && go mod tidy && go run .
 ```
+
+> `hermes-h3` is the same venv console script as `h3-test` — in a fresh shell see
+> the three invocation forms in §5 (re-activate, PATH export, or the explicit
+> `/path/to/shim/.venv/bin/hermes-h3` path) before running this block.
 
 > **Echo, then scaffold — one at a time.** The Go echo example and a freshly
 > scaffolded Go harness both bind `:9191`; stop one (Ctrl-C) before starting the
