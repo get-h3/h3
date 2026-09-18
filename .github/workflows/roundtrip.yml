@@ -5,10 +5,12 @@ on:
     branches: [main]
     paths:
       - "integration/roundtrip/**"
+      - ".github/workflows/roundtrip.yml"
   pull_request:
     branches: [main]
     paths:
       - "integration/roundtrip/**"
+      - ".github/workflows/roundtrip.yml"
   workflow_dispatch:
   repository_dispatch:
     types: [protocol-updated]
