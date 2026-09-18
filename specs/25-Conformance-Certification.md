@@ -82,8 +82,8 @@ The canonical badge is a signed JSON document. The SVG image is derived from it.
     "version": "1.0.0"
   },
   "results": {
-    "total": 44,
-    "passed": 44,
+    "total": 46,
+    "passed": 46,
     "failed": 0,
     "duration_ms": 180,
     "regions": {
@@ -91,7 +91,7 @@ The canonical badge is a signed JSON document. The SVG image is derived from it.
       "process_flows": {"passed": 8, "total": 8},
       "decision_types": {"passed": 6, "total": 6},
       "result_handling": {"passed": 7, "total": 7},
-      "edge_cases": {"passed": 10, "total": 10},
+      "edge_cases": {"passed": 13, "total": 13},
       "stress": {"passed": 5, "total": 5}
     }
   },

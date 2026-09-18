@@ -14,7 +14,10 @@
 #      get-h3/shim out into a subdirectory and points this at it).
 #   c. stale-literal sweep — no current-state doc may still advertise the old
 #      counts ("44/44", "44 tests", "out of 43", ...); prints file:line for each
-#   d. PASS summary naming the canonical count
+#   d. spec arithmetic — the per-category lists in specs/05 and specs/25 and the
+#      report summary block in specs/25 must add up to / agree with the count
+#      (a bare JSON integer or a wrong region count slips past a grep)
+#   e. PASS summary naming the canonical count
 #
 # Exit codes: 0 = pass, 1 = drift, 2 = guard misconfigured (bad/missing inputs).
 # Zero dependencies: POSIX sh + coreutils + grep. No venv, no network.
@@ -96,6 +99,58 @@ if [ "$HITS" -ne 0 ]; then
     exit 1
 fi
 
-# ---- (d) PASS summary -----------------------------------------------------
+# ---- (d) spec count arithmetic --------------------------------------------
+# The stale-literal sweep (c) only catches the retired STRINGS ("44/44", ...).
+# Two drift shapes slip past it, and BOTH shipped once (tick #355 tier2 judge
+# FAIL, verdict d6c849f4):
+#   * a JSON count field carrying the old number ("total": 44 / "passed": 44) —
+#     a bare integer, so no literal from (c) matches it;
+#   * a per-category list that no longer SUMS to the canonical count
+#     (edge_cases 10 where the battery has 13 -> the regions summed to 43).
+# So: both per-category lists and the report summary block must add up / agree.
+SPEC05="$ROOT/specs/05-Test-Battery.md"
+SPEC25="$ROOT/specs/25-Conformance-Certification.md"
+
+sum_categories_05() {
+    awk '/✅/ && !/TOTAL/ {
+           if (match($0, /[0-9]+\/[0-9]+/)) {
+             s = substr($0, RSTART, RLENGTH); split(s, a, "/"); sum += a[1] + 0
+           }
+         } END { print sum + 0 }' "$SPEC05"
+}
+
+sum_regions_25() {
+    awk -F'"total": ' '
+         /"(health_protocol|process_flows|decision_types|result_handling|edge_cases|stress)":/ {
+           v = $2; gsub(/[^0-9].*/, "", v); sum += v + 0
+         } END { print sum + 0 }' "$SPEC25"
+}
+
+spec_sum_ok() {   # $1 file, $2 label, $3 observed sum
+    if [ "$3" != "$CANON" ]; then
+        echo "FAIL: $2 sums to $3, but the canonical compliance-test count is $CANON." >&2
+        echo "      Update the per-category numbers (and the TOTAL row) in $1." >&2
+        exit 1
+    fi
+    echo "check-test-count: $2 sums to $CANON"
+}
+
+if [ -f "$SPEC05" ]; then
+    spec_sum_ok "specs/05-Test-Battery.md" "specs/05 category list" "$(sum_categories_05)"
+fi
+
+if [ -f "$SPEC25" ]; then
+    spec_sum_ok "specs/25-Conformance-Certification.md" "specs/25 region list" "$(sum_regions_25)"
+    SUMMARY=$(sed -n '/"results":/,/"regions":/p' "$SPEC25" | grep -oE '"(total|passed)": *[0-9]+' | grep -oE '[0-9]+' | sort -u || true)
+    for v in $SUMMARY; do
+        if [ "$v" != "$CANON" ]; then
+            echo "FAIL: specs/25 report summary quotes $v, but the canonical count is $CANON." >&2
+            exit 1
+        fi
+    done
+    echo "check-test-count: specs/25 report summary agrees with $CANON"
+fi
+
+# ---- (e) PASS summary -----------------------------------------------------
 echo "check-test-count: PASS — canonical compliance-test count is $CANON; no stale count literals in current-state docs"
 exit 0
