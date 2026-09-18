@@ -157,7 +157,7 @@ GET /v1/health
   "recent_errors": [
     {
       "timestamp": "2026-07-21T14:29:30Z",
-      "decision_id": "d_abc123",
+      "decision_id": "29f0ca62-810f-4392-9298-cba0dc35f3e7",
       "session_id": "s_xyz789",
       "error_type": "llm_timeout",
       "message": "DeepSeek API timeout after 30s",

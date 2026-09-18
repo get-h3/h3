@@ -88,6 +88,10 @@ while the bundled echo examples are laxer and may accept it silently.
 Your agent replies with a `Decision` — a discriminator + `decision_id`
 (both REQUIRED) plus the type-specific payload:
 
+`decision_id` is a plain string per the protocol schema, but the TypeScript SDK validates
+RFC 4122 UUIDs — emit a UUID (`uuid4()` / `crypto.randomUUID()`) so the same decision
+is accepted by every SDK.
+
 | `decision` | Payload | Meaning |
 |------------|---------|---------|
 | `text` | `text: {content, finished}` | Produce (streamed) reply text. `finished:false` = more text coming. |
@@ -102,7 +106,7 @@ Minimal text decision:
 ```json
 {
   "decision": "text",
-  "decision_id": "d_9e4f",
+  "decision_id": "194854c3-ac0d-4f67-96a9-9a0a1c359597",
   "text": {"content": "Found the issue in auth.go:142 — missing JWT expiry check.", "finished": false}
 }
 ```
@@ -119,7 +123,7 @@ The shim drives the loop; your agent just answers it:
 ```json
 {
   "session_id": "s_abc123",
-  "decision_id": "d_7b2c",
+  "decision_id": "dba151bd-5558-4e7f-af34-65f960b22cf2",
   "result": {
     "type": "tool_result",
     "tool_name": "terminal",

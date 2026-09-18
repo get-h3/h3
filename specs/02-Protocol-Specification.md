@@ -189,7 +189,7 @@ The harness MUST return exactly ONE decision per response.
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `decision` | string | ✅ | One of `tool_call`, `llm_call`, `text`, `wait`, `delegate`, `end` |
-| `decision_id` | string | ✅ | Unique identifier for this decision |
+| `decision_id` | string | ✅ | Unique identifier for the decision within the session. The protocol schema types it as a plain string (no format constraint), but the TypeScript SDK validates RFC 4122 UUIDs and rejects anything else with HTTP 500 `INVALID_DECISION` — so emit a UUID (`uuid4()` / `crypto.randomUUID()`) for cross-SDK portability. |
 | `history` | array | ❌ | Echo of `context.history` from the request. REQUIRED for compliance (battery test 2.8): must be a list and must NOT shrink relative to the history sent in the request (equal or larger is accepted). Lets Hermes observe the harness's conversation state. |
 
 ### 4.1 `tool_call` — Execute a tool
@@ -197,7 +197,7 @@ The harness MUST return exactly ONE decision per response.
 ```json
 {
   "decision": "tool_call",
-  "decision_id": "d_7b2c",
+  "decision_id": "dba151bd-5558-4e7f-af34-65f960b22cf2",
   "tool_call": {
     "name": "terminal",
     "params": {
@@ -221,7 +221,7 @@ The harness MUST return exactly ONE decision per response.
 ```json
 {
   "decision": "llm_call",
-  "decision_id": "d_8c3d",
+  "decision_id": "d42dface-9a80-4b8f-871c-165986b0e781",
   "llm_call": {
     "model": "deepseek-v4-pro",
     "system_prompt": "You are an expert Go developer reviewing auth middleware.",
@@ -247,7 +247,7 @@ The harness MUST return exactly ONE decision per response.
 ```json
 {
   "decision": "text",
-  "decision_id": "d_9e4f",
+  "decision_id": "194854c3-ac0d-4f67-96a9-9a0a1c359597",
   "text": {
     "content": "Found the issue in auth.go:142 — missing JWT expiry check.",
     "finished": false
@@ -272,7 +272,7 @@ Battery convention (tests 2.4/2.5): a message whose content contains the phrase 
 ```json
 {
   "decision": "wait",
-  "decision_id": "d_f1a2",
+  "decision_id": "a8c53018-d73c-44ed-9765-3da0ebcbca1e",
   "wait": {
     "reason": "Waiting for CI pipeline to complete",
     "duration_seconds": 120,
@@ -292,7 +292,7 @@ Battery convention (tests 2.4/2.5): a message whose content contains the phrase 
 ```json
 {
   "decision": "delegate",
-  "decision_id": "d_0b3c",
+  "decision_id": "b59b8fea-91b7-4e46-b6a2-f57330103da9",
   "delegate": {
     "agent": "code-reviewer",
     "task": "Review auth.go for security vulnerabilities",
@@ -315,7 +315,7 @@ Battery convention (tests 2.4/2.5): a message whose content contains the phrase 
 ```json
 {
   "decision": "end",
-  "decision_id": "d_c4d5",
+  "decision_id": "3098316f-a21f-487e-b212-af5566e7716a",
   "end": {
     "reason": "task_complete",
     "summary": "Deployed auth endpoint to staging. All tests passing. Endpoint live at https://staging.example.com/auth."
@@ -343,7 +343,7 @@ Hermes calls this after executing a decision. The harness receives the result an
 ```json
 {
   "session_id": "s_abc123",
-  "decision_id": "d_7b2c",
+  "decision_id": "dba151bd-5558-4e7f-af34-65f960b22cf2",
   "result": {
     "type": "tool_result",
     "tool_name": "terminal",
@@ -390,7 +390,7 @@ Hermes calls this to cancel an in-flight operation. Used when the user sends a n
 ```json
 {
   "cancelled": true,
-  "cancelled_decision_id": "d_7b2c"
+  "cancelled_decision_id": "dba151bd-5558-4e7f-af34-65f960b22cf2"
 }
 ```
 
@@ -405,7 +405,7 @@ Hermes calls this to cancel an in-flight operation. Used when the user sends a n
   "last_active": "2026-07-12T22:30:15Z",
   "turn_count": 4,
   "status": "active",
-  "current_decision": "d_7b2c",
+  "current_decision": "dba151bd-5558-4e7f-af34-65f960b22cf2",
   "current_decision_type": "tool_call"
 }
 ```
