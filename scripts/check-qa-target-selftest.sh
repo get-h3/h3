@@ -108,7 +108,7 @@ case_run "this repository passes when passed explicitly" 0 "valid QA target" "$R
 case_run "a subdirectory resolves to its work-tree root" 0 "resolved to git work tree" "$REPO/specs"
 
 # --- default resolution -------------------------------------------------------
-case_run "no argument validates this repository" 0 "PASS" 
+case_run "no argument validates this repository" 0 "PASS"
 
 # --- guard misuse -------------------------------------------------------------
 case_run "two arguments is a usage error" 2 "at most one TARGET_DIR" "$REPO" "$REPO"
