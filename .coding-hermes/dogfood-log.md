@@ -100,3 +100,30 @@ answers: "does this project actually work for a real user, and is it worth it?"
 - Bunker install: clone 4.0s, pip -e 17.4s, smoke 46/46 exit 0 (agent 7520803b, destroyed clean).
 - Friction (3): :9191 EADDRINUSE first-run on shared host (DF-H3-15); doc count drift 44/45/46 re-offense (DF-H3-16); first go mod tidy proxy fetch minutes (DF-H3-17 note).
 - New rows: DF-H3-15, DF-H3-16, DF-H3-17.
+
+## 2026-09-18 — dogfood tick h3-pm-2026-09-18 (PM lane itself; first pass)
+2026-09-18 | PROMISING-BUT-ROUGH | install_seconds=24 | bunker=las-bunker-03 agent=437f91a0 | smoke=ok (46/46 exit 0)
+- **Target:** the `h3-pm` scheduler lane (namespace pm, stand-in workdir), not a
+  repo — real use = consuming its product. Promise: a daily PM cycle audits the
+  h3 umbrella board with ledger-first tracking, G1-G7 gating, and re-verification
+  of the previous cycle's fixes with real commands.
+- **Real use:** re-ran the PASS criteria of the newest rows (H3-PM-005..009) as
+  commands; 4/5 reproduce exactly, 1 is unmeasurable as written (repo-wide grep
+  matches the row + judge artifacts quoting it: 11 live hits, 0 outside them).
+  Resolved every commit_hash in the repo the row names; consumed H3-PM-003's
+  commit_repo product (7/7 resolve in get-h3/shim).
+- **Measured:** 43 of 104 open ledger items are already complete on their boards
+  (41%) → the Step-5 prior-run list is mostly closed work. 6 board ids still hold
+  rows with distinct findings (PM skill's own fingerprint method); 4 duplicate
+  rows are superseded_by themselves.
+- **Lane ops:** stand-in workdirs carry an EMPTY .coding-hermes/ (some have none)
+  and the target→real-board resolution is undocumented (the retired
+  pm-standin-tick.sh had it in code). Cycle log for the day is present in
+  DuckBrain (/stand-in/2026-09-18/h3 + /cycle).
+- **Install leg:** first `bunker spawn` hit deadline_exceeded (transient, no
+  half-user left); retry succeeded. Documented shim quickstart on a bare Debian
+  user: clone → venv → install → scaffold py → battery 46/46 exit 0 in 24s;
+  agent destroyed clean.
+- **Artifacts:** docs/dogfood/2026-09-18-h3-pm-integration.md,
+  docs/dogfood/h3-pm-diagnostics.md, skills/h3-pm-usage/SKILL.md.
+- **Rows:** DF-H3PM-01..05 filed on the h3 board (no cooldown change, foreman not woken).
