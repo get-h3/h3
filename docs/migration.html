@@ -538,18 +538,23 @@ sessions:
 
     <pre><code>git clone https://github.com/get-h3/shim && cd shim
 pip install -e .
-h3-test --endpoint http://localhost:9191
+h3-test --endpoint http://localhost:9191</code></pre>
 
-# Output:
-# ✅ Health & Protocol ........ 7/7
-# ✅ Process Flows ........... 8/8
-# ✅ Decision Types .......... 6/6
-# ✅ Result Handling ......... 7/7
-# ✅ Edge Cases .............. 13/13
-# ✅ Stress .................. 5/5
-# ─────────────────────────────
-# Score: 46/46</code></pre>
+    <p>Your run prints the same category rows and the same <code>46/46</code> total. The <code>Duration</code> and <code>Latency</code> lines are illustrative — the exact timings vary per machine and per run:</p>
 
+    <pre><code>H3 Compliance Test Battery v0.1.0
+Target: http://localhost:9191
+Transport: REST
+
+  Health & Protocol                   7/7  ✅ PASSED
+  Process Basic Flows                 8/8  ✅ PASSED
+  Decision Types                      6/6  ✅ PASSED
+  Result Handling                     7/7  ✅ PASSED
+  Error & Edge Cases                  13/13  ✅ PASSED
+  Stress & Performance                5/5  ✅ PASSED
+  TOTAL                               46/46  PASSED
+  Duration                            0.22s
+  Latency p50/p95                     0.88ms / 30.85ms</code></pre>
     <div class="callout">
       <strong>Aim for 46/46 before going live.</strong> Each gap is a production edge case waiting to surface.
       The test battery runs in &lt;5 seconds and catches protocol-level issues that manual testing misses.
