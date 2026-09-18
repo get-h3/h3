@@ -23,9 +23,19 @@ jobs:
         working-directory: h3/integration/roundtrip
 
     steps:
+      # H3-GAP-088 — this step MUST name its repository. On a workflow_call the
+      # caller's repository is what actions/checkout defaults to, so without
+      # `repository:` the umbrella sources land in a directory named after the
+      # CALLING repo, `h3/` stays absent, and every step below dies with
+      # "working directory 'h3/integration/roundtrip' ... No such file or
+      # directory" (observed: sdk-go/sdk-python/sdk-typescript sync-protocol
+      # calls after c115c46/pins; the same workflow dispatched from h3's own
+      # push event worked). Naming the repo and ref makes the job behave
+      # identically for push, workflow_dispatch and reusable-workflow calls.
       - name: Checkout umbrella repo
         uses: actions/checkout@v4
         with:
+          repository: get-h3/h3
           path: h3
 
       - name: Checkout sdk-go
