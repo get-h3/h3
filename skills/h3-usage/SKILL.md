@@ -164,8 +164,12 @@ non-default port only via source edit for Go targets; TS/py honor PORT.
   `SESSION_NOT_FOUND` (battery `cancel_unknown_session`); returning
   200 `{cancelled: true}` unconditionally fails the battery. Track sessions
   and check existence in the cancel route.
-- **`hermes-h3` config path:** use `--config <file>` explicitly;
-  `HERMES_H3_CONFIG` env is not honored by all subcommands.
+- **`hermes-h3` config path:** resolved highest-first as
+  `--config <path>` (accepted before or after a subcommand) →
+  `$HERMES_H3_CONFIG` → `~/.hermes/h3/config.yaml`. The env var is honored
+  by every subcommand since the DF-H3-10 fix (shim commit 493357d) —
+  on an older shim build it was silently ignored and every command fell
+  back to the real `~/.hermes/h3/config.yaml`, so pin `--config` there.
 - **Health path is `/v1/health`**, not `/health` (a plain `curl /health`
   gives 404 — that's fine).
 - **Verify command:** `hermes-h3 verify --harness <name>` (it takes
