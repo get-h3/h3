@@ -70,29 +70,52 @@ cd ./my-harnesses/h3-harness-ts
 package main
 
 import (
-    "net/http"
-    "github.com/get-h3/sdk-go/harness"
-    "github.com/get-h3/sdk-go/protocol"
+	"fmt"
+	"net/http"
+
+	"github.com/get-h3/sdk-go/harness"
+	"github.com/get-h3/sdk-go/protocol"
 )
 
+// MyHarness implements all five methods of harness.Harness.
 type MyHarness struct{}
 
 func (h *MyHarness) OnProcess(req *protocol.ProcessRequest) (*protocol.Decision, error) {
-    return &protocol.Decision{
-        Decision: protocol.DecisionText,
-        Text: &protocol.TextResp{Content: "Hello from Go!", Finished: true},
-    }, nil
+	return &protocol.Decision{
+		Decision:   protocol.DecisionText,
+		DecisionID: protocol.GenerateUUID(),
+		Text:       &protocol.TextResp{Content: "Hello from Go!", Finished: true},
+	}, nil
 }
 
 func (h *MyHarness) OnResult(req *protocol.ResultRequest) (*protocol.Decision, error) {
-    return &protocol.Decision{
-        Decision: protocol.DecisionEnd,
-        End:      &protocol.EndResult{Reason: "task_complete"},
-    }, nil
+	return &protocol.Decision{
+		Decision:   protocol.DecisionEnd,
+		DecisionID: protocol.GenerateUUID(),
+		End: &protocol.End{
+			Reason:  protocol.EndTaskComplete,
+			Summary: "task complete",
+		},
+	}, nil
+}
+
+func (h *MyHarness) OnCancel(req *protocol.CancelRequest) error { return nil }
+
+func (h *MyHarness) OnSessionTerminate(sessionID string) error { return nil }
+
+func (h *MyHarness) Health() *protocol.HealthResponse {
+	return &protocol.HealthResponse{
+		Status:          protocol.HealthOK,
+		Version:         "1.0.0",
+		Transport:       "rest",
+		ProtocolVersion: "1.0",
+		Capabilities:    []protocol.DecisionType{protocol.DecisionText, protocol.DecisionEnd},
+	}
 }
 
 func main() {
-    http.ListenAndServe(":9191", harness.NewHTTPServer(&MyHarness{}))
+	fmt.Println("H3 harness listening on :9191")
+	http.ListenAndServe(":9191", harness.NewHTTPServer(&MyHarness{}))
 }
 ```
 
