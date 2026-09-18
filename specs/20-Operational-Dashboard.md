@@ -97,7 +97,7 @@ GET /v1/dashboard?harness=all&window=5m&format=json
     "recent_errors": [{
       "timestamp": "2026-07-21T18:44:52Z",
       "session_id": "S1",
-      "decision_id": "D42",
+      "decision_id": "d9f4c1a2-7b3e-4c58-9a10-6f2d8e5b74c3",
       "error_type": "harness_timeout",
       "message": "Harness did not respond within 30s"
     }]
