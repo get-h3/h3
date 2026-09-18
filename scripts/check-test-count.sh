@@ -14,9 +14,10 @@
 #      get-h3/shim out into a subdirectory and points this at it).
 #   c. stale-literal sweep — no current-state doc may still advertise the old
 #      counts ("44/44", "44 tests", "out of 43", ...); prints file:line for each
-#   d. spec arithmetic — the per-category lists in specs/05 and specs/25 and the
-#      report summary block in specs/25 must add up to / agree with the count
-#      (a bare JSON integer or a wrong region count slips past a grep)
+#   d. spec arithmetic — the per-category list in specs/05, the region list in
+#      specs/25, the report summary block in specs/25 and the six region
+#      headings in specs/09 must add up to / agree with the count (a bare JSON
+#      integer or a wrong region count slips past a grep)
 #   e. PASS summary naming the canonical count
 #
 # Exit codes: 0 = pass, 1 = drift, 2 = guard misconfigured (bad/missing inputs).
@@ -107,9 +108,11 @@ fi
 #     a bare integer, so no literal from (c) matches it;
 #   * a per-category list that no longer SUMS to the canonical count
 #     (edge_cases 10 where the battery has 13 -> the regions summed to 43).
-# So: both per-category lists and the report summary block must add up / agree.
+# So: every per-category / per-region list and the report summary block must add
+# up / agree.
 SPEC05="$ROOT/specs/05-Test-Battery.md"
 SPEC25="$ROOT/specs/25-Conformance-Certification.md"
+SPEC09="$ROOT/specs/09-Testing-Framework-Architecture.md"
 
 sum_categories_05() {
     awk '/✅/ && !/TOTAL/ {
@@ -126,10 +129,34 @@ sum_regions_25() {
          } END { print sum + 0 }' "$SPEC25"
 }
 
-spec_sum_ok() {   # $1 file, $2 label, $3 observed sum
+sum_regions_09() {
+    # specs/09 names the same six regions as prose headings of the exact form
+    #   ### Region N: <name> (N tests)
+    # each followed by a fenced list of test names. Only those headings are
+    # summed, so the ASCII tree in §2, the fenced name lists and the report's
+    # "TOTAL 46/46" summary line can never leak into the arithmetic.
+    # Prints: "<heading-count> <sum> <headings-without-a-count> <region-numbers>".
+    awk '
+         /^### Region / {
+           n++
+           num = $3
+           sub(/:.*/, "", num)
+           nums = nums num
+           if (match($0, /\([0-9]+ tests?\)/)) {
+             s = substr($0, RSTART, RLENGTH)
+             gsub(/[^0-9]/, "", s)
+             sum += s + 0
+           } else {
+             bad++
+           }
+         }
+         END { printf "%d %d %d %s\n", n + 0, sum + 0, bad + 0, nums }' "$SPEC09"
+}
+
+spec_sum_ok() {   # $1 file, $2 label, $3 observed sum, $4 optional fix hint
     if [ "$3" != "$CANON" ]; then
         echo "FAIL: $2 sums to $3, but the canonical compliance-test count is $CANON." >&2
-        echo "      Update the per-category numbers (and the TOTAL row) in $1." >&2
+        echo "      ${4:-Update the per-category numbers (and any TOTAL row) in $1.}" >&2
         exit 1
     fi
     echo "check-test-count: $2 sums to $CANON"
@@ -149,6 +176,28 @@ if [ -f "$SPEC25" ]; then
         fi
     done
     echo "check-test-count: specs/25 report summary agrees with $CANON"
+fi
+
+if [ -f "$SPEC09" ]; then
+    # word-splitting the helper's single output line is intended here.
+    # shellcheck disable=SC2046
+    set -- $(sum_regions_09)
+    R_COUNT=${1:-0}; R_SUM=${2:-0}; R_BAD=${3:-0}; R_NUMS=${4:-}
+    if [ "$R_BAD" -ne 0 ]; then
+        echo "FAIL: $R_BAD specs/09 '### Region' heading(s) carry no '(N tests)' count." >&2
+        echo "      Expected six headings of the form '### Region N: <name> (N tests)'." >&2
+        exit 1
+    fi
+    if [ "$R_COUNT" -ne 6 ] || [ "$R_NUMS" != "123456" ]; then
+        echo "FAIL: specs/09 lists $R_COUNT region heading(s) (region numbers: ${R_NUMS:-none});" >&2
+        echo "      expected exactly six — Regions 1..6. The documented per-region split must" >&2
+        echo "      stay complete or the sum below is meaningless." >&2
+        exit 1
+    fi
+    spec_sum_ok "specs/09-Testing-Framework-Architecture.md" "specs/09 region list" "$R_SUM" \
+        "Fix the six '### Region N: <name> (N tests)' headings in specs/09-Testing-Framework-Architecture.md."
+else
+    echo "check-test-count: specs/09 not present — region-sum check skipped"
 fi
 
 # ---- (e) PASS summary -----------------------------------------------------
