@@ -44,6 +44,14 @@ cd h3-harness-go && go mod tidy && go run .
 h3-test --endpoint http://localhost:9191
 ```
 
+> **Run one harness at a time — both quick-start paths bind `:9191`.** The Go
+> echo example and a freshly scaffolded harness use the same default port, so
+> stop the running one (Ctrl-C) before starting the other; otherwise the second
+> exits with `listen tcp :9191: bind: address already in use`. The Python and
+> TypeScript scaffolds honor `PORT` (`PORT=9291 python main.py`, `PORT=9291 npm
+> run dev`); the Go echo example and the Go scaffold hardcode `:9191` today
+> (tracked as DF-H3-9), so there stop the first harness or edit the address line.
+
 > The CLI is `hermes-h3` (standalone binary with `install`, `scaffold`, `test`,
 > `verify`, and more). The `hermes h3` plugin form requires H3 wired into a
 > live Hermes install (tracked as WIRING-01).

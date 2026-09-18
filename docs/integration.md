@@ -291,6 +291,11 @@ hermes-h3 scaffold --lang go     # or py / ts
 cd h3-harness-go && go mod tidy && go run .
 ```
 
+> **Echo, then scaffold — one at a time.** The Go echo example and a freshly
+> scaffolded Go harness both bind `:9191`; stop one (Ctrl-C) before starting the
+> other, or the second fails with `listen tcp :9191: bind: address already in
+> use`. py/ts scaffolds honor `PORT`; Go echo and Go scaffold hardcode it (DF-H3-9).
+
 Each SDK implements the `Harness` interface (Go: 5 methods — `OnProcess`,
 `OnResult`, `OnCancel`, `OnSessionTerminate`, `Health`); you implement those
 methods over your existing agent loop and the HTTP server, middleware,
