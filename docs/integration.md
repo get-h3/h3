@@ -81,8 +81,9 @@ minimal compliant harness is `["text"]`.
 
 Every field list above is enforced by the JSON Schemas in `get-h3/protocol`
 → `schemas/v1/` (`process-request.json` + `common.json`); this example is
-validated against them, and a payload missing any required field is rejected
-with a 400.
+validated against them. A payload that omits a required field (for example
+`message.timestamp`) is schema-invalid: a schema-validating harness rejects it,
+while the bundled echo examples are laxer and may accept it silently.
 
 Your agent replies with a `Decision` — a discriminator + `decision_id`
 (both REQUIRED) plus the type-specific payload:

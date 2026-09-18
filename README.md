@@ -61,9 +61,11 @@ A harness exposes five REST endpoints:
 | `/v1/sessions/{session_id}` | DELETE | Tear down a session's server-side state |
 
 With a harness on `:9191` (see Quick Start), this is a complete first call. All
-four top-level objects are REQUIRED, `message.timestamp` is REQUIRED, and
-`context.session_state` must carry its five fields — a payload missing any of
-them is rejected with a 400:
+four top-level objects are REQUIRED, and the JSON Schemas also require
+`message.timestamp` and the five `context.session_state` fields. Omitting any of
+them makes the payload schema-invalid — harnesses that validate against the
+schemas reject it, while the bundled echo examples are laxer and may accept it
+silently. Copy this payload and you are schema-valid:
 
 ```bash
 curl -s http://localhost:9191/v1/process \
