@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     attempts          TINYINT DEFAULT 0,
     exit_code         INTEGER,
     commit_hash       VARCHAR,
+    commit_repo       VARCHAR,
     files_changed     VARCHAR[],
     lines_added       INTEGER DEFAULT 0,
     lines_removed     INTEGER DEFAULT 0,
