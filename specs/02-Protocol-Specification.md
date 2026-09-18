@@ -167,6 +167,7 @@ Hermes calls this when a new user message arrives. The harness receives full con
 | `message` | object | ✅ | The user's message |
 | `message.role` | string | ✅ | Always `"user"` for /v1/process |
 | `message.content` | string | ✅ | Message text |
+| `message.timestamp` | string | ✅ | ISO-8601 time the message was created |
 | `message.attachments` | array | ❌ | Images, files, etc. |
 | `identity` | object | ✅ | Who sent it, from where |
 | `context.history` | array | ✅ | Last N messages (configurable, default 20) |
@@ -175,7 +176,7 @@ Hermes calls this when a new user message arrives. The harness receives full con
 | `context.memory` | string | ❌ | DuckBrain memory relevant to this session |
 | `context.skills` | array | ❌ | Loaded skill names |
 | `context.config` | object | ✅ | Session-level configuration |
-| `context.session_state` | object | ✅ | Running counters for this session |
+| `context.session_state` | object | ✅ | Running counters: `turn_count`, `total_tool_calls`, `total_llm_calls`, `cost_so_far`, `started_at` |
 
 ---
 
