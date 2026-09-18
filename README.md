@@ -34,6 +34,17 @@ cd sdk-go/examples/echo && go run .
 h3-test --endpoint http://localhost:9191
 ```
 
+> **`python3 -m venv` fails with `ensurepip is not available`?** That host has no
+> python3-venv package (and no sudo to `apt install python3-venv`). Create the venv
+> without pip, then bootstrap pip into it:
+>
+> ```bash
+> python3 -m venv --without-pip .venv
+> curl -sS https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
+> .venv/bin/python /tmp/get-pip.py
+> .venv/bin/pip install -e .
+> ```
+
 > **`h3-test` and `hermes-h3` live inside `shim/.venv/bin` — a new terminal does
 > not have them.** `pip install` puts both console scripts in that venv and
 > `source .venv/bin/activate` adds them to PATH **for that shell only**; there is

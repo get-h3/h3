@@ -233,6 +233,17 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install -e .
 ```
 
+> **`python3 -m venv` fails with `ensurepip is not available`?** That host has no
+> python3-venv package (and no sudo to `apt install python3-venv`). Create the venv
+> without pip, then bootstrap pip into it:
+>
+> ```bash
+> python3 -m venv --without-pip .venv
+> curl -sS https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
+> .venv/bin/python /tmp/get-pip.py
+> .venv/bin/pip install -e .
+> ```
+
 `pip install -e .` writes the two console scripts — `h3-test` and
 `hermes-h3` — into that venv's `bin/`. Activation is **shell-local**: it adds
 them to PATH for the current shell only, so a fresh terminal (or a shell opened
