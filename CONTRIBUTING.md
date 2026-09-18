@@ -52,6 +52,37 @@ The cross-repo task board is `.coding-hermes/board/tasks.jsonl` (JSONL canonical
 - **roundtrip.sh** — cross-language wire format verification
 - **redocly lint** — OpenAPI schema validation
 
+## Commit messages and CI
+
+Never write a GitHub workflow-skip directive in a commit message — not even while
+discussing one, and not in prose. GitHub matches the directive **anywhere** in the
+message of the pushed head commit. The tick #355 subject ended with
+`NO [ci skip]: this push carries the docs/badge fix` and CI was skipped anyway: the
+token was matched, the surrounding words were not read. A commit message is not a
+place to state an intention — the token is a control signal.
+
+Rejected tokens (case-insensitive): `[skip ci]`, `[ci skip]`, `[no ci]`,
+`[skip actions]`, `[actions skip]`.
+
+A board-only commit (`.coding-hermes/`) produces no workflow run because the
+workflows filter on paths — `docs/**`, `specs/**`, `scripts/**`, `**.md` for
+pages.yml; `integration/roundtrip/**` for roundtrip.yml. That is by design, not a
+bug. To keep a workflow from running, use its paths filter; never a message token.
+
+Check the message locally before you commit:
+
+```sh
+sh scripts/check-ci-skip-tokens.sh      # checks HEAD
+make verify                             # all umbrella checks, includes the guard
+```
+
+Audit existing history (report only, always exits 0):
+
+```sh
+sh scripts/check-ci-skip-tokens.sh --audit <rev-range>
+sh scripts/check-ci-skip-tokens.sh --audit 59ecfeb~40..59ecfeb
+```
+
 ## Getting Started
 
 Pick up a task from the board. If you're new to H3, start with:

@@ -13,10 +13,18 @@
 #                       single source of truth: the sibling battery's
 #                       EXPECTED_TEST_COUNT must match it and no current-state doc
 #                       may still quote a retired count (GAP-072).
+#   4. commit-msg     — the HEAD commit message carries no GitHub workflow-skip
+#                       directive (H3-CI-001). GitHub matches one ANYWHERE in the
+#                       message of the pushed head commit — prose included — so a
+#                       board subject that merely mentions it ("NO [ci skip]: ...")
+#                       silently skips every push-triggered workflow. Use a
+#                       workflow's paths filter, never a message token.
+#                       Kept LAST: it inspects HEAD, so it passes only after the
+#                       commit that carries it has landed.
 
-.PHONY: verify verify-docs verify-specs verify-count
+.PHONY: verify verify-docs verify-specs verify-count verify-commit-msg
 
-verify: verify-docs verify-specs verify-count
+verify: verify-docs verify-specs verify-count verify-commit-msg
 	@echo "make verify: ALL PASS — umbrella repo is self-consistent"
 
 verify-docs:
@@ -50,3 +58,7 @@ verify-specs:
 verify-count:
 	@echo "make verify: compliance-test count guard"
 	@sh scripts/check-test-count.sh
+
+verify-commit-msg:
+	@echo "make verify: commit-message skip-directive guard (HEAD)"
+	@sh scripts/check-ci-skip-tokens.sh
