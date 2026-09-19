@@ -6,6 +6,12 @@
 .vfs/graph/.last_reconcile
 .vfs/graph/.parse_cache.json
 .vfs/.dirty
+# The whole .vfs working-state directory is rebuildable runtime state, not repo
+# content (QA-H3-9: a runtime marker showed up as an untracked stray because only
+# individual file names were ignored). Curated artifacts stay tracked regardless —
+# .vfs/manifest.yaml and .vfs/graph/edges.jsonl are committed and remain so; add any
+# new intended artifact explicitly with `git add -f`.
+.vfs/
 
 # Dagger MCP runtime state (never commit — recreated by worker sessions)
 dagger.db
