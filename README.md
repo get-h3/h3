@@ -185,6 +185,41 @@ All SDKs generate their types from the same OpenAPI spec. A change to the protoc
 - **Integration guide:** [`docs/integration.md`](docs/integration.md) — for external harness developers (OpenCode, Consensus, CrewAI, LangChain) wiring H3 into their own systems
 - **Release guide:** [`docs/releases.md`](docs/releases.md) — tag convention, how to pin and verify a tagged release (`git checkout v0.1.0 && make verify`), and what `make verify` does and does not cover
 
+## Repository Layout
+
+This repo is the H3 spec hub. Tracked content is markdown, the JSONL task board,
+and two small generated indexes — there is no build output in the tree, so
+`git status` is a meaningful signal and every tracked path below is either
+hand-maintained or checked by `make verify`.
+
+| Path | What lives there |
+|------|------------------|
+| Root docs — `README.md`, `AGENTS.md`, `CONTRIBUTING.md`, `DEPLOY.md`, `GOVERNANCE.md`, `SECURITY.md`, `SUPPORT.md`, `CODE_OF_CONDUCT.md`, `TRADEMARK_POLICY.md`, `CODEOWNERS`, `CHANGELOG.md`, `LICENSE`, `NOTICE` | Governance, onboarding, deployment and release history |
+| [prd.html](prd.html) | The canonical product requirements document |
+| [journey-narrative.md](journey-narrative.md) | How a Hermes agent bootstrapped its own coding fleet — the narrative behind the foreman workflow below |
+| [specs/](specs/) | The specification set; [specs/_index.md](specs/_index.md) is its manifest, and `make verify` keeps index and files in agreement |
+| [docs/](docs/) | The published site (`index.html`, `guide.html`, `protocol.html`, `sdk.html`, `migration.html`) plus the guides [docs/integration.md](docs/integration.md), [docs/releases.md](docs/releases.md) and [docs/qa-target-contract.md](docs/qa-target-contract.md) |
+| `docs/badge/`, `docs/board/`, `docs/dogfood/` | Generated compliance badges, board decision records, and dated dogfood field reports |
+| [integration/roundtrip/](integration/roundtrip/) | The cross-language round-trip code suite and its generated fixtures |
+| [scripts/](scripts/) | The zero-dependency guards behind `make verify`; `scripts/test-count.txt` is the single home of the compliance-test count |
+| `skills/` | Fleet agent skills — [h3-usage](skills/h3-usage/SKILL.md) and [h3-pm-usage](skills/h3-pm-usage/SKILL.md) |
+| [Makefile](Makefile) | The verification entry point (`make verify`, `make verify-roundtrip`, `make verify-all`) |
+| `.coding-hermes/` | The task board: `board/*.jsonl` is the git-backed store, `tasks.md` is legacy prose history, `dogfood-log.md` is the dogfood lane's own record |
+| `.vfs/` | The hilo code-graph index — `manifest.yaml` and `graph/edges.jsonl` are the only tracked files in it |
+| `.github/`, `.gitreins/`, `.gitignore`, `.gitleaks.toml` | CI workflows, the GitReins gate config and lane task mirror, and the ignore / secret-scan contracts |
+
+### Not tracked on purpose
+
+Local stores and rebuildable caches are declared in `.gitignore` instead of being
+deleted, so that a clean `git status` means something:
+
+- `.vfs/graph/` hilo caches (`graph.db*`, `.last_warm`, `.last_reconcile`, `.parse_cache.json`) and the `.vfs/.dirty` runtime marker — a local dirty flag the hilo hooks write on hosts without `hilo` on `PATH` and remove again on merge, never committed content.
+- `dagger.db*` — Dagger MCP runtime state, recreated by worker sessions.
+- `.gitreins/history/` and `.gitreins/logs/` — gate verdict records and guard run logs.
+- `.coding-hermes/board/board.db` and `.coding-hermes/board/*.parquet` — rebuildable board caches; the JSONL files are the store.
+- `namespaces/` — the local memory-bank store checkout fleet tooling drops into the workdir (H3-GAP-084). It is foreign to this repo and is never committed.
+- `.cross-harness-results/` and `_run_cross_harness.sh` — cross-harness run artifacts. The tool-managed caches (`.pytest_cache/`, `.ruff_cache/`, `integration/roundtrip/__pycache__/`) carry their own ignore files inside the directory.
+
 ## Compliance
 
 A harness is H3-compliant when it passes all 46 tests in the [test battery](https://github.com/get-h3/shim). Current compliance status across SDK examples:

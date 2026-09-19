@@ -14,6 +14,7 @@ dagger.db-wal
 
 # GitReins MCP runtime state (never commit)
 .gitreins/history/
+.gitreins/logs/
 
 # Cross-harness test artifacts
 .cross-harness-results/
@@ -22,3 +23,7 @@ _run_cross_harness.sh
 # Board storage (Bane directive 08-07): JSONL is the git store; .db/parquet are rebuildable caches
 .coding-hermes/board/board.db
 .coding-hermes/board/*.parquet
+
+# Local memory-bank store dropped into the workdir by fleet tooling (H3-GAP-084).
+# Foreign to this repo — a sibling DuckBrain store, never committed.
+namespaces/
