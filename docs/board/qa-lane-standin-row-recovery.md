@@ -2,7 +2,8 @@
 
 - **Tick:** h3 tick #407 (`h3-2026-09-19-07-46-12`), task **DF-H3PM-06**
 - **Date:** 2026-09-19 (UTC); recovery writes at 2026-09-19T07:54:43Z (rows) and 2026-09-19T07:55:34Z (stand-in annotation)
-- **Scope this tick:** off-by-one leg only. The hermes-canopy leg is **deferred** (§5) because its lanes were live at fire.
+- **Scope at #407:** off-by-one leg only. The hermes-canopy leg was **deferred** then (its lanes were live at fire) and was **landed at tick #408** — see §5, which now carries both the landing and the #407 deferral text verbatim (§5.5).
+- **Tick #408 (`DF-H3PM-06`, canopy leg):** row `QA-HERMES-CANOPY-QA-1` → `QA-HERMES-CANOPY-12` on the canopy owner board (362 → 363 rows, commit `252cc03`) and the stand-in board dir replaced by a satellite symlink.
 - **Nothing pushed.** Commits land locally; the foreman pushes.
 
 ---
@@ -96,7 +97,119 @@ $ grep -c moved_to .../board.pre-satellite-20260919/tasks.jsonl
 
 Effect: the off-by-one QA lane's cwd-relative board writes now land on the owner board and are dispatchable. Definition of done for this class of fix is per-directory — the link exists only where it was created.
 
-## 5. DEFERRED — the hermes-canopy leg
+## 5. LANDED at tick #408 — the hermes-canopy leg
+
+**Status: DONE.** The deferral recorded in §5.5 was lifted and the canopy leg was executed at **h3 tick #408**, same task **DF-H3PM-06**. Nothing here rewrites the #407 record — §5.5 keeps the deferral text exactly as it was written; this section adds the landing.
+
+### 5.1 Why the deferral condition was lifted
+
+At #407 the leg was deferred under the collision rule because `hermes-canopy` and `hermes-canopy-qa` were running. At tick #408 (fire 2026-09-19T08:27Z = 03:27-05:00) **neither lane was running**:
+
+```
+$ ps -eo pid,lstart,etime,args | grep -i hermes-canopy | grep -v grep
+1895695 Thu Sep 17 01:10:01 2026  2-02:18:21 node /home/kara/hermes-canopy/frontend/node_modules/.bin/vite --port 5173
+```
+
+The only match is the long-lived vite dev server (up since Sep 17, unrelated to the lanes) — no `hermes chat` worker. Scheduler state at the same moment:
+
+```
+hermes-canopy     last_tick_started=2026-09-19T02:42:31-05:00  last_tick_completed=2026-09-19T03:15:40-05:00
+hermes-canopy-qa  last_tick_started=2026-09-19T02:30:18-05:00  last_tick_completed=2026-09-19T03:02:24-05:00
+running/spawned tick rows fleet-wide: 8    with a LIVE pid: 0
+```
+
+**Correction to the tick-#408 brief, recorded not hidden:** the brief's two timestamps (`02:42:31` and `02:30:18`) are the lanes' `last_tick_started` values, not their completion times; the completions were `03:15:40` (foreman) and `03:02:24` (qa). The conclusion the brief drew from them — the deferral condition was lifted — holds either way: both lanes were between ticks at fire and no worker process was alive.
+
+### 5.2 The recovered row
+
+| old (stand-in) id | new (owner) id | priority | status | ts (carried over) |
+|---|---|---|---|---|
+| `QA-HERMES-CANOPY-QA-1` | **`QA-HERMES-CANOPY-12`** | P3 | pending | 2026-09-16T21:58:07.553Z |
+
+Owner id proved free **before** the write: `QA-HERMES-CANOPY-QA-1` was absent from the owner board in both spacing styles (0 hits compact, 0 hits spaced), and the `QA-HERMES-CANOPY-<n>` family scanned across **all** statuses tops out at **n = 11**, so 12 is the next free slot (asserted in the appender: family max `== 11`, `12 not in nums`).
+
+Owner board: `/home/kara/hermes-canopy/.coding-hermes/board/tasks.jsonl` — **362 → 363 rows**, append-only. Proven against a sha256-pinned pre-write snapshot (`677576555d9f8fa3…` → `/tmp/canopy_tasks_pre.jsonl`; hash re-verified inside the verifier):
+
+```
+(a) parsed rows before=362 after=363
+(b) prefix bytes preserved verbatim: True
+(c) byte-identical untouched lines=362 / 362
+    changed/added line indices: [363]
+(d) trailing newline preserved: True
+(f) VERBATIM field equality vs stranded row:
+      title equal=True   detail equal=True   review_notes equal=True
+      reasoning equal=True   ts equal=True
+(h) parsed-row count with id QA-HERMES-CANOPY-12: 1
+(i) parsed-row count with id QA-HERMES-CANOPY-QA-1: 0   (the old id survives once, as provenance)
+(m) pre-existing rows still parse to identical dicts: 362/362
+```
+
+`title`, `detail`, `review_notes`, `reasoning` and `ts` were copied verbatim (parsed-value equality asserted, not eyeballed) — including the source's `(bunker call: colect)` typo, which was left alone.
+
+**Field set (15 keys):** the spine mirrors the neighbouring pending QA rows `QA-HERMES-CANOPY-9`/`-10` (`status, id, title, detail, priority, source, reasoning, review_notes, ts, foreman_note, updated_at`), then the provenance block the row requires (`recovered_from`, `recovered_id`, `recovered_at`, `recovered_by`). No field was removed from any existing row anywhere.
+
+**Serialization note:** the row was written with `json.dumps(obj, ensure_ascii=False)` — em-dashes as literal UTF-8, spaces after the separators. That matches the three newest rows on the board (`DF-HERMES-CANOPY-30/31/32` are spaced-style) but **not** the older compact majority: the file was mixed-style **357 compact + 5 spaced** before this write and **357 + 6** after. The id-style greps were therefore run both ways — see (h)/(i) above.
+
+**Commit:** **`252cc03`** (short sha) — `1 file changed, 1 insertion(+)`, exactly one `Co-authored-by:` trailer (appended by the repo's `prepare-commit-msg` hook; none supplied in `-m`). **Not pushed** (1 commit ahead of `origin/master`); the untracked `namespaces/` (foreign DuckBrain store) and `.gitreins/logs/` did not ride in.
+
+**Guard on the canopy commit:** `gitreins guard; echo EXIT=$?` against the staged state exited **0** (`Tier 1 Guards: PASS (test mode: full)`, 0.338s) — but this is the vacuous-PASS class §7 already recorded: the guard log shows `No Go files staged` for `go_build`/`go_lint`/`go_tests`, and the console prints `No supported source files found. Supported extensions: …` (`jsonl` is not in that list), so **no test or build ran**. Only the `secrets` guard genuinely executed (gitleaks clean). Backstop for the suite claim: `grep -rn "tasks\.jsonl" --include=*.go --include=*.ts --include=*.tsx --include=Makefile` across the repo returns **0 hits**, i.e. no Go/TS source or Make target reads the board file, so a data-only append to it cannot change the suite's result. A normal commit was made; `--no-verify` was **not** needed.
+
+### 5.3 The satellite link (rename-never-delete)
+
+Applied to `/home/kara/.hermes/stand-in/pm/hermes-canopy/.coding-hermes/`, in this order — rename, then annotate the **preserved** copy, then link, so no write could pass through the link into the owner board:
+
+```bash
+cd /home/kara/.hermes/stand-in/pm/hermes-canopy/.coding-hermes
+mv board board.pre-satellite-20260919                  # PRESERVE — nothing deleted
+#   annotate the preserved row in place (add keys only, original bytes kept as a prefix)
+ln -s /home/kara/hermes-canopy/.coding-hermes/board board
+```
+
+Verification (actual output):
+
+```
+$ ls -la /home/kara/.hermes/stand-in/pm/hermes-canopy/.coding-hermes/
+lrwxrwxrwx 1 kara kara   45 Sep 19 03:28 board -> /home/kara/hermes-canopy/.coding-hermes/board
+drwxrwxr-x 2 kara kara 4096 Sep 16 16:58 board.pre-satellite-20260919
+
+$ readlink -f .../.coding-hermes/board
+/home/kara/hermes-canopy/.coding-hermes/board
+$ readlink -f /home/kara/hermes-canopy/.coding-hermes/board
+/home/kara/hermes-canopy/.coding-hermes/board                     # MATCH: YES
+
+$ parsed row count read THROUGH the link
+363                                                               # owner board, incl. QA-HERMES-CANOPY-12
+
+$ preserved row, read back from the preserved file
+moved_to   = ["QA-HERMES-CANOPY-12"]
+moved_at   = 2026-09-19T08:28:27Z
+moved_note = recovered into the hermes-canopy owner board by h3 umbrella tick #408 (DF-H3PM-06)
+keys: status, id, title, detail, priority, source, reasoning, review_notes, ts, moved_to, moved_at, moved_note
+```
+
+The preserved file keeps its original 9 keys with identical values and no trailing newline (829 bytes, still one parsed row — `wc -l` undercounts it to 0 exactly as §2 warns). The annotator asserts every original key/value survives and that the original bytes remain a strict prefix: the three new keys are inserted before the closing brace, so not one original byte moved.
+
+Effect: the hermes-canopy QA lane's cwd-relative board writes now land on the owner board and are dispatchable. Definition of done for this class of fix is per-directory — the link exists only where it was created.
+
+### 5.4 Strand census after the fix — one honest exception
+
+Same method as §2 (`os.path.islink` on `<dir>/.coding-hermes/board`, parse `tasks.jsonl` in real dirs), run **after** the swap:
+
+| root | dirs | satellite-linked | unlinked **with rows** |
+|---|---|---|---|
+| `/home/kara/.hermes/stand-in/pm` | 48 | **16** (was 15) | **0** (was 1) |
+| `/home/kara/.hermes/stand-in/pm-lane` | 16 | 5 | 0 |
+| `/home/kara/.hermes/stand-in/dogfood` | 43 | 13 | 0 |
+| `/home/kara/.hermes/sync-workdirs` | 51 | 12 | **1 — `heading-sync`, 4 rows** |
+
+**Residual, stated plainly: zero stranded rows remain in the QA-lane class.** Every surveyed `stand-in` root (`pm`, `pm-lane`, `dogfood`) now has 0 unlinked boards holding rows — the QA-lane strand count is 0. The one remaining strand is **not** a QA lane and **not** in the surveyed stand-in roots: `/home/kara/.hermes/sync-workdirs/heading-sync/.coding-hermes/board/tasks.jsonl` holds **4 pending rows** (`HSYNC-DF-001` P0, `HSYNC-DF-002` P1, `HSYNC-DF-003` P1, `HSYNC-DF-004` P2), all **0 hits** on the heading owner board (`/home/kara/heading/.coding-hermes/board/tasks.jsonl`), with the stand-in `board` still a real directory. **Not touched by this tick** — different project and a different lane class (sync), outside the DF-H3PM-06 canopy scope. It is the same defect class and deserves its own board row.
+
+### 5.5 The #407 deferral record (RESOLVED — kept verbatim for history)
+
+Everything from here to the end of this section is the §5 text as written at tick #407, extracted from this file and embedded byte-for-byte. It is retained unedited; the sections above supersede its **status**, not its history. Its original heading was:
+
+`## 5. DEFERRED — the hermes-canopy leg`
+
 
 **Not touched this tick.** Nothing under `/home/kara/hermes-canopy`, its git tree, or `/home/kara/.hermes/stand-in/pm/hermes-canopy` was modified (the stand-in dir still holds its own real `board` dir; the owner board was read only).
 
@@ -117,6 +230,8 @@ Still stranded in that stand-in: **1 row** — `QA-HERMES-CANOPY-QA-1` [P3] "Col
 Related owner-board context (read-only): the canopy owner board already carries the open row **`QA-HERMES-CANOPY-10`** whose text is *"hermes-canopy-qa is re-picked every cycle against an empty stand-in workdir"* (both the id and the phrase match once each). Canopy QA ids top out at **11**, so `QA-HERMES-CANOPY-12` is the next free owner id for the deferred recovery.
 
 Deferred plan: when the canopy lanes are idle — (a) append `QA-HERMES-CANOPY-QA-1` to `/home/kara/hermes-canopy/.coding-hermes/board/tasks.jsonl` as `QA-HERMES-CANOPY-12` with the same provenance field set, (b) rename-and-link `/home/kara/.hermes/stand-in/pm/hermes-canopy/.coding-hermes/board` → `board.pre-satellite-20260919` + symlink to the canopy owner board, (c) annotate the preserved row with `moved_to`/`moved_ids`/`moved_at`. Acceptance is not met for the canopy leg until that lands.
+
+**Resolution at tick #408:** steps (a) and (b) landed as planned, and (c) landed with the key set `moved_to`/`moved_at`/`moved_note` — the plan's `moved_ids` was NOT written; the single recovered id lives in `moved_to` (value `["QA-HERMES-CANOPY-12"]`), which is the recovered-row id shape used for the off-by-one leg as well. Acceptance for the canopy leg is now met.
 
 ## 6. Verification commands and actual results
 
