@@ -2,8 +2,10 @@
 
 **Scope:** the stand-in PM ledger at `~/.hermes/stand-in/ledger.json` and every project board
 (`<workdir>/.coding-hermes/board/tasks.jsonl`) it is compared against.
-**Status:** the reconciler exists and has been run for `h3` (tick #397). The PM-cycle behaviour in
-the last section is required of the lane, not yet enforced by it.
+**Status:** there is exactly ONE reconciler — the canonical fleet-ops implementation (see *Scope and
+residual*) — and it has been run for `h3` (tick #397). This repo's `scripts/` copy is a delegation
+shim, not a second implementation. The PM-cycle behaviour in the last section is required of the
+lane, not yet enforced by it.
 
 ## Why the ledger overstates open work
 
@@ -12,9 +14,9 @@ finding, each carrying its **own** status (`added`, `picked_up`, `verified`, `st
 `added_at`, `last_checked_at`, `pass_criteria` and `verification_evidence`. The work itself is closed
 on the project's board — the ledger was never read back against that board, so the two stores drifted.
 
-Measured before this tick's reconciliation: **154** ledger items were in a non-terminal state
-(`added` or `picked_up`) while **60** of them were already `status=complete` on their project's board
-and **5** had no matching board row at all.
+Measured before this tick's reconciliation (tick #397 — HISTORICAL, see the banner below): **154**
+ledger items were in a non-terminal state (`added` or `picked_up`) while **60** of them were already
+`status=complete` on their project's board and **5** had no matching board row at all.
 
 Two costs, both paid every cycle:
 
@@ -23,30 +25,33 @@ Two costs, both paid every cycle:
   from a ledger row the foreman already finished.
 - **The prior-run pass re-checks closed rows.** A cycle that re-reads `pass_criteria` for every
   "open" item spends its budget re-running checks whose answer is already on the board. In the `h3`
-  slice, *all ten* open ledger items were already complete on the board — a full cycle's budget for
-  that project produced nothing.
+  slice measured at tick #397, *all ten* open ledger items were already complete on the board — a
+  full cycle's budget for that project produced nothing.
 
-The fix is reconcile-on-read: read the board row before treating a ledger item as due, stamp
-`completed_at` when the board shows the work is closed, and report the reconciled number.
+The fix is reconcile-on-read: read the board row before treating a ledger item as due, stamp the
+ledger item `verified` (the canonical tool writes exactly `status`, `last_checked_at` and
+`verification_evidence`) when the board shows the work is closed, and report the reconciled number.
 
-## Measured at 2026-09-19 (tick #397, before reconciliation)
+## Measured at 2026-09-19 (tick #397) — HISTORICAL, NOT CURRENT
+
+**BANNER: HISTORICAL, MEASURED AT TICK #397, NOT CURRENT.** These counts were taken at tick #397 by
+the duplicate implementation this repo has since removed — the `--project` / `--all` / `--json` flags
+went with it (see *Removed duplicate-only flags* in the recipe). They are the measurement that opened
+H3-GAP-093; **never quote them as live** — re-run the canonical tool for current numbers. The
+raw-count staleness class is tracked as DF-H3PM-05.
 
 154 ledger items status added/picked_up — 60 already complete on their boards, 5 with no matching board row (hivemind-work HW-GAP-006..010), 89 genuinely open. h3 slice: 10 of 10 already complete on the board.
 
 Ledger status histogram over all 2141 items at the same moment (`verified` 1983, `added` 129,
-`picked_up` 25, `stale` 3, `blocked` 1). The classification was made by the tool below, against the
-board resolved through the scheduler db:
+`picked_up` 25, `stale` 3, `blocked` 1). The `before.totals` payload shape those numbers came in
+belonged to the removed duplicate and is gone with it: the canonical tool classifies **aged**
+non-terminal items and prints its own categories per project (`drift_closable`, `board_open_work`,
+`stale_drift`, `stale_terminal`, `board_missing`, `no_id_match`, `ambiguous`, `age_unknown`),
+repeated as a machine-readable summary JSON between `<<<RECONCILE-SUMMARY-JSON-BEGIN>>>` /
+`<<<RECONCILE-SUMMARY-JSON-END>>>` markers. The same read today is one flagless command:
 
-```
-$ python3 scripts/ledger-board-reconcile.py --all --json | python3 -c "import json,sys;print(json.dumps(json.load(sys.stdin)['before']['totals'],indent=2))"
-{
-  "projects": 51,
-  "unresolved_board": 6,
-  "open_items": 154,
-  "already_complete": 60,
-  "still_open": 89,
-  "no_board_row": 5
-}
+```bash
+python3 ~/.hermes/stand-in/ledger_board_reconcile.py     # dry run, read-only
 ```
 
 The 5 `no_board_row` items are all `hivemind-work` (`HW-GAP-006`..`HW-GAP-010`): that project's board
@@ -54,53 +59,72 @@ holds 106 rows and none of them carries those ids. They are named below, not clo
 
 ## Recipe
 
-Dry run (read-only — the default). Prints a per-project table, fleet totals, and the item list behind
-`already_complete` and `no_board_row`:
+The canonical tool's CLI is the only CLI: `[-h] [--apply] [--ledger LEDGER] [--scheduler-db
+SCHEDULER_DB] [--backup-suffix BACKUP_SUFFIX]`. Dry run is the default and is read-only — it prints
+the board resolution, the per-project classification, the totals and the summary JSON:
 
 ```bash
-python3 scripts/ledger-board-reconcile.py --project h3      # one project (--project repeats)
-python3 scripts/ledger-board-reconcile.py --all             # every project named in the ledger
+python3 ~/.hermes/stand-in/ledger_board_reconcile.py             # dry run — every swept project
+python3 ~/.hermes/stand-in/ledger_board_reconcile.py --apply     # write the reconciliation
+python3 ~/.hermes/stand-in/ledger_board_reconcile.py \           # alternate ledger / scheduler db
+    --ledger ~/.hermes/stand-in/ledger.json \
+    --scheduler-db ~/.hermes/coding-hermes/scheduler.db
 ```
 
-Machine-readable, one JSON object on stdout — `ledger`, `db`, `applied`, `before.{projects,totals}`
-and, with `--apply`, `after` in the same shape:
+`scripts/ledger-board-reconcile.py` in this repo is a **shim** (H3-GAP-093 residual a). Run it with
+any flag above and it resolves the canonical tool (override: `LEDGER_RECONCILE_CANONICAL`), prints
+the canonical path it resolved to stderr, delegates with your argv unchanged and exits with the
+canonical tool's exit code — `--help` works with no host dependency:
 
 ```bash
-python3 scripts/ledger-board-reconcile.py --all --json
+python3 scripts/ledger-board-reconcile.py --help                 # shim contract, exit 0
+python3 scripts/ledger-board-reconcile.py --apply                # == the canonical --apply
+LEDGER_RECONCILE_CANONICAL=/tmp/other-reconciler.py \
+    python3 scripts/ledger-board-reconcile.py                    # delegate to another copy
 ```
 
-Write the reconciliation. Additive-only: it touches **only** items classified `ALREADY_COMPLETE`,
-setting `status="verified"`, `completed_at`, `last_checked_at` (same UTC timestamp) and a
-`verification_evidence` string naming the board row and this tool. Every other key and value is
-carried over verbatim and in its original order; `STILL_OPEN` and `NO_BOARD_ROW` items are not
-modified at all:
+**Removed duplicate-only flags.** `--project`, `--all` and `--json` belonged to the duplicate
+implementation removed in this commit and exist in neither tool now — there is no per-project
+selector left to use, and its `before.totals` / `after` JSON payload is gone (the canonical
+machine-readable output is the summary JSON block above). Any script still passing them fails with
+the canonical tool's usage error; the invocations preserved below are historical transcripts, not
+recipes. When the canonical tool is missing the shim exits `2`, prints one stderr line naming the
+canonical source path, and writes no reconciliation — it never falls back to local logic.
+
+Write the reconciliation. Additive-only: `--apply` touches **only** the aged items whose board row is
+terminal (`drift_closable`, `stale_drift`) and writes exactly three fields — `status="verified"`,
+`last_checked_at`, and a `verification_evidence` string naming the board row. Items whose board row
+is open (`board_open_work`, `stale_terminal`), items with no matching row (`no_id_match`,
+`board_missing`), `ambiguous` items and items with an unparseable `added_at` (`age_unknown`) are
+never modified:
 
 ```bash
-python3 scripts/ledger-board-reconcile.py --project h3 --apply
-python3 scripts/ledger-board-reconcile.py --all --apply
+python3 ~/.hermes/stand-in/ledger_board_reconcile.py --apply
+python3 ~/.hermes/stand-in/ledger_board_reconcile.py --apply \
+    --backup-suffix bak-20260919        # names the pre-write backup
 ```
 
-**PM-lane lockout.** The ledger is single-writer and the project's PM lane owns it while it runs.
-Before mutating anything, `--apply` probes `http://localhost:9090/api/v1/ticks` (10s timeout) and
-aborts **without writing** when any *running* tick's `project_name` ends with `-pm`:
+**Write safety.** The ledger is single-writer. `--apply` copies it to a `<BACKUP_SUFFIX>` backup,
+then atomically rewrites it (same-directory tmp file + `os.replace`), preserving the file's existing
+JSON formatting. The canonical tool has **no** PM-lane/tick-API lockout: the `--force` flag and the
+exit-3 probe belonged to the duplicate removed in this commit and nothing replaced them, so the
+single-writer discipline is the lane's own — do not run `--apply` while a `-pm` tick is live. Ops
+work in this repo uses the default dry run only; the sweep's write is the PM lane's call.
 
-```
-ABORT: <project> PM lane is running — the ledger is owned by that lane while it runs
-```
-
-An unreachable tick API is also a refusal (`exit 3`) — the tool cannot prove the lane is idle — and
-proceeds only when `--apply` is combined with an explicit `--force`. When the apply does run it takes
-an exclusive `fcntl.flock` on the ledger for the whole read-modify-write, re-reads the file inside the
-lock, writes a `ledger.json.bak-<UTC ts>` backup before the first mutation, and `os.replace()`s a
-same-directory tmp file into place.
-
-Exit codes: `0` ok, `1` ledger missing/unparseable, `2` usage error, `3` apply refused.
-The tool is read-only unless `--apply` is passed; with `--all` or `--project` missing it prints usage
-to stderr and exits 2.
+Exit status: the shim exits `0` for `--help` and `2` when the canonical tool is missing (naming the
+canonical source path); for every other invocation the canonical tool's own exit code is passed
+through unchanged.
 
 ## Result
 
-`h3` slice, before (dry run):
+**BANNER: HISTORICAL, MEASURED AT TICK #397, NOT CURRENT.** Every transcript below was recorded at
+tick #397 with the duplicate implementation this commit removes; its `--project` / `--json` command
+lines are quoted as the invocation *then* and are not runnable now (REMOVED FLAGS — see *Recipe →
+Removed duplicate-only flags*). They are kept as the record of what was applied; for a live reading
+use the canonical commands in *Recipe*.
+
+`h3` slice, before (dry run) — historical invocation, using the REMOVED duplicate-only flag
+`--project`, recorded verbatim:
 
 ```
 $ python3 scripts/ledger-board-reconcile.py --project h3
@@ -126,7 +150,8 @@ ALREADY_COMPLETE — 10 item(s) the board already closed:
   h3 H3-PM-009 [board=complete] specs/09 documents a --json summary/regions payload + jq gate t…
 ```
 
-`--apply`, tail (the table and item list above repeat; only the last lines are shown):
+`--apply`, tail — historical invocation (REMOVED flag `--project`); the table and item list above
+repeat, only the last lines are shown:
 
 ```
 $ python3 scripts/ledger-board-reconcile.py --project h3 --apply
@@ -136,7 +161,8 @@ before:        {"already_complete": 10, "no_board_row": 0, "open_items": 10, "pr
 after:         {"already_complete": 0, "no_board_row": 0, "open_items": 0, "projects": 1, "still_open": 0, "unresolved_board": 0}
 ```
 
-After (the same read command as before, i.e. evidence the items left the open set) — full payload:
+After — historical invocation (REMOVED flags `--project --json`); the same read as before, i.e.
+evidence the items left the open set, showing the duplicate's full payload:
 
 ```
 $ python3 scripts/ledger-board-reconcile.py --project h3 --json
@@ -173,7 +199,9 @@ keys is unchanged, and `completed_at` sits immediately after `status`. A second 
 slice is a no-op: 0 items treated, no new backup, ledger byte-identical (`sha256` unchanged).
 
 Safety branches exercised against a **copy** of the ledger with a local stub ticks endpoint, so no
-live ledger was at risk:
+live ledger was at risk. These cases exercise the **duplicate's** tick-API lockout / `--force` path,
+which this commit removed — the canonical tool has no such probe (see *Write safety*) — so they are
+recorded as history, not as behaviour to expect:
 
 | case | ticks endpoint | result |
 |---|---|---|
@@ -182,44 +210,64 @@ live ledger was at risk:
 | PM lane running, `--apply` | stub returning `h3-pm` `running` | `ABORT: h3-pm PM lane is running — the ledger is owned by that lane while it runs`, `exit 3`, no backup, ledger `sha256` unchanged |
 | real fleet, `--apply` | live API (9 running ticks, none `-pm`) | no abort, write performed — this is the case above that ran for real |
 
-## Required PM-cycle behaviour
+## Required PM-cycle behaviour (the contract)
 
-The lane, not this tool, decides what a cycle does with the numbers. A cycle is only reconciled when
-it does all four:
+The lane, not the tool, decides what a cycle does with the numbers. **The contract: reconcile BEFORE
+listing anything**, then report the board-derived open count and NAME every bucket on the cycle
+report — never the raw `added`/`picked_up` count:
 
-1. **Reconcile on read.** Before listing a ledger item as due, read its board row (id → status) and
-   classify: board status in `complete`/`closed`/`done`/`cancelled` = closed; any other status = open;
-   no row = no board row.
-2. **Stamp `completed_at`** on ledger items whose board row is complete — the timestamp of the check
+| bucket (required name) | canonical category | meaning | closed by a write? |
+|---|---|---|---|
+| already-complete-on-board | `drift_closable`, `stale_drift` | board row exists and is terminal | yes — the only automatic closure |
+| still-open | `board_open_work`, `stale_terminal` | board row exists, not terminal | **never** |
+| no-board-row | `no_id_match`, `ambiguous` | board resolved, but no row (or several fuzzy candidates) for the ledger id | **never** (manual review only) |
+| unresolved | `board_missing`, `age_unknown` | no board could be resolved for the project, or the item's `added_at` is unparseable | **never** |
+
+A cycle is only reconciled when it does all four:
+
+1. **Reconcile before listing.** Run the reconciler (dry run) *before* listing an item as due and
+   classify against the board row: board status in `complete`/`closed`/`done`/`cancelled` =
+   already-complete-on-board; any other status = still-open; no row = no-board-row; no resolvable
+   board = unresolved.
+2. **Stamp the closures** on ledger items whose board row is terminal — the timestamp of the check
    that observed the closure, plus `verification_evidence` naming the board row and the reconciler.
    Do not re-open, and do not touch items the board still shows as open.
-3. **Report the reconciled number**, never the raw `added`/`picked_up` count: `open = still_open`
-   (board-open), with `already_complete` and `no_board_row` reported alongside it as separate lines.
-4. **Name every residual disagreement** in the cycle report — each `STILL_OPEN` item (board row
-   exists, board does not consider it closed: the ledger's real backlog) and each `NO_BOARD_ROW` item
-   (no board row: the finding is filed nowhere the board can see). A silent close of either class is
-   forbidden: only the board decides closure.
+3. **Report the reconciled number**, never the raw `added`/`picked_up` count: the open count is the
+   board-derived still-open figure (`board_open_work` + `stale_terminal`), with
+   already-complete-on-board, no-board-row and unresolved reported alongside it as separate lines.
+4. **Name every bucket** in the cycle report — each still-open item (board row exists, board does not
+   consider it closed: the ledger's real backlog), each no-board-row item (the finding is filed
+   nowhere the board can see) and each unresolved project. **Never auto-close a still-open or
+   no-board-row item**: only the board decides closure, and a silent close of either class destroys
+   exactly the disagreement this tool exists to surface.
 
 ## Scope and residual
 
-- **Related tooling (overlap, stated honestly).** A PM-lane reconciler already existed fleet-side
-  before this tick: `~/.hermes/stand-in/ledger_board_reconcile.py` → a symlink to
-  `ops/pm-standin/ledger_board_reconcile.py` in the scheduler repo (MYPROJECT-GAP-047/049, commit
-  1efacf7, 2026-09-13), dry-run by default, with a wider bucket set (`drift_closable`, `stale_drift`,
-  `board_open_work`, `board_missing`, `no_id_match`, `ambiguous`, `age_unknown`) and its own
-  pre-write backup. So the drift measured above was **not** caused by a missing tool — it was caused
-  by the PM cycle never calling one: the `coding-hermes-project-manager` skill's Step 1 tells the lane
-  to eyeball each item's board row, names no tool, and nothing on this host schedules the ops script.
-  This repo's `scripts/ledger-board-reconcile.py` is the versioned twin (same verified mapping,
-  one command, the same PM-lane lockout rule, `--apply` additive-only). The wiring fix — Step 1 of
-  the PM cycle runs a reconciler before listing anything and reports the reconciled number — is
+- **There is ONE reconciler (H3-GAP-093 residual a).** The canonical implementation is
+  `ops/pm-standin/ledger_board_reconcile.py` in the coding-hermes-scheduler repo
+  (MYPROJECT-GAP-047/049, commit 1efacf7, 2026-09-13), deployed by `ops/pm-standin/install.sh` as the
+  live symlink `~/.hermes/stand-in/ledger_board_reconcile.py` and shipped with the unittest suite
+  `ops/pm-standin/test_ledger_board_reconcile.py`. It is canonical because it is the **deployed live
+  file** and the retired PM driver's digest generator (`ops/pm-standin/pm-standin-tick.sh`) imports it
+  — the ledger digest and the reconciler therefore share ONE classification, and the tool the fleet
+  actually runs is the only one that can drift. `scripts/ledger-board-reconcile.py` in this repo was a
+  second copy (tick #397) and is now a **delegation shim**: canonical flags only, argv passed through
+  unchanged, the canonical exit code preserved, and exit `2` naming the canonical source path when the
+  tool is absent. The duplicate implementation was removed with it — its own
+  `--project`/`--all`/`--json` CLI, its own `ALREADY_COMPLETE`/`STILL_OPEN`/`NO_BOARD_ROW`
+  classification, its `before.totals` JSON and its PM-lane lockout.
+  The drift measured above was **not** caused by a missing tool — it was caused by the PM cycle never
+  calling one: the `coding-hermes-project-manager` skill's Step 1 told the lane to eyeball each item's
+  board row, names no tool, and nothing on this host schedules the ops script. The wiring fix — Step 1
+  of the PM cycle runs the reconciler before listing anything and reports the reconciled number — is
   tracked on this board as **H3-GAP-093**.
 
 - The tool reconciles the **ledger** — fleet data at `~/.hermes/stand-in/ledger.json`, which is not
-  committed in this repo. The `h3` slice above was applied to the live ledger; the other 144 open
-  items were left alone by this tick, and 50 of those are `ALREADY_COMPLETE` for other projects
-  (fleet totals after the `h3` apply: 144 open / 50 already complete / 5 no board row / 89
-  still open) — applying the fleet-wide sweep is a separate decision that belongs to the PM lane.
+  committed in this repo. The `h3` slice above was applied to the live ledger at tick #397; the other
+  144 open items were left alone by that tick, and 50 of those are already complete on their boards
+  (fleet totals after the `h3` apply, all figures tick #397: 144 open / 50 already complete / 5 no
+  board row / 89 still open) — applying the fleet-wide sweep is a separate decision that belongs to
+  the PM lane.
 - **The PM lane prompt/skill change is fleet-side and tracked separately.** Nothing in this repo can
   make a cycle call the reconciler; until the lane does, the ledger drifts again on the next filing.
 - **The 5 `hivemind-work` rows with no board row are named, not closed**: `HW-GAP-006` (Go version
@@ -227,14 +275,16 @@ it does all four:
   (bare `hivemind serve` defaults to `:8080`), `HW-GAP-009` (three competing startup narratives),
   `HW-GAP-010` (fresh-clone quickstart cannot produce the web UI). They need a board row or a
   withdrawal, and either decision belongs to the PM lane and that project's foreman.
-- **`STILL_OPEN` is untouched by design.** 89 items fleet-wide have a board row whose status is not
-  terminal. The tool never writes them: the board's own answer is "not closed", and inventing a
-  ledger status for it would destroy exactly the disagreement this tool exists to surface.
+- **Still-open items are untouched by design.** 89 items fleet-wide at tick #397 have a board row whose
+  status is not terminal; the canonical tool reports them as `board_open_work` and never writes them:
+  the board's own answer is "not closed", and inventing a ledger status for it would destroy exactly
+  the disagreement this tool exists to surface.
 - **6 swept projects have no resolvable board** — `bankai` (db row present, board file absent) and
   `get-h3/shim`, `h3-sdk-go`, `h3-sdk-python`, `h3-sdk-typescript`, `helios-work` (no db row at all).
   They hold 0 reconcilable items today, so they change no number — but they are reported as
-  `unresolved_board` rather than skipped, so a project that starts filing items while unresolved is
-  visible instead of silently counted as clean.
-- **The lockout probe reads the tick API's most recent 50 ticks.** A `-pm` tick older than that
-  window would not be seen; running ticks are the newest rows, so this is a narrow gap, but it is a
-  gap — `--apply` is not a substitute for the lane's own single-writer discipline.
+  unresolved (`board_missing` in the canonical tool) rather than skipped, so a project that starts
+  filing items while unresolved is visible instead of silently counted as clean.
+- **No lockout probe survives the duplicate.** The removed duplicate read the tick API's most recent
+  50 ticks and refused `--apply` while a `-pm` tick ran; the canonical tool has no such probe — it is
+  dry-run by default and writes atomically under a backup — so a `--apply` is not a substitute for the
+  lane's own single-writer discipline.
