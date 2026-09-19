@@ -202,6 +202,19 @@ it does all four:
 
 ## Scope and residual
 
+- **Related tooling (overlap, stated honestly).** A PM-lane reconciler already existed fleet-side
+  before this tick: `~/.hermes/stand-in/ledger_board_reconcile.py` → a symlink to
+  `ops/pm-standin/ledger_board_reconcile.py` in the scheduler repo (MYPROJECT-GAP-047/049, commit
+  1efacf7, 2026-09-13), dry-run by default, with a wider bucket set (`drift_closable`, `stale_drift`,
+  `board_open_work`, `board_missing`, `no_id_match`, `ambiguous`, `age_unknown`) and its own
+  pre-write backup. So the drift measured above was **not** caused by a missing tool — it was caused
+  by the PM cycle never calling one: the `coding-hermes-project-manager` skill's Step 1 tells the lane
+  to eyeball each item's board row, names no tool, and nothing on this host schedules the ops script.
+  This repo's `scripts/ledger-board-reconcile.py` is the versioned twin (same verified mapping,
+  one command, the same PM-lane lockout rule, `--apply` additive-only). The wiring fix — Step 1 of
+  the PM cycle runs a reconciler before listing anything and reports the reconciled number — is
+  tracked on this board as **H3-GAP-093**.
+
 - The tool reconciles the **ledger** — fleet data at `~/.hermes/stand-in/ledger.json`, which is not
   committed in this repo. The `h3` slice above was applied to the live ledger; the other 144 open
   items were left alone by this tick, and 50 of those are `ALREADY_COMPLETE` for other projects
