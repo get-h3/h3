@@ -6,12 +6,21 @@
 .vfs/graph/.last_reconcile
 .vfs/graph/.parse_cache.json
 .vfs/.dirty
-# The whole .vfs working-state directory is rebuildable runtime state, not repo
-# content (QA-H3-9: a runtime marker showed up as an untracked stray because only
-# individual file names were ignored). Curated artifacts stay tracked regardless —
-# .vfs/manifest.yaml and .vfs/graph/edges.jsonl are committed and remain so; add any
-# new intended artifact explicitly with `git add -f`.
-.vfs/
+# The .vfs working-state directory is rebuildable runtime state, not repo content
+# (QA-H3-9: a runtime marker showed up as an untracked stray because only individual
+# file names were ignored). The directory's CONTENTS are ignored — the directory itself
+# is not excluded, because git cannot re-include a file whose parent directory is
+# excluded. The curated artifacts .vfs/manifest.yaml and .vfs/graph/edges.jsonl are
+# committed and stay tracked, and an ordinary `git add` stages them — no `-f` needed.
+.vfs/*
+# Curated artifact (committed) — explicitly unignored so plain `git add` works.
+!.vfs/manifest.yaml
+# .vfs/graph/ must be re-included as well for the negation below to reach its contents.
+!.vfs/graph/
+# Everything else under .vfs/graph/ is rebuildable runtime state.
+.vfs/graph/*
+# Curated artifact (committed) — explicitly unignored so plain `git add` works.
+!.vfs/graph/edges.jsonl
 
 # Dagger MCP runtime state (never commit — recreated by worker sessions)
 dagger.db
