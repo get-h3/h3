@@ -183,6 +183,7 @@ All SDKs generate their types from the same OpenAPI spec. A change to the protoc
 - **Build guide:** [`docs/guide.html`](docs/guide.html) — "Build Your First H3 Harness" tutorial
 - **Migration guide:** [`docs/migration.html`](docs/migration.html) — migrating from native Hermes to H3
 - **Integration guide:** [`docs/integration.md`](docs/integration.md) — for external harness developers (OpenCode, Consensus, CrewAI, LangChain) wiring H3 into their own systems
+- **Release guide:** [`docs/releases.md`](docs/releases.md) — tag convention, how to pin and verify a tagged release (`git checkout v0.1.0 && make verify`), and what `make verify` does and does not cover
 
 ## Compliance
 
