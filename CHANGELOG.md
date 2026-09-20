@@ -2,6 +2,46 @@
 
 All notable changes to the H3 protocol and umbrella project.
 
+## [0.2.0] — 2026-09-20
+
+Second tagged release of the umbrella repo, cut by the release driver added in
+this cycle (RELEASE-H3-005; authorized once the v0.1.0 release-lane work
+RELEASE-H3-002..004 had landed).
+
+### Added
+- `scripts/release.sh` + `make release` (RELEASE-H3-003): the umbrella release
+  driver — dry-run by default, refuses a dirty tree, runs `make verify` and
+  asserts the gate's own ALL PASS line, computes MAJOR/MINOR/PATCH from the
+  commit range, refuses to move a pushed tag, promotes the CHANGELOG, pushes
+  the tag only (never the branch), and publishes + verifies the GitHub Release
+  object.
+- CI-green-on-HEAD for path-filtered ranges (RELEASE-H3-004): the driver (and
+  `--verify-ci`) dispatch `pages.yml` + `roundtrip.yml` via `workflow_dispatch`,
+  assert PER-JOB and PER-STEP success (a run-level green is not evidence —
+  pages.yml carries a continue-on-error step), wait a bounded window, and cite
+  the run ids. The absence of a push-event run on a board-only or specs-only
+  range is UNVERIFIED — neither red nor green.
+
+### Changed
+- v0.1.0 re-issued as a real GitHub Release object (RELEASE-H3-002): it had sat
+  tag-only since 2026-09-18, invisible to `gh release list` and the Releases tab.
+- Releng sweep 2026-09-20 (RELEASE-H3-001): v0.2.0 declared GO; the cut is
+  authorized by RELEASE-H3-005, gated on RELEASE-H3-002..004.
+- 42 operator-decision board rows (LOGSEY/PULSE/LORE/DIGEST families) marked
+  blocked-operator with the owning decision recorded (H3-GAP-097).
+- PM-ledger reconciliation is a single implementation that stops the stand-in
+  PM ledger from overstating open work (H3-GAP-093).
+
+### Fixed
+- False sibling-tag claim in the v0.1.0 notes: sdk-go's tag range is
+  v0.1.0–v0.1.6.
+- Curated `.vfs` artifacts stageable again (ignore vs tracked paths,
+  H3-GAP-094); the whole `.vfs` working-state directory is ignored (QA-H3-9).
+- JSON-fence guard validates in one batched pass instead of one interpreter
+  spawn per fence (GAP-075).
+- DuckBrain tick-key write gaps reconciled from board evidence (405/409
+  standing; 415–421 backfilled from the tick records).
+
 ## [0.1.0] — 2026-09-18
 
 First tagged release of the umbrella repo. The Added/Changed/Fixed entries below
