@@ -28,20 +28,31 @@ pipeline:
       type: ai_eval
       on: [pre-eval]
       condition: "true"
-      max_iterations: -1
+      # Effective cap = MIN(stage, evaluator) -- an explicit stage value keeps the
+      # gate deterministic instead of relying on the -1 sentinel. Fleet rung 200
+      # (shim/sdk-go/protocol all run 200); h3 was the outlier at 50.
+      max_iterations: 200
       # 1M starved the rel-005 tier2 (1,050,997 tokens_in == cap, tier1 PASS, no
       # merits finding) — raised one rung to 2M per the corpus verdict for
       # gitreins-tier2-input-token-cap-exceeded (exact-equality = starvation,
       # direction UP, move every location the knob appears in).
-      max_input_tokens: "2M"
+      # Kept in lockstep with evaluator.max_input_tokens (6M): the tier2 gate is
+      # MIN(stage, evaluator), so a lower stage value would silently re-cap it.
+      max_input_tokens: "6M"
       max_output_tokens: "1M"
       max_time: "20m"
       tools: [read_file, run_command, search_pattern, read_diff, sandbox, detect_dead_code]
 
 evaluator:
-  max_iterations: 50
+  # Bound pair with the tier2 stage's max_iterations (effective = MIN of both).
+  # Raised 50 -> 200 after the nvd431 verdict returned INCOMPLETE "Iteration cap (50)
+  # reached (50.6 used)" (tier1 PASS). Sized from measured burn in .gitreins/usage.jsonl:
+  # 1,170,734 tokens_in over 50 iterations = ~23.4K tokens/iteration, so 200 iterations
+  # is ~4.7M; 2M -> 6M is the one-rung raise above it (one step up the fleet ladder).
+  # Per the corpus verdict for gitreins-tier2-iteration-cap-exceeded: move BOTH knobs.
+  max_iterations: 200
   max_time: 10m
-  max_input_tokens: 2M
+  max_input_tokens: 6M
   max_output_tokens: 1M
   tool_call_weight: 0.1
   compaction_threshold: 0.90
