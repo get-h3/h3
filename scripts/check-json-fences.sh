@@ -37,10 +37,30 @@
 #   with file:line.
 #
 # ENGINES
-#   python3 (preferred): `python3 -c 'import json,sys;json.load(sys.stdin)'` fed the block.
+#   Both engines take ONE process per guard run (GAP-075), not one per block. Each reads the
+#   job list (one payload path per line, in manifest order) and emits exactly one result line
+#   per job, in that order:
+#     OK
+#     <status><TAB><file><TAB><open-line><TAB><nested-count><TAB><payload><TAB><inner-line><TAB><msg>
+#
+#   python3 (preferred): ONE `python3 "$TMP/validate.py" "$TMP/jobs.txt"` runs the canonical
+#   json.load over every payload. The ENGINE SEMANTICS ARE UNCHANGED — same json.load, same
+#   blocks, same failure message derivation (last non-blank traceback line, `line N` pulled out
+#   of it, exception-class prefix stripped). Only the process count changed.
 #   Structural fallback (when python3 is absent): per-line unterminated-string detection plus
-#   brace/bracket balance. WEAKER — it cannot see a comma-less `...` member inside an array
-#   (python3 can), so it is a floor, not a parser; it announces itself loudly when used.
+#   brace/bracket balance, also batched into ONE awk process. WEAKER — it cannot see a
+#   comma-less `...` member inside an array (python3 can), so it is a floor, not a parser; it
+#   announces itself loudly when used.
+#
+#   WHY (GAP-075, fleet load-hygiene): the per-block form started one interpreter per ```json
+#   block — 65 python3 processes for 65 blocks in this repo, ~80% of `make verify` wall clock,
+#   and the only member of this repo's gate battery that fired a subprocess per artifact. The
+#   batch keeps the same blocks, the same engine, the same messages and the same exit codes; it
+#   removes 64 interpreter starts. Measured before/after: docs/verification/gap-075-load-hygiene.md
+#
+#   The batched engines are all-or-nothing: if the engine does not complete, or returns a result
+#   count that disagrees with the job count, the guard fails LOUD with exit 2 (misconfigured)
+#   instead of reporting a short run as a pass.
 #   No python3 AND no awk (extraction needs awk), or no usable temp dir: a LOUD `SKIP` line
 #   and exit 0 — this repo's other checks are zero-dependency, so a skip must never be silent.
 #
@@ -64,6 +84,10 @@ DEFAULT_ROOT=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
 # Failing-line placeholder tokens. One ERE; a leading `*` is written as `[*]` because a bare
 # leading `*` is undefined in POSIX ERE.
 PLACEHOLDERS='\.\.\.|/\*|[*]/'
+
+# Field separator for the batched engine's result lines (GAP-075). A literal tab, not a
+# whitespace-collapsing default: the engine echoes each job's own fields back.
+TAB=$(printf '\t')
 
 usage() {
     cat <<'EOF'
@@ -177,71 +201,156 @@ extract_blocks() {
 }
 
 # ---------------------------------------------------------------------------------------
-# Engines. Both print "<payload-relative-line> <message>" on failure and return 1.
+# Engines (batched — GAP-075). Each takes the JOB LIST as its single operand and prints one
+# result line per job, in job order:
+#     OK
+#     <status><TAB><file><TAB><open-line><TAB><nested-count><TAB><payload><TAB><inner-line><TAB><msg>
+# The job list is one record per validate-able block:  <file>|<open-line>|<nested-count>|<payload>
+# (the `|` framing already comes from the manifest — see extract_blocks).
 # ---------------------------------------------------------------------------------------
 write_structural_awk() {
     cat > "$TMP/structural.awk" <<'AWK'
 # Structural fallback payload check: per-line unterminated-string detection + brace/bracket
 # balance. NOT a JSON parser (no comma/colon/trailing-token checks) — see the header.
-BEGIN { depth = 0; bad = 0 }
-{
-    instr = 0
-    for (i = 1; i <= length($0); i++) {
-        c = substr($0, i, 1)
-        if (instr) {
-            if (c == "\\") { i++; continue }
-            if (c == "\"") instr = 0
-            continue
+# Batched: reads the job list given as the single operand and validates every payload in it,
+# resetting the per-file state at each job. The per-line semantics are those of the former
+# per-block form; only the process count changed (one awk for the whole run, GAP-075).
+BEGIN {
+    list = ARGV[1]
+    ARGV[1] = ""
+    rc = (getline job < list)
+    if (rc < 0) { print "structural: cannot read job list: " list > "/dev/stderr"; exit 2 }
+    while (rc > 0) {
+        if (job == "") { rc = (getline job < list); continue }
+        n = split(job, f, "|")
+        payload = f[4]
+        for (k = 5; k <= n; k++) payload = payload "|" f[k]
+        depth = 0; bad = 0; nline = 0; eline = 0; emsg = ""
+        prc = (getline ln < payload)
+        if (prc < 0) { bad = 1; eline = 0; emsg = "cannot read payload"; prc = 0 }
+        while (prc > 0) {
+            nline++
+            instr = 0
+            for (j = 1; j <= length(ln); j++) {
+                c = substr(ln, j, 1)
+                if (instr) {
+                    if (c == "\\") { j++; continue }
+                    if (c == "\"") instr = 0
+                    continue
+                }
+                if (c == "\"") { instr = 1; continue }
+                if (c == "{" || c == "[") { depth++; continue }
+                if (c == "}" || c == "]") {
+                    depth--
+                    if (depth < 0 && !bad) { eline = nline; emsg = "unexpected closing bracket '" c "'"; bad = 1 }
+                    continue
+                }
+            }
+            if (instr && !bad) { eline = nline; emsg = "unterminated string"; bad = 1 }
+            prc = (getline ln < payload)
         }
-        if (c == "\"") { instr = 1; continue }
-        if (c == "{" || c == "[") { depth++; continue }
-        if (c == "}" || c == "]") {
-            depth--
-            if (depth < 0 && !bad) { print FNR " unexpected closing bracket '" c "'" ; bad = 1 }
-            continue
-        }
+        close(payload)
+        if (!bad && depth != 0) { eline = nline; emsg = "unbalanced braces/brackets (depth " depth ")"; bad = 1 }
+        # The `structural: ` prefix is part of this engine's message format — the former
+        # per-block wrapper added it, and it is what tells a reader which engine spoke.
+        if (bad) printf "FAIL\t%s\t%s\t%s\t%s\t%d\tstructural: %s\n", f[1], f[2], f[3], payload, eline, emsg
+        else printf "OK\t%s\t%s\t%s\t%s\n", f[1], f[2], f[3], payload
+        rc = (getline job < list)
     }
-    if (instr && !bad) { print FNR " unterminated string" ; bad = 1 }
-}
-END {
-    if (!bad && depth != 0) { print FNR " unbalanced braces/brackets (depth " depth ")" ; bad = 1 }
-    exit bad ? 1 : 0
+    close(list)
+    exit 0
 }
 AWK
 }
 
-validate_python3() {
-    # The engine is the canonical one-liner; an uncaught JSONDecodeError prints a full
-    # traceback, so the machine-readable message is the LAST non-blank stderr line
-    # ("json.decoder.JSONDecodeError: Expecting value: line 3 column 5 (char 25)").
-    if E=$(python3 -c 'import json,sys;json.load(sys.stdin)' < "$1" 2>&1 >/dev/null); then
-        return 0
-    fi
-    LAST=$(printf '%s\n' "$E" | sed -n '/[^[:space:]]/p' | tail -n 1)
-    [ -n "$LAST" ] || LAST='python3 json.load failed with empty stderr'
-    L=$(printf '%s\n' "$LAST" | sed -n 's/.*line \([0-9][0-9]*\).*/\1/p' | head -n 1)
-    [ -n "$L" ] || L=$(printf '%s\n' "$E" | sed -n 's/.*line \([0-9][0-9]*\).*/\1/p' | head -n 1)
-    [ -n "$L" ] || L=0
-    MSG=$(printf '%s\n' "$LAST" | sed -e 's/^json\.decoder\.JSONDecodeError: //' -e 's/^[A-Za-z_][A-Za-z0-9_.]*Error: //')
-    printf '%s %s\n' "$L" "$MSG"
-    return 1
+write_python3_script() {
+    # Batched python3 engine (GAP-075): ONE interpreter for the whole job list. The engine is
+    # the canonical json.load; the failure derivation mirrors exactly what the former per-block
+    # form did with an uncaught traceback on stderr — take the last non-blank line, pull
+    # `line <N>` out of it, and strip the exception-class prefix.
+    cat > "$TMP/validate.py" <<'PY'
+import json
+import re
+import sys
+import traceback
+
+LINE_RE = re.compile(r"line (\d+)")
+PREFIX_RES = (
+    re.compile(r"^json\.decoder\.JSONDecodeError: "),
+    re.compile(r"^[A-Za-z_][A-Za-z0-9_.]*Error: "),
+)
+
+
+def derive(tb):
+    """The derivation the shell applied to python3's stderr in the per-block form."""
+    lines = [l for l in tb.splitlines() if l.strip()]
+    last = lines[-1] if lines else ""
+    m = LINE_RE.search(last)
+    if not m:
+        m = LINE_RE.search(tb)
+    line = m.group(1) if m else "0"
+    msg = last
+    for r in PREFIX_RES:
+        msg = r.sub("", msg)
+    # Framing guard: the result line is TAB-separated, so a tab or newline inside the message
+    # would break field pairing for the shell. Real json errors never carry one.
+    msg = msg.replace("\t", " ").replace("\r", " ").replace("\n", " ")
+    return line, msg
+
+
+def main():
+    out = sys.stdout
+    with open(sys.argv[1]) as jobs:
+        for raw in jobs:
+            job = raw.rstrip("\n")
+            if not job:
+                continue
+            fields = job.split("|", 3)
+            if len(fields) != 4:
+                out.write("FAIL\t?\t?\t?\t%s\t0\tmalformed job record\n" % (job,))
+                continue
+            bfile, bline, nested, payload = fields
+            try:
+                with open(payload) as fh:
+                    json.load(fh)
+            except Exception:
+                line, msg = derive(traceback.format_exc())
+                out.write("FAIL\t%s\t%s\t%s\t%s\t%s\t%s\n" % (bfile, bline, nested, payload, line, msg))
+                continue
+            out.write("OK\t%s\t%s\t%s\t%s\n" % (bfile, bline, nested, payload))
+    out.flush()
+
+
+if __name__ == "__main__":
+    main()
+PY
 }
 
-validate_structural() {
-    if E=$(awk -f "$TMP/structural.awk" "$1" 2>&1); then
-        return 0
-    fi
-    L=${E%% *}
-    printf '%s %s\n' "$L" "structural: ${E#* }"
-    return 1
-}
-
-validate() {
+run_engine() {
+    # ONE engine process for the whole run (GAP-075). Any non-zero engine exit, or a result
+    # count that disagrees with the job count, is a loud misconfiguration — never a pass.
+    NRES=0
+    RC=0
+    : > "$TMP/results.txt"
+    : > "$TMP/engine.err"
     if [ "$ENGINE" = python3 ]; then
-        validate_python3 "$1"
+        python3 "$TMP/validate.py" "$TMP/jobs.txt" > "$TMP/results.txt" 2> "$TMP/engine.err" || RC=$?
     else
-        validate_structural "$1"
+        awk -f "$TMP/structural.awk" "$TMP/jobs.txt" < /dev/null > "$TMP/results.txt" 2> "$TMP/engine.err" || RC=$?
     fi
+    if [ "$RC" -ne 0 ]; then
+        echo "FAIL: check-json-fences — the $ENGINE validation pass exited $RC; guard misconfigured" >&2
+        if [ -s "$TMP/engine.err" ]; then cat "$TMP/engine.err" >&2; fi
+        exit 2
+    fi
+    NRES=$(wc -l < "$TMP/results.txt" | tr -d '[:space:]')
+    if [ "$NRES" != "$TOTAL" ]; then
+        echo "FAIL: check-json-fences — the $ENGINE validation pass returned $NRES result(s) for $TOTAL block(s); guard misconfigured" >&2
+        if [ -s "$TMP/engine.err" ]; then cat "$TMP/engine.err" >&2; fi
+        exit 2
+    fi
+    if [ -s "$TMP/engine.err" ]; then cat "$TMP/engine.err" >&2; fi
+    return 0
 }
 
 # ---------------------------------------------------------------------------------------
@@ -269,11 +378,16 @@ run_guard() {
 
     write_extract_awk
     write_structural_awk
+    write_python3_script
     extract_blocks
 
     TOTAL=0
     ALLOWED=0
     FAILED=0
+
+    # Pass 1: walk the manifest once to count the blocks and build the job list. Nothing is
+    # validated here, so the engine can be a single process (GAP-075).
+    : > "$TMP/jobs.txt"
     while IFS='|' read -r bfile bline payload nested; do
         [ -n "$bfile" ] || continue
         if [ "$bfile" = "UNCLOSED" ]; then
@@ -285,14 +399,24 @@ run_guard() {
         [ -n "$payload" ] || continue
         [ -f "$payload" ] || continue
         TOTAL=$((TOTAL + 1))
+        printf '%s|%s|%s|%s\n' "$bfile" "$bline" "${nested:-0}" "$payload" >> "$TMP/jobs.txt"
+    done < "$TMP/manifest.txt"
+
+    # Pass 2: validate every block in ONE engine process, then report in manifest order. The
+    # engine echoes each job's own fields back, so a result line is self-identifying and the
+    # per-block attribution (file, absolute line, inner line) survives the batch.
+    run_engine
+
+    while IFS="$TAB" read -r status bfile bline nested payload rline rmsg; do
+        [ -n "$status" ] || continue
         if [ "${nested:-0}" -gt 0 ]; then
             echo "NOTE: check-json-fences — $bfile:$bline carries $nested line-initial nested fence(s); they are content per CommonMark but almost always an authoring accident" >&2
         fi
-        if ERR=$(validate "$payload" 2>&1); then
+        if [ "$status" = "OK" ]; then
             continue
         fi
-        L=${ERR%% *}
-        MSG=${ERR#* }
+        L=$rline
+        MSG=$rmsg
         case "$L" in
             ''|*[!0-9]*) L=0 ;;
         esac
@@ -307,9 +431,9 @@ run_guard() {
         else
             FAILED=$((FAILED + 1))
             printf 'check-json-fences: FAIL %s:%s — %s\n' "$bfile" "$FAILLINE" "$MSG" >&2
-            [ -n "$FAILTEXT" ] && printf '                   %s\n' "$FAILTEXT" >&2
+            if [ -n "$FAILTEXT" ]; then printf '                   %s\n' "$FAILTEXT" >&2; fi
         fi
-    done < "$TMP/manifest.txt"
+    done < "$TMP/results.txt"
 
     if [ "$FAILED" -eq 0 ]; then
         printf 'check-json-fences: PASS — %d json blocks scanned, %d allowed (abbreviated), 0 failures\n' "$TOTAL" "$ALLOWED"
