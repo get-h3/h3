@@ -29,7 +29,11 @@ pipeline:
       on: [pre-eval]
       condition: "true"
       max_iterations: -1
-      max_input_tokens: "1M"
+      # 1M starved the rel-005 tier2 (1,050,997 tokens_in == cap, tier1 PASS, no
+      # merits finding) — raised one rung to 2M per the corpus verdict for
+      # gitreins-tier2-input-token-cap-exceeded (exact-equality = starvation,
+      # direction UP, move every location the knob appears in).
+      max_input_tokens: "2M"
       max_output_tokens: "1M"
       max_time: "20m"
       tools: [read_file, run_command, search_pattern, read_diff, sandbox, detect_dead_code]
@@ -37,7 +41,7 @@ pipeline:
 evaluator:
   max_iterations: 50
   max_time: 10m
-  max_input_tokens: 1M
+  max_input_tokens: 2M
   max_output_tokens: 1M
   tool_call_weight: 0.1
   compaction_threshold: 0.90
