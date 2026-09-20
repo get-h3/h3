@@ -29,7 +29,7 @@ shipped in the untagged 2026-08 window; the tag is cut at the `main` commit wher
 ### Release
 - **First tagged release** of `get-h3/h3`: annotated tag `v0.1.0` on `main`.
 - **Tag convention:** `vX.Y.Z`, annotated (`git tag -a`), cut on `main` at a commit where `make verify` exits 0. A pushed tag is never moved.
-- The umbrella tags at each docs-shipped milestone. (Sibling-tag sentence corrected 2026-09-20, RELEASE-H3-002: it originally claimed `shim`, `sdk-go` and `sdk-python` all carry their own `v0.1.x` tags. Measured via `git ls-remote --tags` per repo: only sdk-go is tagged (v0.1.0–v0.1.2); shim, sdk-python and sdk-typescript carry NONE. Also fixed same day: an annotated tag alone does not create a GitHub Release object — the `v0.1.0` Release was published 2026-09-20.)
+- The umbrella tags at each docs-shipped milestone. (Sibling-tag sentence corrected 2026-09-20, RELEASE-H3-002: it originally claimed `shim`, `sdk-go` and `sdk-python` all carry their own `v0.1.x` tags. Measured via `git ls-remote --tags` per repo: only sdk-go is tagged (v0.1.0–v0.1.6); shim, sdk-python and sdk-typescript carry NONE. Also fixed same day: an annotated tag alone does not create a GitHub Release object — the `v0.1.0` Release was published 2026-09-20.)
 - **Compliance battery: 46 tests** — the canonical count lives in `scripts/test-count.txt`, and `make verify`'s count guard fails any current-state doc that quotes a retired count (43/44) or a per-region list that does not sum to 46.
 - Consumer recipe for pinning and verifying this tag: [`docs/releases.md`](docs/releases.md).
 
