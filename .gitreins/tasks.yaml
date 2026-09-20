@@ -115,3 +115,22 @@ tasks:
   status: complete
   created_at: '2026-09-20T02:33:20.947308+00:00'
   completed_at: '2026-09-20T02:46:02.004880+00:00'
+- id: h3-rel-001
+  title: Release readiness sweep evidence closure (RELEASE-H3-001)
+  criteria:
+  - make verify exits 0 and prints its 'ALL PASS' line at the committed HEAD.
+  - 'CHANGELOG.md contains exactly one heading starting with ''## [Unreleased]'';
+    that heading appears ABOVE the ''## [0.2.0]'' heading; and the four release-section
+    headings appear in reverse-chronological order: [Unreleased], [0.2.0] (2026-09-20),
+    [0.1.0] (2026-09-18), [1.0.0] (2026-07-19).'
+  - No dated [Unreleased] heading remains anywhere in CHANGELOG.md (the stale '##
+    [Unreleased] - 2026-09-20' block below [0.1.0] is gone), and the window substance
+    it carried was preserved rather than deleted.
+  - gh release view v0.2.0 --json isDraft reports false, and git rev-parse v0.2.0^{commit}
+    equals 11107682c2665342d7ee4cccc41747a9d692eba6.
+  - The release driver contract in docs/releases.md states that [Unreleased] is re-opened
+    EMPTY above the promoted section after every cut; CHANGELOG.md now satisfies that
+    invariant.
+  status: complete
+  created_at: '2026-09-20T13:01:52.301666+00:00'
+  completed_at: '2026-09-20T13:10:45.711465+00:00'
