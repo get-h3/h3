@@ -58,3 +58,14 @@ keeps them runnable on a dependency-free clone. Code-level verification is
 3. `git tag -a vX.Y.Z -m "…"` on that commit (annotated, on `main`).
 4. `git push origin vX.Y.Z` — the tag only, never the branch.
 5. Record the tag's 40-char sha on the cross-repo board.
+6. Publish the GitHub Release object — the tag alone is NOT one (RELEASE-H3-002:
+   `v0.1.0` sat tag-only from 2026-09-18 until 2026-09-20, invisible to
+   `gh release list` and anyone browsing the Releases tab):
+
+   ```bash
+   gh release create vX.Y.Z --title "vX.Y.Z" --notes-file <notes.md> --repo get-h3/h3
+   gh release view vX.Y.Z --repo get-h3/h3   # must exit 0
+   ```
+
+   `gh release create` on an existing tag attaches the Release to that tag — it
+   does not move or recreate it.
