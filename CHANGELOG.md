@@ -2,6 +2,11 @@
 
 All notable changes to the H3 protocol and umbrella project.
 
+## [Unreleased]
+
+Nothing yet. This section is re-opened empty by every cut; the substance that
+shipped in a release lives under that release's section below.
+
 ## [0.2.0] — 2026-09-20
 
 Second tagged release of the umbrella repo, cut by the release driver added in
@@ -42,6 +47,19 @@ RELEASE-H3-002..004 had landed).
 - DuckBrain tick-key write gaps reconciled from board evidence (405/409
   standing; 415–421 backfilled from the tick records).
 
+### Verification
+- E2E-001 closing run: 46/46 on `:9191`, window #412–#417; NEVER-DONE desk
+  audits #61–#64, read-only gate ALL PASS on every idle tick.
+- Window scope: work landed on `main` after the `v0.1.0` cut (tick #392, tag
+  `v0.1.0` at `482a316`) across foreman ticks #392–#422, which opened the
+  `RELEASE-H3-*` rows.
+- JSON-fence guard validates every tracked fenced block in one batched `python3`
+  pass instead of one interpreter per fence (GAP-075, `7bfb5b8`).
+- `.vfs` curated artifacts stageable again and the whole working-state directory
+  ignored (H3-GAP-094 / QA-H3-9).
+- Cross-repo gap work in this window: H3-GAP-086 (sdk-go quickstart port sync),
+  H3-GAP-095/096, H3-CI-002 (sdk-typescript round-trip, CI run 35421835252).
+
 ## [0.1.0] — 2026-09-18
 
 First tagged release of the umbrella repo. The Added/Changed/Fixed entries below
@@ -73,33 +91,6 @@ shipped in the untagged 2026-08 window; the tag is cut at the `main` commit wher
 - **An annotated tag is not a GitHub Release object.** The `v0.1.0` tag sat tag-only from 2026-09-18 until the Release was published 2026-09-20, invisible to `gh release list` (RELEASE-H3-002). `scripts/release.sh` / `make release` now performs both, and `docs/releases.md` names the steps.
 - **Compliance battery: 46 tests** — the canonical count lives in `scripts/test-count.txt`, and `make verify`'s count guard fails any current-state doc that quotes a retired count (43/44) or a per-region list that does not sum to 46.
 - Consumer recipe for pinning and verifying this tag: [`docs/releases.md`](docs/releases.md).
-
-## [Unreleased] — 2026-09-20
-
-Work landed on `main` after the `v0.1.0` cut (tick #392, tag `v0.1.0` at `482a316`).
-Foreman ticks #392–#422, with the release-engineering sweep of 2026-09-20 opening
-the `RELEASE-H3-*` rows.
-
-### Added
-- `scripts/release.sh` — the release driver, with `make release`: the cut is tooling now instead of prose, and it is dry-run by default (RELEASE-H3-003)
-- `scripts/ledger-board-reconcile.py` — one reconciler for the PM ledger against the JSONL board; the ledger had been overstating open work (H3-GAP-093)
-
-### Changed
-- The JSON-fence guard validates every tracked fenced block in a single batched `python3` pass instead of spawning one interpreter per fence (GAP-075, `7bfb5b8`)
-- Tracked-versus-local repo layout documented and the untracked local stores ignored (CLN-1); the whole `.vfs/` working-state directory is ignored (QA-H3-9)
-- Satellite-row discipline: PM-lane rows are recovered into the board of the workdir they were actually driven from (DF-H3PM-04/06/07), and DF-H3PM-05 pins quoted counts to their measurement commit
-- Stand-in PM cycle (2026-09-19): 3 falsified rows retired, 4 annotated, H3-GAP-097 added and closed for the 42 operator-decision rows
-
-### Fixed
-- The `v0.1.0` tag was invisible to `gh release list` from 2026-09-18; the GitHub Release object was published 2026-09-20 (RELEASE-H3-002)
-- The `[0.1.0]` Release note's sibling-tag claim was corrected to the measured state, and the `get-h3/sdk-go` tag range to `v0.1.0`–`v0.1.6` (`1bb16d9`)
-- A partial `.vfs` ignore rule left curated vfs artifacts unstageable (H3-GAP-094)
-- Cross-repo gap work landed with this window's ticks: H3-GAP-086 (sdk-go quickstart port sync), H3-GAP-095/096, H3-CI-002 (sdk-typescript round-trip, CI run 35421835252 SUCCESS)
-
-### Verification
-- E2E-001 closing run: 46/46 on `:9191`, window #412–#417
-- NEVER-DONE desk audits #61–#64; read-only gate ALL PASS on every idle tick
-- Release-engineering sweep 2026-09-20: 5 `RELEASE-H3-*` rows (v0.2.0 GO, `v0.1.0` tag-only, false tag claims, CI-on-HEAD gap)
 
 ## [1.0.0] — 2026-07-19
 
