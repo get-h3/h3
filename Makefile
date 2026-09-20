@@ -54,12 +54,29 @@
 #                       message reaches the user unchanged.
 #   make verify-all   — verify verify-roundtrip (composite: docs guards + code).
 #
+#   make release      — the RELEASE DRIVER (scripts/release.sh), RELEASE-H3-003.
+#                       DRY-RUN BY DEFAULT: it runs `make verify`, derives the
+#                       next version from the conventional commits since the
+#                       last tag (feat -> MINOR, breaking -> MAJOR, else PATCH),
+#                       proves the tag is unused locally and at origin, and
+#                       prints the exact steps a cut would take — mutating
+#                       nothing (no tag, no push, no CHANGELOG write, no gh
+#                       call). The cut itself needs the explicit opt-in:
+#                           bash scripts/release.sh --execute
+#                       which promotes the changelog, tags the verified commit
+#                       (`git tag -a`), pushes ONLY the tag, and creates +
+#                       verifies the GitHub Release object (`gh release
+#                       create` / `gh release view` — a tag alone is not a
+#                       Release, RELEASE-H3-002). It is deliberately NOT part
+#                       of `make verify`: promoting the changelog writes into
+#                       the repo, so it must never run in the gate.
+#
 # CI runs the round-trip only through .github/workflows/roundtrip.yml, which is
 # path-filtered to integration/roundtrip/** — so a docs-only push gets green CI
 # that never executed code. That filter is a deliberate design, not an accident;
 # the naming above is what makes the difference visible. See CONTRIBUTING.md.
 
-.PHONY: verify verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-qa-target-selftest verify-commit-msg verify-roundtrip verify-all
+.PHONY: verify verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-qa-target-selftest verify-commit-msg verify-roundtrip verify-all release
 
 verify: verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-commit-msg
 	@echo "make verify: ALL PASS — umbrella repo is self-consistent"
@@ -118,3 +135,10 @@ verify-roundtrip:
 	bash integration/roundtrip/roundtrip.sh
 
 verify-all: verify verify-roundtrip
+
+# The release driver. DRY-RUN BY DEFAULT — a bare `make release` runs the gate
+# and prints the plan without mutating anything (see the header comment above).
+# The cut is a separate, explicit opt-in:  bash scripts/release.sh --execute
+release:
+	@echo "make release: release driver (scripts/release.sh) — DRY-RUN by default; nothing is tagged, pushed or written"
+	@bash scripts/release.sh

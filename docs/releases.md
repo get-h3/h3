@@ -53,12 +53,37 @@ keeps them runnable on a dependency-free clone. Code-level verification is
 
 ## Cutting the next release
 
+Two paths, one destination: a tag **and** a published GitHub Release object.
+A tag on its own is not a release (RELEASE-H3-002).
+
+**The driver (preferred).** `scripts/release.sh`, exposed as `make release`:
+
+```bash
+make release                        # dry-run: prints the plan, mutates nothing
+bash scripts/release.sh --execute   # performs the cut
+```
+
+The dry-run is the default deliberately — it runs `make verify`, derives the
+next version from the conventional commits since the last tag (`feat` → MINOR,
+breaking → MAJOR, otherwise PATCH), proves the tag is unused locally and at
+origin, and prints every step a cut would take. `--execute` is the single opt-in
+that mutates, and it works through the numbered procedure below including the
+Release object, verifying that object before it reports success.
+`--no-changelog` skips step 2 when the new section was written by hand;
+`--tag vX.Y.Z` overrides the proposed version.
+
+**By hand.** The same procedure, in order — it is not finished at step 4:
+
 1. `make verify` is green at the commit you intend to tag.
-2. Update `CHANGELOG.md`: move the `[Unreleased]` substance into a new `[X.Y.Z]` section.
+2. Update `CHANGELOG.md`: promote the `[Unreleased]` substance into a new
+   `[X.Y.Z]` section **and RE-OPEN an empty `[Unreleased]` section above it**.
+   The rule: `[Unreleased]` is always present, and after a cut it is empty again
+   ("Nothing yet.") — never renamed into the release, never carried forward
+   un-promoted. Commit that edit before tagging, so the tag names the released
+   text.
 3. `git tag -a vX.Y.Z -m "…"` on that commit (annotated, on `main`).
 4. `git push origin vX.Y.Z` — the tag only, never the branch.
-5. Record the tag's 40-char sha on the cross-repo board.
-6. Publish the GitHub Release object — the tag alone is NOT one (RELEASE-H3-002:
+5. Publish the GitHub Release object — the tag alone is NOT one (RELEASE-H3-002:
    `v0.1.0` sat tag-only from 2026-09-18 until 2026-09-20, invisible to
    `gh release list` and anyone browsing the Releases tab):
 
@@ -69,3 +94,6 @@ keeps them runnable on a dependency-free clone. Code-level verification is
 
    `gh release create` on an existing tag attaches the Release to that tag — it
    does not move or recreate it.
+6. Only then record the tag's 40-char sha **and** the Release URL on the
+   cross-repo board. The cut is not done until step 5 has run: a procedure that
+   stops at step 4 is exactly how the `v0.1.0` Release went missing for two days.
