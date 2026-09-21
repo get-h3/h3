@@ -1,8 +1,1 @@
-tasks:
-- id: never-done-449
-  title: NEVER-DONE 72nd audit tick 449
-  criteria:
-  - 12-point desk audit passes with zero new gaps at tick 449; audit event + fixture
-    note refresh land on the board, DuckBrain records written, commits pushed
-  status: in_progress
-  created_at: '2026-09-21T01:32:19.846316+00:00'
+tasks: []
