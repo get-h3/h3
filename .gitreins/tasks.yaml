@@ -1,11 +1,1 @@
-tasks:
-- id: NVD463
-  title: 'tick #463 plain-idle verification audit'
-  criteria:
-  - 'All umbrella gates green at pre-tick HEAD: make verify ALL PASS (tick-chain census
-    418..462 verified, /tick/462 present, 463 absent pre-write), CI 5/5 success, git
-    parity 0/0 clean, gitreins tasks empty pre-create, OBO :8766 healthy, scheduler
-    cooldown 21600 live==config, no :919x listeners; board verified 0 dispatchable
-    rows (42 blocked-operator + DOGFOOD-01 blocked-token + perpetual fixture)'
-  status: in_progress
-  created_at: '2026-09-21T07:17:21.236440+00:00'
+tasks: []
