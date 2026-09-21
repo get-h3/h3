@@ -54,6 +54,29 @@
 #                       cannot (ticks #452/#453 wrote drifted keys and left holes
 #                       in the bare chain at both numbers).
 #                       Negative proof: make verify-tick-chain-selftest.
+#   8. board-header  — the board's OWN header is self-consistent (H3-GAP-099).
+#                       board.jsonl is a one-line object whose last_commit and
+#                       ticks_total every reader believes without checking, and
+#                       nothing verified either. Measured 2026-09-21: BOTH had
+#                       gone stale — the post-push header sync was skipped by one
+#                       tick's last commit and last_commit sat three commits
+#                       behind (the same drift class already hand-repaired twice,
+#                       #459 ticks_idle and #463 cooldown_s, where a Tier-2 judge
+#                       had to catch the foreman reading the STALE HEADER instead
+#                       of config). This check makes it catchable without a judge:
+#                       last_commit must be HEAD or HEAD's parent (the two-phase
+#                       sync runs at most one commit ago), ticks_total must not
+#                       trail the highest tick the event log records, every tick
+#                       in the recent window must have an event, and the working
+#                       header must equal the committed one. Tick numbers are read
+#                       from BOTH shapes (top-level tick_number and detail-embedded
+#                       tick) — reading one shape only reports the other as a hole
+#                       (an independent audit did exactly that and reported four
+#                       phantom missing ticks on 2026-09-21).
+#                       SCOPE: staleness and holes only — it cannot prove the named
+#                       commit is the CORRECT pushed one, and it does not read the
+#                       event log for anything but tick coverage.
+#                       Negative proof: make verify-board-header-selftest.
 #
 # SCOPE (QA-H3-7): checks 1-6 above are docs/repo-consistency guards — `make
 # verify` never executes SDK code (the qa-target check inspects the checkout's
@@ -100,9 +123,9 @@
 # that never executed code. That filter is a deliberate design, not an accident;
 # the naming above is what makes the difference visible. See CONTRIBUTING.md.
 
-.PHONY: verify verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-qa-target-selftest verify-tick-chain verify-tick-chain-selftest verify-commit-msg verify-roundtrip verify-all release
+.PHONY: verify verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-qa-target-selftest verify-tick-chain verify-tick-chain-selftest verify-board-header verify-board-header-selftest verify-commit-msg verify-roundtrip verify-all release
 
-verify: verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-tick-chain verify-commit-msg
+verify: verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-tick-chain verify-board-header verify-commit-msg
 	@echo "make verify: ALL PASS — umbrella repo is self-consistent"
 	@echo "make verify: SCOPE — docs + repo-consistency checks only (no code executed; the tick-chain census is read-only against DuckBrain and reports UNVERIFIED when jq/curl/token/board are absent); code-level verification is 'make verify-roundtrip' (CI: roundtrip.yml)."
 
@@ -157,6 +180,14 @@ verify-tick-chain:
 verify-tick-chain-selftest:
 	@echo "make verify-tick-chain-selftest: positive + negative proof for the tick-chain checker (H3-GAP-098)"
 	@sh scripts/check-duckbrain-tick-chain-selftest.sh
+
+verify-board-header:
+	@echo "make verify: board-header self-consistency guard (H3-GAP-099)"
+	@sh scripts/check-board-header-consistency.sh
+
+verify-board-header-selftest:
+	@echo "make verify-board-header-selftest: positive + negative proof for the board-header guard (H3-GAP-099)"
+	@sh scripts/check-board-header-consistency-selftest.sh
 
 verify-commit-msg:
 	@echo "make verify: commit-message skip-directive guard (HEAD)"
