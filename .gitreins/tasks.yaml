@@ -1,1 +1,10 @@
-tasks: []
+tasks:
+- id: QA-H3-1416-VERIFY
+  title: Verify QA-H3-14/15/16 harness fixes via fresh bunker battery
+  criteria:
+  - Fresh battery on bunker-las-02 shows toolchain-bootstrap OK (make available) and
+    no rc=127 make-missing cells; QA-H3-14, QA-H3-15, QA-H3-16 board rows closed with
+    live evidence from this run
+  status: complete
+  created_at: '2026-09-21T11:10:19.742560+00:00'
+  completed_at: '2026-09-21T12:31:27.429559+00:00'
