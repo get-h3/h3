@@ -242,3 +242,25 @@ then `pip install -e .`. Quickstart should carry this fallback (DF-H3-8).
 - Install: works from source on clean machines AFTER the venv bootstrap
   workaround (E14); bunker-las-03 (default dogfood host) offline ~1d —
   install leg ran on bunker-las-04.
+
+### E15. The census is not the writer: tick-chain drift came back exactly as designed (2026-09-21)
+**What happened:** dogfood tick h3-dogfood-2026-09-21 ran `make verify` against the
+h3 repo itself for the first time (prior runs tested the shim/SDK/battery products,
+never the hub's own guards) and verify-tick-chain went RED: `1 hole(s): 464`.
+The DuckBrain tree holds the drifted shape `/project/h3/tick/464` while the bare
+canonical `/tick/464` is absent — 458-463 and 465 are all bare. This is the same
+drift shape as ticks 452/453, which tick #459 backfilled but whose write path was
+never fixed.
+**Why it matters:** the checker comment says a future drift "goes red at the gate
+that measures it instead of being narrated as contiguous in the next audit" — that
+is exactly what happened. The gate works. What is broken is the WRITER: the
+foreman's DuckBrain record key intermittently lands under `/project/h3/tick/<N>`
+instead of bare `/tick/<N>`. Backfilling 464 alone would repeat the 452/453
+pattern — symptom patched, cause alive.
+**Right way:** fix the write path (the record key must be bare `/tick/<N>` for the
+h3 umbrella ns), then backfill the drifted key, and add a regression check on the
+writer (e.g. assert the key the writer just wrote parses as canonical) — not only
+on the census, which can only catch the drift one tick late by design. Filed as
+DF-H3-23 (P1). Note: the HEAD commit message at the time (f22cf9f, tick #465)
+claimed a green verify; it was red at merge time — commit messages that narrate
+gate status are claims, the gate re-run at HEAD is the fact.

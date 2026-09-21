@@ -127,3 +127,28 @@ answers: "does this project actually work for a real user, and is it worth it?"
 - **Artifacts:** docs/dogfood/2026-09-18-h3-pm-integration.md,
   docs/dogfood/h3-pm-diagnostics.md, skills/h3-pm-usage/SKILL.md.
 - **Rows:** DF-H3PM-01..05 filed on the h3 board (no cooldown change, foreman not woken).
+
+## 2026-09-21 — dogfood tick h3-dogfood-2026-09-21-10-03-07
+- Verdict: SHIPPABLE with one P1 gate break — first run against the h3 repo's OWN
+  documented paths (runs 1-7 all tested the shim/SDK/battery products).
+- Angle (new surface): `make verify`, `make verify-roundtrip`, README
+  "Make your first call" hand-curl, session GET/DELETE workflow.
+- Real use: Go echo battery 46/46 exit 0 (p50 0.69ms); README curl payload works
+  verbatim (echo + history preserved); /v1/sessions/{id} GET 200 → DELETE 200 →
+  GET 404 SESSION_NOT_FOUND envelope; DELETE with empty/{} body also 200 (undocumented
+  laxness, non-blocking); round-trip suite 6/6 PASS rc=0.
+- FOUND (DF-H3-23, P1): `make verify` RED at HEAD f22cf9f — verify-tick-chain
+  "1 hole(s): 464". Tree has drifted /project/h3/tick/464 while bare /tick/464 is
+  absent; 3rd occurrence of this drift shape (452/453 precedent). Writer bug, gate
+  correctly catching it. HEAD commit message claims tick #465 ran green — false at
+  merge time.
+- Bunker install leg: fresh clone f22cf9f on las-bunker-03 agent a1d6544c →
+  `make verify` ALL PASS rc=0 in 2s (tick-chain cell honestly UNVERIFIED with no
+  DuckBrain token, per documented convention). Destroyed clean, absence verified.
+  t2fs for the repo-as-product: ~7s (clone+verify).
+- Friction (2): DF-H3-23 gate break above; minor — DELETE session body requirement
+  undocumented (works without, but OpenAPI says required).
+- Foreman: h3 enabled 43200s cooldown; NOT woken (h3 foreman cadence is deliberate
+  GAP-003 pin; one open P1 row will surface on next tick).
+- Artifacts: docs/dogfood/diagnostics.md E15 (tick-chain drift: writer vs census
+  lesson); this log entry; board row DF-H3-23.
