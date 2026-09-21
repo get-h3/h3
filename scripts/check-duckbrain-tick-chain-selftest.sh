@@ -134,12 +134,38 @@ case_run "allowlisted drift is reported as known, the hole still fails" 1 \
     "drift-known-key 420 /project/h3/shim/tick/420|drift-unknown 0|hole 419|VERDICT: FAILED" \
     env $CLEAN_ENV H3_TICK_CHAIN_ALLOWLIST=452,453,420 H3_TICK_CHAIN_TREE_FILE="$BROKEN" H3_TICK_CHAIN_TICKS_TOTAL=420 sh "$CHECK"
 
+# --- degrade: the tree listing is possibly truncated (the capped-listing guard)
+# A tree answer whose "total" reaches the LIMIT must be UNVERIFIED: a capped
+# listing can omit bare keys (measured 2026-09-21: total:100 tree reported
+# bare /tick/418 as a hole that exists) — judging a partial tree is the exact
+# false-failure class this guard exists for.
+TRUNCATED="$WORK/truncated.json"
+cat > "$TRUNCATED" <<'JSON'
+{
+  "total": 100,
+  "tree": [
+    { "path": "/tick/418" },
+    { "path": "/tick/419" },
+    { "path": "/project/h3/tick/420" }
+  ]
+}
+JSON
+# shellcheck disable=SC2086
+case_run "tree total >= limit degrades to UNVERIFIED (capped-listing guard)" 0 \
+    "UNVERIFIED (key-tree answer is possibly truncated|VERDICT: UNVERIFIED" \
+    env $CLEAN_ENV H3_TICK_CHAIN_TREE_FILE="$TRUNCATED" H3_TICK_CHAIN_TICKS_TOTAL=420 H3_TICK_CHAIN_LIMIT=100 sh "$CHECK"
+
+# --- positive: a total below the limit is judged normally ---------------------
+# shellcheck disable=SC2086
+case_run "tree total below limit still VERIFIES (guard does not over-fire)" 0 \
+    "window-present 2/2|holes 0|VERDICT: VERIFIED" \
+    env $CLEAN_ENV H3_TICK_CHAIN_TREE_FILE="$TRUNCATED" H3_TICK_CHAIN_TICKS_TOTAL=420 H3_TICK_CHAIN_LIMIT=5000 sh "$CHECK"
+
 # --- degrade: tree file missing ---------------------------------------------
 # shellcheck disable=SC2086
 case_run "missing tree file degrades to UNVERIFIED (never a PASS)" 0 \
     "UNVERIFIED|VERDICT: UNVERIFIED" \
     env $CLEAN_ENV H3_TICK_CHAIN_TREE_FILE="$WORK/does-not-exist.json" H3_TICK_CHAIN_TICKS_TOTAL=420 sh "$CHECK"
-
 # --- degrade: no token, unreachable service ---------------------------------
 # shellcheck disable=SC2086
 case_run "no token file degrades to UNVERIFIED" 0 \

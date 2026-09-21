@@ -18,8 +18,8 @@
 #   measures it instead of being narrated as contiguous in the next audit.
 #
 # WHAT IT READS
-#   One request: GET $H3_TICK_CHAIN_URL/api/keys?namespace=<ns>&tree with the
-#   X-API-Key header. Every node's "path" is collected and classified by regex:
+#   One request: GET $H3_TICK_CHAIN_URL/api/keys?namespace=<ns>&tree&limit=<LIMIT>
+#   with the X-API-Key header. Every node's "path" is collected and classified by regex:
 #     canonical — ^/tick/[0-9]+$                    (the bare chain)
 #     legacy    — ^/project/h3/tick/[0-9]+$         (pre-#418 hub series, 408..427)
 #     drift     — any OTHER path ending in /tick/<N>, N >= START
@@ -55,6 +55,8 @@
 #   H3_TICK_CHAIN_TICKS_TOTAL=                    (override the board header read)
 #   H3_TICK_CHAIN_START=418
 #   H3_TICK_CHAIN_ALLOWLIST=452,453               (known twins from the #459 backfill)
+#   H3_TICK_CHAIN_LIMIT=5000                      (api/keys page size; answer is
+#                                                   UNVERIFIED when total >= limit)
 #
 # Dependencies: POSIX sh, jq, curl (curl only in HTTP mode), a readable token,
 # and a readable board header — anything missing degrades to UNVERIFIED.
@@ -73,6 +75,7 @@ TREE_FILE=${H3_TICK_CHAIN_TREE_FILE:-}
 TICKS_TOTAL_OVERRIDE=${H3_TICK_CHAIN_TICKS_TOTAL:-}
 START=${H3_TICK_CHAIN_START:-418}
 ALLOWLIST=${H3_TICK_CHAIN_ALLOWLIST:-452,453}
+LIMIT=${H3_TICK_CHAIN_LIMIT:-5000}
 
 NAME=check-duckbrain-tick-chain
 BOARD=$ROOT/.coding-hermes/board/board.jsonl
@@ -91,6 +94,9 @@ case $START in
 esac
 case $NS in
     '' | */*) unverified "H3_TICK_CHAIN_NAMESPACE is not a bare namespace name: '$NS'" ;;
+esac
+case $LIMIT in
+    '' | *[!0-9]*) unverified "H3_TICK_CHAIN_LIMIT is not a positive integer: '$LIMIT'" ;;
 esac
 
 command -v jq >/dev/null 2>&1 || unverified "jq not found on PATH — cannot classify the key tree"
@@ -116,7 +122,7 @@ else
     [ -n "$TOKEN_FILE" ] || unverified "no readable token: no *.token file in $TOKEN_DIR"
     TOKEN=$(cat -- "$TOKEN_FILE") || unverified "token file could not be read: $TOKEN_FILE"
     [ -n "$TOKEN" ] || unverified "token file is empty: $TOKEN_FILE"
-    API="$URL/api/keys?namespace=$NS&tree"
+    API="$URL/api/keys?namespace=$NS&tree&limit=$LIMIT"
     BODY=$(curl -fsS -m 15 -H "X-API-Key: $TOKEN" "$API" 2>/dev/null) || BODY=
     [ -n "$BODY" ] || unverified "DuckBrain API unreachable or refused: $API"
     SOURCE="$API"
@@ -146,6 +152,24 @@ else
     END=$START
 fi
 REQUIRED=$((END - START + 1))
+
+# ---- 2b. completeness guard: the keys listing is CAPPED ---------------------
+# GET /api/keys without a large enough limit silently truncates the tree, and
+# the response's "total" field then counts the RETURNED nodes, not the
+# namespace — so the cap is invisible in the body. Measured 2026-09-21 (h3
+# tick #465): the default-capped tree read total:100 / 121 paths and reported
+# bare /tick/418 as a hole that exists on disk, in the flat listing, and in
+# the limit=5000 tree. A tree answer whose total reaches the limit is possibly
+# truncated: degrade to UNVERIFIED, never judge a chain over a partial listing.
+TOTAL_KEYS=$(jq -r 'if type == "object" then (.total // empty) else empty end' "$WORK/tree.json" 2>/dev/null || true)
+case $TOTAL_KEYS in
+    '' | *[!0-9]*) : ;; # total absent or non-numeric: nothing to compare, proceed
+    *)
+        if [ "$TOTAL_KEYS" -ge "$LIMIT" ]; then
+            unverified "key-tree answer is possibly truncated (total=$TOTAL_KEYS >= limit=$LIMIT); raise H3_TICK_CHAIN_LIMIT and retry — a capped listing must never be judged"
+        fi
+        ;;
+esac
 
 # ---- 3. classify every tick-ish path ---------------------------------------
 TAB=$(printf '\t')
