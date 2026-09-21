@@ -44,10 +44,13 @@ Expected result: every guard prints PASS, the run ends with
 | `verify-count` | the compliance-test count (46) in `scripts/test-count.txt` agrees with the sibling battery and the per-region lists in specs 05/09/25; no current-state doc quotes a retired count |
 | `verify-json-fences` | every JSON fenced block in the tracked markdown parses, and an abbreviated payload says so on the failing line |
 | `verify-qa-target` | the QA target is a real checkout of THIS repo — zero cells is UNVERIFIED, never a pass |
+| `verify-tick-chain` | the DuckBrain tick-key census (H3-GAP-098): the bare `/tick/<N>` chain is complete from 418 to the board's `ticks_total - 1`, and no unknown-shaped tick key exists — the #459 backfill twins 452/453 are allowlisted, the pre-#418 legacy series and timestamped slugs are reported non-fatally. Reports UNVERIFIED when DuckBrain, `jq`, `curl`, the token or the board header is absent. Negative proof: `make verify-tick-chain-selftest` |
 | `verify-commit-msg` | the HEAD commit message carries no workflow-skip directive |
 
-It does **not** execute code: these are docs/repo-consistency guards, which is what
-keeps them runnable on a dependency-free clone. Code-level verification is
+It does **not** execute SDK code: these are docs/repo-consistency guards, which is what
+keeps them runnable on a dependency-free clone (the one exception is the tick-chain
+census, which reads DuckBrain's key tree read-only over HTTP and prints UNVERIFIED when
+it cannot). Code-level verification is
 `make verify-roundtrip` — the cross-language round-trip suite, run in CI by
 `.github/workflows/roundtrip.yml` against the sibling SDK repos; `make verify-all` runs both.
 

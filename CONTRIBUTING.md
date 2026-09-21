@@ -49,9 +49,15 @@ TypeScript phase runs through `npx tsx`).
 `make verify` (the zero-dependency target that runs on a fresh clone) is a
 docs + repo-consistency check only: docs-link resolution, spec-index vs. files,
 the canonical compliance-test count, json-fence payloads, the QA-target
-contract guard, and the commit-message skip-directive guard. It executes **no
+contract guard, the DuckBrain tick-chain drift census (H3-GAP-098), and the
+commit-message skip-directive guard. It executes **no
 SDK code** — a green `make verify` on a bare clone exercises none of the
 round-trip suite above. Use `make verify-all` when you want both in one command.
+
+The tick-chain census is the one check that reaches outside the repo: it probes
+DuckBrain on `localhost:3000` read-only (see `make verify-tick-chain`). When the
+service, `jq`, `curl`, the token file or the board header is absent it prints an
+explicit `UNVERIFIED` and exits 0 — absent tooling is UNVERIFIED, never a pass.
 
 ### Why CI only runs this on `integration/roundtrip/**`
 
@@ -92,6 +98,8 @@ Validate a target before recording any QA cell:
 ```bash
 sh scripts/check-qa-target.sh <candidate-dir>   # 0 = this repo; non-zero = not a valid target
 make verify-qa-target                           # same check against this checkout
+sh scripts/check-duckbrain-tick-chain.sh        # DuckBrain tick-key drift + window census (H3-GAP-098)
+make verify-tick-chain-selftest                 # its fixture-driven positive + negative proof (no network)
 ```
 
 An empty, no-cell QA result is **UNVERIFIED — never a pass**. Full contract and

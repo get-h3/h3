@@ -1,0 +1,34 @@
+{
+  "_comment": "H3-GAP-098 fixture: a BROKEN h3 tick-key tree. Bare /tick/419 is MISSING (run with H3_TICK_CHAIN_TICKS_TOTAL=420 => required window 418..419 has a hole) and an unknown wrong-shaped key /project/h3/shim/tick/420 is present (integer 420 >= START=418, not in the allowlist). The checker must exit 1 and name BOTH in its output.",
+  "tree": [
+    {
+      "path": "/tick",
+      "children": [
+        { "path": "/tick/418" },
+        { "path": "/tick/420" }
+      ]
+    },
+    {
+      "path": "/project",
+      "children": [
+        {
+          "path": "/project/h3",
+          "children": [
+            {
+              "path": "/project/h3/tick",
+              "children": [
+                { "path": "/project/h3/tick/410" }
+              ]
+            },
+            {
+              "path": "/project/h3/shim",
+              "children": [
+                { "path": "/project/h3/shim/tick/420" }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

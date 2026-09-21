@@ -1,0 +1,29 @@
+{
+  "_comment": "H3-GAP-098 fixture: a CLEAN h3 tick-key tree. Bare /tick/418, /tick/419, /tick/420 exist (run with H3_TICK_CHAIN_TICKS_TOTAL=420 => required window 418..419 is complete), one legacy pre-#418 key exists, and no wrong-shaped tick key is present. The checker must exit 0 with VERDICT: VERIFIED.",
+  "tree": [
+    {
+      "path": "/tick",
+      "children": [
+        { "path": "/tick/418" },
+        { "path": "/tick/419" },
+        { "path": "/tick/420" }
+      ]
+    },
+    {
+      "path": "/project",
+      "children": [
+        {
+          "path": "/project/h3",
+          "children": [
+            {
+              "path": "/project/h3/tick",
+              "children": [
+                { "path": "/project/h3/tick/410" }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

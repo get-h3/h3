@@ -4,8 +4,25 @@ All notable changes to the H3 protocol and umbrella project.
 
 ## [Unreleased]
 
-Nothing yet. This section is re-opened empty by every cut; the substance that
-shipped in a release lives under that release's section below.
+### Added
+- `scripts/check-duckbrain-tick-chain.sh` + `make verify-tick-chain` (H3-GAP-098):
+  the DuckBrain tick-key census for namespace `h3`. It reads the WHOLE key tree
+  (read-only, tree endpoint) and classifies every tick-ish path — the canonical
+  bare `/tick/<N>` chain, the pre-#418 legacy series, wrong-shaped keys (DRIFT),
+  and legitimate timestamped slugs — so a drifted key fails the gate instead of
+  being reported as contiguous by a census that only counted bare keys (ticks
+  #452/#453 wrote drifted keys and left holes at both numbers; the backfill in
+  #459 did not fix the write path). The bare chain must be complete from 418 to
+  the board's `ticks_total - 1`; the two twins #459 deliberately preserved
+  (452/453) are allowlisted and warned, every other drifted key fails. Unreadable
+  states — DuckBrain unreachable, no `jq`/`curl`, no token, no readable board
+  header — print an explicit `UNVERIFIED` and exit 0: absent tooling is
+  UNVERIFIED, never a PASS.
+- `scripts/check-duckbrain-tick-chain-selftest.sh` + `make verify-tick-chain-selftest`:
+  fixture-driven positive and negative proof (`scripts/fixtures/tick-chain/`) — a
+  clean tree verifies, a missing window tick or an unknown drifted key fails, and
+  every unreadable state degrades to UNVERIFIED.
+- `make verify` now runs the tick-chain census as its seventh check.
 
 ## [0.2.0] — 2026-09-20
 

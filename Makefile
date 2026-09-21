@@ -2,7 +2,10 @@
 #
 # A fresh clone of get-h3/h3 alone must be able to verify itself:
 #   make verify
-# Runs with zero dependencies (POSIX shell + coreutils) — no venv, no network.
+# Runs with zero *required* dependencies (POSIX shell + coreutils + git) — no
+# venv, no outbound network. One check (tick-chain, #7) additionally uses
+# jq/curl against DuckBrain on localhost; when those are absent it reports
+# UNVERIFIED instead of passing (see SCOPE below).
 #
 # Checks:
 #   1. docs-link      — every relative .md link in README.md and specs/_index.md
@@ -36,12 +39,33 @@
 #                       workflow's paths filter, never a message token.
 #                       Kept LAST: it inspects HEAD, so it passes only after the
 #                       commit that carries it has landed.
+#   7. tick-chain     — the DuckBrain tick-key census for namespace `h3`
+#                       (H3-GAP-098). Reads the WHOLE key tree and classifies
+#                       every tick-ish path: the canonical bare /tick/<N> chain,
+#                       the pre-#418 legacy series (/project/h3/tick/408..427),
+#                       DRIFT (any other path ending in /tick/<N>, N >= 418),
+#                       and legitimate timestamped slug keys (non-fatal). The
+#                       bare chain must be complete from 418 to the board's
+#                       ticks_total - 1, and no unknown-shaped tick key may
+#                       exist: the two twins tick #459 deliberately backfilled
+#                       (452/453) are allowlisted and warned, every OTHER drifted
+#                       key fails. A census that reads only the bare keys reports
+#                       a drifted chain as "contiguous" — this is the census that
+#                       cannot (ticks #452/#453 wrote drifted keys and left holes
+#                       in the bare chain at both numbers).
+#                       Negative proof: make verify-tick-chain-selftest.
 #
-# SCOPE (QA-H3-7): every check above is a docs/repo-consistency guard — `make
+# SCOPE (QA-H3-7): checks 1-6 above are docs/repo-consistency guards — `make
 # verify` never executes SDK code (the qa-target check inspects the checkout's
 # identity, not its code). That is deliberate: it must keep working on a bare
 # fresh clone with zero deps (POSIX shell + coreutils + git — which the
 # commit-msg guard already required) and zero siblings.
+# The 7th check (tick-chain) is the one exception and is built to preserve that
+# property honestly: it probes DuckBrain on localhost:3000 read-only, and when
+# the service, jq, curl, the token file or the board header is missing it prints
+# an explicit UNVERIFIED and exits 0 — absent tooling is UNVERIFIED, never PASS,
+# so a fresh clone with no DuckBrain still gets a green gate that does not lie
+# about what it read.
 # The repo's only executable verification is the cross-language round-trip
 # suite in integration/roundtrip/, exposed here as:
 #
@@ -76,11 +100,11 @@
 # that never executed code. That filter is a deliberate design, not an accident;
 # the naming above is what makes the difference visible. See CONTRIBUTING.md.
 
-.PHONY: verify verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-qa-target-selftest verify-commit-msg verify-roundtrip verify-all release
+.PHONY: verify verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-qa-target-selftest verify-tick-chain verify-tick-chain-selftest verify-commit-msg verify-roundtrip verify-all release
 
-verify: verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-commit-msg
+verify: verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-tick-chain verify-commit-msg
 	@echo "make verify: ALL PASS — umbrella repo is self-consistent"
-	@echo "make verify: SCOPE — docs + repo-consistency checks only (no code executed); code-level verification is 'make verify-roundtrip' (CI: roundtrip.yml)."
+	@echo "make verify: SCOPE — docs + repo-consistency checks only (no code executed; the tick-chain census is read-only against DuckBrain and reports UNVERIFIED when jq/curl/token/board are absent); code-level verification is 'make verify-roundtrip' (CI: roundtrip.yml)."
 
 verify-docs:
 	@echo "make verify: docs-link check"
@@ -125,6 +149,14 @@ verify-qa-target:
 verify-qa-target-selftest:
 	@echo "make verify-qa-target-selftest: negative proof for the QA target guard (QA-H3-1)"
 	@sh scripts/check-qa-target-selftest.sh
+
+verify-tick-chain:
+	@echo "make verify: DuckBrain tick-chain drift/window census (H3-GAP-098)"
+	@sh scripts/check-duckbrain-tick-chain.sh
+
+verify-tick-chain-selftest:
+	@echo "make verify-tick-chain-selftest: positive + negative proof for the tick-chain checker (H3-GAP-098)"
+	@sh scripts/check-duckbrain-tick-chain-selftest.sh
 
 verify-commit-msg:
 	@echo "make verify: commit-message skip-directive guard (HEAD)"

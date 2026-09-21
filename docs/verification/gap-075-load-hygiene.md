@@ -43,7 +43,8 @@ block. The remainder was the extraction/plumbing set:
 ```
 
 Wall clock, three runs: **2.90 s / 2.82 s / 2.90 s** (`maxrss` ~16.0 MB).
-`make verify` (all six checks): **2.23 s**, `maxrss` 16.0 MB.
+`make verify` (all six checks as the gate stood at this measurement — it carries seven
+since H3-GAP-098 added `verify-tick-chain`): **2.23 s**, `maxrss` 16.0 MB.
 
 For reference, the foreman's audit of this same command on this same host earlier in the tick
 measured 1.49 s / 1.53 s / 1.49 s with the identical 104 / 65 spawn counts. The spawn counts agree
