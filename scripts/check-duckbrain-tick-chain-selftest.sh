@@ -134,6 +134,33 @@ case_run "allowlisted drift is reported as known, the hole still fails" 1 \
     "drift-known-key 420 /project/h3/shim/tick/420|drift-unknown 0|hole 419|VERDICT: FAILED" \
     env $CLEAN_ENV H3_TICK_CHAIN_ALLOWLIST=452,453,420 H3_TICK_CHAIN_TREE_FILE="$BROKEN" H3_TICK_CHAIN_TICKS_TOTAL=420 sh "$CHECK"
 
+# --- the legacy class is BOUNDED: a chain-A key above LEGACY_MAX is DRIFT ----
+# Tick-#466 live specimen: tick 464 wrote its DuckBrain record at the drifted
+# /project/h3/tick/464 while bare /tick/464 was missing. The old checker's
+# legacy branch was UNBOUNDED, so a future drifted chain-A key would be
+# silently tolerated forever. LEGACY_MAX=427 bounds the pre-#418 hub series;
+# anything above it is drift. (Window 418..419 via TICKS_TOTAL=420 in both
+# cases so the drift class is exercised on an otherwise hole-less tree.)
+LEGACY_DRIFT="$WORK/legacy-drift.json"
+cat > "$LEGACY_DRIFT" <<'JSON'
+{
+  "tree": [
+    { "path": "/tick/418" },
+    { "path": "/tick/419" },
+    { "path": "/project/h3/tick/464" }
+  ]
+}
+JSON
+# shellcheck disable=SC2086
+case_run "chain-A key above LEGACY_MAX is unknown drift (bounded legacy class, tick-#466 specimen)" 1 \
+    "drift-unknown 1|drift-unknown-key 464 /project/h3/tick/464|VERDICT: FAILED" \
+    env $CLEAN_ENV H3_TICK_CHAIN_TREE_FILE="$LEGACY_DRIFT" H3_TICK_CHAIN_TICKS_TOTAL=420 sh "$CHECK"
+
+# shellcheck disable=SC2086
+case_run "the same key with 464 allowlisted is only the known twin (tree then verifies)" 0 \
+    "drift-known-key 464 /project/h3/tick/464|drift-unknown 0|holes 0|VERDICT: VERIFIED" \
+    env $CLEAN_ENV H3_TICK_CHAIN_ALLOWLIST=452,453,464 H3_TICK_CHAIN_TREE_FILE="$LEGACY_DRIFT" H3_TICK_CHAIN_TICKS_TOTAL=420 sh "$CHECK"
+
 # --- degrade: the tree listing is possibly truncated (the capped-listing guard)
 # A tree answer whose "total" reaches the LIMIT must be UNVERIFIED: a capped
 # listing can omit bare keys (measured 2026-09-21: total:100 tree reported

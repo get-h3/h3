@@ -21,8 +21,14 @@
 #   One request: GET $H3_TICK_CHAIN_URL/api/keys?namespace=<ns>&tree&limit=<LIMIT>
 #   with the X-API-Key header. Every node's "path" is collected and classified by regex:
 #     canonical — ^/tick/[0-9]+$                    (the bare chain)
-#     legacy    — ^/project/h3/tick/[0-9]+$         (pre-#418 hub series, 408..427)
-#     drift     — any OTHER path ending in /tick/<N>, N >= START
+#     legacy    — ^/project/h3/tick/[0-9]+$ AND N <= LEGACY_MAX (427):
+#                 the pre-#418 hub series 408..427, tolerated non-fatal. The class
+#                 is deliberately BOUNDED — an unbounded legacy branch would
+#                 silently tolerate future drifted /project/h3/tick/<N> keys
+#                 (live tick-#466 specimen: bare /tick/464 missing while the
+#                 drifted /project/h3/tick/464 sat in the tolerated class).
+#     drift     — any OTHER path ending in /tick/<N>, N >= START (this now
+#                 includes chain-A keys above LEGACY_MAX)
 #     other     — tick-like paths without a bare tick number (timestamped slugs,
 #                 /tick/<N>/supplement notes) — legitimate, reported, non-fatal
 #   It never fetches key CONTENT: the tree endpoint is the only source
@@ -54,7 +60,12 @@
 #   H3_TICK_CHAIN_TREE_FILE=                      (read tree JSON from a file)
 #   H3_TICK_CHAIN_TICKS_TOTAL=                    (override the board header read)
 #   H3_TICK_CHAIN_START=418
-#   H3_TICK_CHAIN_ALLOWLIST=452,453               (known twins from the #459 backfill)
+#   H3_TICK_CHAIN_ALLOWLIST=452,453,464           (known twins: the #459 backfill
+#                                                   plus the #466 backfill of the
+#                                                   chain-A key written by tick 464)
+#   H3_TICK_CHAIN_LEGACY_MAX=427                  (legacy /project/h3/tick/<N> keys
+#                                                   are tolerated only up to this
+#                                                   number; anything above is DRIFT)
 #   H3_TICK_CHAIN_LIMIT=5000                      (api/keys page size; answer is
 #                                                   UNVERIFIED when total >= limit)
 #
@@ -74,7 +85,8 @@ TOKEN_DIR=${H3_TICK_CHAIN_TOKEN_DIR:-$HOME/.duckbrain}
 TREE_FILE=${H3_TICK_CHAIN_TREE_FILE:-}
 TICKS_TOTAL_OVERRIDE=${H3_TICK_CHAIN_TICKS_TOTAL:-}
 START=${H3_TICK_CHAIN_START:-418}
-ALLOWLIST=${H3_TICK_CHAIN_ALLOWLIST:-452,453}
+ALLOWLIST=${H3_TICK_CHAIN_ALLOWLIST:-452,453,464}
+LEGACY_MAX=${H3_TICK_CHAIN_LEGACY_MAX:-427}
 LIMIT=${H3_TICK_CHAIN_LIMIT:-5000}
 
 NAME=check-duckbrain-tick-chain
@@ -91,6 +103,9 @@ unverified() {
 
 case $START in
     '' | *[!0-9]*) unverified "H3_TICK_CHAIN_START is not a non-negative integer: '$START'" ;;
+esac
+case $LEGACY_MAX in
+    '' | *[!0-9]*) unverified "H3_TICK_CHAIN_LEGACY_MAX is not a non-negative integer: '$LEGACY_MAX'" ;;
 esac
 case $NS in
     '' | */*) unverified "H3_TICK_CHAIN_NAMESPACE is not a bare namespace name: '$NS'" ;;
@@ -173,13 +188,13 @@ esac
 
 # ---- 3. classify every tick-ish path ---------------------------------------
 TAB=$(printf '\t')
-jq -r --arg tab "$TAB" '
+jq -r --arg tab "$TAB" --arg maxn "$LEGACY_MAX" '
   [.. | .path? // empty]
   | map(
       . as $p
       | if   ($p | test("^/tick/[0-9]+$"))
         then "canonical\($tab)\(($p | capture("^/tick/(?<n>[0-9]+)$").n | tonumber))\($tab)\($p)"
-        elif ($p | test("^/project/h3/tick/[0-9]+$"))
+        elif (($p | test("^/project/h3/tick/[0-9]+$")) and ($p | capture("^/project/h3/tick/(?<n>[0-9]+)$").n | tonumber) <= ($maxn | tonumber))
         then "legacy\($tab)\(($p | capture("^/project/h3/tick/(?<n>[0-9]+)$").n | tonumber))\($tab)\($p)"
         elif ($p | test("/tick/[0-9]+$"))
         then "driftish\($tab)\(($p | capture("/(?<n>[0-9]+)$").n | tonumber))\($tab)\($p)"
@@ -247,11 +262,11 @@ done < "$WORK/beyond"
 LEGACY_RANGE="-"
 if [ -s "$WORK/legacy" ]; then
     LEGACY_MIN=$(awk '{print $1}' "$WORK/legacy" | sort -n | head -n 1 | tr -d ' ')
-    LEGACY_MAX=$(awk '{print $1}' "$WORK/legacy" | sort -n | tail -n 1 | tr -d ' ')
-    LEGACY_RANGE="/project/h3/tick/$LEGACY_MIN../project/h3/tick/$LEGACY_MAX"
+    LEGACY_LAST=$(awk '{print $1}' "$WORK/legacy" | sort -n | tail -n 1 | tr -d ' ')
+    LEGACY_RANGE="/project/h3/tick/$LEGACY_MIN../project/h3/tick/$LEGACY_LAST"
 fi
-echo "tick-chain: legacy $LEGACY_RANGE ($(wc -l < "$WORK/legacy" | tr -d ' ') keys, pre-#418 hub convention — tolerated, non-fatal)"
-echo "tick-chain: drift-known $DRIFT_KNOWN (allowlist $ALLOWLIST — the #459 backfill deliberately preserved these twins)"
+echo "tick-chain: legacy $LEGACY_RANGE ($(wc -l < "$WORK/legacy" | tr -d ' ') keys, pre-#418 hub convention — tolerated, non-fatal, bounded <= LEGACY_MAX=$LEGACY_MAX)"
+echo "tick-chain: drift-known $DRIFT_KNOWN (allowlist $ALLOWLIST — #459 backfill twins 452/453 + the #466-backfilled chain-A key 464)"
 while IFS="$TAB" read -r k n p; do
     [ -n "${p:-}" ] || continue
     [ "$k" = "known" ] || continue
