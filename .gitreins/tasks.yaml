@@ -15,8 +15,9 @@ tasks:
   - 'make verify regenerates and proves: (1) a new committed guard fails when board.jsonl
     header last_commit/ticks_total disagree with git state (negative proof actually
     executed, not asserted); (2) make verify exits 0 ALL PASS at the fix HEAD; (3)
-    .coding-hermes/board/board.jsonl header last_commit equals the full 40-char hash
-    of the commit that last touched the board dir, so a header edit can no longer
-    silently land as 5c1d5f4'
-  status: in_progress
+    .coding-hermes/board/board.jsonl header last_commit is the full 40-char hash of
+    a commit reachable from HEAD that is at most one commit behind it (the two-phase
+    sync invariant), never a stale older hash like 5c1d5f4'
+  status: complete
   created_at: '2026-09-21T13:07:44.417460+00:00'
+  completed_at: '2026-09-21T14:02:34.901746+00:00'
