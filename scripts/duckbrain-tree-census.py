@@ -51,13 +51,24 @@ USAGE
         # record may not be written yet, so the last required record is
         # ticks_total - 1. This is the mode `make verify-tick-chain` uses.
     printenv H3OPS_DUCKBRAIN_API_KEY | wc -c      # the token env it reads
+                                                  # (falls back to the sibling
+                                                  # guard's token-dir convention
+                                                  # when unset: $H3_TREE_CENSUS_TOKEN_DIR,
+                                                  # ~/.duckbrain, <repo>/scripts/.duckbrain;
+                                                  # first *.token wins; a
+                                                  # SET-BUT-EMPTY env var is an
+                                                  # explicit offline pin)
 
     Options: --start N (default 418), --end N | auto | board (omitted = EMPTY
     window start..start-1: the hole check is skipped, the drift census still
     runs — a caller that wants a closed window must say so), --tree-file PATH,
     --url URL (default https://duckbrain.dexdat.com), --token-env NAME
     (default H3OPS_DUCKBRAIN_API_KEY), --token-file PATH (explicit opt-in
-    alternative for ad-hoc runs; there is NO silent fallback to a token file),
+    alternative for ad-hoc runs), --token-dir DIR (first *.token inside wins;
+    when the env var is unset the census falls back to $H3_TREE_CENSUS_TOKEN_DIR,
+    then ~/.duckbrain, then <repo>/scripts/.duckbrain — the sibling guard's
+    convention; a SET-BUT-EMPTY token env var is an explicit offline pin and
+    never falls through),
     --limit N (default 20000), --legacy-max N (default 427), --allowlist N,...
     (default 452,453,464; pass '' for the raw drift class), --board PATH,
     --ticks-total N (override the board read).
@@ -75,7 +86,9 @@ UNVERIFIED SEMANTICS (the repo's gate philosophy, Makefile header)
     An unreadable substrate is UNVERIFIED, never a PASS and never a FAIL: zero
     cells is not a pass (QA-H3-1). This script exits 0 with an audible
         UNVERIFIED — <reason>
-    line when the token env var is unset (and no --token-file was given), the
+    line when the token cannot be resolved (env unset and no --token-file and
+    no readable *.token in any token dir; a set-but-empty env var is an
+    explicit offline pin), the
     fetch fails (urllib error / non-2xx / unparseable JSON), the answer is
     possibly truncated (total >= limit), the tree file is missing/unreadable/
     unparseable, or the board header is unreadable in --end auto mode. Exit 1
@@ -106,6 +119,12 @@ DEFAULT_START = 418
 DEFAULT_LEGACY_MAX = 427
 DEFAULT_URL = "https://duckbrain.dexdat.com"
 DEFAULT_TOKEN_ENV = "H3OPS_DUCKBRAIN_API_KEY"
+# Token-dir fallback (sibling guard convention: check-duckbrain-tick-chain.sh
+# reads H3_TICK_CHAIN_TOKEN_DIR, default ~/.duckbrain, first *.token wins).
+DEFAULT_TOKEN_DIR_ENV = "H3_TREE_CENSUS_TOKEN_DIR"
+LOCAL_TOKEN_DIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), ".duckbrain"
+)
 DEFAULT_LIMIT = 20000
 # Known wrong-shaped tick numbers, mirrored from the sibling guard's default
 # (check-duckbrain-tick-chain.sh: H3_TICK_CHAIN_ALLOWLIST=452,453,464). They are
@@ -185,6 +204,80 @@ def walk_keys(node, out):
             walk_keys(child, out)
 
 
+def resolve_token(args):
+    """-> (token, source, error_reason) for the API token.
+
+    Precedence: token env var (non-empty) > --token-file > token dir
+    (--token-dir > $H3_TREE_CENSUS_TOKEN_DIR > ~/.duckbrain > <repo>/scripts/.duckbrain,
+    first *.token in glob order — the sibling guard's convention, H3-GAP-099
+    foreman follow-up). A SET-BUT-EMPTY token env var is an explicit offline
+    pin and never falls through (the selftest pins cases with `ENV=`).
+    """
+    env_token = os.environ.get(args.token_env)
+    if env_token is not None:
+        if env_token.strip():
+            return env_token.strip(), "env:%s" % args.token_env, None
+        return (
+            None,
+            "env:%s" % args.token_env,
+            "token env var is set but empty: %s" % args.token_env,
+        )
+    if args.token_file:
+        if not os.path.isfile(args.token_file):
+            return (
+                None,
+                "file:%s" % args.token_file,
+                "token file is missing: %s" % args.token_file,
+            )
+        try:
+            with open(args.token_file, "r", encoding="utf-8", errors="replace") as fh:
+                token = fh.read().strip()
+        except OSError as exc:
+            return None, "file:%s" % args.token_file, (
+                "token file could not be read (%s: %s)" % (args.token_file, exc)
+            )
+        if not token:
+            return None, "file:%s" % args.token_file, (
+                "token file is empty: %s" % args.token_file
+            )
+        return token, "file:%s" % args.token_file, None
+
+    dirs = []
+    if args.token_dir:
+        dirs.append(args.token_dir)
+    else:
+        env_dir = os.environ.get(DEFAULT_TOKEN_DIR_ENV, "")
+        if env_dir:
+            dirs.append(env_dir)
+        dirs.append(os.path.join(os.path.expanduser("~"), ".duckbrain"))
+        dirs.append(LOCAL_TOKEN_DIR)
+    for tdir in dirs:
+        try:
+            names = sorted(n for n in os.listdir(tdir) if n.endswith(".token"))
+        except OSError:
+            continue
+        if not names:
+            continue
+        tpath = os.path.join(tdir, names[0])
+        try:
+            with open(tpath, "r", encoding="utf-8", errors="replace") as fh:
+                token = fh.read().strip()
+        except OSError as exc:
+            return None, "file:%s" % tpath, (
+                "token file could not be read (%s: %s)" % (tpath, exc)
+            )
+        if not token:
+            return None, "file:%s" % tpath, "token file is empty: %s" % tpath
+        return token, "file:%s" % tpath, None
+    return (
+        None,
+        "token-dir",
+        "no token: env %s is unset and no readable *.token file exists in %s "
+        "— set the env var, pass --token-dir/--token-file, or use --tree-file "
+        "PATH for an offline census" % (args.token_env, ", ".join(dirs)),
+    )
+
+
 def load_tree(args):
     """-> (body_text, source, error_reason). error_reason set means UNVERIFIED."""
     if args.tree_file:
@@ -200,36 +293,11 @@ def load_tree(args):
                 exc,
             )
 
-    url = args.url.rstrip("/")
-    token = os.environ.get(args.token_env, "")
-    if not token:
-        if args.token_file:
-            if not os.path.isfile(args.token_file):
-                return (
-                    None,
-                    "file:%s" % args.token_file,
-                    "token file is missing: %s" % args.token_file,
-                )
-            try:
-                with open(args.token_file, "r", encoding="utf-8", errors="replace") as fh:
-                    token = fh.read().strip()
-            except OSError as exc:
-                return None, "file:%s" % args.token_file, (
-                    "token file could not be read (%s: %s)" % (args.token_file, exc)
-                )
-            if not token:
-                return None, "file:%s" % args.token_file, (
-                    "token file is empty: %s" % args.token_file
-                )
-        else:
-            return (
-                None,
-                url,
-                "token env var is unset or empty: %s — set it, or pass "
-                "--token-file PATH, or use --tree-file PATH for an offline census"
-                % args.token_env,
-            )
+    token, token_source, tok_err = resolve_token(args)
+    if tok_err:
+        return None, token_source, tok_err
 
+    url = args.url.rstrip("/")
     api = "%s/api/keys?namespace=%s&tree&limit=%d" % (url, args.namespace, args.limit)
     request = urllib.request.Request(api, headers={"X-API-Key": token})
     try:
@@ -237,9 +305,19 @@ def load_tree(args):
             code = getattr(response, "status", 200)
             body = response.read().decode("utf-8", errors="replace")
     except urllib.error.HTTPError as exc:
-        return None, api, "DuckBrain API returned HTTP %s: %s" % (exc.code, api)
+        return (
+            None,
+            api,
+            "DuckBrain API returned HTTP %s (token: %s): %s"
+            % (exc.code, token_source, api),
+        )
     except (urllib.error.URLError, OSError, ValueError) as exc:
-        return None, api, "DuckBrain API unreachable or refused (%s): %s" % (exc, api)
+        return (
+            None,
+            api,
+            "DuckBrain API unreachable or refused (%s) (token: %s): %s"
+            % (exc, token_source, api),
+        )
     if code < 200 or code >= 300:
         return None, api, "DuckBrain API returned HTTP %s: %s" % (code, api)
     if not body.strip():
@@ -288,6 +366,15 @@ def main(argv=None) -> int:
         help=(
             "explicit alternative token source (used only when --token-env is "
             "unset; there is no silent fallback — an absent token stays UNVERIFIED)"
+        ),
+    )
+    parser.add_argument(
+        "--token-dir",
+        default=None,
+        help=(
+            "token DIRECTORY (first *.token inside wins) used when --token-env "
+            "is unset; default: $H3_TREE_CENSUS_TOKEN_DIR, then ~/.duckbrain, "
+            "then <repo>/scripts/.duckbrain — the sibling guard's convention"
         ),
     )
     parser.add_argument(

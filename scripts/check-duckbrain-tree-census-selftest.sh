@@ -244,8 +244,8 @@ case_run "--end auto with an unreadable board header degrades to UNVERIFIED" 0 \
         --start 418 --end auto --tree-file "$CLEAN"
 
 # --- (d) degrade: token env unset in live mode -----------------------------
-case_run "(d) live mode with the token env unset degrades to UNVERIFIED" 0 \
-    "UNVERIFIED (token env var is unset or empty: H3OPS_DUCKBRAIN_API_KEY|VERDICT: UNVERIFIED" \
+case_run "(d) live mode with a set-but-empty token env degrades to UNVERIFIED (explicit offline pin)" 0 \
+    "UNVERIFIED (token env var is set but empty: H3OPS_DUCKBRAIN_API_KEY|VERDICT: UNVERIFIED" \
     env H3OPS_DUCKBRAIN_API_KEY= python3 "$CENSUS" h3 --start 418 --end 420 \
         --url http://localhost:1/
 
@@ -253,6 +253,27 @@ case_run "(d2) a live fetch failure (unreachable URL) degrades to UNVERIFIED" 0 
     "UNVERIFIED (DuckBrain API unreachable or refused|VERDICT: UNVERIFIED" \
     env H3OPS_DUCKBRAIN_API_KEY=selftest-not-a-real-token python3 "$CENSUS" h3 \
         --start 418 --end 420 --url http://localhost:1/
+
+# --- (d8/d9) degrade + fallback: the token-dir convention -------------------
+# (sibling guard convention: first *.token in the token dir; H3-GAP-099)
+mkdir -p "$WORK/tokdir"
+printf 'selftest-dir-token\n' > "$WORK/tokdir/selftest.token"
+
+case_run "(d8) env unset + --token-dir: the dir token is used and the fetch failure names its source" 0 \
+    "UNVERIFIED (DuckBrain API unreachable or refused|token: file:|selftest.token" \
+    env -u H3OPS_DUCKBRAIN_API_KEY python3 "$CENSUS" h3 --start 418 --end 420 \
+        --url http://localhost:1/ --token-dir "$WORK/tokdir"
+
+case_run "(d9) a set-but-empty token env NEVER falls through to the token dir" 0 \
+    "UNVERIFIED (token env var is set but empty: H3OPS_DUCKBRAIN_API_KEY" \
+    env H3OPS_DUCKBRAIN_API_KEY= python3 "$CENSUS" h3 --start 418 --end 420 \
+        --url http://localhost:1/ --token-dir "$WORK/tokdir"
+
+mkdir -p "$WORK/emptydir"
+case_run "(d10) env unset + a token dir with no *.token files degrades with the dir named" 0 \
+    "UNVERIFIED (no token: env H3OPS_DUCKBRAIN_API_KEY is unset|VERDICT: UNVERIFIED" \
+    env -u H3OPS_DUCKBRAIN_API_KEY python3 "$CENSUS" h3 \
+        --start 418 --end 420 --url http://localhost:1/ --token-dir "$WORK/emptydir"
 
 # --- (d3) degrade: unreadable tree in offline mode -------------------------
 case_run "(d3) missing tree file degrades to UNVERIFIED" 0 \
