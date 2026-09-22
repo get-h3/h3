@@ -232,7 +232,7 @@ func main() {
 		ToolName:   "read_file",
 		Data:       map[string]any{"content": "file contents\nline 2\nline 3"},
 		DurationMs: 150,
-		Success:    true,
+		Success:    protocol.BoolPtr(true),
 	})
 
 	// Capability — list of DecisionType string values
@@ -401,7 +401,7 @@ func main() {
 			ToolName:   "read_file",
 			Data:       map[string]any{"content": "file contents here"},
 			DurationMs: 150,
-			Success:    true,
+			Success:    protocol.BoolPtr(true),
 		},
 	})
 

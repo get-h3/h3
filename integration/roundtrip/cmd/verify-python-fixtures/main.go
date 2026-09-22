@@ -475,7 +475,7 @@ func verifyResultPayload() error {
 	if r.ToolName != "read_file" {
 		return fmt.Errorf("tool_name: got %q", r.ToolName)
 	}
-	if !r.Success {
+	if r.Success == nil || !*r.Success {
 		return fmt.Errorf("success: got false, want true")
 	}
 	if r.DurationMs != 150 {
@@ -736,7 +736,7 @@ func verifyResultRequest() error {
 	if rr.Result.ToolName != "read_file" {
 		return fmt.Errorf("result.tool_name: got %q", rr.Result.ToolName)
 	}
-	if !rr.Result.Success {
+	if rr.Result.Success == nil || !*rr.Result.Success {
 		return fmt.Errorf("result.success: got false")
 	}
 	if rr.Result.DurationMs != 150 {
