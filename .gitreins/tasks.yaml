@@ -41,3 +41,11 @@ tasks:
   status: complete
   created_at: '2026-09-22T14:49:47.773949+00:00'
   completed_at: '2026-09-22T16:50:20.875694+00:00'
+- id: e2e-001
+  title: 'E2E-001 due-cycle tick #476 - live battery 46/46'
+  criteria:
+  - 'fixtures.jsonl E2E-001 note contains ''ran #476 46/46 on :9191''; board.jsonl
+    ticks_total=476; events.jsonl holds tick #476 e2e-audit event with battery breakdown;
+    :9191 verified free after teardown'
+  status: in_progress
+  created_at: '2026-09-22T17:14:40.062471+00:00'
