@@ -99,7 +99,9 @@ Validate a target before recording any QA cell:
 sh scripts/check-qa-target.sh <candidate-dir>   # 0 = this repo; non-zero = not a valid target
 make verify-qa-target                           # same check against this checkout
 sh scripts/check-duckbrain-tick-chain.sh        # DuckBrain tick-key drift + window census (H3-GAP-098)
+python3 scripts/duckbrain-tree-census.py h3 --start 418 --end auto   # the independent tree census (H3-GAP-099)
 make verify-tick-chain-selftest                 # its fixture-driven positive + negative proof (no network)
+make verify-tree-census-selftest                # the same for the independent tree-census walker (no network)
 ```
 
 An empty, no-cell QA result is **UNVERIFIED — never a pass**. Full contract and

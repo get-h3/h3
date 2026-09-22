@@ -54,6 +54,27 @@
 #                       cannot (ticks #452/#453 wrote drifted keys and left holes
 #                       in the bare chain at both numbers).
 #                       Negative proof: make verify-tick-chain-selftest.
+#                       The target then runs the INDEPENDENT census walker
+#                       scripts/duckbrain-tree-census.py (H3-GAP-099, the
+#                       promotion of the 79th/80th NEVER-DONE audits' ad-hoc
+#                       /tmp walker, ticks #469/#474) in LIVE mode against the
+#                       same namespace and requires exit 0: it prints the
+#                       audit-publishable line
+#                           present=<N> missing=[..] unknown_drift=[..]
+#                       and fails on a hole or on an unknown-shaped tick key at
+#                       N >= 418. Two readers of one tree is the point — a
+#                       disagreement between them is the signal, so it is
+#                       deliberately a second implementation rather than a
+#                       second call into the guard. UNVERIFIED (exit 0) when
+#                       the token env var H3OPS_DUCKBRAIN_API_KEY is unset, the
+#                       fetch fails, or the board header cannot be read; the
+#                       token is read from the environment only (never a silent
+#                       token-file fallback), so a host that keeps its token in
+#                       a file arms it explicitly:
+#                           H3_TREE_CENSUS_ARGS="--url http://localhost:3000 \
+#                               --token-file ~/.duckbrain/h3.token" make verify-tick-chain
+#                       Negative proof: make verify-tree-census-selftest (its
+#                       selftest is also run by make verify-tick-chain-selftest).
 #   8. board-header  — the board's OWN header is self-consistent (H3-GAP-099).
 #                       board.jsonl is a one-line object whose last_commit and
 #                       ticks_total every reader believes without checking, and
@@ -88,7 +109,11 @@
 # the service, jq, curl, the token file or the board header is missing it prints
 # an explicit UNVERIFIED and exits 0 — absent tooling is UNVERIFIED, never PASS,
 # so a fresh clone with no DuckBrain still gets a green gate that does not lie
-# about what it read.
+# about what it read. The independent tree-census walker it also runs
+# (scripts/duckbrain-tree-census.py, python3 stdlib — no jq) follows the same
+# rule: python3 absent, the token env var unset, the fetch failing or the board
+# header unreadable all print UNVERIFIED and exit 0, and only a tree that was
+# actually READ can fail the target.
 # The repo's only executable verification is the cross-language round-trip
 # suite in integration/roundtrip/, exposed here as:
 #
@@ -123,11 +148,11 @@
 # that never executed code. That filter is a deliberate design, not an accident;
 # the naming above is what makes the difference visible. See CONTRIBUTING.md.
 
-.PHONY: verify verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-qa-target-selftest verify-tick-chain verify-tick-chain-selftest verify-board-header verify-board-header-selftest verify-commit-msg verify-roundtrip verify-all release
+.PHONY: verify verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-qa-target-selftest verify-tick-chain verify-tick-chain-selftest verify-tree-census-selftest verify-board-header verify-board-header-selftest verify-commit-msg verify-roundtrip verify-all release
 
 verify: verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-tick-chain verify-board-header verify-commit-msg
 	@echo "make verify: ALL PASS — umbrella repo is self-consistent"
-	@echo "make verify: SCOPE — docs + repo-consistency checks only (no code executed; the tick-chain census is read-only against DuckBrain and reports UNVERIFIED when jq/curl/token/board are absent); code-level verification is 'make verify-roundtrip' (CI: roundtrip.yml)."
+	@echo "make verify: SCOPE — docs + repo-consistency checks only (no code executed; both DuckBrain checks are read-only and report UNVERIFIED when their substrate is absent — jq/curl/token-file/board for the tick-chain guard, python3/token env/board for the independent tree-census walker); code-level verification is 'make verify-roundtrip' (CI: roundtrip.yml)."
 
 verify-docs:
 	@echo "make verify: docs-link check"
@@ -176,10 +201,18 @@ verify-qa-target-selftest:
 verify-tick-chain:
 	@echo "make verify: DuckBrain tick-chain drift/window census (H3-GAP-098)"
 	@sh scripts/check-duckbrain-tick-chain.sh
+	@echo "make verify: independent DuckBrain tree-census walker (H3-GAP-099)"
+	@if command -v python3 >/dev/null 2>&1; then python3 scripts/duckbrain-tree-census.py h3 --start 418 --end auto $${H3_TREE_CENSUS_ARGS:-}; else echo "duckbrain-tree-census: UNVERIFIED — python3 not found on PATH (the independent census was not run)"; fi
 
 verify-tick-chain-selftest:
 	@echo "make verify-tick-chain-selftest: positive + negative proof for the tick-chain checker (H3-GAP-098)"
 	@sh scripts/check-duckbrain-tick-chain-selftest.sh
+	@echo "make verify-tick-chain-selftest: positive + negative proof for the independent tree-census walker (H3-GAP-099)"
+	@sh scripts/check-duckbrain-tree-census-selftest.sh
+
+verify-tree-census-selftest:
+	@echo "make verify-tree-census-selftest: positive + negative proof for the tree-census walker (H3-GAP-099)"
+	@sh scripts/check-duckbrain-tree-census-selftest.sh
 
 verify-board-header:
 	@echo "make verify: board-header self-consistency guard (H3-GAP-099)"

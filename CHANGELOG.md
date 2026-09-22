@@ -23,6 +23,17 @@ All notable changes to the H3 protocol and umbrella project.
   clean tree verifies, a missing window tick or an unknown drifted key fails, and
   every unreadable state degrades to UNVERIFIED.
 - `make verify` now runs the tick-chain census as its seventh check.
+- `scripts/duckbrain-tree-census.py` + `make verify-tree-census-selftest`
+  (H3-GAP-099): the ad-hoc DuckBrain tree-census walker the 79th and 80th
+  NEVER-DONE audits kept in `/tmp` (ticks #469/#474) is promoted into the repo —
+  python3 stdlib only, no jq, no third-party code. It walks the same
+  `/api/keys?namespace=…&tree` answer as a second, INDEPENDENT reader of the tree
+  and prints the census line the audit events publish
+  (`present=<N> missing=[..] unknown_drift=[..]`); `make verify-tick-chain` runs it
+  in live mode after the H3-GAP-098 guard and requires exit 0 (a hole or an
+  unknown-shaped tick key fails the target), and it degrades to `UNVERIFIED`
+  (exit 0) when the token env var `H3OPS_DUCKBRAIN_API_KEY` is unset, the fetch
+  fails, the listing is possibly truncated or the board header is unreadable.
 
 ## [0.2.0] — 2026-09-20
 
