@@ -1,0 +1,96 @@
+{
+  "scheduler_tick_id": "h3-2026-09-22-22-21-23",
+  "created_at": "2026-09-22T22:40:00-05:00",
+  "foreman_workdir": "/home/kara/get-h3/h3",
+  "wave_budget": 9,
+  "mode": "cross-repo",
+  "base_commits": {
+    "shim": "4e6800b",
+    "sdk-python": "5ca9a8e",
+    "sdk-go": "1c51deb",
+    "protocol": "1a449577"
+  },
+  "tasks": [
+    {
+      "id": "SHIM-DF4-H3-SHIM-4",
+      "repo": "shim",
+      "worktree": "/home/kara/worktrees/shim-DF4-H3-SHIM-4",
+      "branch": "wt/DF4-H3-SHIM-4",
+      "gitreins_task": "W4-DF4-H3-SHIM-4",
+      "status": "dispatched"
+    },
+    {
+      "id": "DOGFOOD-01",
+      "repo": "shim",
+      "worktree": "/home/kara/worktrees/shim-DOGFOOD-01",
+      "branch": "wt/DOGFOOD-01",
+      "gitreins_task": "W4-DOGFOOD-01",
+      "status": "dispatched"
+    },
+    {
+      "id": "SDKPY-GAP-066",
+      "repo": "sdk-python",
+      "worktree": "/home/kara/worktrees/sdk-python-SDKPY-GAP-066",
+      "branch": "wt/SDKPY-GAP-066",
+      "gitreins_task": "W4-SDKPY-GAP-066",
+      "status": "dispatched"
+    },
+    {
+      "id": "SDKGO-DF-H3-SDK-GO-FOREMAN-9",
+      "repo": "sdk-go",
+      "worktree": "/home/kara/worktrees/sdk-go-DF-H3-SDK-GO-FOREMAN-9",
+      "branch": "wt/DF-H3-SDK-GO-FOREMAN-9",
+      "gitreins_task": "W4-DF-H3-SDK-GO-FOREMAN-9",
+      "status": "dispatched"
+    },
+    {
+      "id": "PROTO-DF-03",
+      "repo": "protocol",
+      "worktree": "/home/kara/worktrees/protocol-PROTO-DF-03",
+      "branch": "wt/PROTO-DF-03",
+      "gitreins_task": "W4-PROTO-DF-03",
+      "status": "dispatched"
+    }
+  ],
+  "parked": [
+    {
+      "id": "SHIM-DF3-H3-SHIM-4",
+      "reason": "same repo + same file (docs/api.md) as DF4-H3-SHIM-4 worker; merge-conflict risk"
+    },
+    {
+      "id": "SDKGO-GAP-052",
+      "reason": "bunker CLI infra work (spawn deadline/rollback/reaper) - too large for this wave"
+    },
+    {
+      "id": "SDKPY-DEPS-03",
+      "reason": "venv-only dep refresh, no repo deliverable"
+    },
+    {
+      "id": "SDKTS-* (all)",
+      "reason": "sdk-typescript not in this wave; P2 row SDKTS-H3TS-GAP-062 next tick"
+    },
+    {
+      "id": "LOGSEY-*/PULSE-*/LORE-*/DIGEST-*",
+      "reason": "decision-gated on LOGSEY-001 (Bane)"
+    },
+    {
+      "id": "SDKGO-RELENG-20260921-001",
+      "reason": "blocked on P0/P1 open blockers per its own title"
+    },
+    {
+      "id": "PROTO-RELENG-H3-PROTOCOL-20260921",
+      "reason": "needs DISPATCH_PAT resolution + cut authorization"
+    }
+  ],
+  "worker_model": "deepseek-v4-flash",
+  "worker_provider": "deepseek-foreman",
+  "finished_at": "2026-09-22T18:55:00-05:00",
+  "outcome": {
+    "SHIM-DF4-H3-SHIM-4": "harvested: merged d545c6d, judge d743d8b0 PASS, board closed (tick #479 recovery)",
+    "DOGFOOD-01": "partially harvested: merged 93085fe, judge 1ef00197 FAIL INCOMPLETE-class (AGENTS.md clause approval-gated; PyPI premise went stale \u2014 package live 23:33:29Z); row stays in_progress with remediation note",
+    "SDKPY-GAP-066": "harvested: merged b219ae3, judge 0a4c16f5 PASS, board closed",
+    "SDKGO-DF-H3-SDK-GO-FOREMAN-9": "harvested: merged ee84e59, judge 5b4ad5ec PASS, board closed",
+    "PROTO-DF-03": "harvested: merged be5d4eee, judge 35eb969d PASS, board closed"
+  },
+  "recovered_by": "h3-2026-09-22-22-21-23-nudge1 (tick #479)"
+}
