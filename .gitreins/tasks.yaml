@@ -21,3 +21,13 @@ tasks:
   status: complete
   created_at: '2026-09-21T13:07:44.417460+00:00'
   completed_at: '2026-09-21T14:02:34.901746+00:00'
+- id: qa-h3-17
+  title: Board-header guard must degrade to UNVERIFIED on git-less trees
+  criteria:
+  - 'scripts/check-board-header-consistency.sh emits VERDICT: UNVERIFIED (no git history)
+    with exit 0 when the target tree has no .git (tar/archive install); the selftest
+    proves the git-less case exits 0 with UNVERIFIED and that SKIP=A does not bypass
+    the degrade'
+  status: complete
+  created_at: '2026-09-22T10:57:04.248857+00:00'
+  completed_at: '2026-09-22T11:49:52.183641+00:00'
