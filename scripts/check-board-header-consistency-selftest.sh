@@ -161,6 +161,23 @@ B9=$WORK/b9
 mkdir -p "$B9"
 case_run "empty board dir -> UNVERIFIED (not a pass)" 0 "VERDICT: UNVERIFIED" "$B9"
 
+# ---- 9b. QA-H3-17: a tree WITHOUT .git degrades to UNVERIFIED, exit 0 -------
+# The bunker 9252c745 finding: a tar --exclude=.git extraction carries the board
+# but no commit history, so check A hard-FAILED ("does not resolve to a commit")
+# and make verify went red on every fresh-install-shaped cell. Missing history
+# is not a board defect. The tar image includes scripts/ and the board, but the
+# FAKE repo is replaced via a later H3_BOARD_HEADER_ROOT (env last-wins), so the
+# guard resolves ROOT to the git-less tree — exactly the tar-install shape.
+NG=$WORK/no-git
+mkdir -p "$NG"
+( cd /home/kara/get-h3/h3 && tar --exclude=.git -cf - scripts .coding-hermes/board/board.jsonl ) | ( cd "$NG" && tar xf - )
+case_run "tar extraction without .git -> UNVERIFIED, not FAILED (QA-H3-17)" 0 "UNVERIFIED (no git history" "$NG/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$NG"
+
+# ---- 9c. QA-H3-17: SKIP=A does NOT bypass the git-less degrade --------------
+# The degrade sits before check A and guards check D's git reads too, so a
+# requested A-skip must not change the outcome.
+case_run "SKIP=A on a git-less tree -> still UNVERIFIED (QA-H3-17)" 0 "UNVERIFIED (no git history" "$NG/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$NG" H3_BOARD_HEADER_SKIP=A
+
 # ---- 10. degrade: RECENT is not an integer ---------------------------------
 B10=$WORK/b10
 board_fixture "$B10" 10 "$FAKE_HEAD" 10

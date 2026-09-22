@@ -47,8 +47,9 @@
 # must not read as broader than it is).
 #
 # EXIT CODES (sibling-guard convention):
-#   0 = VERIFIED, or UNVERIFIED when the board/header cannot be read at all
-#       (an unreadable board is not a pass)
+#   0 = VERIFIED, or UNVERIFIED when the checks cannot run at all: an
+#       unreadable board/header, or a tree with no git history (QA-H3-17:
+#       a tar/archive install is a degrade, not a FAILED verdict)
 #   1 = FAILED — one or more of A/B/C/D above
 #
 # Output is grep-friendly: one fact per line, ending with the verdict line
@@ -114,6 +115,18 @@ esac
 
 command -v jq >/dev/null 2>&1 || unverified "jq not found on PATH — cannot read the board header"
 command -v git >/dev/null 2>&1 || unverified "git not found on PATH — cannot resolve commits"
+
+# QA-H3-17: a tar/archive install (or any extraction without .git) carries the
+# board but no commit history. Check A would then FAIL on "last_commit does not
+# resolve" and D's committed-header probe would silently report a misleading
+# "not committed at HEAD" — missing history is not a defect of the board, and
+# hard-failing on it turned every fresh-install-shaped battery cell red
+# (bunker 9252c745, 2026-09-21). Degrade to UNVERIFIED with exit 0, matching
+# the documented contract (exit 0 = VERIFIED or "cannot check"); this fires
+# regardless of SKIP=A because D reads git state too — a skip is never a pass.
+if ! git -C "$ROOT" rev-parse --git-dir >/dev/null 2>&1; then
+    unverified "no git history in $ROOT (tar/archive or history-less extraction) — checks A/D need commits; run the header sync after the first real clone"
+fi
 
 # ---- 1. read the header -----------------------------------------------------
 if [ -n "$HEADER_INPUT" ]; then
