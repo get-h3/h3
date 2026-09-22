@@ -30,6 +30,10 @@ dagger.db-wal
 # GitReins MCP runtime state (never commit)
 .gitreins/history/
 .gitreins/logs/
+# Evaluator token-burn ledger (QA-H3-17-era runtime state, QA-H3-19): grows per
+# judged task, is rebuildable from .gitreins/history verdict artifacts, and is
+# host-local runtime state like the history/ and logs/ dirs above — not repo content.
+.gitreins/usage.jsonl
 
 # Cross-harness test artifacts
 .cross-harness-results/

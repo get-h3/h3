@@ -31,3 +31,13 @@ tasks:
   status: complete
   created_at: '2026-09-22T10:57:04.248857+00:00'
   completed_at: '2026-09-22T11:49:52.183641+00:00'
+- id: H3-GAP-099
+  title: Promote ad-hoc DuckBrain tree-census walker into scripts/
+  criteria:
+  - scripts/duckbrain-tree-census.py exists in-repo (stdlib-only, namespace+start
+    args), output shape present=N missing=[..] unknown_drift=[..], wired into make
+    verify-tick-chain (or sibling target) with UNVERIFIED degrade, selftest/manual
+    invocation reproduces 0 holes in 418..474
+  status: complete
+  created_at: '2026-09-22T14:49:47.773949+00:00'
+  completed_at: '2026-09-22T16:50:20.875694+00:00'
