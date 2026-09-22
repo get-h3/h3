@@ -1,0 +1,52 @@
+{
+  "scheduler_tick_id": "h3-2026-09-22-20-00-15",
+  "created_at": "2026-09-22T20:10:00-05:00",
+  "foreman_workdir": "/home/kara/get-h3/h3",
+  "wave_budget": 8,
+  "mode": "cross-repo",
+  "base_commits": {
+    "protocol": "d44a380a",
+    "shim": "8913316",
+    "sdk-python": null,
+    "sdk-go": "dacbbe3"
+  },
+  "tasks": [
+    {
+      "id": "PROTO-DF-02",
+      "repo": "protocol",
+      "worktree": "/home/kara/worktrees/protocol-PROTO-DF-02",
+      "branch": "wt/PROTO-DF-02",
+      "gitreins_task": null,
+      "status": "dispatched"
+    },
+    {
+      "id": "SHIM-DF5-H3-SHIM-3",
+      "repo": "shim",
+      "worktree": "/home/kara/worktrees/shim-DF5-H3-SHIM-3",
+      "branch": "wt/DF5-H3-SHIM-3",
+      "gitreins_task": null,
+      "status": "dispatched"
+    },
+    {
+      "id": "SDKPY-GAP-065",
+      "repo": "sdk-python",
+      "worktree": "/home/kara/worktrees/sdk-python-SDKPY-GAP-065",
+      "branch": "wt/SDKPY-GAP-065",
+      "gitreins_task": null,
+      "status": "dispatched"
+    },
+    {
+      "id": "SDKGO-GAP-055",
+      "repo": "sdk-go",
+      "worktree": "/home/kara/worktrees/sdk-go-SDKGO-GAP-055",
+      "branch": "wt/SDKGO-GAP-055",
+      "gitreins_task": null,
+      "status": "dispatched"
+    }
+  ],
+  "parked": [
+    {"id": "PROTO-DF-03", "reason": "same-repo overlap with PROTO-DF-02 (both touch README examples/sections)"}
+  ],
+  "worker_model": "deepseek-v4-flash",
+  "worker_provider": "deepseek-foreman"
+}
