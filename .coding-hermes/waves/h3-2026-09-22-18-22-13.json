@@ -1,0 +1,57 @@
+{
+  "tick_id": "h3-2026-09-22-18-22-13",
+  "project": "h3",
+  "composed_at": "2026-09-22T18:45:00Z",
+  "wave_budget": 9,
+  "workers": 5,
+  "tasks": [
+    {
+      "task_id": "SHIM-DF5-H3-SHIM-4",
+      "repo": "/home/kara/get-h3/shim",
+      "worktree": "/home/kara/worktrees/h3-shim-DF5-H3-SHIM-4",
+      "branch": "wt/DF5-H3-SHIM-4",
+      "gitreins_task": "df5-h3-shim-4",
+      "model": "deepseek-v4-flash",
+      "provider": "deepseek-foreman"
+    },
+    {
+      "task_id": "SDKPY-GAP-063",
+      "repo": "/home/kara/get-h3/sdk-python",
+      "worktree": "/home/kara/worktrees/h3-sdk-python-SDKPY-GAP-063",
+      "branch": "wt/SDKPY-GAP-063",
+      "gitreins_task": "sdkpy-gap-063",
+      "model": "deepseek-v4-flash",
+      "provider": "deepseek-foreman"
+    },
+    {
+      "task_id": "SDKPY-GAP-063b",
+      "repo": "/home/kara/get-h3/sdk-python",
+      "worktree": "/home/kara/worktrees/h3-sdk-python-SDKPY-GAP-063b",
+      "branch": "wt/SDKPY-GAP-063b",
+      "gitreins_task": "sdkpy-gap-063b",
+      "model": "deepseek-v4-flash",
+      "provider": "deepseek-foreman"
+    },
+    {
+      "task_id": "SDKGO-GAP058-060",
+      "repo": "/home/kara/get-h3/sdk-go",
+      "worktree": "/home/kara/worktrees/h3-sdk-go-SDKGO-GAP058-060",
+      "branch": "wt/SDKGO-GAP058-060",
+      "gitreins_task": "sdkgo-gap058-060",
+      "covers_board_rows": ["SDKGO-GAP-058", "SDKGO-GAP-059", "SDKGO-GAP-060"],
+      "model": "deepseek-v4-flash",
+      "provider": "deepseek-foreman"
+    },
+    {
+      "task_id": "SDKTS-H3TS-GAP-063",
+      "repo": "/home/kara/get-h3/sdk-typescript",
+      "worktree": "/home/kara/worktrees/h3-sdk-typescript-SDKTS-H3TS-GAP-063",
+      "branch": "wt/SDKTS-H3TS-GAP-063",
+      "gitreins_task": "sdkts-gap-063",
+      "model": "deepseek-v4-flash",
+      "provider": "deepseek-foreman"
+    }
+  ],
+  "merge_order": ["SHIM-DF5-H3-SHIM-4", "SDKPY-GAP-063", "SDKPY-GAP-063b", "SDKGO-GAP058-060", "SDKTS-H3TS-GAP-063"],
+  "notes": "All 5 tasks mutually independent: 4 repos, and the two sdk-python tasks touch disjoint file sets (docs+skills vs harness.py+tests). Push-before-wave completed: shim/sdk-python/sdk-typescript mains all 0-ahead. Base for all worktrees = origin/main at push time."
+}

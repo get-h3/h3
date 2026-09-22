@@ -47,5 +47,15 @@ tasks:
   - 'fixtures.jsonl E2E-001 note contains ''ran #476 46/46 on :9191''; board.jsonl
     ticks_total=476; events.jsonl holds tick #476 e2e-audit event with battery breakdown;
     :9191 verified free after teardown'
-  status: in_progress
+  status: complete
   created_at: '2026-09-22T17:14:40.062471+00:00'
+  completed_at: '2026-09-22T17:18:42.005317+00:00'
+- id: H3-CI-002
+  title: Fix cross-language roundtrip after sdk-go GAP-061 Result.Success *bool migration
+  criteria:
+  - go build ./... and go vet ./... exit 0 in integration/roundtrip; make verify-roundtrip
+    passes from the repo root; verify-python-fixtures treats a nil Success as verification
+    failure instead of panicking; GitHub roundtrip workflow green on the fix push
+  status: complete
+  created_at: '2026-09-22T18:06:47.684785+00:00'
+  completed_at: '2026-09-22T18:40:34.030100+00:00'
