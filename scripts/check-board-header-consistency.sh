@@ -40,11 +40,48 @@
 # an independent audit did exactly that on 2026-09-21 and reported four phantom
 # missing ticks (457/458/463/466, all present). The guard reads both.
 #
+# DF-H3-25 added the THIRD shape the board writes: a top-level numeric `tick`
+# on the event object itself (the current writer — the task_complete /
+# judge_verdict rows of tick #481 carry `"tick": 481` and a detail that holds no
+# tick at all). Until it was read here, a tick whose ONLY record used that shape
+# was invisible to this guard: the header could not be sized from it, and the
+# closeout's writer (scripts/sync-board-header.sh) would have disagreed with the
+# checker checking it. Both sides now run the same three-shape program, in the
+# same precedence order (tick_number, then tick, then detail.tick) — a row's own
+# top-level tick identity wins over a tick number merely mentioned inside its
+# detail. Sets were compared before/after the change over the real 543-line log:
+# identical (219 ticks), so this closed a future hole without moving today's
+# verdict.
+#
 # WHAT THIS DOES NOT DO: it cannot verify that last_commit names the CORRECT
 # pushed commit (only that it names a commit from the current or immediately
 # preceding commit) — a fresh-but-wrong hash still passes. It is a staleness and
 # hole guard, not a provenance proof. Say so when reporting it (QA-H3-1: a guard
 # must not read as broader than it is).
+#
+# FLEET ALERT (DF-H3-25): a public clone whose header is BEHIND is a
+# fleet-level signal, not a local one — the writer regressed five times (#459,
+# #463/#464, #480/#481) while this guard caught every occurrence. When the
+# behind class fires, the guard prints a loud, greppable line:
+#
+#   PUBLIC-HEAD-VERIFY-FAIL: board header is BEHIND the board it describes ...
+#
+# Alert recipe — no external infrastructure, just the exit code and the line:
+#
+#   git clone --depth 1 https://github.com/get-h3/h3 /tmp/h3-public-check &&
+#   cd /tmp/h3-public-check &&
+#   if ! make verify > /tmp/h3-verify.log 2>&1; then
+#       grep -F 'PUBLIC-HEAD-VERIFY-FAIL' /tmp/h3-verify.log && <page/alert>; fi
+#
+# (Or, on the tip of the working repo, before any clone:)
+#   sh scripts/check-board-header-consistency.sh | grep -F 'PUBLIC-HEAD-VERIFY-FAIL'
+#
+# The line is printed ONLY for the behind class (A: stale last_commit;
+# B: ticks_total behind the event log). It is deliberately not printed for C (a
+# tick with no event) or D (an uncommitted header) — those are real failures
+# with their own remedies, and an alert that fires on everything is an alert
+# nobody reads. The remedy it names is the documented closeout step:
+# `make board-close` before the board commit.
 #
 # EXIT CODES (sibling-guard convention):
 #   0 = VERIFIED, or UNVERIFIED when the checks cannot run at all: an
@@ -159,9 +196,17 @@ if [ -n "$SKIP" ]; then
 fi
 
 FAIL=0
+BEHIND=0
 fail() {
     FAIL=1
     echo "$NAME: FAIL — $1"
+}
+# The behind class (DF-H3-25): last_commit stale, or ticks_total trailing the
+# event log. These two are what the write-back exists to prevent, so they raise
+# the fleet-level line below.
+fail_behind() {
+    BEHIND=1
+    fail "$1"
 }
 
 # ---- 2. A: last_commit is the commit the header is being written against -----
@@ -184,15 +229,19 @@ else
             echo "$NAME: A PASS — last_commit $LAST_COMMIT is HEAD's parent (the two-phase sync ran one commit ago, the documented state)"
         else
             SINCE=$(git -C "$ROOT" rev-list --count "$V_FULL"..HEAD 2>/dev/null || echo '?')
-            fail "A: last_commit '$LAST_COMMIT' is neither HEAD nor HEAD's parent — it is $SINCE commit(s) behind the board it claims to describe; the post-push header sync did not run (write HEAD's hash back into the header)"
+            fail_behind "A: last_commit '$LAST_COMMIT' is neither HEAD nor HEAD's parent — it is $SINCE commit(s) behind the board it claims to describe; the header write-back did not run in the board-writing closeout (run 'make board-close' before the board commit; the writer is scripts/sync-board-header.sh)"
         fi
     fi
 fi
 
 # ---- 3. B + C: tick coverage from the event log ------------------------------
-# Tick number shapes: top-level numeric .tick_number, else numeric .tick inside
-# the JSON-encoded detail string. Reading one shape only is what produced a
-# phantom-hole audit on 2026-09-21.
+# Tick number shapes, in PRECEDENCE order: top-level numeric .tick_number, then
+# top-level numeric .tick (the current writer), then numeric .tick inside the
+# JSON-encoded detail string (the older shape). Reading one shape only is what
+# produced a phantom-hole audit on 2026-09-21, and reading two is what made the
+# current writer's top-level `tick` invisible until DF-H3-25. scripts/
+# sync-board-header.sh runs this program VERBATIM: the writer must not be free
+# to disagree with the checker that checks it.
 if [ ! -r "$EVENTS" ]; then
     echo "$NAME: B/C SKIPPED — event log unreadable ($EVENTS)"
 else
@@ -200,19 +249,20 @@ else
     trap 'rm -f "$TICK_TMP"' EXIT HUP INT TERM
     jq -r '
         if (.tick_number|type) == "number" then .tick_number|tostring
+        elif (.tick|type) == "number" then .tick|tostring
         elif (.detail|type) == "string" then ((try (.detail|fromjson) catch null) | if (.tick|type) == "number" then .tick|tostring else empty end)
         else empty end
     ' "$EVENTS" 2>/dev/null | sort -n -u > "$TICK_TMP" || true
 
     MAX_TICK=$(tail -n 1 "$TICK_TMP" 2>/dev/null || echo '')
     COUNT_TICK=$(wc -l < "$TICK_TMP" | tr -d ' ')
-    echo "$NAME: event-ticks recorded=$COUNT_TICK max=$MAX_TICK (shapes: tick_number + detail.tick)"
+    echo "$NAME: event-ticks recorded=$COUNT_TICK max=$MAX_TICK (shapes: tick_number + tick + detail.tick)"
 
     if [ -z "$MAX_TICK" ]; then
         echo "$NAME: B/C SKIPPED — no tick number found in $BOARD_REL/events.jsonl"
     else
         if [ "$TICKS_TOTAL" -lt "$MAX_TICK" ]; then
-            fail "B: ticks_total $TICKS_TOTAL is BEHIND the event log (highest recorded tick is $MAX_TICK) — the header is understating the board"
+            fail_behind "B: ticks_total $TICKS_TOTAL is BEHIND the event log (highest recorded tick is $MAX_TICK) — the header is understating the board; run 'make board-close' before the board commit"
         elif [ "$TICKS_TOTAL" -gt "$MAX_TICK" ]; then
             echo "$NAME: B PASS — ticks_total $TICKS_TOTAL names the tick in flight (highest recorded tick $MAX_TICK; the header counts the running tick, whose event may not be written yet)"
         else
@@ -256,6 +306,16 @@ if [ "$FAIL" -eq 0 ]; then
     echo "$NAME: PASS — header self-consistent (A freshness, B total, C tick coverage, D committed==worktree)"
     echo "VERDICT: VERIFIED (ticks_total=$TICKS_TOTAL last_commit=$LAST_COMMIT; scope: staleness + holes only — NOT provenance of the named commit)"
     exit 0
+fi
+
+# The fleet-level line (DF-H3-25): only for the behind class, only when the
+# header is behind the board it describes. Greppable on purpose — the alert
+# recipe is in the header comment of this file. A clone whose public HEAD fails
+# this is a writer regression, not a reader problem: the remedy is the
+# closeout's unconditional write-back, `make board-close`, before the board
+# commit.
+if [ "$BEHIND" -eq 1 ]; then
+    echo "PUBLIC-HEAD-VERIFY-FAIL: board header is BEHIND the board it describes (last_commit=$LAST_COMMIT ticks_total=$TICKS_TOTAL) — a fresh public clone of this repo FAILS make verify; the board-writing tick's closeout skipped 'make board-close' (scripts/sync-board-header.sh) before the board commit. Alert recipe: see the FLEET ALERT block in the header comment of make verify's board-header guard."
 fi
 
 echo "VERDICT: FAILED (board header and board state disagree — see the FAIL lines above)"
