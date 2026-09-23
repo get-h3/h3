@@ -59,3 +59,45 @@ tasks:
   status: complete
   created_at: '2026-09-22T18:06:47.684785+00:00'
   completed_at: '2026-09-22T18:40:34.030100+00:00'
+- id: df-h3-25
+  title: DF-H3-25 board-header sync writer fix
+  criteria:
+  - 'Fresh-clone make verify must pass: fix the header write-back so it is an unconditional
+    part of the board-writing tick closeout, prove last_commit==HEAD and ticks_total==max(event
+    ticks) on a freshly cloned repo after a simulated board commit, add/extend a self-test,
+    and ensure all existing repo checks pass'
+  status: complete
+  created_at: '2026-09-23T02:08:50.852861+00:00'
+  completed_at: '2026-09-23T02:32:08.719837+00:00'
+- id: df-h3-26-29-battery
+  title: DF-H3-26 battery identity + freshness (with DF-H3-29 battery half)
+  criteria:
+  - On connect h3-test prints the target /v1/health identity (version, uptime_seconds,
+    active_sessions) and warns on large uptime or missing expected capabilities; --expect-fresh
+    flag fails when uptime_seconds exceeds the freshness threshold; the 'do not finish'
+    partial-turn convention is named in the battery failure detail for test_2_4; battery
+    self-tests pass and the CLI suite stays green
+  status: complete
+  created_at: '2026-09-23T02:08:50.929876+00:00'
+  completed_at: '2026-09-23T02:36:11.326975+00:00'
+- id: pypi-docs-bundle
+  title: H3-PYPI-001 + DF-H3-27/28/29 hub docs bundle
+  criteria:
+  - Hub README/docs/skills docs accurately reflect that hermes-h3-shim 0.1.0 is live
+    on PyPI (pip install first, source as fallback), README loop diagram says tool_call
+    not tool_use, integration.md gains a /v1/result + on_result section with exact
+    ResultRequest fields and a dict-attribute warning, README quickstart names the
+    'do not finish' partial-turn convention; markdown checks and make verify doc gates
+    pass
+  status: complete
+  created_at: '2026-09-23T02:08:51.009914+00:00'
+  completed_at: '2026-09-23T02:45:58.177386+00:00'
+- id: sdkts-deps-02
+  title: SDKTS-DEPS-02 npm dep majors
+  criteria:
+  - typescript 5->7, vitest and @vitest/coverage-v8 4->5 upgrades land with npm run
+    build, npx tsc --noEmit and full vitest suite green on Node >=20, verify-counts
+    guard green, changelog notes the runtime-affecting changes
+  status: complete
+  created_at: '2026-09-23T02:08:51.089923+00:00'
+  completed_at: '2026-09-23T02:47:35.562551+00:00'

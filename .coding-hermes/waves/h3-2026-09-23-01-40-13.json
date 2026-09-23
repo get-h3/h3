@@ -1,0 +1,60 @@
+{
+  "scheduler_tick_id": "h3-2026-09-23-01-40-13",
+  "created_at": "2026-09-23T01:40:00-05:00",
+  "foreman_workdir": "/home/kara/get-h3/h3",
+  "wave_budget": 4,
+  "mode": "cross-repo",
+  "base_commits": {
+    "h3 (wt/DF-H3-25)": "7fa9b01",
+    "h3 (wt/H3-PYPI-001)": "e0ef6e9",
+    "shim (wt/DF-H3-26)": "465c106",
+    "sdk-typescript (wt/SDKTS-DEPS-02)": "dfcbcbc"
+  },
+  "tasks": [
+    {
+      "id": "DF-H3-25",
+      "repo": "h3",
+      "worktree": "/home/kara/worktrees/h3-DF-H3-25",
+      "branch": "wt/DF-H3-25",
+      "gitreins_task": "df-h3-25",
+      "status": "dispatched"
+    },
+    {
+      "id": "DF-H3-26 (+ DF-H3-29 battery half)",
+      "repo": "shim",
+      "worktree": "/home/kara/worktrees/shim-DF-H3-26",
+      "branch": "wt/DF-H3-26",
+      "gitreins_task": "df-h3-26-29-battery",
+      "status": "dispatched"
+    },
+    {
+      "id": "H3-PYPI-001 + DF-H3-27 + DF-H3-28 + DF-H3-29 README half",
+      "repo": "h3",
+      "worktree": "/home/kara/worktrees/h3-H3-PYPI-001",
+      "branch": "wt/H3-PYPI-001",
+      "gitreins_task": "pypi-docs-bundle",
+      "status": "dispatched"
+    },
+    {
+      "id": "SDKTS-DEPS-02",
+      "repo": "sdk-typescript",
+      "worktree": "/home/kara/worktrees/sdk-typescript-SDKTS-DEPS-02",
+      "branch": "wt/SDKTS-DEPS-02",
+      "gitreins_task": "sdkts-deps-02",
+      "status": "dispatched"
+    }
+  ],
+  "parked": [
+    { "id": "LOGSEY-*/PULSE-*/LORE-*/DIGEST-* (41 rows)", "reason": "decision-gated on LOGSEY-001 (Bane)" },
+    { "id": "SDKPY-DEPS-03", "reason": "venv-only dep refresh, no repo deliverable (same verdict as 09-22 wave)" },
+    { "id": "SDKPY-DF-H3-SDK-PYTHON-FOREMAN-6", "reason": "P3 record-keeping row; evidence complete, close via board flip next serial slot" },
+    { "id": "SDKTS-QA-SDK-TYPESCRIPT-1", "reason": "P3 QA-chaos observation; fix direction optional, dep major bump (SDKTS-DEPS-02) may shift vitest memory profile — re-evaluate after wave" },
+    { "id": "SDKTS-H3TS-GAP-062", "reason": "writer-side fix belongs to the duckbrain repo, not a get-h3 repo; needs its own dispatch outside this wave" },
+    { "id": "DOGFOOD-01", "reason": "PyPI live (0.1.0 verified 2026-09-22T23:33:29Z); doc-sync remediation dispatched as H3-PYPI-001; row flips complete after H3-PYPI-001 merge + AGENTS.md clause (approval-gated) noted" },
+    { "id": "SHIM-DF3-H3-SHIM-7", "reason": "owner decision (Bane): keep reworded help lines vs revert — foreman did not decide unilaterally" },
+    { "id": "DF-H3-26 battery WARN thresholds", "reason": "thresholds (>1h warn, >300s expect-fresh) chosen per row's fix direction; Bane may retune" }
+  ],
+  "worker_model": "deepseek-v4-flash",
+  "worker_provider": "deepseek-foreman",
+  "sibling_activity": "dogfood session 2026-09-22 20:59 (-0500) filed DF-H3-25..29 on this board (pushed e0ef6e9); worktree wt/DF-H3-25 re-based onto 7fa9b01 to include those rows"
+}
