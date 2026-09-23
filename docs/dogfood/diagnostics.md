@@ -264,3 +264,13 @@ on the census, which can only catch the drift one tick late by design. Filed as
 DF-H3-23 (P1). Note: the HEAD commit message at the time (f22cf9f, tick #465)
 claimed a green verify; it was red at merge time — commit messages that narrate
 gate status are claims, the gate re-run at HEAD is the fact.
+
+---
+
+## E16 (2026-09-23) — The detector/writer split is the real architecture: guards age, writers regress
+
+**What happened:** DF-H3-24 shipped the board-header consistency guard (H3-GAP-099) and closed. Two ticks later (#480, #481), a fresh public clone fails `make verify` again: header last_commit=125f473 (4 commits behind), ticks_total=479 vs event log 481 — the post-push header sync didn't run in either closeout. The guard did exactly its job (clean FAIL naming both A and B conditions); the WRITER is what regressed, again (459/463/464, now 480/481).
+
+**Why it matters:** a repo whose own README-documented smoke (`git checkout && make verify`) is red at public HEAD fails the FIRST thing every fresh user runs — the product works, the gate about the gate doesn't. A green detector row ("guard complete") is not a green system when the class it detects keeps recurring; the recurrence rate IS the metric for the writer fix, and it has now fired five times.
+
+**Right way:** treat repeated guard catches of the same class as evidence the WRITER needs an unconditional step (header write-back inside the board-writing closeout, not a best-effort post-push hook), and re-open the writer row each time the guard fires instead of treating the catch itself as closure. Filed DF-H3-25 (P1). Companion lesson from the same run: a compliance battery can green-light the WRONG server on a shared host (h3-test 46/46 vs a 2.6-day-old co-tenant harness while the target never bound — DF-H3-26); a gate must print the identity/uptime of what it tested, or its PASS is only about the port, not the process.

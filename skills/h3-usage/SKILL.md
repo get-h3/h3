@@ -6,7 +6,7 @@ description: >-
   from real dogfood runs (2026-08-02, refreshed 2026-08-14). Load this
   before working with any get-h3 repo: h3 (spec hub), protocol, shim,
   sdk-go, sdk-python, sdk-typescript.
-version: 1.1.0
+version: 1.2.0
 category: software-development
 ---
 
@@ -15,7 +15,8 @@ category: software-development
 H3 lets an external agent system (OpenCode, LangChain, CrewAI, your own
 harness) act as the thinking brain of Hermes. Hermes is the body; the H3
 protocol is the neural link. This skill is the *user manual* — how to
-actually build, run, and verify a harness.
+actually build, run, and verify a harness. Pitfalls refreshed from real
+dogfood runs (2026-08-02, 2026-08-14, 2026-09-23).
 
 ## What it is / repo map
 
@@ -139,6 +140,26 @@ detail lines, and `end.reason` must be the schema enum (`task_complete`,
 NOT "completed"). **Read the echo example for your SDK before writing
 onProcess/onResult — the example IS the spec for the battery.**
 
+### Pitfall: the README says decision type "tool_use" — the wire enum is `tool_call` (DF-H3-27)
+README line ~171 ("text, tool_use, end, or wait") disagrees with the protocol:
+the decision field is `tool_call` (py SDK `DecisionType.TOOL_CALL`; the pydantic
+sub-field is still named `tool_use=`). A docs-following developer writes
+`DecisionType.TOOL_USE`, gets `AttributeError`, and the router MASKS it: the
+endpoint returns HTTP 200 `{decision: "end", end: {reason: "error",
+summary: "<exception text>"}}` — the loop silently stops while looking
+compliant. **Always read `end.summary` on an unexpected `end` decision, and
+`grep end.summary server.log` — the SDK logs `on_process failed — masked as ...`
+there.** `create_router(..., debug_errors=True)` raises instead (dev mode).
+
+### Pitfall: `on_result` gets NO context, and `result` is a plain dict (DF-H3-28)
+`ResultRequest` carries exactly `decision_id`, `result`, `session_id` — there is
+no `context`/`history` on the result leg (echo the history you want in each
+Decision yourself). `req.result` is `dict[str, Any]`: the typed `ResultPayload`
+class is exported but never attached, so `req.result.success` (attribute access)
+silently returns `False` — use `req.result.get("success")`. Chained-tool
+example: `on_result` returns the NEXT `tool_call` decision; see
+`docs/dogfood/2026-09-23-integration.md`.
+
 ### Pitfall: fresh Debian has no venv/ensurepip (DF-H3-8)
 On stock Debian (docker/cloud images, rootless agents), `python3 -m venv`
 dies asking for `apt install python3.13-venv`. Working no-sudo fallback:
@@ -159,11 +180,16 @@ non-default port only via source edit for Go targets; TS/py honor PORT.
   result route is FLAT `POST /v1/result` (not `/v1/sessions/{id}/result`).
   The error messages walk you in one field at a time; the full working
   curl pair is in `docs/dogfood/2026-09-08-integration.md`.
-- **Port collisions are silent killers.** `h3-test` tests whatever listens
-  on the port. The Python echo example hardcodes `:8000`; if it fails to
-  bind (exit 3), the battery tests the WRONG server (looks like a baffling
-  9/44 with `{"detail":"Not Found"}` health). Always `curl
-  <endpoint>/v1/health` first, and use `ss -tlnp` to confirm ownership.
+- **Port collisions are silent killers — and can be silent FALSE PASSES
+  (DF-H3-15 → DF-H3-26).** `h3-test` tests whatever listens on the port. The
+  Python echo example hardcodes `:8000`/`:9191`; if your harness fails to bind
+  (log redirect broken, port taken), the battery happily validates the
+  co-tenant process — on a shared bunker a 2.6-day-old stranger's harness
+  scored 46/46 while the harness under test never started. **Always
+  `curl <endpoint>/v1/health` FIRST and check `uptime_seconds` is small and
+  `version` matches the SDK you just installed** (git-main py SDK = 0.1.6 as
+  of 2026-09-23; a mismatch means something else is listening). Use
+  `ss -tlnp` to confirm ownership.
 - **`go run .` fails with `unknown revision v0.0.0`** → stale local go.mod;
   sdk-go v0.1.0+ is published, so `go mod tidy` fetches it — add a
   `replace` directive only for local SDK dev.

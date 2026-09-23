@@ -152,3 +152,14 @@ answers: "does this project actually work for a real user, and is it worth it?"
   GAP-003 pin; one open P1 row will surface on next tick).
 - Artifacts: docs/dogfood/diagnostics.md E15 (tick-chain drift: writer vs census
   lesson); this log entry; board row DF-H3-23.
+## 2026-09-23 — dogfood tick h3-dogfood-2026-09-23-01-11-49
+- Verdict: SHIPPABLE — docs-following consumer reaches 46/46 and the full chained-tool loop works; rough edges are docs/naming, not product.
+- Angle (NEW surface): from-scratch consumer written from README+integration.md only, PyPI/git SDK (0.1.6), full agentic loop with chained tool_calls + session lifecycle + cancel; h3 repo's own `make verify` from a fresh PUBLIC clone in the bunker (prior runs always tested shim/SDK products, never the hub's own gate).
+- Real use: process→tool_call→result→tool_call→result→end(task_complete,"Deployed and verified") over live HTTP; GET session completed → DELETE → 404; cancel 200. Battery 45/46 first run (real catch: "do not finish" convention) → 46/46 exit 0 after fix. Server log clean throughout.
+- Measured (Step 2b): cold boot-to-ready 239ms, first /v1/process 1.2ms; warm /v1/process 6.2ms±0.5 (hyperfine n=20); full battery 0.32s warm (p50 1.79ms/p95 35.6ms). Nothing a user would feel — no PERF row filed, deliberately.
+- Bunker install leg (las-bunker-03 agent efc4d4ce): clone 4.0s; `make verify` FAILED rc=2 in 1s at public HEAD 8b3cbc5 (header 4 commits/2 ticks stale — DF-H3-25 P1, DF-H3-24 guard correctly catching); shim source install 10s → h3-test OK; PyPI SDK install + echo 46/46 on :9527 — first attempt on :9191 was a FALSE PASS against a co-tenant's 2.6-day-old leftover harness (DF-H3-26 P1; caught via health uptime_seconds=228122 check). Agent destroyed, absence verified (0 passwd, 0 containers).
+- Friction (3): README "tool_use" vs wire enum tool_call, masked as 200 end(error) (DF-H3-27); integration.md documents neither ResultRequest fields nor on_result; req.result is a dict — attribute access silently False (DF-H3-28).
+- New rows: DF-H3-25..29 (2×P1, 2×P2, 1×P3) — committed e0ef6e9, PUSHED to origin/main and verified (origin/main..HEAD=0).
+- Foreman: h3 mid-tick #482 during this run; NOT woken (GAP-003 43200s pin is deliberate; fresh rows surface next evaluation).
+- Artifacts: docs/dogfood/2026-09-23-integration.md; diagnostics.md E16; skills/h3-usage/SKILL.md refreshed (3 new pitfalls); this log entry.
+2026-09-23 | SHIPPABLE | install_seconds=4(clone)+10(shim) | bunker=las-bunker-03 agent=efc4d4ce destroyed | smoke=ok(46/46 on :9527) + make-verify=FAIL(header, DF-H3-25)
