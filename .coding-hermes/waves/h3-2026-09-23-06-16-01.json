@@ -1,0 +1,30 @@
+{
+  "scheduler_tick_id": "h3-2026-09-23-06-16-01",
+  "created_at": "2026-09-23T06:20:00-05:00",
+  "foreman_workdir": "/home/kara/get-h3/h3",
+  "wave_budget": 9,
+  "mode": "single-lane (serial fallback: only one executable independent task on the board)",
+  "tasks": [
+    {
+      "id": "SDKTS-QA-SDK-TYPESCRIPT-1",
+      "repo": "sdk-typescript",
+      "board_of_record": "/home/kara/get-h3/h3/.coding-hermes/board/tasks.jsonl",
+      "worktree": "/home/kara/worktrees/sdk-typescript-SDKTS-QA-SDK-TYPESCRIPT-1",
+      "branch": "wt/SDKTS-QA-SDK-TYPESCRIPT-1",
+      "base": "origin/main",
+      "base_sha": "d701a00",
+      "model": "glm-5.3-flash",
+      "provider": "zai-glm-default",
+      "lane_verified": "API call #1 model=glm-5.3-flash provider=custom, no fallback (session 20260923_013038_280ad8)",
+      "touches": ["vitest.config.ts", "docs/qa/memory-floor.md"],
+      "forbidden": ["scripts/test-count.txt (no case-count change allowed this wave)", "any other repo"],
+      "merge_order": 1,
+      "status": "complete",
+      "worker_commit": "8906a48057af3df3f3a13dc1f0097dba8051cd07",
+      "merge_commit": "38ca0670ac0f820447870d1b411ff0d3fb57b15e",
+      "verdict": "6c356daf PASS"
+    }
+  ],
+  "finished_at": "2026-09-23T07:42:30Z",
+  "outcome": "merged, pushed, judged, and board-closed by tick #487"
+}
