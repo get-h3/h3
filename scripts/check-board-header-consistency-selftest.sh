@@ -149,6 +149,21 @@ board_fixture "$B7" 10 "$FAKE_HEAD" 10 9
 printf '{"id": 99, "event_type": "audit", "detail": "{\\"tick\\": 9, \\"type\\": \\"work-tick\\"}"}\n' >> "$B7/events.jsonl"
 case_run "tick present only as detail.tick -> NO hole (both shapes read)" 0 "C PASS — every tick 8..10" "$B7"
 
+# ---- 7b. C: the THIRD shape — a top-level numeric `tick` (DF-H3-25) --------
+# The current board writer emits `"tick": N` on the event object itself, with no
+# tick_number and a detail that holds no tick. Until the guard read that shape,
+# such a tick was invisible: it read as a hole in the recent window (the case
+# below fails without the modern row) and could not size the header. This pair
+# is the falsification proof — the same fixture PASSES with the modern row and
+# FAILs on the phantom hole without it.
+B7b=$WORK/b7b
+board_fixture "$B7b" 10 "$FAKE_HEAD" 10 10
+printf '{"id": 100, "tick": 10, "event": "audit"}\n' >> "$B7b/events.jsonl"
+case_run "tick present only as a top-level .tick -> read (max + no hole)" 0 "B PASS — ticks_total 10 == highest recorded tick" "$B7b"
+B7c=$WORK/b7c
+board_fixture "$B7c" 10 "$FAKE_HEAD" 10 10
+case_run "the same tick, top-level .tick row absent -> a real hole is still a hole" 1 "C: tick(s) with NO event" "$B7c"
+
 # ---- 8. A: skip semantics are REPORTED and actually skip the check ---------
 B8=$WORK/b8
 mkdir -p "$B8"

@@ -99,6 +99,56 @@
 #                       event log for anything but tick coverage.
 #                       Negative proof: make verify-board-header-selftest.
 #
+# THE BOARD-WRITING CLOSE-OUT (DF-H3-25) — `make board-close`
+#
+# The header is a WRITE problem, and a guard catching it is not a fix. The
+# write-back regressed five times (#459, #463/#464, #480, #481) while check 8
+# caught every occurrence: the last two ticks skipped it, so a fresh public
+# clone of this repo failed `make verify` (last_commit four commits behind,
+# ticks_total 479 against an event log already recording #481).
+# scripts/sync-board-header.sh is the WRITER, and this target is the single
+# unconditional step a board-writing tick ends with:
+#
+#   make board-close          # rewrites line 1 of .coding-hermes/board/board.jsonl:
+#                             #   last_commit = git rev-parse --short HEAD
+#                             #   ticks_total = highest tick in events.jsonl
+#                             #   last_tick   = now, UTC (YYYY-MM-DD HH:MM:SS)
+#                             # idempotent (a re-run with nothing to re-pin writes
+#                             # nothing), byte-preserving every other line, and it
+#                             # refuses (non-zero, nothing written) rather than
+#                             # guess — see the script's header for the refusals.
+#
+# The close-out contract, in order:
+#
+#   1. append the tick's events (and any board rows) to the board files
+#   2. make board-close                       <- the header names the current HEAD
+#   3. git commit the board files             <- the commit that carries the header
+#
+# Step 3 is what makes check 8 pass at rest: the header then names the commit
+# the board was written against — the board commit's parent — which is the
+# strongest state that can exist, because a commit cannot contain its own hash
+# (that is exactly why the guard's rule is "last_commit is HEAD or HEAD's
+# parent"). Syncing AFTER the commit instead leaves an uncommitted header edit,
+# which check D FAILs on; if a tick must commit again after the board commit,
+# re-run `make board-close` and include the header in that commit.
+#
+# The step is deliberately NOT part of `make verify`: verify is read-only, runs
+# on a fresh clone, and must never write a board. And it is deliberately not a
+# post-push hook: a hook is what was skipped. Skipping the close-out is now
+# loud in two places — check 8 fails, and it prints the greppable fleet line
+# `PUBLIC-HEAD-VERIFY-FAIL:` (alert recipe in scripts/
+# check-board-header-consistency.sh). Negative proof, including the syncer:
+# make verify-board-sync-selftest.
+#
+# The board's OTHER closeout write is the namespace tick record,
+# scripts/duckbrain-tick-record.sh <N> (DF-H3-23) — the canonical writer for the
+# `/tick/<N>` memory key. A board-writing tick's close-out is therefore two
+# writes, both before the board commit: the header (make board-close) and the
+# tick record. They are separate on purpose: the record writer degrades to
+# UNVERIFIED when DuckBrain/jq/curl/the token are absent, and a degraded memory
+# write must never be the thing that decides whether the repo's own header gets
+# written.
+#
 # SCOPE (QA-H3-7): checks 1-6 above are docs/repo-consistency guards — `make
 # verify` never executes SDK code (the qa-target check inspects the checkout's
 # identity, not its code). That is deliberate: it must keep working on a bare
@@ -148,7 +198,7 @@
 # that never executed code. That filter is a deliberate design, not an accident;
 # the naming above is what makes the difference visible. See CONTRIBUTING.md.
 
-.PHONY: verify verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-qa-target-selftest verify-tick-chain verify-tick-chain-selftest verify-tree-census-selftest verify-board-header verify-board-header-selftest verify-commit-msg verify-roundtrip verify-all release
+.PHONY: verify verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-qa-target-selftest verify-tick-chain verify-tick-chain-selftest verify-tree-census-selftest verify-board-header verify-board-header-selftest verify-board-sync-selftest board-close verify-commit-msg verify-roundtrip verify-all release
 
 verify: verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-tick-chain verify-board-header verify-commit-msg
 	@echo "make verify: ALL PASS — umbrella repo is self-consistent"
@@ -221,6 +271,20 @@ verify-board-header:
 verify-board-header-selftest:
 	@echo "make verify-board-header-selftest: positive + negative proof for the board-header guard (H3-GAP-099)"
 	@sh scripts/check-board-header-consistency-selftest.sh
+	@echo "make verify-board-header-selftest: positive + negative proof for the header WRITER, and the guard on its output (DF-H3-25)"
+	@sh scripts/sync-board-header-selftest.sh
+
+# The board-writing close-out (DF-H3-25). Not part of `make verify` — verify is
+# read-only and runs on a fresh clone; this WRITES line 1 of the board header.
+# Run it after the board edits and BEFORE the board commit (see the close-out
+# contract in the header comment at the top of this Makefile).
+board-close:
+	@echo "make board-close: board-header write-back (DF-H3-25) — run this as the last step before the board commit"
+	@sh scripts/sync-board-header.sh
+
+verify-board-sync-selftest:
+	@echo "make verify-board-sync-selftest: positive + negative proof for the board-header writer (DF-H3-25)"
+	@sh scripts/sync-board-header-selftest.sh
 
 verify-commit-msg:
 	@echo "make verify: commit-message skip-directive guard (HEAD)"
