@@ -8497,3 +8497,36 @@ Promise: {"entry_point":"Spec hub / documentation repo (Markdown + static HTML) 
 - [P2] :9191 port collision between scaffold and echo example, undocumented — sdk-go/examples/echo main.go does http.ListenAndServe(":9191") and the scaffold Go template hardcodes addr := ":9191" (templates/go/main.go:148); py template defaults PORT=9191. Following README quick
 - [P2] Two install forms for the same shim package — README quick start uses 'pip install -e .' (line 27) while docs/integration.md:139 uses 'pip install git+https://github.com/get-h3/shim' — inconsistent instructions for one package.
 - [P2] No worked example of the live session round-trip — docs/integration.md describes the loop conceptually (steps 1-4) but no curl example; the battery never GETs /v1/sessions/{id} (uses synthetic _sid ids only), so new users can't see process → session G
+  Tick #485 (h3-2026-09-23-04-51-53) — 2026-09-23 05:07 UTC — double-fixture maintenance (NEVER-DONE + E2E-001), foreman-direct, no worker
+
+  VERDICT: productive maintenance tick. Both fixtures were overdue after a 10-tick work-tick
+  stretch (#475-484): NEVER-DONE last ran #474 (due ~#477), E2E-001 last ran #476 (due ~#481).
+  All non-blocked board rows are P3 record-shaped; 41 LOGSEY/PULSE/LORE/DIGEST rows remain
+  blocked on the LOGSEY-001 operator decision → no worker dispatch, both fixtures foreman-direct.
+
+  E2E-001 (window #477-481 closed long ago; new window #485-490): 46/46 PASS (0.24s, p50 1.06ms /
+  p95 31.85ms) vs OWN Go echo on :9193. Port story: :9191 held by co-tenant shim python harness
+  (systemd --user, started 09-22 14:20 — left untouched per port-conflict rule); :9192 ALSO held
+  (python3 co-tenant); first sed-port attempt (sed s/:9191/:9192/ on main.go) died on bind because
+  the bind address comes from harness.ListenAddr() = PORT env var, not the log string — the first
+  battery WARN caught it (target v0.1.6 uptime 10h = co-tenant). Fix: build UNMODIFIED
+  examples/echo/main.go + PORT=9193. Cleanup verified, :9193 free, co-tenants untouched.
+
+  NEVER-DONE (81st run, 11-point, all-PASS with one formal finding):
+    - Fleet sweep: shim 552/552 (52s), sdk-go 4 pkgs ok, sdk-python 228 passed/1 skipped,
+      sdk-typescript 183/183, protocol validate 56/56 (grew from 41 — live total counted).
+    - JUDGE PASS ×6 (deepseek-v4-flash), Hilo ×6 live: h3 41e/8f, shim 402e/38f, sdk-go 234e/27f,
+      sdk-python 129e/28f, sdk-typescript 98e/28f, protocol 32e/4f.
+    - CI green: h3 Pages ×3 + Cross-Language Round-Trip (09-22 18:20Z), shim Test 3/3; 0 open issues.
+    - Git: all 6 repos 0 ahead/behind. Deps: shim several minor bumps available, sdk-python
+      pydantic_core 2.46.5→2.49.0 + watchfiles 1.2.0→1.3.0 (= known SDKPY-DEPS-03, venv-only).
+    - Off-by-one healthy (:8766 200). No harness-port zombies. specs 27 files (26 + _index),
+      md 64, gitreins tasks.yaml 5/5 complete.
+    - FINDING: DF-H3-24 board-header guard FAILED check A — header last_commit e129a7c0 did not
+      resolve to any commit (B/C/D PASS). Root cause: tick #484's board-close ran pre-push and
+      pinned its pre-commit HEAD, which was then garbage-collected/rebased away. Repaired via
+      make board-close → 6312334 (pre-commit HEAD, guard A's parent convention); two-phase
+      post-push write-back names this board commit (guard check A accepts both).
+
+  Next: E2E-001 window #485-490 (closing tick #490 due); NEVER-DONE ~#488-489 (strict-3 from
+  #485, first element #488).
