@@ -45,16 +45,52 @@
     }
   ],
   "parked": [
-    { "id": "LOGSEY-*/PULSE-*/LORE-*/DIGEST-* (41 rows)", "reason": "decision-gated on LOGSEY-001 (Bane)" },
-    { "id": "SDKPY-DEPS-03", "reason": "venv-only dep refresh, no repo deliverable (same verdict as 09-22 wave)" },
-    { "id": "SDKPY-DF-H3-SDK-PYTHON-FOREMAN-6", "reason": "P3 record-keeping row; evidence complete, close via board flip next serial slot" },
-    { "id": "SDKTS-QA-SDK-TYPESCRIPT-1", "reason": "P3 QA-chaos observation; fix direction optional, dep major bump (SDKTS-DEPS-02) may shift vitest memory profile — re-evaluate after wave" },
-    { "id": "SDKTS-H3TS-GAP-062", "reason": "writer-side fix belongs to the duckbrain repo, not a get-h3 repo; needs its own dispatch outside this wave" },
-    { "id": "DOGFOOD-01", "reason": "PyPI live (0.1.0 verified 2026-09-22T23:33:29Z); doc-sync remediation dispatched as H3-PYPI-001; row flips complete after H3-PYPI-001 merge + AGENTS.md clause (approval-gated) noted" },
-    { "id": "SHIM-DF3-H3-SHIM-7", "reason": "owner decision (Bane): keep reworded help lines vs revert — foreman did not decide unilaterally" },
-    { "id": "DF-H3-26 battery WARN thresholds", "reason": "thresholds (>1h warn, >300s expect-fresh) chosen per row's fix direction; Bane may retune" }
+    {
+      "id": "LOGSEY-*/PULSE-*/LORE-*/DIGEST-* (41 rows)",
+      "reason": "decision-gated on LOGSEY-001 (Bane)"
+    },
+    {
+      "id": "SDKPY-DEPS-03",
+      "reason": "venv-only dep refresh, no repo deliverable (same verdict as 09-22 wave)"
+    },
+    {
+      "id": "SDKPY-DF-H3-SDK-PYTHON-FOREMAN-6",
+      "reason": "P3 record-keeping row; evidence complete, close via board flip next serial slot"
+    },
+    {
+      "id": "SDKTS-QA-SDK-TYPESCRIPT-1",
+      "reason": "P3 QA-chaos observation; fix direction optional, dep major bump (SDKTS-DEPS-02) may shift vitest memory profile \u2014 re-evaluate after wave"
+    },
+    {
+      "id": "SDKTS-H3TS-GAP-062",
+      "reason": "writer-side fix belongs to the duckbrain repo, not a get-h3 repo; needs its own dispatch outside this wave"
+    },
+    {
+      "id": "DOGFOOD-01",
+      "reason": "PyPI live (0.1.0 verified 2026-09-22T23:33:29Z); doc-sync remediation dispatched as H3-PYPI-001; row flips complete after H3-PYPI-001 merge + AGENTS.md clause (approval-gated) noted"
+    },
+    {
+      "id": "SHIM-DF3-H3-SHIM-7",
+      "reason": "owner decision (Bane): keep reworded help lines vs revert \u2014 foreman did not decide unilaterally"
+    },
+    {
+      "id": "DF-H3-26 battery WARN thresholds",
+      "reason": "thresholds (>1h warn, >300s expect-fresh) chosen per row's fix direction; Bane may retune"
+    }
   ],
   "worker_model": "deepseek-v4-flash",
   "worker_provider": "deepseek-foreman",
-  "sibling_activity": "dogfood session 2026-09-22 20:59 (-0500) filed DF-H3-25..29 on this board (pushed e0ef6e9); worktree wt/DF-H3-25 re-based onto 7fa9b01 to include those rows"
+  "sibling_activity": "dogfood session 2026-09-22 20:59 (-0500) filed DF-H3-25..29 on this board (pushed e0ef6e9); worktree wt/DF-H3-25 re-based onto 7fa9b01 to include those rows",
+  "finished_at": "2026-09-23T02:52:00-05:00",
+  "outcome": {
+    "DF-H3-25": "merged 071d3c2 (h3 7ca7f7a), judge 72dc46f3 PASS \u2014 fresh-clone make verify re-proven by judge",
+    "DF-H3-26 (+DF-H3-29 battery)": "merged d205cf2 (shim c2494b6), judge e2224f43 PASS \u2014 expect-fresh live-verified on stale+fresh servers",
+    "H3-PYPI-001 + DF-H3-27/28/29": "merged 6c3aed1 (h3 514c056), judge 7bb07882 PASS; skill-version conflict resolved 1.2.1",
+    "SDKTS-DEPS-02": "merged 56f5def (sdk-typescript d701a00), judge aee8d95f PASS; merged suite 183/183"
+  },
+  "pushes": {
+    "h3": "9b183e2 parity 0",
+    "sdk-typescript": "d701a00 parity 0",
+    "shim": "c2494b6 parity 0"
+  }
 }
