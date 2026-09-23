@@ -8530,3 +8530,25 @@ Promise: {"entry_point":"Spec hub / documentation repo (Markdown + static HTML) 
 
   Next: E2E-001 window #485-490 (closing tick #490 due); NEVER-DONE ~#488-489 (strict-3 from
   #485, first element #488).
+  Tick #486 (h3-2026-09-23-05-26-05) — 2026-09-23 06:00 UTC — sdk-go home-board reconciliation + v0.1.8 release, foreman-direct, no worker
+
+  VERDICT: productive tick. The h3 board's 51 pending rows decompose: 41 LOGSEY/PULSE/LORE/DIGEST rows
+  blocked-operator (LOGSEY-001 decision), 2 explicit operator-decision rows (skip per H3-GAP-097 pick rule),
+  P3 record-shaped rows, and one actionable P1 — SDKGO-RELENG-20260921-001 (mirror of sdk-go home board's
+  RELENG-20260921-001). Discovery found the sdk-go HOME board stale after the 09-22 waves: 7 rows with fixes
+  already merged to main but status never flipped (dead close-out; events 320-329 = three wave attempts).
+
+  LANDED (sdk-go tick #264, commits a9af978 + 69a1b69, pushed parity 0):
+    - Board truth folded, 9 rows -> complete: GAP-055/058/059/060/061/062 + DF-H3-SDK-GO-FOREMAN-9
+      (commit hashes + 09-22 tier2 judge hashes 874e7270/ecde8597/07ab41ea/89afa3b1/4cf47cf2/5b4ad5ec),
+      CLN-1 (gitignore residue: .vfs/graph/.last_reconcile + .parse_cache.json + tasks.yaml.lock),
+      RELENG-20260921-001 (executed).
+    - RELEASE: v0.1.8 cut per RELENG row prescription — CHANGELOG 0.1.8 section, tag on a9af978, GitHub
+      release verified live. Gates: gitreins guard PASS 4/4 (x3 runs), go test -count=1 -p 1 all ok,
+      count guard PASS battery=46 suite=169, CI green on both pushes.
+    - Umbrella board: SDKGO-RELENG-20260921-001 -> complete (event 555) + tick-486 audit event; header 486/0.
+
+  Remaining open after this tick: 41 blocked-operator rows (LOGSEY-001 decision pending Bane) + 2 operator
+  decision rows (LOGSEY-001, PROTO v1.1.0 cut + DISPATCH_PAT) + P3 record rows + GAP-052 (foreign-owned,
+  bunker project) + NEVER-DONE fixture. Next actionable work requires Bane: LOGSEY-001, or protocol v1.1.0
+  cut authorization. Next: NEVER-DONE ~#488-489 (strict-3 from #485); E2E-001 window #485-490 (closing #490).
