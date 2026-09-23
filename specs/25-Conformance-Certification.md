@@ -516,7 +516,7 @@ jobs:
       - name: Start harness
         run: go run . & sleep 2
       - name: Install test battery
-        run: pip install hermes-h3-shim  # gated on P3-10 (PyPI publish); until then: git clone https://github.com/get-h3/shim && cd shim && pip install -e .
+        run: pip install hermes-h3-shim  # PyPI since 0.1.0 (2026-09-22); use a venv on PEP 668 runners
       - name: Run certification
         run: |
           h3-test --endpoint http://localhost:9191 --json > report.json

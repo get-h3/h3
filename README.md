@@ -21,12 +21,16 @@ H3 (Hermes Harness Hooks) is an open protocol that lets external agent systems �
 The fastest way to see H3 in action:
 
 ```bash
-# Install the test battery + CLI (source install — hermes-h3-shim is not on PyPI yet; install from source per docs/integration.md. h3-harness-sdk IS published: pip install h3-harness-sdk)
-git clone https://github.com/get-h3/shim && cd shim
+# Install the test battery + CLI from PyPI — always in a venv (PEP 668 distros
+# refuse a bare `pip install`; the shim's sibling `h3-harness-sdk` is on PyPI too)
 python3 -m venv .venv && source .venv/bin/activate
-pip install -e .
+pip install hermes-h3-shim
 
-# Start a Go echo harness — clone the sibling sdk-go repo first (it is NOT part of shim/)
+# A commit that is not in a release yet (or local development)? Install the
+# source checkout instead, into the same venv:
+#   git clone https://github.com/get-h3/shim && cd shim && pip install -e .
+
+# Start a Go echo harness — the echo example lives in the sdk-go repo, not in the shim
 git clone https://github.com/get-h3/sdk-go
 cd sdk-go/examples/echo && go run .
 
@@ -42,20 +46,21 @@ h3-test --endpoint http://localhost:9191
 > python3 -m venv --without-pip .venv
 > curl -sS https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
 > .venv/bin/python /tmp/get-pip.py
-> .venv/bin/pip install -e .
+> .venv/bin/pip install hermes-h3-shim   # or: -e .  (the source fallback)
 > ```
 
-> **`h3-test` and `hermes-h3` live inside `shim/.venv/bin` — a new terminal does
-> not have them.** `pip install` puts both console scripts in that venv and
-> `source .venv/bin/activate` adds them to PATH **for that shell only**; there is
-> no global install (the package is not on PyPI). So in a fresh shell — or any
-> shell that has since changed directory — pick one; the paths below are
-> absolute, so they work from anywhere:
+> **`h3-test` and `hermes-h3` live inside the venv you installed into — a new
+> terminal does not have them.** `pip install hermes-h3-shim` puts both console
+> scripts in that venv's `bin/` and `source .venv/bin/activate` adds them to
+> PATH **for that shell only**; pip never puts them on the system PATH (a bare
+> system-wide `pip install` is refused anyway on PEP 668 distros). So in a fresh
+> shell — or any shell that has since changed directory — pick one; the paths
+> below are absolute, so they work from anywhere:
 >
 > ```bash
-> source /path/to/shim/.venv/bin/activate               # re-activate (the shim checkout you cloned)
-> export PATH="/path/to/shim/.venv/bin:$PATH"           # or put the venv on PATH, no activation
-> /path/to/shim/.venv/bin/h3-test --endpoint http://localhost:9191   # or call the script by path
+> source /path/to/.venv/bin/activate                # re-activate (the venv you installed into)
+> export PATH="/path/to/.venv/bin:$PATH"            # or put the venv on PATH, no activation
+> /path/to/.venv/bin/h3-test --endpoint http://localhost:9191   # or call the script by path
 > ```
 >
 > All three are equivalent; the exported PATH and the explicit path work from
@@ -63,7 +68,7 @@ h3-test --endpoint http://localhost:9191
 > the CLI on PATH (it runs `hermes-h3`, then `h3-test` from inside the generated
 > `h3-harness-go/`):
 
-46 tests — 6 categories — exit code 0 means your harness is H3-compliant.
+46 tests — 6 categories — exit code 0 means your harness is H3-compliant. For 46/46: a message containing `do not finish` must return `text` with `finished: false` — see [docs/integration.md §5.1](docs/integration.md#51-conventions-the-battery-enforces).
 
 Or scaffold a new harness in 30 seconds:
 
@@ -168,7 +173,7 @@ All SDKs generate their types from the same OpenAPI spec. A change to the protoc
 ### The Loop
 
 1. Hermes sends a **ProcessRequest** (text, tool_call, or tool_result)
-2. The harness returns a **Decision** (text, tool_use, end, or wait)
+2. The harness returns a **Decision** (text, tool_call, end, or wait)
 3. Hermes executes the decision and sends back a **ResultRequest**
 4. The harness returns another Decision
 5. Loop until the harness returns `Decision.end`

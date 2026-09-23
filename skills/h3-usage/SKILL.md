@@ -3,10 +3,10 @@ name: h3-usage
 description: >-
   How to USE the get-h3 fleet (Hermes Harness Hooks — brain-swap protocol).
   Entry points, run commands, pitfalls, and the right-way patterns, learned
-  from real dogfood runs (2026-08-02, refreshed 2026-08-14). Load this
+  from real dogfood runs (2026-08-02, refreshed 2026-09-23). Load this
   before working with any get-h3 repo: h3 (spec hub), protocol, shim,
   sdk-go, sdk-python, sdk-typescript.
-version: 1.1.0
+version: 1.1.1
 category: software-development
 ---
 
@@ -39,18 +39,21 @@ Error shape: `{"error": {"code", "message", "details"}}` (codes in specs/02 §9)
 
 - The Python SDK **`h3-harness-sdk` IS on PyPI** (0.1.2, published
   2026-08-08): `pip install h3-harness-sdk` works.
-- The shim package `hermes-h3-shim` is NOT yet on PyPI (blocked P3-10 -
-  PYPI_API_TOKEN). `pip install hermes-h3-shim` FAILS. Install the shim
-  from source:
+- The shim package **`hermes-h3-shim` IS on PyPI** (0.1.0, published
+  2026-09-22): `pip install hermes-h3-shim` works — inside a venv (a bare
+  system install is refused on PEP 668 distros). Installing from source is
+  the fallback, for a commit that is not in a release yet:
   ```bash
   uv venv .venv
-  uv pip install --python .venv/bin/python -e $HOME/get-h3/shim
-  # → installs h3-test + hermes-h3 into ./.venv/bin — NOT your global PATH
+  uv pip install --python .venv/bin/python hermes-h3-shim           # PyPI (primary)
+  uv pip install --python .venv/bin/python -e $HOME/get-h3/shim     # unreleased commit / local dev
+  # → either way: h3-test + hermes-h3 land in ./.venv/bin — NOT your global PATH
   ```
 - **`h3-test` / `hermes-h3` are venv console scripts, and activation is
   shell-local (DF-H3-5).** `uv venv` (or `python3 -m venv`) plus the install
   above puts both scripts in the venv's `bin/`; nothing is installed globally
-  (`hermes-h3-shim` is not on PyPI). A **new terminal has neither** — it fails
+  (pip writes both scripts into the venv you chose, never onto the system
+  PATH). A **new terminal has neither** — it fails
   with `h3-test: command not found`. In a fresh shell pick one, all equivalent:
   ```bash
   source .venv/bin/activate                 # re-activate (run from the venv's directory)
