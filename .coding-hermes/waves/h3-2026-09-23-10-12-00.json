@@ -1,0 +1,20 @@
+{
+  "scheduler_tick_id": "h3-2026-09-23-10-12-00",
+  "tick_number": 491,
+  "wave_budget": 4,
+  "composed": "serial-fallback-single-lane",
+  "reason": "Only 1 actionable independent row on the board (SDKTS-QA-H3-SDK-TYPESCRIPT-FOREMAN-7); 42 pending rows are blocked-operator (LOGSEY/PULSE/LORE/DIGEST families on LOGSEY-001), PROTO-RELENG is Bane-gated, SHIM-DF3 is foreman-direct bookkeeping. <2 independent executable rows = serial fallback per foreman skill.",
+  "lanes": [
+    {
+      "task_id": "SDKTS-QA-H3-SDK-TYPESCRIPT-FOREMAN-7",
+      "repo": "get-h3/sdk-typescript",
+      "worktree": "/home/kara/worktrees/sdk-typescript-SDKTS-QA-FOREMAN-7",
+      "branch": "wt/SDKTS-QA-FOREMAN-7",
+      "worker_model": "glm-5.3-flash",
+      "worker_provider": "zai-glm-default",
+      "gitreins_task": "sdkts-qa-foreman-7",
+      "dispatched_at": null,
+      "status": "prepared"
+    }
+  ]
+}
