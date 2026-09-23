@@ -3,10 +3,10 @@ name: h3-usage
 description: >-
   How to USE the get-h3 fleet (Hermes Harness Hooks — brain-swap protocol).
   Entry points, run commands, pitfalls, and the right-way patterns, learned
-  from real dogfood runs (2026-08-02, refreshed 2026-08-14). Load this
+  from real dogfood runs (2026-08-02, refreshed 2026-09-23). Load this
   before working with any get-h3 repo: h3 (spec hub), protocol, shim,
   sdk-go, sdk-python, sdk-typescript.
-version: 1.2.0
+version: 1.2.1
 category: software-development
 ---
 
@@ -15,8 +15,7 @@ category: software-development
 H3 lets an external agent system (OpenCode, LangChain, CrewAI, your own
 harness) act as the thinking brain of Hermes. Hermes is the body; the H3
 protocol is the neural link. This skill is the *user manual* — how to
-actually build, run, and verify a harness. Pitfalls refreshed from real
-dogfood runs (2026-08-02, 2026-08-14, 2026-09-23).
+actually build, run, and verify a harness.
 
 ## What it is / repo map
 
@@ -40,18 +39,21 @@ Error shape: `{"error": {"code", "message", "details"}}` (codes in specs/02 §9)
 
 - The Python SDK **`h3-harness-sdk` IS on PyPI** (0.1.2, published
   2026-08-08): `pip install h3-harness-sdk` works.
-- The shim package `hermes-h3-shim` is NOT yet on PyPI (blocked P3-10 -
-  PYPI_API_TOKEN). `pip install hermes-h3-shim` FAILS. Install the shim
-  from source:
+- The shim package **`hermes-h3-shim` IS on PyPI** (0.1.0, published
+  2026-09-22): `pip install hermes-h3-shim` works — inside a venv (a bare
+  system install is refused on PEP 668 distros). Installing from source is
+  the fallback, for a commit that is not in a release yet:
   ```bash
   uv venv .venv
-  uv pip install --python .venv/bin/python -e $HOME/get-h3/shim
-  # → installs h3-test + hermes-h3 into ./.venv/bin — NOT your global PATH
+  uv pip install --python .venv/bin/python hermes-h3-shim           # PyPI (primary)
+  uv pip install --python .venv/bin/python -e $HOME/get-h3/shim     # unreleased commit / local dev
+  # → either way: h3-test + hermes-h3 land in ./.venv/bin — NOT your global PATH
   ```
 - **`h3-test` / `hermes-h3` are venv console scripts, and activation is
   shell-local (DF-H3-5).** `uv venv` (or `python3 -m venv`) plus the install
   above puts both scripts in the venv's `bin/`; nothing is installed globally
-  (`hermes-h3-shim` is not on PyPI). A **new terminal has neither** — it fails
+  (pip writes both scripts into the venv you chose, never onto the system
+  PATH). A **new terminal has neither** — it fails
   with `h3-test: command not found`. In a fresh shell pick one, all equivalent:
   ```bash
   source .venv/bin/activate                 # re-activate (run from the venv's directory)
@@ -140,26 +142,6 @@ detail lines, and `end.reason` must be the schema enum (`task_complete`,
 NOT "completed"). **Read the echo example for your SDK before writing
 onProcess/onResult — the example IS the spec for the battery.**
 
-### Pitfall: the README says decision type "tool_use" — the wire enum is `tool_call` (DF-H3-27)
-README line ~171 ("text, tool_use, end, or wait") disagrees with the protocol:
-the decision field is `tool_call` (py SDK `DecisionType.TOOL_CALL`; the pydantic
-sub-field is still named `tool_use=`). A docs-following developer writes
-`DecisionType.TOOL_USE`, gets `AttributeError`, and the router MASKS it: the
-endpoint returns HTTP 200 `{decision: "end", end: {reason: "error",
-summary: "<exception text>"}}` — the loop silently stops while looking
-compliant. **Always read `end.summary` on an unexpected `end` decision, and
-`grep end.summary server.log` — the SDK logs `on_process failed — masked as ...`
-there.** `create_router(..., debug_errors=True)` raises instead (dev mode).
-
-### Pitfall: `on_result` gets NO context, and `result` is a plain dict (DF-H3-28)
-`ResultRequest` carries exactly `decision_id`, `result`, `session_id` — there is
-no `context`/`history` on the result leg (echo the history you want in each
-Decision yourself). `req.result` is `dict[str, Any]`: the typed `ResultPayload`
-class is exported but never attached, so `req.result.success` (attribute access)
-silently returns `False` — use `req.result.get("success")`. Chained-tool
-example: `on_result` returns the NEXT `tool_call` decision; see
-`docs/dogfood/2026-09-23-integration.md`.
-
 ### Pitfall: fresh Debian has no venv/ensurepip (DF-H3-8)
 On stock Debian (docker/cloud images, rootless agents), `python3 -m venv`
 dies asking for `apt install python3.13-venv`. Working no-sudo fallback:
@@ -180,16 +162,11 @@ non-default port only via source edit for Go targets; TS/py honor PORT.
   result route is FLAT `POST /v1/result` (not `/v1/sessions/{id}/result`).
   The error messages walk you in one field at a time; the full working
   curl pair is in `docs/dogfood/2026-09-08-integration.md`.
-- **Port collisions are silent killers — and can be silent FALSE PASSES
-  (DF-H3-15 → DF-H3-26).** `h3-test` tests whatever listens on the port. The
-  Python echo example hardcodes `:8000`/`:9191`; if your harness fails to bind
-  (log redirect broken, port taken), the battery happily validates the
-  co-tenant process — on a shared bunker a 2.6-day-old stranger's harness
-  scored 46/46 while the harness under test never started. **Always
-  `curl <endpoint>/v1/health` FIRST and check `uptime_seconds` is small and
-  `version` matches the SDK you just installed** (git-main py SDK = 0.1.6 as
-  of 2026-09-23; a mismatch means something else is listening). Use
-  `ss -tlnp` to confirm ownership.
+- **Port collisions are silent killers.** `h3-test` tests whatever listens
+  on the port. The Python echo example hardcodes `:8000`; if it fails to
+  bind (exit 3), the battery tests the WRONG server (looks like a baffling
+  9/44 with `{"detail":"Not Found"}` health). Always `curl
+  <endpoint>/v1/health` first, and use `ss -tlnp` to confirm ownership.
 - **`go run .` fails with `unknown revision v0.0.0`** → stale local go.mod;
   sdk-go v0.1.0+ is published, so `go mod tidy` fetches it — add a
   `replace` directive only for local SDK dev.

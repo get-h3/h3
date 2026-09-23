@@ -96,7 +96,7 @@ is accepted by every SDK.
 | `decision` | Payload | Meaning |
 |------------|---------|---------|
 | `text` | `text: {content, finished}` | Produce (streamed) reply text. `finished:false` = more text coming. |
-| `tool_call` | `tool_call: {name, arguments}` | Ask Hermes to run a tool from `context.tools` and send the result back via `/v1/result`. |
+| `tool_call` | `tool_call: {name, params}` | Ask Hermes to run a tool from `context.tools` and send the result back via `/v1/result`. |
 | `llm_call` | `llm_call: {model, prompt, ...}` | Ask Hermes to run an LLM call (e.g. for small sub-tasks). |
 | `wait` | `wait: {reason, ...}` | Pause the session (human approval, long-running work). |
 | `delegate` | `delegate: {target, prompt}` | Hand the turn to another agent/harness. |
@@ -140,6 +140,23 @@ The shim drives the loop; your agent just answers it:
 
 The loop enforces a hard iteration cap (default 50) so a misbehaving harness
 cannot spin forever, and propagates cancellation through `/v1/cancel`.
+
+One property of the loop is worth knowing before you debug it: the Python and
+TypeScript SDK routers treat an **exception raised inside your handler** as a
+decision, not as a failure. With Python's default `debug_errors=False` — and
+unconditionally in the TypeScript router — an `on_process` / `on_result`
+exception is masked as
+
+```json
+{"decision":"end","decision_id":"...","end":{"reason":"error","summary":"<exception text>"}}
+```
+
+returned **with HTTP 200** — so a client that reads only `.decision` sees a
+normal, protocol-compliant end and the bug is invisible unless you log
+`end.summary`. Set `debug_errors=True` on the Python router while developing and
+the same exception propagates as a real HTTP 500 with a traceback. (The Go SDK
+behaves differently: a panicking handler is recovered as an HTTP 500 with
+`"code": "INTERNAL_ERROR"`, not as an `end`/`error` decision.)
 
 ### 4.1 Worked example — the live round trip (curl)
 
@@ -219,13 +236,134 @@ Content-Length: 86
 Stop the harness (Ctrl-C) when the walkthrough is done — killing the process
 frees `:9191` for the `h3-test` run in §5.
 
+### 4.2 `/v1/result` and `on_result`
+
+`POST /v1/result` is the other half of every turn, and it does **not** carry the
+envelope `/v1/process` carries. The request body has exactly three fields — and
+nothing else:
+
+| Field | Type | Meaning |
+|-------|------|---------|
+| `session_id` | string | The session this result belongs to. |
+| `decision_id` | string | The `decision_id` of the decision being reported on — this is what keys the result to the turn. |
+| `result` | object | The outcome. `type` and `success` are REQUIRED; `tool_name`, `data` (an object whose contents vary by `type`) and `duration_ms` are optional. `type` is one of `tool_result`, `llm_response`, `text_sent`, `delegate_result`, `wait_timeout`, `error`. |
+
+There is **no `context` and no `history`** here: the schema
+(`get-h3/protocol` → `schemas/v1/result-request.json`) requires exactly those
+three fields and defines nothing else, and the SDK type matches it —
+`ResultRequest(decision_id, result, session_id)`. Your handler sees one outcome,
+not the conversation. A handler copied from `on_process` breaks on the first
+result turn: `req.context` raises `AttributeError: 'ResultRequest' object has no
+attribute 'context'` — and with the SDK's default router settings that
+AttributeError is masked as an HTTP 200 `end(reason="error")` (see §4), so the
+session looks like it finished cleanly while nothing worked.
+
+**The result payload arrives as a plain dict.** The SDK exports a typed
+`ResultPayload` model, but the router never constructs it — `req.result` is the
+raw `dict[str, Any]` off the wire. Attribute access does not read it, and it
+fails *silently* in the form people reach for:
+
+```python
+async def on_result(self, req):
+    # WRONG — req.result is a dict, there is no typed object behind it:
+    #   req.result.success                    -> AttributeError: 'dict' object
+    #                                            has no attribute 'success'
+    #   getattr(req.result, "success", False) -> False    (no error anywhere!)
+    #   JavaScript/TypeScript: req.result.success -> undefined  (falsy, no throw)
+    ok = getattr(req.result, "success", False)   # silently False even when it is True
+
+    # RIGHT — read it as a mapping, and treat a missing key as missing:
+    raw = req.result
+    ok = raw.get("success", False)
+    tool = raw.get("tool_name")
+    data = raw.get("data") or {}
+```
+
+Measured, not theoretical: a harness that checked
+`getattr(req.result, "success", False)` reported "Deploy had failures" about a
+deployment that succeeded, with no exception and nothing in any log. If you want
+the typed view, build it yourself — `ResultPayload(**req.result)` — and handle
+the validation error when a field is absent.
+
+#### Worked example — a two-tool chain
+
+The sequence below is verbatim from a scratch two-tool chain harness built on
+the Python SDK's `BaseHarness` (same shape as
+`sdk-python/src/h3_harness/examples/*.py`). The pattern is always
+`process` → `tool_call` → `result` → `tool_call` → `result` → `end`; each
+request body here is valid against `schemas/v1/result-request.json` and each
+response against `schemas/v1/decision.json`.
+
+Turn 1 — `POST /v1/process` (the §3 envelope, with `context.tools` listing
+`terminal`) answers with the first tool call. Note `params`, not `arguments`,
+and the UUID `decision_id` the SDK generates:
+
+```json
+{"decision":"tool_call","decision_id":"4f5b5a0e-a630-4cfa-9e19-4588134f65a4","history":[],"tool_call":{"name":"terminal","params":{"command":"cd /app/auth && docker compose up -d"},"reasoning":"Deploy the auth endpoint to staging"}}
+```
+
+Turn 2 — Hermes runs the tool and reports the outcome, keyed by that
+`decision_id`:
+
+```json
+{"session_id":"s_probe_chain_02","decision_id":"4f5b5a0e-a630-4cfa-9e19-4588134f65a4","result":{"type":"tool_result","tool_name":"terminal","data":{"output":"auth-1 deployed\n","exit_code":0},"duration_ms":2843,"success":true}}
+```
+
+The response *is* the next decision — a second `tool_call`:
+
+```json
+{"decision":"tool_call","decision_id":"0ccc8178-a0b8-4534-922b-288736df4e95","history":[],"tool_call":{"name":"terminal","params":{"command":"make smoke-test"},"reasoning":"Verify the deployment before finishing"}}
+```
+
+Turn 3 — report that result the same way:
+
+```json
+{"session_id":"s_probe_chain_02","decision_id":"0ccc8178-a0b8-4534-922b-288736df4e95","result":{"type":"tool_result","tool_name":"terminal","data":{"output":"12 passed\n","exit_code":0},"duration_ms":1105,"success":true}}
+```
+
+and the harness ends the session:
+
+```json
+{"decision":"end","decision_id":"9e0dc3c3-5a3b-487d-8d98-dffa6b894940","history":[],"end":{"reason":"task_complete","summary":"deployed and smoke-tested"}}
+```
+
+`history` is empty on the decisions returned from `on_result`: the echo rule in
+§4.1 applies to `on_process`, which is the only handler that receives
+`context.history`.
+
+The handler side of that chain, in outline — the signature to implement, and the
+dict-safe read of the result:
+
+```python
+class ChainHarness(BaseHarness):
+    async def on_result(self, req):          # ResultRequest: session_id, decision_id, result
+        raw = req.result                     # plain dict — never a ResultPayload
+        if raw.get("type") == "tool_result" and not self._second_pass:
+            self._second_pass = True
+            return Decision(
+                decision=DecisionType.TOOL_CALL,
+                tool_call=ToolCall(name="terminal", params={"command": "make smoke-test"}),
+            )
+        return Decision(
+            decision=DecisionType.END,
+            end=End(reason=EndReason.TASK_COMPLETE, summary="deployed and smoke-tested"),
+        )
+```
+
 ## 5. Step 4 — prove compliance: `h3-test`
 
-Install the shim from source (the package is not on PyPI yet): clone the
-repository and install the checkout in editable mode. Use a virtual
-environment — required on PEP 668-managed Pythons (Ubuntu 24.04+,
-Debian 12+), where a bare `pip install` fails with
+Install the shim from PyPI — `hermes-h3-shim` (0.1.0) is published, so the
+package install is the primary path. Use a virtual environment: on PEP 668
+managed Pythons (Ubuntu 24.04+, Debian 12+) a bare `pip install` fails with
 externally-managed-environment:
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install hermes-h3-shim
+```
+
+Installing from source is the fallback — for a commit that is not in a release
+yet, or for local development of the shim itself:
 
 ```bash
 git clone https://github.com/get-h3/shim && cd shim
@@ -241,15 +379,16 @@ pip install -e .
 > python3 -m venv --without-pip .venv
 > curl -sS https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
 > .venv/bin/python /tmp/get-pip.py
-> .venv/bin/pip install -e .
+> .venv/bin/pip install hermes-h3-shim   # or: -e .  (the source fallback)
 > ```
 
-`pip install -e .` writes the two console scripts — `h3-test` and
-`hermes-h3` — into that venv's `bin/`. Activation is **shell-local**: it adds
-them to PATH for the current shell only, so a fresh terminal (or a shell opened
-before the install) has neither and fails with `h3-test: command not found`.
-There is no global install — the package is not on PyPI. In a new shell pick one
-of the three, all equivalent:
+`pip install hermes-h3-shim` (or the source fallback `pip install -e .`) writes
+the two console scripts — `h3-test` and `hermes-h3` — into that venv's `bin/`.
+Activation is **shell-local**: it adds them to PATH for the current shell only,
+so a fresh terminal (or a shell opened before the install) has neither and fails
+with `h3-test: command not found`. There is no global install — pip writes both
+scripts into the venv you chose, never onto the system PATH. In a new shell pick
+one of the three, all equivalent:
 
 ```bash
 source .venv/bin/activate                            # re-activate (run from the venv's directory)
