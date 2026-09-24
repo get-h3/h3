@@ -302,3 +302,41 @@ the skill + docs/dogfood/2026-09-08-integration.md); treat validator errors as t
 cheapest spec reading available. For shared JSONL boards, commit surgically and prove
 it (`git diff --numstat` == your row count) — never `git add` the whole board file
 when any other lane can append between your read and your commit.
+
+## E18 (2026-09-24) — A breaker wired only to the health loop cannot heal: "skipped" is not "half-open"
+
+**What happened:** the ninth h3 dogfood run drove H3Loader's resilience path
+(loader.py) for the first time — kill the harness, watch reroute, restart,
+watch recovery. Reroute works (85-90s via the 30s health loop). Recovery does
+not exist when the breaker opens: measured OPEN for 300s straight with the
+documented knobs (window=2, threshold=0.5, cooldown=3s) and the harness
+healthy again from +180s.
+
+**Why it matters (the mechanism, not the incident):** the CircuitBreaker
+class is textbook-correct in isolation. The defect is a **wiring shape**: the
+health loop's first branch is `if state == OPEN: skip + continue`, and the
+health loop is the ONLY component that feeds the breaker
+(`record_outcome` ×3, `allow_request` ×0 in src/). Transitioning OPEN →
+HALF_OPEN needs either an outcome (skipped) or someone *observing* the
+cooldown expiry via `allow_request` (never called). "Skip while OPEN" and
+"probe after cooldown" are mutually exclusive when the skipper is also the
+only observer. Lesson: when you add a fast-path guard, audit who else feeds
+the state machine — a state machine with one feeder and a guard on that
+feeder deadlocks in the failure state. The correct shape is either the skip
+branch doing the HALF_OPEN transition itself (loop still runs; check
+`allow_request()` instead of `state == OPEN`), or request-path calls
+flowing through the breaker so real traffic can close it.
+
+**Second lesson from the same run:** `resolve()` reads static config while
+reroute rewrites `_session_routes` — two sources of truth for one question.
+Any restart re-resolves to the dead name. Durability of routing decisions
+must live in the same structure that answers the query, or be re-derived on
+load. This is the same writer/detector split as E15-E16 in a new costume:
+the guard (reroute) writes state the reader (resolve) never looks at.
+
+**Right way:** to use H3Loader today, treat the breaker as a
+latch-disabled-until-restart device: set `circuit_breaker_window` huge or
+write your own probe loop; keep sessions on the default harness during
+deploys. To fix it (DF-H3-34/33), make the health loop call
+`allow_request()` on every pass and probe when permitted, and make reroute
+state the only answer `resolve()` gives.

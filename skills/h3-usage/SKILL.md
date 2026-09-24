@@ -247,3 +247,43 @@ hermes-h3 --config /tmp/h3config.yaml test --endpoint http://localhost:9191
   scaffold), `sdk-python/src/h3_harness/examples/echo.py`
 - This run's evidence: `docs/dogfood/2026-08-02-integration.md`,
   `docs/dogfood/diagnostics.md`
+
+## Embedding H3Loader in a Hermes host (2026-09-24 run — loader resilience)
+
+### Pitfall: the circuit breaker never recovers (DF-H3-34, P0)
+`CircuitBreaker` (shim loader.py) can never leave OPEN: the health loop
+SKIPS harnesses whose breaker is OPEN, and the health loop is the only
+caller of `record_outcome`/`allow_request` — so the half-open probe never
+fires. Measured: OPEN for 300s straight (window=2, threshold=0.5,
+cooldown=3s) with the harness healthy again at +180s. **Until fixed, treat
+an opened breaker as permanent for the host process; prefer
+`max_consecutive_failures` reroute with the breaker effectively out of the
+way (huge window) or roll your own probe.**
+
+### Pitfall: reroute is not durable and resolve() ignores health (DF-H3-33, P1)
+`resolve()` reads the static `sessions` config; reroute rewrites
+`_session_routes`. A host restart re-resolves pinned sessions to a DEAD
+harness name. Also, the healthy flag starts `False` even for a live harness
+(first pass takes up to 30s) — never trust health state at boot time.
+
+### Measured reroute latency (set expectations, not "immediately")
+Documented defaults (30s interval, 3 consecutive failures) → reroute lands
+at 85-90s after the harness dies (reproduced local AND on a fresh bunker
+box). integration.md's "reroutes immediately" refers only to the
+breaker-open branch, which as of this run cannot open-and-recover anyway.
+Worst case = `health_interval × max_consecutive_failures`; set both
+explicitly in the loader config.
+
+### Loader config that reproduces the measurements fast
+```python
+CFG = {"default_harness": "native", "max_consecutive_failures": 3,
+       "circuit_breaker_window": 2, "circuit_breaker_threshold": 0.5,
+       "circuit_breaker_cooldown": 3.0,
+       "harnesses": {"go-echo": {"endpoint": "http://127.0.0.1:9731",
+                                 "transport": "rest", "timeout_ms": 3000}},
+       "sessions": {"telegram:-100999": "go-echo"}}
+loader = H3Loader(CFG)
+await loader.start_health_checks()   # background, 30s cadence hard-coded
+loader.route_session("sess-A", "go-echo")
+loader.get_session_harness("sess-A")  # observe reroute here after kill
+```

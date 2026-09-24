@@ -175,3 +175,41 @@ answers: "does this project actually work for a real user, and is it worth it?"
 - Foreman: h3 idle since #499 (cooldown 43200s pin deliberate); 2 fresh pending rows will surface at next evaluation. NOT woken.
 - Artifacts: docs/dogfood/2026-09-24-integration.md; diagnostics.md E17; skills/h3-usage/SKILL.md (44/44->46/46 sweep + new published-routes section); this log entry.
 2026-09-24 | SHIPPABLE | install_seconds=16(ts)+11(goget)+19(gobuild) | bunker=las-bunker-03 agent=21419eff destroyed | smoke=ok(46/46 go local; 46/46 ts local; health+process smoke on agent)
+
+## 2026-09-24 — dogfood tick h3-dogfood-2026-09-24-22-15-26 (run 9)
+- Verdict: PROMISING-BUT-ROUGH — first run of the H3Loader resilience surface (the
+  Hermes-side half of the brain-swap promise); happy-path failover works, recovery
+  is structurally broken (P0).
+- Angle (NEW surface): H3Loader (shim loader.py) — discovery, session routing,
+  background health loop, circuit breaker, reroute; kill-the-harness scenario.
+  No battery test does this; runs 1-8 never drove the loader.
+- Real use: resolve precedence (thread>chat>platform>default) ✓; route_session/
+  get_session_harness ✓; kill harness → reroute to native at 85s local / 90s bunker
+  (3 × 30s health interval); new sessions during outage → native ✓.
+- FOUND (DF-H3-34, P0): circuit breaker can NEVER leave OPEN — health loop skips
+  OPEN harnesses and is the ONLY feeder of record_outcome/allow_request
+  (allow_request has ZERO call sites in src/), so the half-open probe never fires.
+  Measured OPEN 300s straight (documented knobs window=2/threshold=0.5/cooldown=3s)
+  with harness restarted and healthy at +180s. One transient outage = harness
+  disabled for the life of the host process.
+- FOUND (DF-H3-33, P1): reroute not durable — resolve() reads static config while
+  reroute rewrites _session_routes; fresh host mid-outage (and any host restart)
+  resolves pinned sessions to the DEAD harness. Healthy flag also boots False for
+  live harnesses (up to 30s).
+- FOUND (DF-H3-35, P2): docs overpromise — integration.md:175 "reroutes
+  immediately" (measured 85-90s); no recovery contract documented at all.
+- Measured (Step 2b): reroute latency is the finding (85-90s vs "immediately");
+  boot→first-healthy ~0.5s; battery on bunker 0.59s. No PERF row — nothing slow
+  beyond the documented failover gap, which is a correctness/latency-contract row
+  (DF-H3-35), not an optimization target.
+- Bunker install leg (las-bunker-03 agent f914cf7d, bare Debian 13): clone 5.3s
+  (HEAD 9af6d50), install 15s (venv --without-pip + get-pip + pip install -e .),
+  scaffold py, full resilience scenario REPRODUCED on the fresh box (reroute 90s,
+  resolve-at-boot→dead name), battery 46/46 exit 0 in 0.59s. Agent destroyed,
+  absence verified (0 passwd entries; only pre-existing co-tenant containers).
+- Friction (3): the three rows above.
+- Foreman: h3 enabled 43200s deliberate pin; NOT woken (rows surface next
+  evaluation). Board committed surgically (3 rows only).
+- Artifacts: docs/dogfood/2026-09-24b-integration.md; diagnostics.md E18;
+  skills/h3-usage/SKILL.md (loader-resilience section + repro config); this entry.
+2026-09-24 | PROMISING-BUT-ROUGH | install_seconds=15 | bunker=las-bunker-03 agent=f914cf7d destroyed | smoke=ok(46/46, 0.59s; resilience scenario reproduced)
