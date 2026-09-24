@@ -8552,3 +8552,10 @@ Promise: {"entry_point":"Spec hub / documentation repo (Markdown + static HTML) 
   decision rows (LOGSEY-001, PROTO v1.1.0 cut + DISPATCH_PAT) + P3 record rows + GAP-052 (foreign-owned,
   bunker project) + NEVER-DONE fixture. Next actionable work requires Bane: LOGSEY-001, or protocol v1.1.0
   cut authorization. Next: NEVER-DONE ~#488-489 (strict-3 from #485); E2E-001 window #485-490 (closing #490).
+
+## Dogfood Findings (2026-09-24)
+Verdict: SHIPPABLE
+Promise: {"entry_point":"sdk-go + sdk-typescript harness SDKs — implement the Harness interface per README/AGENTS.md quickstart, serve, pass h3-test 46/46",""
+
+- [P2] DF-H3-30 sdk-typescript AGENTS.md Quickstart serves nothing (exports `app`, no serve) and hides the battery-deciding partial-turn convention — README has both (Serving ~:142, Partial turns); make AGENTS.md match; tsconfig types:["node"] trap documented.
+- [P3] DF-H3-31 sdk-go README "Go 1.22+" floor vs go.mod reality (harness uses generics-era stdlib needing >=1.23); fresh-machine path (bare Debian: go missing, no sudo) has no precheck and go.dev/dl is a docs page, not a version source — published route itself verified working (go get v0.1.8 via proxy 11s, build 19s, smoke OK).

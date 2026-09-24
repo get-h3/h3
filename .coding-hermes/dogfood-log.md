@@ -163,3 +163,15 @@ answers: "does this project actually work for a real user, and is it worth it?"
 - Foreman: h3 mid-tick #482 during this run; NOT woken (GAP-003 43200s pin is deliberate; fresh rows surface next evaluation).
 - Artifacts: docs/dogfood/2026-09-23-integration.md; diagnostics.md E16; skills/h3-usage/SKILL.md refreshed (3 new pitfalls); this log entry.
 2026-09-23 | SHIPPABLE | install_seconds=4(clone)+10(shim) | bunker=las-bunker-03 agent=efc4d4ce destroyed | smoke=ok(46/46 on :9527) + make-verify=FAIL(header, DF-H3-25)
+
+## 2026-09-24 — dogfood tick h3-dogfood-2026-09-24-00-17-44
+- Verdict: SHIPPABLE (5th consecutive) — both SDK surfaces deliver a battery-passing harness from docs alone; defects are docs-precision only.
+- Angle (NEW surface): harness-author through sdk-go and sdk-typescript (never consumed by any prior run), documented entry paths only, gated by the 46-test battery; first fresh-machine PUBLISHED-route proof for both (module proxy / npm GitHub).
+- Real use: Go quickstart verbatim -> build first-try -> 46/46 first try (p50 0.78ms). TS consumer via npm GitHub route -> 46/46 after README's serve + partial-turn steps (AGENTS.md quickstart serves nothing — DF-H3-30). Spec-conformance cross-check: hand-rolled payload missing identity.platform correctly rejected (common.json:55; validator error named the field — E17).
+- Measured (Step 2b): battery 0.21s (Go) / 0.24s (TS); boot-to-ready cold 13ms (Go) / 135ms (TS); npm GitHub install 5.2s local / 16s agent; go get v0.1.8 via proxy 11s + build 19s (agent). Nothing a user would feel — no PERF row filed, deliberately.
+- Bunker install leg (las-bunker-03 agent 21419eff, bare Debian 13, no sudo, go MISSING): clone 2.7s (HEAD 071a08f = local); TS npm route 16s + serve + health 200; Go: toolchain extracted to ~/go-toolchain (go1.26.6 via dl.google.com), go get 11s, build 19s, spec-shaped /v1/process smoke -> correct echo decision. Battery itself not installable on agent (shim is source-only + venv needs sudo = DF-H3-8 class, known). Agent destroyed, absence verified (0 passwd, 0 containers).
+- Friction (2): TS AGENTS.md quickstart gap (serve + partial turns buried in README — DF-H3-30 P2); Go README 1.22+ floor vs go.mod reality + no fresh-machine go-precheck (DF-H3-31 P3).
+- New rows: DF-H3-30..31 (1×P2, 1×P3) — committed a38d988 (rows only; releng's uncommitted RELEASE-H3-006 row left byte-exact as found). NOT pushed (see Foreman).
+- Foreman: h3 idle since #499 (cooldown 43200s pin deliberate); 2 fresh pending rows will surface at next evaluation. NOT woken.
+- Artifacts: docs/dogfood/2026-09-24-integration.md; diagnostics.md E17; skills/h3-usage/SKILL.md (44/44->46/46 sweep + new published-routes section); this log entry.
+2026-09-24 | SHIPPABLE | install_seconds=16(ts)+11(goget)+19(gobuild) | bunker=las-bunker-03 agent=21419eff destroyed | smoke=ok(46/46 go local; 46/46 ts local; health+process smoke on agent)

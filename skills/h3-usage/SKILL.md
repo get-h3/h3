@@ -79,32 +79,59 @@ cd /tmp && hermes-h3 scaffold --lang go --output-dir /tmp
 # (DOGFOOD-07/08/09 landed). go scaffold pins sdk-go v0.1.1 (cancel-404 fix
 # addb017 is in v0.1.1+); py scaffold 404s on unknown-session cancel; ts
 # scaffold installs via github:get-h3/sdk-typescript (npm E404 workaround).
-# Fresh go + py scaffolds verified 44/44, exit 0 on 2026-08-17 (tick #317):
+# Battery is 46 tests since 2026-09-08 (GAP-045 wave). Fresh go + py scaffolds
+# verified battery-clean exit 0 (was 44/44 at tick #317, 2026-08-17; count grew):
 #   cd /tmp/h3-harness-go && go mod tidy && go run . &
-#   h3-test --endpoint http://localhost:9191   # 44/44, exit 0
+#   h3-test --endpoint http://localhost:9191   # 46/46, exit 0
 ```
 
-## Verified 44/44 paths (SDK examples)
+## Verified battery-clean paths (SDK examples)
 
 ```bash
 # Go (sdk-go main has the 404 fix):
 git clone https://github.com/get-h3/sdk-go && cd sdk-go/examples/echo && go run . &
-h3-test --endpoint http://localhost:9191   # 44/44, exit 0
+h3-test --endpoint http://localhost:9191   # 46/46, exit 0
 
 # Python:
 cd sdk-python && python3 -m venv .venv && . .venv/bin/activate && pip install -e .
 python src/h3_harness/examples/echo.py &   # (script runner — NOT `uvicorn ...:app`)
-h3-test --endpoint http://localhost:9191   # 44/44
+h3-test --endpoint http://localhost:9191   # 46/46
 
 # TypeScript:
 cd sdk-typescript && npx tsx src/examples/echo.ts &
-h3-test --endpoint http://localhost:9191   # 44/44
+h3-test --endpoint http://localhost:9191   # 46/46
+```
+
+## Verified battery-clean paths (published routes, no repo clone)
+
+Verified 2026-09-24 (dogfood DF-H3-30/31). These are the routes a consumer
+with NO local get-h3 checkout uses.
+
+```bash
+# Go via public module proxy (v0.1.8 verified): quickstart main.go verbatim
+# from sdk-go README/AGENTS.md, then:
+mkdir dgconsumer && cd dgconsumer && go mod init dgconsumer
+go get github.com/get-h3/sdk-go        # resolves latest semver tag via proxy
+go build -o echo-go . && PORT=9291 ./echo-go &
+h3-test --endpoint http://127.0.0.1:9291   # 46/46, exit 0 (local go1.26.5)
+# Fresh-machine proof (bunker, bare Debian, toolchain extracted to ~/go-toolchain):
+#   go get 11s, build 19s, serve+smoke OK — see docs/dogfood/2026-09-24-integration.md
+
+# TypeScript via npm GitHub route (NOT on the npm registry):
+mkdir tsconsumer && cd tsconsumer && npm init -y && npm pkg set type=module
+npm install github:get-h3/sdk-typescript   # prepare script builds dist/ (5-16s)
+npm i @hono/node-server && npm i -D @types/node typescript
+# harness per README Quickstart + Partial turns + Serving sections, then:
+npx tsc -p . && PORT=9292 node harness.ts &
+h3-test --endpoint http://127.0.0.1:9292   # 46/46, exit 0 (Node v22.22.3)
+# tsc consumers NEED tsconfig with "types": ["node"] — bare `tsc file.ts`
+# fails even with @types/node installed (TS2591). tsx/Bun consumers skip this.
 ```
 
 ## Custom harness from the spec (Python, no SDK)
 
-Read `specs/02-Protocol-Specification.md` — it is sufficient for ~41/44
-immediately. To reach 44/44 you need TWO conventions that are only in SDK
+Read `specs/02-Protocol-Specification.md` — it is sufficient for ~41/46
+immediately. To reach 46/46 you need TWO conventions that are only in SDK
 example code (see docs/dogfood/2026-08-02-integration.md):
 
 1. **History echo:** include a top-level `history` in the decision response,
@@ -119,7 +146,7 @@ example code (see docs/dogfood/2026-08-02-integration.md):
    finished = "do not finish" not in content
    ```
 
-Minimal stdlib skeleton (proven 44/44): one handler per endpoint
+Minimal stdlib skeleton (battery-clean): one handler per endpoint
 (`/v1/health`, `/v1/process`, `/v1/result`, `/v1/cancel`, `/v1/sessions/:id`
 GET+DELETE), a `_decision_*` helper per type, error envelope per §9.
 ~130 lines total.
@@ -171,7 +198,7 @@ non-default port only via source edit for Go targets; TS/py honor PORT.
   sdk-go v0.1.0+ is published, so `go mod tidy` fetches it — add a
   `replace` directive only for local SDK dev.
 - **Scaffolds are battery-clean since DOGFOOD-07/08/09 landed** (verified
-  go + py 44/44, exit 0 on 2026-08-17, tick #317): go template pins sdk-go
+  go + py battery-clean, exit 0 (tick #317, 2026-08-17): go template pins sdk-go
   v0.1.1 (cancel-404 fix); py scaffold 404s unknown-session cancel; ts
   scaffold installs via github:get-h3/sdk-typescript (npm E404 workaround).
   Still, after scaffolding ALWAYS run `h3-test` — don't trust "it builds".

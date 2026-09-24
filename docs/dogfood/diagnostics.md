@@ -274,3 +274,31 @@ gate status are claims, the gate re-run at HEAD is the fact.
 **Why it matters:** a repo whose own README-documented smoke (`git checkout && make verify`) is red at public HEAD fails the FIRST thing every fresh user runs — the product works, the gate about the gate doesn't. A green detector row ("guard complete") is not a green system when the class it detects keeps recurring; the recurrence rate IS the metric for the writer fix, and it has now fired five times.
 
 **Right way:** treat repeated guard catches of the same class as evidence the WRITER needs an unconditional step (header write-back inside the board-writing closeout, not a best-effort post-push hook), and re-open the writer row each time the guard fires instead of treating the catch itself as closure. Filed DF-H3-25 (P1). Companion lesson from the same run: a compliance battery can green-light the WRONG server on a shared host (h3-test 46/46 vs a 2.6-day-old co-tenant harness while the target never bound — DF-H3-26); a gate must print the identity/uptime of what it tested, or its PASS is only about the port, not the process.
+
+### E17 (2026-09-24) — The validator IS documentation: an error message that proves the contract, and the surgical-commit rule for shared boards
+
+**What happened:** two things, one run. (1) Probing the v0.1.8 Go harness with a
+hand-rolled curl payload (session_id + message + context, no identity), the server
+answered `INVALID_REQUEST: identity.platform is required` instead of echoing. For a
+moment this looked like SDK-vs-spec drift — `grep -r platform` finds NOTHING in
+shim/client.py or the YAML surface, so "the published tag demands a field the spec
+never mentions" seemed live. It was not: protocol/schemas/v1/common.json:55 requires
+platform/chat_id/user_name/user_id on Identity, and sdk-go's `Validate()` tests assert
+exactly that. My payload was wrong; the server was the spec. (2) Committing the two
+dogfood rows, the board already contained an UNCOMMITTED row from a sibling lane
+(releng's RELEASE-H3-006, appended after the foreman's last commit e08ed4d).
+
+**Why it matters:** (1) A terse, field-naming validator error is better onboarding
+than prose — it pointed at the one missing concept (Identity) and the fix took one
+edit. When a consumer sees a "drift," the sequence that settles it in minutes is:
+read the JSON Schema (not the YAML prose) → read the SDK's Validate tests → only then
+believe drift. (2) A dogfood/audit lane that commits the whole board file can swallow
+or mis-attribute a sibling's in-flight row. The safe shape: stage HEAD + ONLY your
+rows (rebuild the file from `git show HEAD:path` + your appends, byte-exact), commit,
+then restore the sibling's row byte-identically as the uncommitted state you found.
+
+**Right way:** send the full envelope on first contact (the working curl pair is in
+the skill + docs/dogfood/2026-09-08-integration.md); treat validator errors as the
+cheapest spec reading available. For shared JSONL boards, commit surgically and prove
+it (`git diff --numstat` == your row count) — never `git add` the whole board file
+when any other lane can append between your read and your commit.
