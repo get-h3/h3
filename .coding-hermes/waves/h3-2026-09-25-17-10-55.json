@@ -1,0 +1,38 @@
+{
+  "tick_id": "h3-2026-09-25-17-10-55",
+  "project": "h3-umbrella",
+  "created_at": "2026-09-25T17:25:00-05:00",
+  "wave_budget": 8,
+  "waves": [
+    {
+      "repo": "shim",
+      "repo_path": "/home/kara/get-h3/shim",
+      "task_ids": ["DF-H3-33", "DF-H3-34", "DF-H3-35"],
+      "worktree": "/home/kara/worktrees/shim-DF-H3-33-35",
+      "branch": "wt/DF-H3-33-35",
+      "base_sha": "9af6d50",
+      "gitreins_task": "h3shim-df333-335",
+      "model": "ox-alpha-free",
+      "provider": "opencode-go",
+      "log": "/tmp/h3wave_shim.log"
+    },
+    {
+      "repo": "sdk-go",
+      "repo_path": "/home/kara/get-h3/sdk-go",
+      "task_ids": ["DF-H3-31"],
+      "worktree": "/home/kara/worktrees/sdk-go-DF-H3-31",
+      "branch": "wt/DF-H3-31",
+      "base_sha": "071a08f",
+      "gitreins_task": "h3sdkgo-df331",
+      "model": "ox-alpha-free",
+      "provider": "opencode-go",
+      "log": "/tmp/h3wave_sdkgo.log"
+    }
+  ],
+  "folds": [
+    {
+      "task_id": "DF-H3-32",
+      "note": "foreman-fold: run make board-close in h3 umbrella before the closeout board commit (documented writer, scripts/sync-board-header.sh)"
+    }
+  ]
+}
