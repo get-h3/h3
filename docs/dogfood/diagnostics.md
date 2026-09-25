@@ -340,3 +340,38 @@ write your own probe loop; keep sessions on the default harness during
 deploys. To fix it (DF-H3-34/33), make the health loop call
 `allow_request()` on every pass and probe when permitted, and make reroute
 state the only answer `resolve()` gives.
+
+## E19 (2026-09-25) — The control plane's weak point is a data file nobody owns: versions.yaml
+
+**What happened:** run 10 exercised the CLI lifecycle (install/list/use/
+route/verify/pre-update-check/uninstall) for the first time. The lifecycle
+itself is clean — fail-closed everywhere, install probes before persisting,
+uninstall demotes default_harness, config survives a dead endpoint. The one
+surface that lies is `pre-update-check`: it BLOCKed 0.21.1 (newer than
+matrix), 0.20.0 and 0.19.0 (shim 0.1.0 vs required 1.1.0/2.0.0) — i.e. the
+check cannot return "safe" on any Hermes a current user could run. Only
+0.17.0 (WARN-only) passes, and that Hermes predates every fleet machine.
+
+**Why:** `data/versions.yaml` is generated from the S03 spec and its own
+header says "version bumps and this matrix move together" — but nothing owns
+that cadence. The shim version stayed 0.1.0 across five Hermes releases;
+the matrix (and the `min_h3` values of its "planned" rows) drifted into a
+state where the tool is always-BLOCK. The failure mode is not a crash, it
+is a safety check that cries wolf: a user trained by permanent BLOCKs
+skips the check the day it matters.
+
+**Second observation, same class:** the `config_schema v0 → v1` WARN
+fires on every config forever — `upgrade_check.py` compares
+`cfg.get('_schema', 0)` to `CURRENT_CONFIG_SCHEMA=1`, but nothing in the
+codebase ever writes a `_schema` key or migrates anything. A permanent
+warning about a migration that does not exist.
+
+**Right way:** a compatibility matrix is a *product surface* with an owner
+and a freshness signal (print its last-updated date in BLOCK output). Any
+WARN a user cannot clear must be a BUG — either implement the migration or
+don't warn. The harness-facing check 4 (`harness:NAME unreachable` WARN)
+shows what correct looks like: it is conditional, accurate, and clears.
+
+**Cross-reference:** rows DF-H3-36 (P1), DF-H3-37/38/39 (P2, one class:
+string literals duplicating runtime facts — enum repr, breaker narrative,
+schema claim — each drifts from its source independently).

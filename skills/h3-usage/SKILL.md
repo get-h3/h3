@@ -287,3 +287,49 @@ await loader.start_health_checks()   # background, 30s cadence hard-coded
 loader.route_session("sess-A", "go-echo")
 loader.get_session_harness("sess-A")  # observe reroute here after kill
 ```
+
+## Managing a running harness with the CLI (2026-09-25 run — control plane)
+
+The lifecycle commands operate on a config file
+(default `~/.hermes/h3/config.yaml`; override with `--config` or
+`$HERMES_H3_CONFIG`). Verified end-to-end from an empty config:
+
+```bash
+hermes-h3 install NAME --endpoint http://localhost:9191 --set-default
+# ^ health-probes the endpoint FIRST; a bad endpoint never lands in config
+hermes-h3 list                 # table; '*' marks default_harness
+hermes-h3 verify NAME          # status/version/caps
+hermes-h3 verify NAME --fallback  # + failover narrative; exit 0 either way
+hermes-h3 use NAME             # promote to default_harness
+hermes-h3 route --session "<platform:chat[:thread]>" --set-harness NAME
+hermes-h3 route --session "..." --remove
+hermes-h3 uninstall NAME       # demotes default_harness if it was default
+```
+
+Behavioral contract (verified, rely on it): every lookup fails closed —
+unknown harness/session → exit 1 naming what exists; `verify` against a
+dead endpoint → exit 1 (clean error, config untouched); `--fallback`
+prints the ENGAGED/STANDBY narrative and exits 0.
+
+### Pitfall: `verify` prints `HealthStatus.OK`, not `ok` (DF-H3-37)
+The status line is a Pydantic enum repr. If you grep verify's output,
+match on the endpoint/harness lines, not `status:   ok` — the wire value
+and install's output both say `ok`, verify's display does not.
+
+### Pitfall: pre-update-check is BLOCK-happy (DF-H3-36)
+The bundled `versions.yaml` lags Hermes releases. As of this run it
+blocked every version ≥ 0.19.0 on shim 0.1.0 and 0.21.1 on staleness.
+Treat BLOCK as "matrix says no", not "protocol says no" — cross-check
+`h3_shim/data/versions.yaml` mtime and the protocol repo before trusting
+it, and pass `--versions-yaml` explicitly in CI.
+
+### Pitfall: the "config schema v0 will be migrated" WARN is permanent (DF-H3-39)
+No migration exists in the codebase; ignore that line (or better, don't
+let its presence train you to ignore the harness-health WARN, which IS
+real).
+
+### Reroute/breaker behavior
+See the loader section below (2026-09-24 run): reroute is interval-bound
+(~85-90s at defaults) and was not durable before DF-H3-33/34 landed.
+`verify --fallback`'s "reroutes sessions immediately" refers only to the
+breaker-open branch.

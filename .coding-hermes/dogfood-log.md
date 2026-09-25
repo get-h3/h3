@@ -213,3 +213,46 @@ answers: "does this project actually work for a real user, and is it worth it?"
 - Artifacts: docs/dogfood/2026-09-24b-integration.md; diagnostics.md E18;
   skills/h3-usage/SKILL.md (loader-resilience section + repro config); this entry.
 2026-09-24 | PROMISING-BUT-ROUGH | install_seconds=15 | bunker=las-bunker-03 agent=f914cf7d destroyed | smoke=ok(46/46, 0.59s; resilience scenario reproduced)
+
+## 2026-09-25 — dogfood tick h3-dogfood-2026-09-25-22-57-33 (run 10)
+
+- Verdict: SHIPPABLE (6th consecutive verdict run) — the control-plane CLI
+  (hermes-h3) delivers the full harness lifecycle honestly; defects are
+  staleness/cosmetic, none break real use.
+- Angle (NEW surface): the harness CONTROL PLANE — install / list / use /
+  route (set/remove/show) / verify (+ --fallback) / pre-update-check /
+  uninstall against a live scaffolded harness. Runs 1-9 never exercised the
+  lifecycle commands (they tested scaffold output, SDKs, battery, loader
+  internals, make verify).
+- Promise: "A harness author can register a running harness, pin a session
+  to it, verify its health, pre-flight a Hermes upgrade against the compat
+  matrix, and remove it — all from the CLI, config-backed and fail-closed."
+- Reality: lifecycle works end-to-end from empty config (0.15s scaffold) —
+  install (0.46s, health-probes on register), verify, use, route
+  set/show/table/remove, uninstall, all exit-code disciplined, fail-closed
+  on unknown harness/session, config survives a dead endpoint without
+  corruption. Battery 46/46 in 0.42s against the registered harness.
+- Found (DF-H3-36, P1): pre-update-check BLOCKs on EVERY real Hermes
+  version — bundled matrix tops at 0.20.0 (installed Hermes: 0.21.1), and
+  even 'planned' rows block on shim 0.1.0 vs required 1.1.0/2.0.0. The
+  safety check can never say "safe" on a current system.
+- Found (DF-H3-37..39, P2): verify prints enum repr 'HealthStatus.OK'
+  instead of the wire value 'ok'; verify --fallback hard-codes the
+  resilience narrative in cli.py (re-creating the DF-H3-35 docs drift,
+  incl. 'reroutes immediately'); pre-update-check permanently warns about
+  a config-schema v0->v1 migration that exists nowhere in the codebase.
+- Measured (Step 2b, all warm, hyperfine --warmup 3 --runs 20):
+  list 193ms ±34, route 163ms ±24, verify 292ms ±18 (raw HTTP round-trip
+  3.9ms — ~288ms is CLI/Python startup); cold battery 0.62s vs 0.42s warm;
+  harness boot->healthy 17ms; install 0.46s. Nothing a user would feel —
+  no PERF row filed.
+- Bunker install leg: SKIPPED-install-bunker (DF-H3-40) — bunker-las-03
+  offline (tailscale 'last seen 5h ago', ssh connect timeout, bunker list
+  deadline_exceeded). Latest installability proof remains 2026-09-24b
+  (15s install, 46/46). Not a silent pass.
+- Friction (4): the four rows above.
+- Foreman: h3 enabled, 43200s deliberate pin; NOT woken (rows surface next
+  evaluation). Board committed surgically (5 rows only).
+- Artifacts: docs/dogfood/2026-09-25-integration.md; diagnostics.md E19;
+  skills/h3-usage/SKILL.md (control-plane section); this entry.
+
