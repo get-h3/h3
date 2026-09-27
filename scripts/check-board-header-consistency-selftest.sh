@@ -29,6 +29,32 @@ fail_case() {
     echo "  FAIL: $1"
 }
 
+expect_sub() {  # <name> <text> <substring that must be present>
+    CASES_TOTAL=$((CASES_TOTAL + 1))
+    case $2 in
+        *"$3"*)
+            CASES_PASS=$((CASES_PASS + 1))
+            echo "  ok  $1 (contains: $3)"
+            ;;
+        *)
+            fail_case "$1: text does not contain '$3'"
+            ;;
+    esac
+}
+
+expect_not_sub() {  # <name> <text> <substring that must be absent>
+    CASES_TOTAL=$((CASES_TOTAL + 1))
+    case $2 in
+        *"$3"*)
+            fail_case "$1: text unexpectedly contains '$3'"
+            ;;
+        *)
+            CASES_PASS=$((CASES_PASS + 1))
+            echo "  ok  $1 (does not contain: $3)"
+            ;;
+    esac
+}
+
 # case_run <name> <expected-exit> <expected-substring> <board-dir> [extra env ...]
 # Every case runs the guard against the FAKE repo (H3_BOARD_HEADER_ROOT) with a
 # 3-tick recent window, so the C check has a tractable span.
@@ -192,6 +218,60 @@ case_run "tar extraction without .git -> UNVERIFIED, not FAILED (QA-H3-17)" 0 "U
 # The degrade sits before check A and guards check D's git reads too, so a
 # requested A-skip must not change the outcome.
 case_run "SKIP=A on a git-less tree -> still UNVERIFIED (QA-H3-17)" 0 "UNVERIFIED (no git history" "$NG/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$NG" H3_BOARD_HEADER_SKIP=A
+
+# ---- 9d. QA-H3-18: missing last_commit object in a shallow fresh copy -------
+# The QA evidence class: a shallow sync of this repo carries a self-consistent
+# board (B/C/D green) but lacks the header's commit object (bfd3cf6, which on
+# a shallow copy is an unfetched ancestor), so A's rev-parse could not tell
+# "the hash is wrong" from "the object is not fetched" and hard-FAILED, red
+# `make verify` on an otherwise-consistent copy. In a shallow copy the local
+# history is not provenance for the header's hash, so the guard now reports
+# missing provenance as UNVERIFIED (degraded, greppable) instead of FAILED.
+SH=$WORK/shallow
+git clone -q --depth 1 "file://$FAKE" "$SH"
+git -C "$SH" -c user.email=t@t -c user.name=t commit -q --allow-empty -m four
+SH_HEAD=$(git -C "$SH" rev-parse HEAD)
+board_fixture "$SH/.coding-hermes/board" 3 "$SH_HEAD" 3
+case_run "shallow copy, last_commit = its own HEAD -> VERIFIED" 0 "VERDICT: VERIFIED" "$SH/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SH"
+
+SHc=$WORK/shallow-missing
+git clone -q --depth 1 "file://$FAKE" "$SHc"
+board_fixture "$SHc/.coding-hermes/board" 3 "$FAKE_PARENT" 3
+case_run "shallow copy, unresolvable last_commit -> UNVERIFIED + degraded, exit 0" 0 "VERDICT: UNVERIFIED (last_commit provenance unavailable" "$SHc/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SHc"
+case_run "shallow copy, unresolvable last_commit -> A UNVERIFIED line" 0 "A UNVERIFIED — last_commit" "$SHc/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SHc"
+case_run "shallow copy, unresolvable last_commit -> greppable degraded line" 0 "PUBLIC-HEAD-VERIFY-UNVERIFIED" "$SHc/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SHc"
+set +e
+SHc_OUT=$(env H3_BOARD_HEADER_ROOT="$SHc" H3_BOARD_HEADER_RECENT=3 H3_BOARD_HEADER_DIR="$SHc/.coding-hermes/board" sh "$GUARD" 2>&1)
+set -e
+expect_not_sub "shallow copy, unresolvable last_commit -> no PUBLIC-HEAD-VERIFY-FAIL (not a stale-board failure)" "$SHc_OUT" "PUBLIC-HEAD-VERIFY-FAIL"
+expect_not_sub "shallow copy, unresolvable last_commit -> no A FAIL line (degraded, not failed)" "$SHc_OUT" "FAIL — A: last_commit"
+expect_sub "shallow copy, unresolvable last_commit -> B/C continue and pass" "$SHc_OUT" "C PASS — every tick 1..3"
+
+# ---- 9e. QA-H3-18: full clone — an unresolvable hash is still a FAIL --------
+# Provenance IS available in a full clone: an unknown hash there is a bogus
+# value, not an unfetched ancestor, so the honest verdict stays FAILED (a
+# degrade must never swallow a real defect).
+FKe=$WORK/full-foreign
+git clone -q "file://$FAKE" "$FKe"
+board_fixture "$FKe/.coding-hermes/board" 3 "0000000" 3
+case_run "full clone, unresolvable last_commit -> FAILED, exit 1" 1 "does not resolve to a commit" "$FKe/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$FKe"
+
+# ---- 9f. QA-H3-18: provenance available — resolvable foreign commit FAILs ----
+# Same shape as the failing arm but resolvable: the hash names a REAL commit
+# this branch does not contain. Provenance is available and refutes the value,
+# so this is a genuine inconsistency, not missing provenance.
+FKf=$WORK/full-resolvable-foreign
+git clone -q "file://$FAKE" "$FKf"
+FKf_BASE=$(git -C "$FKf" rev-parse --abbrev-ref HEAD)
+# A REAL commit that HEAD's history does not contain: an orphan-branch commit
+# created inside the full clone itself — a resolvable object the provenance
+# data refutes (not an ancestor of HEAD).
+git -C "$FKf" checkout -q --orphan h3-foreign
+git -C "$FKf" -c user.email=t@t -c user.name=t commit -q --allow-empty -m foreign
+git -C "$FKf" checkout -q "$FKf_BASE"
+FKf_TARGET=$(git -C "$FKf" rev-parse h3-foreign)
+board_fixture "$FKf/.coding-hermes/board" 3 "$FKf_TARGET" 3
+case_run "full clone, resolvable foreign last_commit -> FAILED (provenance refutes it)" 1 "not an ancestor of HEAD" "$FKf/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$FKf"
 
 # ---- 10. degrade: RECENT is not an integer ---------------------------------
 B10=$WORK/b10

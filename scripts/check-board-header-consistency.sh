@@ -26,6 +26,16 @@
 #      commit, then a follow-up that pins last_commit to the pushed commit), so
 #      "the sync ran at most one commit ago" is exactly the invariant. A stale
 #      value fails here and names how far it drifted.
+#
+#      QA-H3-18 — the two provenance contexts of A. A FULL clone's history is
+#      provenance: if the header's hash does not resolve there, the value is
+#      bogus and A FAILs as before. A SHALLOW or grafted copy (git clone
+#      --depth, a synced snapshot) carries only PART of the history, so an
+#      unresolvable hash can mean "the object was never fetched" — the honest
+#      verdict for that case is a DEGRADED UNVERIFIED (exit 0, with a
+#      greppable PUBLIC-HEAD-VERIFY-UNVERIFIED line), never a silent PASS and
+#      never the stale-board FAILED, while B/C/D still run. A resolvable value
+#      is judged strictly in BOTH contexts: HEAD or HEAD's parent, or A fails.
 #   B. ticks_total must equal the highest tick number the event log actually
 #      records. If they disagree, the header is publishable fiction.
 #   C. every tick in the most recent window must have at least one event. A tick
@@ -66,12 +76,26 @@
 #
 #   PUBLIC-HEAD-VERIFY-FAIL: board header is BEHIND the board it describes ...
 #
+# QA-H3-18 adds the degraded sibling for the missing-provenance class (a
+# shallow/synced copy that lacks the header's commit object but is otherwise
+# self-consistent):
+#
+#   PUBLIC-HEAD-VERIFY-UNVERIFIED: last_commit provenance unavailable ...
+#
 # Alert recipe — no external infrastructure, just the exit code and the line:
 #
 #   git clone --depth 1 https://github.com/get-h3/h3 /tmp/h3-public-check &&
 #   cd /tmp/h3-public-check &&
 #   if ! make verify > /tmp/h3-verify.log 2>&1; then
 #       grep -F 'PUBLIC-HEAD-VERIFY-FAIL' /tmp/h3-verify.log && <page/alert>; fi
+#
+# On a shallow copy the header's commit object may be absent BECAUSE the copy
+# is shallow (an unfetched ancestor), not because the board is stale — the
+# guard then emits the UNVERIFIED line above and exits 0 (make verify stays
+# green on an otherwise self-consistent copy, without claiming verification).
+# On a FULL clone an unresolvable hash is a bogus value, not an unfetched
+# ancestor: provenance is available and refutes the header, so the case is a
+# real FAILED with the same FAIL lines it always had.
 #
 # (Or, on the tip of the working repo, before any clone:)
 #   sh scripts/check-board-header-consistency.sh | grep -F 'PUBLIC-HEAD-VERIFY-FAIL'
@@ -85,8 +109,10 @@
 #
 # EXIT CODES (sibling-guard convention):
 #   0 = VERIFIED, or UNVERIFIED when the checks cannot run at all: an
-#       unreadable board/header, or a tree with no git history (QA-H3-17:
-#       a tar/archive install is a degrade, not a FAILED verdict)
+#       unreadable board/header, a tree with no git history (QA-H3-17: a
+#       tar/archive install is a degrade, not a FAILED verdict), or a
+#       shallow/grafted copy where last_commit's object is absent (QA-H3-18:
+#       provenance unavailable is a degrade, not a stale-board FAILED)
 #   1 = FAILED — one or more of A/B/C/D above
 #
 # Output is grep-friendly: one fact per line, ending with the verdict line
@@ -165,6 +191,25 @@ if ! git -C "$ROOT" rev-parse --git-dir >/dev/null 2>&1; then
     unverified "no git history in $ROOT (tar/archive or history-less extraction) — checks A/D need commits; run the header sync after the first real clone"
 fi
 
+# QA-H3-18: record the PROVENANCE CONTEXT. A shallow or grafted copy (git
+# clone --depth, a synced snapshot with grafted history) carries only part of
+# the history, so an unresolvable last_commit there can mean "the object was
+# never fetched" — not "the value is bogus". A full clone's history IS the
+# provenance, so the same unresolvable value there stays a real defect.
+H3_GIT_DIR=$(git -C "$ROOT" rev-parse --absolute-git-dir 2>/dev/null) ||
+    H3_GIT_DIR=$(git -C "$ROOT" rev-parse --git-dir 2>/dev/null) || H3_GIT_DIR=
+case $H3_GIT_DIR in
+    /*) : ;;
+    ?*) H3_GIT_DIR=$ROOT/$H3_GIT_DIR ;;
+esac
+if git -C "$ROOT" rev-parse --is-shallow-repository 2>/dev/null | grep -q '^true' ||
+    { [ -n "$H3_GIT_DIR" ] && [ -f "$H3_GIT_DIR/shallow" ]; }; then
+    SHALLOW=1
+    echo "$NAME: git context — shallow/grafted copy: history is partial, so last_commit provenance may be unavailable (an unresolvable value may name an unfetched ancestor)"
+else
+    SHALLOW=0
+fi
+
 # ---- 1. read the header -----------------------------------------------------
 if [ -n "$HEADER_INPUT" ]; then
     [ -f "$HEADER_INPUT" ] || unverified "header input is missing: $HEADER_INPUT"
@@ -197,6 +242,9 @@ fi
 
 FAIL=0
 BEHIND=0
+# QA-H3-18: check A found the header's last_commit unresolvable in a
+# shallow/grafted copy — provenance unavailable, degraded but not failed.
+A_UNVERIFIED=0
 fail() {
     FAIL=1
     echo "$NAME: FAIL — $1"
@@ -216,7 +264,15 @@ elif [ -z "$LAST_COMMIT" ]; then
     fail "A: header carries no last_commit"
 else
     if ! git -C "$ROOT" rev-parse --verify --quiet "${LAST_COMMIT}^{commit}" >/dev/null 2>&1; then
-        fail "A: last_commit '$LAST_COMMIT' does not resolve to a commit in this repo"
+        if [ "$SHALLOW" -eq 1 ]; then
+            # QA-H3-18: this copy carries only part of the history, so the
+            # object may simply not have been fetched. Not proven, not failed:
+            # degraded UNVERIFIED, with the reason on the final verdict.
+            A_UNVERIFIED=1
+            echo "$NAME: A UNVERIFIED — last_commit '$LAST_COMMIT' does not resolve in this shallow/grafted copy (the object was likely never fetched); freshness NOT verified"
+        else
+            fail "A: last_commit '$LAST_COMMIT' does not resolve to a commit in this repo"
+        fi
     elif ! git -C "$ROOT" merge-base --is-ancestor "$LAST_COMMIT" HEAD 2>/dev/null; then
         fail "A: last_commit '$LAST_COMMIT' is not an ancestor of HEAD (it names a commit this branch does not contain)"
     else
@@ -302,9 +358,20 @@ elif [ -z "$HEADER_INPUT" ]; then
 fi
 
 # ---- 5. verdict -------------------------------------------------------------
-if [ "$FAIL" -eq 0 ]; then
+if [ "$FAIL" -eq 0 ] && [ "$A_UNVERIFIED" -eq 0 ]; then
     echo "$NAME: PASS — header self-consistent (A freshness, B total, C tick coverage, D committed==worktree)"
     echo "VERDICT: VERIFIED (ticks_total=$TICKS_TOTAL last_commit=$LAST_COMMIT; scope: staleness + holes only — NOT provenance of the named commit)"
+    exit 0
+fi
+
+# QA-H3-18: no FAIL, but check A could not verify freshness because this copy
+# lacks the header's commit object (shallow/grafted). Degraded, never a pass:
+# the greppable line tells fleet tooling that provenance was unavailable, and
+# the verdict says UNVERIFIED rather than VERIFIED — make verify stays usable
+# on the copy without claiming a verification it did not perform.
+if [ "$A_UNVERIFIED" -eq 1 ]; then
+    echo "PUBLIC-HEAD-VERIFY-UNVERIFIED: last_commit provenance unavailable (last_commit=$LAST_COMMIT does not resolve in this shallow/grafted copy) — board consistency checks that ran: PASS; commit freshness NOT verified here (fetch history or verify on a full clone). Alert recipe: see the FLEET ALERT block in the header comment of make verify's board-header guard."
+    echo "VERDICT: UNVERIFIED (last_commit provenance unavailable: '$LAST_COMMIT' does not resolve in this shallow/grafted copy — B/C/D consistency held; run a full clone to verify freshness)"
     exit 0
 fi
 
