@@ -7,7 +7,11 @@
     {
       "repo": "shim",
       "repo_path": "/home/kara/get-h3/shim",
-      "task_ids": ["DF-H3-33", "DF-H3-34", "DF-H3-35"],
+      "task_ids": [
+        "DF-H3-33",
+        "DF-H3-34",
+        "DF-H3-35"
+      ],
       "worktree": "/home/kara/worktrees/shim-DF-H3-33-35",
       "branch": "wt/DF-H3-33-35",
       "base_sha": "9af6d50",
@@ -19,7 +23,9 @@
     {
       "repo": "sdk-go",
       "repo_path": "/home/kara/get-h3/sdk-go",
-      "task_ids": ["DF-H3-31"],
+      "task_ids": [
+        "DF-H3-31"
+      ],
       "worktree": "/home/kara/worktrees/sdk-go-DF-H3-31",
       "branch": "wt/DF-H3-31",
       "base_sha": "071a08f",
@@ -34,5 +40,35 @@
       "task_id": "DF-H3-32",
       "note": "foreman-fold: run make board-close in h3 umbrella before the closeout board commit (documented writer, scripts/sync-board-header.sh)"
     }
-  ]
+  ],
+  "finished_at": "2026-09-27T00:45:00Z",
+  "outcomes": {
+    "shim": {
+      "tasks": [
+        "DF-H3-33",
+        "DF-H3-34",
+        "DF-H3-35"
+      ],
+      "result": "already merged on origin/main at 402f00be2112aad5833f349c2c25ed1fc705cbb8",
+      "branch_tip_gate": "pytest 568 passed; gitreins guard DEGRADED PASS for no staged files (secrets clean)",
+      "merge": "no-op, already reachable from main",
+      "worktree": "absent",
+      "branch": "local and remote refs absent"
+    },
+    "sdk-go": {
+      "tasks": [
+        "DF-H3-31"
+      ],
+      "result": "already merged on origin/main at f748461d05463379a8fc4f977f51a07501e293d9",
+      "branch_tip_gate": "go build ./..., go vet ./..., go test -short -p 1 ./... passed; gitreins guard PASS (full)",
+      "merge": "no-op, already reachable from main",
+      "worktree": "absent",
+      "branch": "local and remote refs absent"
+    },
+    "fold": {
+      "task_id": "DF-H3-32",
+      "result": "already complete as foreman fold in board at b657dd6"
+    }
+  },
+  "recovery_note": "All listed outcomes verified against live git state; no fixup workers required."
 }
