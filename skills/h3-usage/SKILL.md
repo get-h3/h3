@@ -333,3 +333,54 @@ See the loader section below (2026-09-24 run): reroute is interval-bound
 (~85-90s at defaults) and was not durable before DF-H3-33/34 landed.
 `verify --fallback`'s "reroutes sessions immediately" refers only to the
 breaker-open branch.
+
+## Release-engineering sweep (2026-09-28 releng-lane run)
+
+How to run a release-readiness sweep on this repo, from real use:
+
+```bash
+# 1. inventory since last artifact (tags+Release objects, not CHANGELOG claims)
+gh release list --repo get-h3/h3
+git rev-list --count v0.2.0..HEAD   # 169 at HEAD 3864dbb: 3 feat / 8 fix / 0 breaking = MINOR
+
+# 2. re-derive the gate on the COMMITTED state in a scratch worktree
+#    (the dev checkout is dirty with live board traffic — never trust it)
+git worktree add /tmp/releng-h3 origin/main
+cd /tmp/releng-h3 && export H3_TICK_CHAIN_TOKEN_DIR="$HOME/.duckbrain"
+make verify                          # rc=2 at HEAD 3864dbb: tick-chain hole /tick/500
+make verify-board-header             # check-A: last_commit not HEAD/parent
+                                     # check-B: ticks_total 502 < max event tick 503
+
+# 3. the driver's opinion (dry-run is the default and mutates nothing)
+bash scripts/release.sh              # refuses while make verify is red — CORRECT
+
+# 4. CI truth on the candidate SHA (path-filtered workflows: push history proves nothing)
+gh run list --repo get-h3/h3 --limit 5   # newest run is on 76abd74, not HEAD
+#   remedy: scripts/release.sh --verify-ci  (dispatches pages.yml+roundtrip.yml
+#   and asserts PER-JOB and PER-STEP success — run-level success hides steps)
+
+# 5. freshness census
+curl -s https://pypi.org/pypi/hermes-h3-shim/json   # still 0.1.0 while umbrella is v0.2.0
+```
+
+**Findings at HEAD 3864dbb (rows DF-H3-41..43 + cross-evidence on
+RELEASE-H3-007/008):** the release stays NO CUT —
+tick-500 hole (recurrence #4) + header last_commit/ticks_total behind the
+board (2nd consecutive commit skipping `make board-close` in the tick
+closeout). Tick-500's own close-out event (id 650) recorded the hole and
+shipped anyway — closing a tick over a known red census is the root pattern
+to fix, not the hole itself.
+
+**Pitfall (DF-H3-41):** on a host with no DuckBrain token,
+`make verify-tick-chain` alone exits 0 (both readers UNVERIFIED), and that
+0 composes into `make verify` — release.sh would pass step 2 on a
+substrate it never checked. Never read a green composite gate on a machine
+where the substrate is unreachable as "verified"; run the armed sweep
+(token + reachable DuckBrain) before believing any cut is safe.
+
+**Bunker fresh-clone leg doubles as a release probe:** `make verify` on a
+clean public clone fails in 1s with exactly the release blockers
+(header check A+B + PUBLIC-HEAD-VERIFY-FAIL alert naming `make board-close`),
+while DuckBrain-dependent guards print honest UNVERIFIED. One command,
+two questions answered: *can a fresh user install it* (yes, guards included)
+and *is it cuttable* (no).

@@ -375,3 +375,47 @@ shows what correct looks like: it is conditional, accurate, and clears.
 **Cross-reference:** rows DF-H3-36 (P1), DF-H3-37/38/39 (P2, one class:
 string literals duplicating runtime facts — enum repr, breaker narrative,
 schema claim — each drifts from its source independently).
+
+## E20 (2026-09-28) — A release gate is only as honest as its weakest composition
+
+**The run:** h3-releng sweep at HEAD 3864dbb, plus the fresh-clone install
+leg on a bunker agent (las-bunker-03, back online after a day offline — the
+fresh probe found it; historical skip evidence almost cost us the leg).
+
+**What happened:** every pending RELEASE row's blocker claim re-derived TRUE
+at the newest HEAD — the sweep machinery itself is trustworthy. The tick-500
+hole (recurrence #4 of the DF-H3-23/H3-GAP-098 class) is corroborated by
+tick-500's own close-out event (id 650), which recorded "Tier 2 INCOMPLETE
+due existing stale header and DuckBrain tick-500 hole" — the writer KNEW and
+the hole shipped anyway. The header check has grown a second dimension
+(check-B: ticks_total 502 vs max event tick 503 — the header understates the
+board), so the recidivist guard's alert is now two-sided.
+
+**The new defect is compositional:** `make verify-tick-chain` alone exits 0
+when BOTH readers report UNVERIFIED (no token). Target-level, that is the
+documented absent-tooling vocabulary working as designed. Composed into
+`make verify`, that target's exit 0 flows into the composite — and
+`scripts/release.sh` step 2 trusts the composite's exit code plus the literal
+`ALL PASS` line. An operator on a substrate-unreachable host gets a
+gate-green release over a chain nobody checked. UNVERIFIED is honest as a
+*report* and corrosive as an *exit code*.
+
+**Why:** UNVERIFIED-as-exit-0 was designed for the composite's *old*
+audience — a developer reading a report — before release.sh started
+consuming it as a machine gate. When a human-readable verdict vocabulary is
+repurposed as a gate input, the distinctions that matter to the reader
+(FAIL vs UNVERIFIED) collapse into whatever the exit code can express, and
+exit codes only have two honest states for a gate: pass and fail.
+
+**Right way:** gates composed from probes that can be UNVERIFIED need a
+third exit (or an explicit env opt-in like RELEASE_ALLOW_UNVERIFIED=1 that
+prints itself in the cut record). A release cut on an unreachable substrate
+should be impossible OR loudly flagged in the tag annotation — never
+indistinguishable from a fully-verified cut. The composite header check
+(DF-H3-24/25) shows the fix pattern: it FAILED the fresh clone loudly and
+its alert block names the remedy (`make board-close`).
+
+**Cross-reference:** rows DF-H3-41 (composite gate, P3), DF-H3-42
+(recurrence #4, P1), DF-H3-43 (PyPI, P2); the two blocker re-derivations
+are carried as cross-evidence notes on RELEASE-H3-007/008, which remain
+the cut-gating rows.

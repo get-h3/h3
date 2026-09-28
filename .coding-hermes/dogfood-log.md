@@ -256,3 +256,48 @@ answers: "does this project actually work for a real user, and is it worth it?"
 - Artifacts: docs/dogfood/2026-09-25-integration.md; diagnostics.md E19;
   skills/h3-usage/SKILL.md (control-plane section); this entry.
 
+## 2026-09-28 — dogfood tick h3-releng (run 11) — release-readiness sweep lane
+
+- Lane: h3-releng (release-engineering satellite for get-h3/h3). Angle per
+  the change-the-angle law: the lane's OWN surface — the readiness sweep —
+  never dogfooded; prior runs covered control-plane CLI (09-27), loader
+  resilience (09-25), sdk quickstarts (09-24).
+- Verdict: **SHIPPABLE (sweep machinery) / NO CUT (the release it gates)**.
+- Promise vs reality: the sweep's claims re-derived TRUE at HEAD 3864dbb —
+  169 commits past v0.2.0 (3 feat/8 fix/0 breaking = MINOR, consistent with
+  RELEASE-H3-006's authorization); make verify rc=2 at tick-chain (hole
+  /tick/500, independently re-derived from the raw DuckBrain tree API);
+  header check now fails TWO-SIDED (check-A last_commit + new check-B
+  ticks_total 502 vs max event tick 503); release.sh dry-run refuses
+  correctly (rc=1, nothing mutated); newest CI run 36340855717 (success) is
+  on 76abd74, NOT the candidate SHA — --verify-ci is the designed remedy.
+- Found (P1, cross-evidence notes on RELEASE-H3-007/008): both pending
+  RELEASE blockers current at the newest HEAD; tick-500's own close-out
+  event (id 650) recorded the hole at write time and shipped anyway —
+  closing a tick over a known red census is the root pattern.
+- Found (DF-H3-42, P1): tick-key hole recurrence #4 post-DF-H3-23-fix —
+  guard/writer split: the detector ages well, the writer keeps regressing.
+- Found (DF-H3-41, P3): `make verify-tick-chain` exits 0 when both readers
+  are UNVERIFIED (no token) and that composes into `make verify` —
+  release.sh would pass step 2 on an unchecked substrate. Proven with
+  /nonexistent token paths: rc=0, 4 UNVERIFIED lines.
+- Found (DF-H3-43, P2): PyPI hermes-h3-shim still 0.1.0 while the umbrella
+  is v0.2.0+169 — RELEASE-H3-003's "no release to push" expired.
+- Bunker install leg EXECUTED (supersedes DF-H3-40's skip): fresh probe
+  found las-bunker-03 back online; agent 2b5b2980, public clone 3864dbb,
+  documented path `make verify` = 1s rc=2 reproducing exactly the release
+  blockers (5 guards PASS, DuckBrain guards honest UNVERIFIED,
+  PUBLIC-HEAD-VERIFY-FAIL alert); armed leg (token + ssh -R tunnel)
+  reproduced the hole through the guard's live path + independent walker.
+  Agent destroyed, tunnel closed, staged token shredded; sibling agent
+  04ccef2d untouched. install_seconds=1 (verify) / clone ~5s.
+- Step 2b (perf): header check 0.09s, driver dry-run 0.60s, full armed
+  verify ~2s — nothing a user would feel; no PERF row.
+- Friction (4): the four rows above.
+- Foreman: h3 enabled, 43200s deliberate pin; NOT woken per fleet law
+  (21600s floor; rows surface next evaluation).
+- Artifacts: docs/dogfood/2026-09-28-h3-releng-integration.md;
+  diagnostics.md E20; skills/h3-usage/SKILL.md (release-sweep section);
+  board rows DF-H3-41..43 + cross-evidence notes on RELEASE-H3-007/008;
+  this entry.
+
