@@ -8571,4 +8571,6 @@ Reality: every pending RELEASE row's blocker re-derived TRUE at HEAD 3864dbb (16
 
 Cross-evidence updates (not new rows): RELEASE-H3-007 blocker re-derived CURRENT at 3864dbb and now TWO-SIDED (check-A last_commit + check-B ticks_total 502 vs max event tick 503 — QA-H3-20 shows the sync path skips the write-back too); RELEASE-H3-008 blocker re-derived CURRENT (rc=2, hole /tick/500, independent walker agrees, event 650 corroborates).
 
+Also filed: BT-053-GATE-BORN-RED (P1) — the BT-053 board-lint pre-commit hook refused this tick's board commit on 12 PRE-EXISTING dangling depends_on refs (legacy SDKPY-*/SHIM-* rows): installed gate never proven gate-green; landed via documented --no-verify + make board-close close-out; header healed at the dogfood commit (A/B/C/D PASS fresh-worktree), push 8dcdc7b green on CI 36456374575.
+
 Bunker install leg: fresh public clone (3864dbb) on agent 2b5b2980 @ bunker-las-03; Leg A documented path `make verify` = 1s rc=2 (5 guards PASS, DuckBrain guards honest UNVERIFIED, header FAIL A+B with PUBLIC-HEAD-VERIFY-FAIL alert); Leg B armed (token + ssh -R tunnel) reproduces the /tick/500 hole through the live HTTP path; agent destroyed, tunnel closed, staged token shredded. install_seconds=1 (verify) / clone ~5s.

@@ -298,6 +298,13 @@ answers: "does this project actually work for a real user, and is it worth it?"
   (21600s floor; rows surface next evaluation).
 - Artifacts: docs/dogfood/2026-09-28-h3-releng-integration.md;
   diagnostics.md E20; skills/h3-usage/SKILL.md (release-sweep section);
-  board rows DF-H3-41..43 + cross-evidence notes on RELEASE-H3-007/008;
-  this entry.
+  board rows DF-H3-41..43 + BT-053-GATE-BORN-RED + cross-evidence notes on
+  RELEASE-H3-007/008; this entry.
+- Commit trail: first commit attempt REFUSED by the new BT-053 board-lint
+  pre-commit hook (12 PRE-EXISTING dangling depends_on on legacy SDKPY-*/
+  SHIM-* rows — gate born-red, filed as BT-053-GATE-BORN-RED P1); landed
+  via documented --no-verify bypass after running the repo's own
+  `make board-close` close-out. Header healed at this commit (A/B/C/D PASS
+  in a fresh worktree); push 8dcdc7b -> CI 36456374575 success on the new
+  candidate SHA (the CI-on-HEAD axis RELEASE-H3-007/008 wanted).
 
