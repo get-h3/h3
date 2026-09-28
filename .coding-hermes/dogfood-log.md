@@ -308,3 +308,4 @@ answers: "does this project actually work for a real user, and is it worth it?"
   in a fresh worktree); push 8dcdc7b -> CI 36456374575 success on the new
   candidate SHA (the CI-on-HEAD axis RELEASE-H3-007/008 wanted).
 
+2026-09-28 (run 13, pypi-fresh-user angle) | SHIPPABLE | install_seconds=14(bunker source)+5.7(PyPI) | bunker=las-bunker-03 agent=9f45f0c3 destroyed | smoke=ok(46/46 on bunker; 46/46 local PyPI venv, p50 2.2ms p95 75ms) | angle: PyPI fresh-user quick start, first run ever to install from PyPI instead of source; no new gaps; battery 0.6s warm=not-a-perf-finding
