@@ -309,3 +309,42 @@ answers: "does this project actually work for a real user, and is it worth it?"
   candidate SHA (the CI-on-HEAD axis RELEASE-H3-007/008 wanted).
 
 2026-09-28 (run 13, pypi-fresh-user angle) | SHIPPABLE | install_seconds=14(bunker source)+5.7(PyPI) | bunker=las-bunker-03 agent=9f45f0c3 destroyed | smoke=ok(46/46 on bunker; 46/46 local PyPI venv, p50 2.2ms p95 75ms) | angle: PyPI fresh-user quick start, first run ever to install from PyPI instead of source; no new gaps; battery 0.6s warm=not-a-perf-finding
+
+## 2026-09-29 — dogfood tick h3-docs (run 14) — the published docs surface
+
+- Lane: h3-docs. Angle (NEW surface): the lane's OWN product — the GitHub
+  Pages site (docs/ artifact) + the published release-pin contract. Runs 1-13
+  tested shim/SDK/battery/CLI/loader/make-verify/PyPI; no run ever consumed
+  the SITE as a reader or executed the published pin flow on the newest tag.
+- Verdict: **SHIPPABLE** — live == HEAD on every page after the v0.3.0 cut;
+  the guide's pin+verify flow works verbatim (fresh clone → v0.3.0 →
+  `make verify` ALL PASS rc=0 in 3.1s; 12 PASS lines); site TTFB 235ms.
+- Found (DF-H3-44, P2): published releases.md Tags table lists ONLY v0.1.0
+  while v0.2.0/v0.3.0 are cut+pushed — consumers pinning via the published
+  guide verify 2-releases-old code. Same drift class GAP-072 fixed for the
+  46 count; hand-fed table, nothing feeds it at release time.
+- Found (DF-H3-45, P2): published integration.md links to /h3/specs/*.md
+  → live 404s (specs deliberately unpublished per H3-PM-007). The link
+  guard (verify-docs) covers README + specs/_index only — links inside
+  docs/*.md are validated NOWHERE.
+- Found (DF-H3-46, P3, cross-evidence): DF-H3-41's UNVERIFIED→exit-0
+  composition reproduced NATURALLY on a fresh box (6 UNVERIFIED lines,
+  final ALL PASS rc=0) — the default fresh-machine path, not a synthetic
+  probe. DF-H3-43 re-checked live: PyPI shim still 0.1.0 under umbrella
+  v0.3.0.
+- Count-guard sweep of the published surface: zero retired counts (43/44/45
+  hits are CSS pixels/hashes) — GAP-072 holds on Pages.
+- Step 2b (perf): make verify 0.98s ±0.21 warm (hyperfine n=10), count
+  guard 101ms, cold journey clone→tag→verify 3.6s, TTFB 235ms — nothing a
+  user would feel; no PERF row, deliberately.
+- Bunker install leg EXECUTED (las-bunker-03, agent 1027e20b, destroyed +
+  absence verified): documented path needs git+coreutils ONLY (no venv, no
+  pip, no toolchain) — clone 5s, make verify 1s rc=0, DuckBrain guards
+  honest UNVERIFIED without token. t2fs ≈ 6s.
+- Friction (2): the two P2 rows above.
+- Foreman: NOT woken (fleet law 21600s floor; rows surface at normal
+  cadence). Cooldown untouched.
+- Artifacts: docs/dogfood/2026-09-29-h3-docs-integration.md;
+  diagnostics.md E21; skills/h3-usage/SKILL.md (docs-surface section);
+  board rows DF-H3-44..46 + cross-evidence notes on DF-H3-41/43; this entry.
+2026-09-29 (run 14, docs-surface angle) | SHIPPABLE | install_seconds=6(clone+verify on bunker) | bunker=las-bunker-03 agent=1027e20b destroyed | smoke=ok(make verify ALL PASS rc=0 on v0.3.0, local AND fresh box; live==HEAD all pages; 2 live 404s filed) | angle: published Pages site + release-pin contract, never consumed by runs 1-13

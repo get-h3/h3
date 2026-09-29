@@ -384,3 +384,35 @@ clean public clone fails in 1s with exactly the release blockers
 while DuckBrain-dependent guards print honest UNVERIFIED. One command,
 two questions answered: *can a fresh user install it* (yes, guards included)
 and *is it cuttable* (no).
+
+## Docs surface (2026-09-29 h3-docs-lane run 14)
+
+The published site (https://get-h3.github.io/h3/, Pages artifact = `docs/`)
+is the lane's own product. How it works: push to `main` touching `docs/**`,
+`scripts/**`, or top-level `*.md` (spelled `*.md` on purpose — `**.md` would
+match `specs/*.md`) → count-guard job (single-sources 46 via
+`scripts/test-count.txt`, sibling parity vs the shim battery) → deploy-pages.
+Specs are deliberately NOT published (`/h3/specs/...` 404s) — recorded in
+pages.yml as H3-PM-007.
+
+**Run-14 lessons (docs/dogfood/2026-09-29-h3-docs-integration.md, rows
+DF-H3-44..46):**
+
+- Live == HEAD was verified by byte-diff for every page — after a tag cut,
+  the site is only as fresh as the last `docs/**` push; check `git log -1 --
+  docs/index.html` before trusting published content on day one of a release.
+- The published `releases.md` Tags table went stale within one release
+  (v0.1.0 only vs three cut tags). Docs tables that a release should feed
+  need the same treatment the 46 count got: one source, a guard, or a place
+  in the release checklist (row DF-H3-44).
+- The repo's link guard (`verify-docs`) covers README.md + specs/_index.md
+  ONLY — links inside `docs/*.md` are validated nowhere, and the Pages
+  artifact inherits whatever dead links docs/ carries (run 14 found two
+  live 404s to never-published specs paths, row DF-H3-45). When adding
+  spec references to published docs, link the GitHub blob URL, not a
+  repo-relative path.
+- Fresh-machine shape of this product is the cheapest in the fleet: git +
+  coreutils; `make verify` needs no venv/pip/toolchain, and absent
+  DuckBrain substrate degrades to printed UNVERIFIED (still exit 0 into the
+  composite — see the DF-H3-41 pitfall above; reproduced naturally on the
+  bunker box, row DF-H3-46).

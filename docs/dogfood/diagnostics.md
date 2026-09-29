@@ -419,3 +419,51 @@ its alert block names the remedy (`make board-close`).
 (recurrence #4, P1), DF-H3-43 (PyPI, P2); the two blocker re-derivations
 are carried as cross-evidence notes on RELEASE-H3-007/008, which remain
 the cut-gating rows.
+
+## E21 — Run 14 (2026-09-29, h3-docs lane): the published docs surface, verified as a reader
+
+**How this surface is built:** `docs/` is the entire Pages artifact
+(`.github/workflows/pages.yml`). Path filter: `docs/**`, `scripts/**`,
+top-level `*.md` (`*.md`, not `**.md` — the long-form comment in the
+workflow records why). A count-guard job runs `scripts/check-test-count.sh`
+before deploy: the 46 in the badge and every current-state doc is
+single-sourced from `scripts/test-count.txt`, with sibling parity against
+the shim battery's `EXPECTED_TEST_COUNT`. Specs are deliberately unpublished
+(H3-PM-007) — which is exactly the property run 14's link probe tripped over.
+
+**What run 14 did:** consumed the site as a reader (all five pages + two
+mids byte-diffed against HEAD: live == HEAD), followed the published
+release guide verbatim on the newest tag (`v0.3.0`: fresh public clone →
+checkout → `make verify` = ALL PASS rc=0 in 3.1 s; again on a bare bunker
+box: clone 5 s, verify 1 s, no venv/no pip/no toolchain), probed 27 unique
+published links + GitHub repo existence, and swept the published surface
+for retired compliance counts (none; only CSS-pixel/hash false positives —
+the GAP-072 guard holds on the published surface).
+
+**Errors hit, and what each teaches:**
+
+- Two live 404s on the published site: `integration.md` links
+  `../specs/02-...md` and `../specs/05-...md` — repo-relative links that
+  resolve fine in a clone but point outside the published artifact. The
+  repo's link guard (`verify-docs`) validates only README.md +
+  specs/_index.md, so links inside `docs/*.md` are checked NOWHERE. Lesson:
+  a link guard scoped to "the files that matter in 2026-08" silently
+  excludes everything added to the published set later; guard the artifact,
+  not a file list (row DF-H3-45).
+- `docs/releases.md` Tags table: one row (v0.1.0) while `git ls-remote`
+  shows three tags. The table is hand-fed and nothing in the release
+  checklist feeds it — the same drift class GAP-072 fixed for the test
+  count, one artifact over (row DF-H3-44). Lesson: any published table a
+  release should update needs a generator or a named checklist step;
+  hand-fed tables rot at exactly release cadence.
+- The UNVERIFIED→exit-0 composition (E20 / DF-H3-41) was probed
+  synthetically in run 11; run 14 hit it NATURALLY on the fresh box — no
+  token on a bunker agent, 6 UNVERIFIED lines, composite still prints
+  `ALL PASS` rc=0 (row DF-H3-46). A probe you have to construct is a
+  finding; the same failure on the default path is a defect with users.
+
+**Right way (for the next agent consuming this surface):** byte-diff live
+vs HEAD before judging content freshness (a tag cut does not push docs);
+verify the pin flow on the NEWEST tag from a fresh clone, not the working
+tree; and treat `make verify` on a substrate-less host as "5 of 7 checked,
+2 unknown" — never as green.
