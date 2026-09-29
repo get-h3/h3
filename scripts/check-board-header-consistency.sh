@@ -36,6 +36,19 @@
 #      greppable PUBLIC-HEAD-VERIFY-UNVERIFIED line), never a silent PASS and
 #      never the stale-board FAILED, while B/C/D still run. A resolvable value
 #      is judged strictly in BOTH contexts: HEAD or HEAD's parent, or A fails.
+#
+#      QA-H3-21 — the same provenance absence with a DIFFERENT fingerprint, the
+#      one the shallow probe cannot see. The bunker FROZEN sync builds its copy
+#      as `git archive HEAD | tar -x` followed by `git init && git add -A &&
+#      git commit`, so the copy reports is-shallow-repository=false and has NO
+#      .git/shallow file — yet it carries exactly ONE synthetic root commit, so
+#      the upstream header's hash is not in that history either and A
+#      hard-FAILED on a copy whose board was otherwise self-consistent. Fewer
+#      than two commits is a HISTORY-LESS copy (0 = a git init that never
+#      committed, 1 = the synthetic init commit), not a full clone refuting the
+#      value: A degrades to UNVERIFIED there too. A history of two or more
+#      commits IS provenance, so an unresolvable hash there stays the original
+#      hard FAIL — the degrade must never swallow a real board defect.
 #   B. ticks_total must equal the highest tick number the event log actually
 #      records. If they disagree, the header is publishable fiction.
 #   C. every tick in the most recent window must have at least one event. A tick
@@ -112,8 +125,11 @@
 #       unreadable board/header, a tree with no git history (QA-H3-17: a
 #       tar/archive install is a degrade, not a FAILED verdict), or a
 #       shallow/grafted copy where last_commit's object is absent (QA-H3-18:
-#       provenance unavailable is a degrade, not a stale-board FAILED)
-#   1 = FAILED — one or more of A/B/C/D above
+#       provenance unavailable is a degrade, not a stale-board FAILED), or a
+#       history-less copy carrying fewer than two commits (QA-H3-21: the
+#       git-init single-root-commit shape — provenance unavailable again)
+#   1 = FAILED — one or more of A/B/C/D above, including an unresolvable
+#       last_commit in a copy that DOES carry real history (two or more commits)
 #
 # Output is grep-friendly: one fact per line, ending with the verdict line
 #   VERDICT: VERIFIED | UNVERIFIED (<reason>) | FAILED (<reasons>)
@@ -205,9 +221,47 @@ esac
 if git -C "$ROOT" rev-parse --is-shallow-repository 2>/dev/null | grep -q '^true' ||
     { [ -n "$H3_GIT_DIR" ] && [ -f "$H3_GIT_DIR/shallow" ]; }; then
     SHALLOW=1
+    SINGLE_ROOT=0
+    H3_HEAD_COMMITS=
+    A_UNVERIFIED_CTX='shallow/grafted copy'
     echo "$NAME: git context — shallow/grafted copy: history is partial, so last_commit provenance may be unavailable (an unresolvable value may name an unfetched ancestor)"
 else
     SHALLOW=0
+    # QA-H3-21: the OTHER history-less shape, which the shallow probe above
+    # cannot see. The bunker FROZEN sync builds its copy with
+    # `git archive HEAD | tar -x` and then `git init && git add -A && git
+    # commit`, so is-shallow-repository is false and no .git/shallow file
+    # exists — but the copy carries exactly ONE synthetic root commit, and the
+    # header's upstream commit is not in that history at all. Fewer than two
+    # commits is a history-less copy, not provenance: 1 = the synthetic init
+    # commit, 0 = a git init that never committed (an unborn HEAD, where no
+    # hash can resolve either). Two or more commits is real history, so an
+    # unresolvable last_commit there stays the hard FAIL.
+    if git -C "$ROOT" rev-parse --verify --quiet HEAD >/dev/null 2>&1; then
+        H3_HEAD_COMMITS=$(git -C "$ROOT" rev-list --count HEAD 2>/dev/null) || H3_HEAD_COMMITS=
+    else
+        H3_HEAD_COMMITS=0
+    fi
+    case ${H3_HEAD_COMMITS:-} in
+        0)
+            SINGLE_ROOT=1
+            A_UNVERIFIED_CTX='history-less copy with no commits'
+            echo "$NAME: git context — history-less copy: this repo has NO commits at all (a git init that never committed), so last_commit provenance is unavailable"
+            ;;
+        1)
+            SINGLE_ROOT=1
+            A_UNVERIFIED_CTX='history-less single-commit copy'
+            echo "$NAME: git context — history-less copy: HEAD is a single synthetic root commit (the git-init shape a FROZEN sync produces with 'git archive HEAD | tar -x' + 'git init && git add -A && git commit'), so last_commit provenance may be unavailable (an unresolvable value may name an upstream commit this copy never had)"
+            ;;
+        *)
+            # Real history (two or more commits): provenance IS available here,
+            # so an unresolvable last_commit is a board defect and A FAILs. No
+            # degrade context applies.
+            SINGLE_ROOT=0
+            H3_HEAD_COMMITS=
+            A_UNVERIFIED_CTX=''
+            ;;
+    esac
 fi
 
 # ---- 1. read the header -----------------------------------------------------
@@ -270,6 +324,14 @@ else
             # degraded UNVERIFIED, with the reason on the final verdict.
             A_UNVERIFIED=1
             echo "$NAME: A UNVERIFIED — last_commit '$LAST_COMMIT' does not resolve in this shallow/grafted copy (the object was likely never fetched); freshness NOT verified"
+        elif [ "$SINGLE_ROOT" -eq 1 ]; then
+            # QA-H3-21: NOT shallow, but history-less — the git-init
+            # single-root-commit (or zero-commit) copy. The header's upstream
+            # commit is not in this history, so the value cannot resolve here
+            # for the same reason it cannot in a shallow copy: provenance is
+            # unavailable. Same degrade, its own reason.
+            A_UNVERIFIED=1
+            echo "$NAME: A UNVERIFIED — last_commit '$LAST_COMMIT' does not resolve in this history-less copy (HEAD carries ${H3_HEAD_COMMITS:-0} commit(s), so the header's upstream commit is not in this history); freshness NOT verified"
         else
             fail "A: last_commit '$LAST_COMMIT' does not resolve to a commit in this repo"
         fi
@@ -364,14 +426,16 @@ if [ "$FAIL" -eq 0 ] && [ "$A_UNVERIFIED" -eq 0 ]; then
     exit 0
 fi
 
-# QA-H3-18: no FAIL, but check A could not verify freshness because this copy
-# lacks the header's commit object (shallow/grafted). Degraded, never a pass:
-# the greppable line tells fleet tooling that provenance was unavailable, and
-# the verdict says UNVERIFIED rather than VERIFIED — make verify stays usable
-# on the copy without claiming a verification it did not perform.
+# QA-H3-18/QA-H3-21: no FAIL, but check A could not verify freshness because
+# this copy does not carry the header's commit object — shallow/grafted
+# (QA-H3-18) or history-less, i.e. fewer than two commits (QA-H3-21). Degraded,
+# never a pass: the greppable line tells fleet tooling that provenance was
+# unavailable, and the verdict says UNVERIFIED rather than VERIFIED — make
+# verify stays usable on the copy without claiming a verification it did not
+# perform. The reason text names which of the two contexts applied.
 if [ "$A_UNVERIFIED" -eq 1 ]; then
-    echo "PUBLIC-HEAD-VERIFY-UNVERIFIED: last_commit provenance unavailable (last_commit=$LAST_COMMIT does not resolve in this shallow/grafted copy) — board consistency checks that ran: PASS; commit freshness NOT verified here (fetch history or verify on a full clone). Alert recipe: see the FLEET ALERT block in the header comment of make verify's board-header guard."
-    echo "VERDICT: UNVERIFIED (last_commit provenance unavailable: '$LAST_COMMIT' does not resolve in this shallow/grafted copy — B/C/D consistency held; run a full clone to verify freshness)"
+    echo "PUBLIC-HEAD-VERIFY-UNVERIFIED: last_commit provenance unavailable (last_commit=$LAST_COMMIT does not resolve in this $A_UNVERIFIED_CTX) — board consistency checks that ran: PASS; commit freshness NOT verified here (fetch history or verify on a full clone). Alert recipe: see the FLEET ALERT block in the header comment of make verify's board-header guard."
+    echo "VERDICT: UNVERIFIED (last_commit provenance unavailable: '$LAST_COMMIT' does not resolve in this $A_UNVERIFIED_CTX — B/C/D consistency held; run a full clone to verify freshness)"
     exit 0
 fi
 

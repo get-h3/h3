@@ -273,6 +273,76 @@ FKf_TARGET=$(git -C "$FKf" rev-parse h3-foreign)
 board_fixture "$FKf/.coding-hermes/board" 3 "$FKf_TARGET" 3
 case_run "full clone, resolvable foreign last_commit -> FAILED (provenance refutes it)" 1 "not an ancestor of HEAD" "$FKf/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$FKf"
 
+# ---- 9g. QA-H3-21: a git-init single-root-commit copy (FROZEN sync) --------
+# The QA-H3-18 degrade keys on shallow/grafted, but the bunker FROZEN sync
+# builds its copy as `git archive HEAD | tar -x` + `git init && git add -A &&
+# git commit`: is-shallow-repository is FALSE and there is NO .git/shallow file,
+# so the shallow probe cannot see it — yet the copy carries ONE synthetic root
+# commit and the header's upstream commit is not in that history at all.
+# Measured before the fix: A hard-FAILED ("does not resolve to a commit") on a
+# copy whose B/C/D were all green. Fewer than two commits is a history-less
+# copy, not provenance, so A degrades; a second real commit restores the hard
+# FAIL — the last case in this block is that control.
+SRS=$WORK/single-root-src
+mkdir -p "$SRS/.coding-hermes/board"
+git -C "$SRS" init -q
+printf 'payload\n' > "$SRS/payload.txt"
+git -C "$SRS" -c user.email=t@t -c user.name=t add -A
+git -C "$SRS" -c user.email=t@t -c user.name=t commit -q -m upstream-one
+SRS_HEAD=$(git -C "$SRS" rev-parse HEAD)
+# The header pins the upstream commit (the documented two-phase state), and
+# upstream then moves on — so the copy below is nobody's shallow clone, it is
+# simply missing this history.
+board_fixture "$SRS/.coding-hermes/board" 3 "$SRS_HEAD" 3
+git -C "$SRS" -c user.email=t@t -c user.name=t add -A
+git -C "$SRS" -c user.email=t@t -c user.name=t commit -q -m upstream-two
+
+SR=$WORK/single-root
+mkdir -p "$SR"
+( cd "$SRS" && git archive HEAD ) | ( cd "$SR" && tar xf - )
+git -C "$SR" init -q
+git -C "$SR" -c user.email=t@t -c user.name=t add -A
+git -C "$SR" -c user.email=t@t -c user.name=t commit -q -m init
+# Fixture sanity — the SHAPE is the point: not shallow, no shallow file, one
+# commit (the assertion is the pair, so a .git/shallow appearing would break it).
+expect_sub "single-root fixture: not shallow and no .git/shallow" \
+    "shallowrepo=$(git -C "$SR" rev-parse --is-shallow-repository) shallowfile=$([ -f "$SR/.git/shallow" ] && echo yes || echo no)" \
+    "shallowrepo=false shallowfile=no"
+expect_sub "single-root fixture: exactly one commit" "commits=$(git -C "$SR" rev-list --count HEAD)" "commits=1"
+
+case_run "git-init single-root-commit copy, unresolvable last_commit -> UNVERIFIED, exit 0 (QA-H3-21)" 0 "VERDICT: UNVERIFIED (last_commit provenance unavailable" "$SR/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR"
+case_run "single-root copy -> the context line names it history-less, not shallow" 0 "git context — history-less copy: HEAD is a single synthetic root commit" "$SR/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR"
+case_run "single-root copy -> A UNVERIFIED line" 0 "A UNVERIFIED — last_commit" "$SR/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR"
+case_run "single-root copy -> B/C still run and pass" 0 "C PASS — every tick 1..3" "$SR/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR"
+# The board sits at the default RELATIVE path inside the copy, so this arm uses
+# that path and D has a committed header to compare (an ABSOLUTE
+# H3_BOARD_HEADER_DIR becomes BOARD_REL, which can never match HEAD:<path> —
+# the other arms here use absolute dirs and D reports "nothing to compare").
+case_run "single-root copy -> D compares the committed header (relative board path)" 0 "D PASS — the working-tree header equals the committed header at HEAD" ".coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR"
+case_run "single-root copy -> greppable degraded line" 0 "PUBLIC-HEAD-VERIFY-UNVERIFIED" "$SR/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR"
+set +e
+SR_OUT=$(env H3_BOARD_HEADER_ROOT="$SR" H3_BOARD_HEADER_RECENT=3 H3_BOARD_HEADER_DIR="$SR/.coding-hermes/board" sh "$GUARD" 2>&1)
+set -e
+expect_not_sub "single-root copy -> no A FAIL line (degraded, not failed)" "$SR_OUT" "FAIL — A: last_commit"
+expect_not_sub "single-root copy -> no hard-FAIL text" "$SR_OUT" "does not resolve to a commit"
+expect_not_sub "single-root copy -> no PUBLIC-HEAD-VERIFY-FAIL" "$SR_OUT" "PUBLIC-HEAD-VERIFY-FAIL"
+expect_sub "single-root copy -> the verdict names the history-less context" "$SR_OUT" "does not resolve in this history-less single-commit copy"
+
+# The hard-FAIL path is KEPT (criterion 2 of QA-H3-21): once the same copy has
+# real history, an unresolvable last_commit is a board defect again.
+git -C "$SR" -c user.email=t@t -c user.name=t commit -q --allow-empty -m upstream-history-arrives
+case_run "the same copy once real history arrives (2 commits) -> still FAILED" 1 "does not resolve to a commit" "$SR/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR"
+
+# ---- 9h. QA-H3-21: a git init that never committed -------------------------
+# The zero-commit end of the same class: an unborn HEAD cannot resolve any hash
+# either, so the check cannot run at all — UNVERIFIED, never FAILED.
+SR0=$WORK/history-less-no-commit
+mkdir -p "$SR0/.coding-hermes/board"
+git -C "$SR0" init -q
+board_fixture "$SR0/.coding-hermes/board" 3 "$(printf 'd%.0s' $(seq 40))" 3
+case_run "git init with no commit at all -> UNVERIFIED, exit 0 (QA-H3-21)" 0 "VERDICT: UNVERIFIED (last_commit provenance unavailable" "$SR0/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR0"
+case_run "git init with no commit -> the context line says so" 0 "this repo has NO commits at all" "$SR0/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR0"
+
 # ---- 10. degrade: RECENT is not an integer ---------------------------------
 B10=$WORK/b10
 board_fixture "$B10" 10 "$FAKE_HEAD" 10
