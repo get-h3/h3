@@ -113,3 +113,15 @@ tasks:
   status: complete
   created_at: '2026-09-23T08:37:51.960145+00:00'
   completed_at: '2026-09-23T08:37:55.294716+00:00'
+- id: QA-H3-21
+  title: 'Board-header guard: degrade to UNVERIFIED on git-init single-root-commit
+    copies (QA-H3-21)'
+  criteria:
+  - 'scripts/check-board-header-consistency.sh check A must take the UNVERIFIED/exit-0
+    path when last_commit fails to resolve AND git rev-list --count HEAD == 1 (no
+    real history), not the hard-FAIL branch. Repro: git archive HEAD | tar -x into
+    fresh dir, git init/add/commit, run guard -> currently FAILS with ''last_commit
+    does not resolve''; after fix -> UNVERIFIED exit 0.'
+  status: complete
+  created_at: '2026-09-29T00:12:19.007118+00:00'
+  completed_at: '2026-09-29T00:19:38.144926+00:00'
