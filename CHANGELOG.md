@@ -2,7 +2,11 @@
 
 All notable changes to the H3 protocol and umbrella project.
 
-## [Unreleased]
+## [Unreleased] — 2026-09-29
+
+Nothing yet.
+
+## [0.3.0] — 2026-09-29
 
 ### Added
 - `scripts/check-duckbrain-tick-chain.sh` + `make verify-tick-chain` (H3-GAP-098):
