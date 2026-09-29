@@ -247,6 +247,22 @@ expect_not_sub "shallow copy, unresolvable last_commit -> no PUBLIC-HEAD-VERIFY-
 expect_not_sub "shallow copy, unresolvable last_commit -> no A FAIL line (degraded, not failed)" "$SHc_OUT" "FAIL — A: last_commit"
 expect_sub "shallow copy, unresolvable last_commit -> B/C continue and pass" "$SHc_OUT" "C PASS — every tick 1..3"
 
+# ---- 9d2. QA-H3-21: the degraded A must not swallow a REAL failure ----------
+# Measured before the precedence fix: a copy that took the A degrade exited 0
+# with "B/C/D consistency held" while its own FAIL — B line said the header was
+# behind, and the PUBLIC-HEAD-VERIFY-FAIL fleet alert was jumped over entirely.
+# A provenance gap says nothing about B/C/D, so a real failure must outrank it.
+SHb=$WORK/shallow-behind
+git clone -q --depth 1 "file://$FAKE" "$SHb"
+board_fixture "$SHb/.coding-hermes/board" 8 "$FAKE_PARENT" 10
+case_run "shallow copy AND a real B failure -> FAILED, exit 1 (degrade does not swallow it)" 1 "B: ticks_total 8 is BEHIND" "$SHb/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SHb"
+case_run "shallow copy AND a real B failure -> the fleet alert still fires" 1 "PUBLIC-HEAD-VERIFY-FAIL" "$SHb/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SHb"
+set +e
+SHb_OUT=$(env H3_BOARD_HEADER_ROOT="$SHb" H3_BOARD_HEADER_RECENT=3 H3_BOARD_HEADER_DIR="$SHb/.coding-hermes/board" sh "$GUARD" 2>&1)
+set -e
+expect_not_sub "shallow copy AND a real B failure -> no VERDICT: UNVERIFIED (it is a FAILED board)" "$SHb_OUT" "VERDICT: UNVERIFIED"
+expect_sub "shallow copy AND a real B failure -> A's provenance gap is still reported" "$SHb_OUT" "A UNVERIFIED — last_commit"
+
 # ---- 9e. QA-H3-18: full clone — an unresolvable hash is still a FAIL --------
 # Provenance IS available in a full clone: an unknown hash there is a bogus
 # value, not an unfetched ancestor, so the honest verdict stays FAILED (a
@@ -332,6 +348,25 @@ expect_sub "single-root copy -> the verdict names the history-less context" "$SR
 # real history, an unresolvable last_commit is a board defect again.
 git -C "$SR" -c user.email=t@t -c user.name=t commit -q --allow-empty -m upstream-history-arrives
 case_run "the same copy once real history arrives (2 commits) -> still FAILED" 1 "does not resolve to a commit" "$SR/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR"
+
+# ---- 9g2. QA-H3-21: history-less copy AND a real B failure ------------------
+# The live shape: a FROZEN-sync copy of a repo whose header trails its event
+# log. The provenance gap is real AND so is the behind class, and the behind
+# class must win — FAILED, exit 1, fleet alert intact.
+SRB=$WORK/single-root-behind
+mkdir -p "$SRB"
+( cd "$SRS" && git archive HEAD ) | ( cd "$SRB" && tar xf - )
+git -C "$SRB" init -q
+board_fixture "$SRB/.coding-hermes/board" 2 "$SRS_HEAD" 3
+git -C "$SRB" -c user.email=t@t -c user.name=t add -A
+git -C "$SRB" -c user.email=t@t -c user.name=t commit -q -m init
+case_run "single-root copy AND a real B failure -> FAILED, exit 1 (not swallowed)" 1 "B: ticks_total 2 is BEHIND" "$SRB/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SRB"
+case_run "single-root copy AND a real B failure -> the fleet alert still fires" 1 "PUBLIC-HEAD-VERIFY-FAIL" "$SRB/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SRB"
+set +e
+SRB_OUT=$(env H3_BOARD_HEADER_ROOT="$SRB" H3_BOARD_HEADER_RECENT=3 H3_BOARD_HEADER_DIR="$SRB/.coding-hermes/board" sh "$GUARD" 2>&1)
+set -e
+expect_not_sub "single-root copy AND a real B failure -> no VERDICT: UNVERIFIED" "$SRB_OUT" "VERDICT: UNVERIFIED"
+expect_sub "single-root copy AND a real B failure -> the provenance gap is still reported" "$SRB_OUT" "A UNVERIFIED — last_commit"
 
 # ---- 9h. QA-H3-21: a git init that never committed -------------------------
 # The zero-commit end of the same class: an unborn HEAD cannot resolve any hash

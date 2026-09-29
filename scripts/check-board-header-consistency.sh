@@ -49,6 +49,13 @@
 #      value: A degrades to UNVERIFIED there too. A history of two or more
 #      commits IS provenance, so an unresolvable hash there stays the original
 #      hard FAIL — the degrade must never swallow a real board defect.
+#
+#      PRECEDENCE (QA-H3-21, measured): the degraded verdict is taken ONLY when
+#      no check failed. A provenance gap says nothing about B/C/D, so if one of
+#      them FAILS for real the verdict stays FAILED and exits 1 — and the
+#      PUBLIC-HEAD-VERIFY-FAIL fleet alert still fires (the degraded exit used
+#      to jump over it, silently swallowing both the failure and the alert on
+#      any shallow/history-less copy whose header trailed the event log).
 #   B. ticks_total must equal the highest tick number the event log actually
 #      records. If they disagree, the header is publishable fiction.
 #   C. every tick in the most recent window must have at least one event. A tick
@@ -127,7 +134,9 @@
 #       shallow/grafted copy where last_commit's object is absent (QA-H3-18:
 #       provenance unavailable is a degrade, not a stale-board FAILED), or a
 #       history-less copy carrying fewer than two commits (QA-H3-21: the
-#       git-init single-root-commit shape — provenance unavailable again)
+#       git-init single-root-commit shape — provenance unavailable again).
+#       UNVERIFIED is taken only when NO check failed (QA-H3-21): a real
+#       B/C/D failure outranks the degrade and exits 1.
 #   1 = FAILED — one or more of A/B/C/D above, including an unresolvable
 #       last_commit in a copy that DOES carry real history (two or more commits)
 #
@@ -426,14 +435,19 @@ if [ "$FAIL" -eq 0 ] && [ "$A_UNVERIFIED" -eq 0 ]; then
     exit 0
 fi
 
-# QA-H3-18/QA-H3-21: no FAIL, but check A could not verify freshness because
-# this copy does not carry the header's commit object — shallow/grafted
+# QA-H3-18/QA-H3-21: nothing failed, but check A could not verify freshness
+# because this copy does not carry the header's commit object — shallow/grafted
 # (QA-H3-18) or history-less, i.e. fewer than two commits (QA-H3-21). Degraded,
 # never a pass: the greppable line tells fleet tooling that provenance was
 # unavailable, and the verdict says UNVERIFIED rather than VERIFIED — make
 # verify stays usable on the copy without claiming a verification it did not
 # perform. The reason text names which of the two contexts applied.
-if [ "$A_UNVERIFIED" -eq 1 ]; then
+# PRECEDENCE (QA-H3-21, measured): this exit is taken ONLY when FAIL=0. A
+# provenance gap says nothing about B/C/D, so when one of them failed for real
+# the run falls through to the BEHIND alert and the FAILED verdict below — a
+# degraded A must never swallow a real board defect, nor the fleet line that
+# defect raises.
+if [ "$A_UNVERIFIED" -eq 1 ] && [ "$FAIL" -eq 0 ]; then
     echo "PUBLIC-HEAD-VERIFY-UNVERIFIED: last_commit provenance unavailable (last_commit=$LAST_COMMIT does not resolve in this $A_UNVERIFIED_CTX) — board consistency checks that ran: PASS; commit freshness NOT verified here (fetch history or verify on a full clone). Alert recipe: see the FLEET ALERT block in the header comment of make verify's board-header guard."
     echo "VERDICT: UNVERIFIED (last_commit provenance unavailable: '$LAST_COMMIT' does not resolve in this $A_UNVERIFIED_CTX — B/C/D consistency held; run a full clone to verify freshness)"
     exit 0
