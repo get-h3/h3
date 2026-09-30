@@ -679,3 +679,4 @@
 {"id":662,"type":null,"actor":"foreman","task_id":"DF-H3-44","created_at":null,"detail":"{\"id\":\"DF-H3-44\",\"status\":\"pending\"}","timestamp":"2026-09-29T22:12:30.124267+00:00","event_type":"task_created"}
 {"id":663,"type":null,"actor":"foreman","task_id":"DF-H3-45","created_at":null,"detail":"{\"id\":\"DF-H3-45\",\"status\":\"pending\"}","timestamp":"2026-09-29T22:12:52.256815+00:00","event_type":"task_created"}
 {"id":664,"type":null,"actor":"foreman","task_id":"DF-H3-46","created_at":null,"detail":"{\"id\":\"DF-H3-46\",\"status\":\"pending\"}","timestamp":"2026-09-29T22:12:52.292798+00:00","event_type":"task_created"}
+{"tick":"h3-2026-09-30-01-07-42","event":"worker-stall","task":"BT-053-GATE-BORN-RED","status":"no-work-landed","detail":"worker dispatched glm-5.3-flash@zai-glm-default, stalled 7m19s at 0% CPU (LLM provider hang, no code produced); killed; gitreins tier1 PASS verdict 7adee899 (no code to judge); row remains pending; CI last 3 green"}
