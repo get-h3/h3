@@ -98,6 +98,14 @@ git -C "$FAKE" -c user.email=t@t -c user.name=t commit -q --allow-empty -m three
 FAKE_HEAD=$(git -C "$FAKE" rev-parse HEAD)
 FAKE_PARENT=$(git -C "$FAKE" rev-parse HEAD^)
 FAKE_GRANDPARENT=$(git -C "$FAKE" rev-parse HEAD~2)
+# QA-H3-20: FAKE carries the upstream anchor every real clone has — a ref under
+# refs/remotes/* — because check A only REFUTES an absent last_commit from a
+# copy whose history is anchored to an upstream. Without it FAKE is the
+# archive+git-init shape (a purely LOCAL lineage) and the strict cases below
+# would degrade to UNVERIFIED instead of failing, i.e. they would silently stop
+# testing A's refutation path. Its own branch name is used so the fixture stays
+# faithful whatever git's init.defaultBranch is here and on CI.
+git -C "$FAKE" update-ref "refs/remotes/origin/$(git -C "$FAKE" rev-parse --abbrev-ref HEAD)" "$FAKE_HEAD"
 
 # ---- fixture builders --------------------------------------------------------
 # board_fixture <dir> <ticks_total> <last_commit> <max_event_tick> [<tick_with_no_event>]
@@ -289,6 +297,36 @@ FKf_TARGET=$(git -C "$FKf" rev-parse h3-foreign)
 board_fixture "$FKf/.coding-hermes/board" 3 "$FKf_TARGET" 3
 case_run "full clone, resolvable foreign last_commit -> FAILED (provenance refutes it)" 1 "not an ancestor of HEAD" "$FKf/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$FKf"
 
+# ---- 9f2. QA-H3-20 (I1): a FULL clone with a genuinely stale COMMITTED header -
+# The invariant the degrade must never weaken. A copy that CAN adjudicate an
+# absent value (anchored — refs/remotes/* — with real history) whose committed
+# header names a RESOLVABLE commit that is neither HEAD nor HEAD's parent is the
+# WRITER defect, and it fails with the greppable fleet line. Here the header is
+# committed, so D has something to compare and the FAIL carries the behind
+# class, not a provenance gap. This is the measured shape of the real
+# recurrence: at HEAD 3ba9ba3 the committed header named 76f4d19, 2 commits
+# behind, and `make verify` exited 2 with PUBLIC-HEAD-VERIFY-FAIL.
+FKg=$WORK/full-stale-committed
+git clone -q "file://$FAKE" "$FKg"
+board_fixture "$FKg/.coding-hermes/board" 3 "$FAKE_PARENT" 3
+git -C "$FKg" -c user.email=t@t -c user.name=t add -A
+git -C "$FKg" -c user.email=t@t -c user.name=t commit -q -m board-consistent
+board_fixture "$FKg/.coding-hermes/board" 3 "$FAKE_GRANDPARENT" 3
+git -C "$FKg" -c user.email=t@t -c user.name=t add -A
+git -C "$FKg" -c user.email=t@t -c user.name=t commit -q -m "stale header pinned to a resolvable older commit"
+# Fixture sanity: the pinned value RESOLVES here (never the absent/unresolvable
+# class), it is beyond HEAD's parent, and the copy is anchored.
+FKg_PIN=$(git -C "$FKg" rev-parse --verify --quiet "$FAKE_GRANDPARENT^{commit}" >/dev/null 2>&1 && echo yes || echo no)
+FKg_BEHIND=$(git -C "$FKg" rev-list --count "$FAKE_GRANDPARENT..HEAD" 2>/dev/null || echo 0)
+expect_sub "I1 fixture: the pinned last_commit resolves and is beyond HEAD's parent" \
+    "resolves=$FKg_PIN behind=$([ "${FKg_BEHIND:-0}" -ge 2 ] && echo beyond-parent)" \
+    "resolves=yes behind=beyond-parent"
+expect_sub "I1 fixture: the clone is anchored (refs/remotes/*)" \
+    "$(git -C "$FKg" for-each-ref --format='%(refname)' refs/remotes | head -n 1)" "refs/remotes/"
+case_run "I1: full clone, committed stale header -> FAILED, exit 1" 1 "neither HEAD nor HEAD's parent" ".coding-hermes/board" H3_BOARD_HEADER_ROOT="$FKg"
+case_run "I1: the greppable fleet alert still fires" 1 "PUBLIC-HEAD-VERIFY-FAIL" ".coding-hermes/board" H3_BOARD_HEADER_ROOT="$FKg"
+case_run "I1: the committed header is compared (D PASS, no uncommitted edit involved)" 1 "D PASS" ".coding-hermes/board" H3_BOARD_HEADER_ROOT="$FKg"
+
 # ---- 9g. QA-H3-21: a git-init single-root-commit copy (FROZEN sync) --------
 # The QA-H3-18 degrade keys on shallow/grafted, but the bunker FROZEN sync
 # builds its copy as `git archive HEAD | tar -x` + `git init && git add -A &&
@@ -344,10 +382,30 @@ expect_not_sub "single-root copy -> no hard-FAIL text" "$SR_OUT" "does not resol
 expect_not_sub "single-root copy -> no PUBLIC-HEAD-VERIFY-FAIL" "$SR_OUT" "PUBLIC-HEAD-VERIFY-FAIL"
 expect_sub "single-root copy -> the verdict names the history-less context" "$SR_OUT" "does not resolve in this history-less single-commit copy"
 
-# The hard-FAIL path is KEPT (criterion 2 of QA-H3-21): once the same copy has
-# real history, an unresolvable last_commit is a board defect again.
-git -C "$SR" -c user.email=t@t -c user.name=t commit -q --allow-empty -m upstream-history-arrives
-case_run "the same copy once real history arrives (2 commits) -> still FAILED" 1 "does not resolve to a commit" "$SR/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR"
+# The hard-FAIL path is KEPT (criterion 2 of QA-H3-21), restated by QA-H3-20 to
+# the bound that measurement actually supports.
+# MEASURED (QA-H3-20): a purely LOCAL extra commit does NOT re-arm the hard
+# FAIL. The copy below with one local commit is structurally identical to the
+# archive+init sync copy once any work lands in it — its entire history is the
+# snapshot — so the old assertion ("2 commits => provenance is available")
+# described a distinction the git object graph does not carry, which is how this
+# class recurred four times (QA-H3-20, QA-H3-22, RELEASE-H3-007, tick
+# h3-2026-09-30-23-38-12). It is pinned BOTH ways below.
+git -C "$SR" -c user.email=t@t -c user.name=t commit -q --allow-empty -m local-work
+case_run "QA-H3-20: a purely LOCAL second commit does NOT re-arm the hard FAIL -> UNVERIFIED, exit 0" 0 "VERDICT: UNVERIFIED (last_commit provenance unavailable" "$SR/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR"
+# What DOES re-arm it is an ANCHOR — an upstream lineage actually fetched into
+# the copy (refs/remotes/*). The same copy, anchored to an upstream that does
+# not contain the header's commit, hard-FAILs again: the refutation path is
+# intact for every copy that can speak (a clone, this dev tree, CI).
+git -C "$SR" remote add upstream "file://$FAKE" || true
+git -C "$SR" fetch -q upstream || true
+expect_sub "anchored-control fixture: the copy now carries refs/remotes/*" \
+    "$(git -C "$SR" for-each-ref --format='%(refname)' refs/remotes | head -n 1)" "refs/remotes/"
+case_run "the same copy once ANCHORED to an upstream -> an unresolvable last_commit FAILs again" 1 "does not resolve to a commit" "$SR/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR"
+set +e
+SRA_OUT=$(env H3_BOARD_HEADER_ROOT="$SR" H3_BOARD_HEADER_RECENT=3 H3_BOARD_HEADER_DIR="$SR/.coding-hermes/board" sh "$GUARD" 2>&1)
+set -e
+expect_not_sub "anchored unresolvable value -> no fleet alert (absence is not the behind class)" "$SRA_OUT" "PUBLIC-HEAD-VERIFY-FAIL"
 
 # ---- 9g2. QA-H3-21: history-less copy AND a real B failure ------------------
 # The live shape: a FROZEN-sync copy of a repo whose header trails its event
@@ -377,6 +435,66 @@ git -C "$SR0" init -q
 board_fixture "$SR0/.coding-hermes/board" 3 "$(printf 'd%.0s' $(seq 40))" 3
 case_run "git init with no commit at all -> UNVERIFIED, exit 0 (QA-H3-21)" 0 "VERDICT: UNVERIFIED (last_commit provenance unavailable" "$SR0/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR0"
 case_run "git init with no commit -> the context line says so" 0 "this repo has NO commits at all" "$SR0/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR0"
+
+# ---- 9g3. QA-H3-20: the archive+init copy AFTER work has landed in it --------
+# The POSITIVE case for the measured hole, and the shape the class recurred in.
+# sync_repo (bunker-qa.sh) ships the tree as `git archive HEAD` | tar -x +
+# `git init && git add -A && git commit`, so the copy starts at ONE local commit
+# (the state the 9g block above covers). It then gains purely LOCAL commits — a
+# tick, a battery artifact, act's push simulation — and the old bound
+# (`rev-list --count HEAD` < 2) stopped firing: A hard-FAILED "does not resolve
+# to a commit" on a copy that still carried no upstream history, with B/C/D all
+# green. Measured on this repo at a board-consistent HEAD before the fix:
+# collapsed copy -> rc=0 UNVERIFIED, the SAME copy + one local commit -> rc=1.
+SR2=$WORK/single-root-local-work
+mkdir -p "$SR2"
+( cd "$SRS" && git archive HEAD ) | ( cd "$SR2" && tar xf - )
+git -C "$SR2" init -q
+git -C "$SR2" -c user.email=t@t -c user.name=t add -A
+git -C "$SR2" -c user.email=t@t -c user.name=t commit -q -m qa-sync
+printf 'battery artifact\n' > "$SR2/qa-evidence.txt"
+git -C "$SR2" -c user.email=t@t -c user.name=t add -A
+git -C "$SR2" -c user.email=t@t -c user.name=t commit -q -m local-tick
+# Fixture sanity — the SHAPE is the point: two commits and STILL no anchor, so
+# the commit count alone would read as "real history".
+expect_sub "QA-H3-20 fixture: two commits, still no upstream anchor" \
+    "commits=$(git -C "$SR2" rev-list --count HEAD) remote_refs=$(git -C "$SR2" for-each-ref --format='%(refname)' refs/remotes | wc -l | tr -d ' ')" \
+    "commits=2 remote_refs=0"
+case_run "history-limited copy + a local commit -> UNVERIFIED, exit 0 (QA-H3-20)" 0 "VERDICT: UNVERIFIED (last_commit provenance unavailable" "$SR2/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR2"
+case_run "QA-H3-20 -> the context line names the UNANCHORED history" 0 "git context — UNANCHORED history" "$SR2/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR2"
+case_run "QA-H3-20 -> A UNVERIFIED line" 0 "A UNVERIFIED — last_commit" "$SR2/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR2"
+case_run "QA-H3-20 -> B/C still run and pass" 0 "C PASS — every tick 1..3" "$SR2/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR2"
+case_run "QA-H3-20 -> D compares the committed header (relative board path)" 0 "D PASS — the working-tree header equals the committed header at HEAD" ".coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR2"
+case_run "QA-H3-20 -> greppable degraded line" 0 "PUBLIC-HEAD-VERIFY-UNVERIFIED" "$SR2/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR2"
+set +e
+SR2_OUT=$(env H3_BOARD_HEADER_ROOT="$SR2" H3_BOARD_HEADER_RECENT=3 H3_BOARD_HEADER_DIR="$SR2/.coding-hermes/board" sh "$GUARD" 2>&1)
+set -e
+expect_not_sub "QA-H3-20 -> no hard-FAIL text" "$SR2_OUT" "does not resolve to a commit"
+expect_not_sub "QA-H3-20 -> no PUBLIC-HEAD-VERIFY-FAIL (not a stale-board failure)" "$SR2_OUT" "PUBLIC-HEAD-VERIFY-FAIL"
+expect_not_sub "QA-H3-20 -> no VERDICT: FAILED" "$SR2_OUT" "VERDICT: FAILED"
+expect_sub "QA-H3-20 -> the verdict names the unanchored context" "$SR2_OUT" "does not resolve in this unanchored-history copy"
+
+# ---- 9g4. QA-H3-20: the same copy with a REAL board defect -------------------
+# The new degrade must not swallow a real failure either (QA-H3-21 precedence):
+# an unanchored copy whose header ALSO trails its event log is a FAILED board,
+# exit 1, fleet alert intact.
+SR3=$WORK/single-root-local-work-behind
+mkdir -p "$SR3"
+( cd "$SRS" && git archive HEAD ) | ( cd "$SR3" && tar xf - )
+git -C "$SR3" init -q
+board_fixture "$SR3/.coding-hermes/board" 2 "$SRS_HEAD" 3
+git -C "$SR3" -c user.email=t@t -c user.name=t add -A
+git -C "$SR3" -c user.email=t@t -c user.name=t commit -q -m qa-sync
+printf 'battery artifact\n' > "$SR3/qa-evidence.txt"
+git -C "$SR3" -c user.email=t@t -c user.name=t add -A
+git -C "$SR3" -c user.email=t@t -c user.name=t commit -q -m local-tick
+case_run "unanchored copy AND a real B failure -> FAILED, exit 1 (not swallowed)" 1 "B: ticks_total 2 is BEHIND" "$SR3/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR3"
+case_run "unanchored copy AND a real B failure -> the fleet alert still fires" 1 "PUBLIC-HEAD-VERIFY-FAIL" "$SR3/.coding-hermes/board" H3_BOARD_HEADER_ROOT="$SR3"
+set +e
+SR3_OUT=$(env H3_BOARD_HEADER_ROOT="$SR3" H3_BOARD_HEADER_RECENT=3 H3_BOARD_HEADER_DIR="$SR3/.coding-hermes/board" sh "$GUARD" 2>&1)
+set -e
+expect_not_sub "unanchored copy AND a real B failure -> no VERDICT: UNVERIFIED" "$SR3_OUT" "VERDICT: UNVERIFIED"
+expect_sub "unanchored copy AND a real B failure -> the provenance gap is still reported" "$SR3_OUT" "A UNVERIFIED — last_commit"
 
 # ---- 10. degrade: RECENT is not an integer ---------------------------------
 B10=$WORK/b10

@@ -47,8 +47,39 @@
 #      than two commits is a HISTORY-LESS copy (0 = a git init that never
 #      committed, 1 = the synthetic init commit), not a full clone refuting the
 #      value: A degrades to UNVERIFIED there too. A history of two or more
-#      commits IS provenance, so an unresolvable hash there stays the original
-#      hard FAIL — the degrade must never swallow a real board defect.
+#      commits was taken to BE provenance — QA-H3-20 measured that proxy and
+#      found it false for the copy that gains a second LOCAL commit — so the
+#      bound is now ANCHORING, not the commit count (next paragraph). The
+#      degrade still never swallows a real board defect: every measured
+#      recurrence of the WRITER defect leaves a RESOLVABLE value, so it falls
+#      through to the hard FAIL and the fleet alert below regardless.
+#
+#      QA-H3-20 — the THIRD shape, and the one that made the class recur. A
+#      commit COUNT is a proxy a history-limited copy stops satisfying the
+#      moment any work lands in it. The bunker FROZEN sync (sync_repo in
+#      bunker-qa.sh) builds its copy with `git archive HEAD | tar -x` followed
+#      by `git init && git add -A && git commit`, so it starts at exactly ONE
+#      local commit and the QA-H3-21 degrade catches it; the copy then gains a
+#      second LOCAL commit (a tick, a battery artifact, act's push simulation)
+#      and A flips to the hard FAIL "does not resolve to a commit" — on a copy
+#      that still carries no upstream history at all. Measured on this repo at
+#      a board-consistent HEAD: `git archive HEAD | tar -x` + `git init &&
+#      git add -A && git commit` -> rc=0 UNVERIFIED; the SAME copy with one
+#      more local commit -> rc=1 with B/C/D all PASS, while a full clone of the
+#      same HEAD verifies green.
+#
+#      The honest bound is therefore not the commit count but ANCHORING: a copy
+#      can REFUTE an absent last_commit only if its history is anchored to an
+#      upstream, which is observable locally as a ref under refs/remotes/*
+#      (an upstream lineage was actually fetched). Without one the copy's
+#      history is purely its own — the archive/init fresh-install lineage — and
+#      an unresolvable value may name a commit from a lineage this copy never
+#      had, whatever its local commit count is. So shallow/grafted, fewer than
+#      two commits, OR an unanchored history (no refs/remotes/*) is
+#      provenance-unavailable -> degrade. A RESOLVABLE value is still judged
+#      strictly in EVERY context (HEAD or HEAD's parent, else the behind FAIL
+#      and its fleet alert), and that is the class every measured recurrence of
+#      the writer defect belongs to, so the degrade cannot hide a stale header.
 #
 #      PRECEDENCE (QA-H3-21, measured): the degraded verdict is taken ONLY when
 #      no check failed. A provenance gap says nothing about B/C/D, so if one of
@@ -134,11 +165,15 @@
 #       shallow/grafted copy where last_commit's object is absent (QA-H3-18:
 #       provenance unavailable is a degrade, not a stale-board FAILED), or a
 #       history-less copy carrying fewer than two commits (QA-H3-21: the
-#       git-init single-root-commit shape — provenance unavailable again).
+#       git-init single-root-commit shape — provenance unavailable again), or a
+#       copy with an UNANCHORED history — no ref under refs/remotes/*, i.e. the
+#       purely local lineage an archive+init fresh-install copy has however many
+#       local commits it has since gained (QA-H3-20).
 #       UNVERIFIED is taken only when NO check failed (QA-H3-21): a real
 #       B/C/D failure outranks the degrade and exits 1.
 #   1 = FAILED — one or more of A/B/C/D above, including an unresolvable
-#       last_commit in a copy that DOES carry real history (two or more commits)
+#       last_commit in a copy that DOES carry adjudicable history: two or more
+#       commits AND an upstream anchor (refs/remotes/*)
 #
 # Output is grep-friendly: one fact per line, ending with the verdict line
 #   VERDICT: VERIFIED | UNVERIFIED (<reason>) | FAILED (<reasons>)
@@ -227,11 +262,18 @@ case $H3_GIT_DIR in
     /*) : ;;
     ?*) H3_GIT_DIR=$ROOT/$H3_GIT_DIR ;;
 esac
+# QA-H3-20: the provenance shapes are decided below (shallow/grafted,
+# history-less, unanchored); default the adjudication flags first so check A can
+# always read them under `set -u`.
+UNANCHORED=0
+H3_LOCAL_COMMITS=
 if git -C "$ROOT" rev-parse --is-shallow-repository 2>/dev/null | grep -q '^true' ||
     { [ -n "$H3_GIT_DIR" ] && [ -f "$H3_GIT_DIR/shallow" ]; }; then
     SHALLOW=1
     SINGLE_ROOT=0
+    UNANCHORED=0
     H3_HEAD_COMMITS=
+    H3_LOCAL_COMMITS=
     A_UNVERIFIED_CTX='shallow/grafted copy'
     echo "$NAME: git context — shallow/grafted copy: history is partial, so last_commit provenance may be unavailable (an unresolvable value may name an unfetched ancestor)"
 else
@@ -254,21 +296,37 @@ else
     case ${H3_HEAD_COMMITS:-} in
         0)
             SINGLE_ROOT=1
+            UNANCHORED=0
             A_UNVERIFIED_CTX='history-less copy with no commits'
             echo "$NAME: git context — history-less copy: this repo has NO commits at all (a git init that never committed), so last_commit provenance is unavailable"
             ;;
         1)
             SINGLE_ROOT=1
+            UNANCHORED=0
             A_UNVERIFIED_CTX='history-less single-commit copy'
             echo "$NAME: git context — history-less copy: HEAD is a single synthetic root commit (the git-init shape a FROZEN sync produces with 'git archive HEAD | tar -x' + 'git init && git add -A && git commit'), so last_commit provenance may be unavailable (an unresolvable value may name an upstream commit this copy never had)"
             ;;
         *)
-            # Real history (two or more commits): provenance IS available here,
-            # so an unresolvable last_commit is a board defect and A FAILs. No
-            # degrade context applies.
+            # QA-H3-20: two or more commits, not shallow — but that is only
+            # adjudicable history if the copy is ANCHORED to an upstream. An
+            # archive+init copy starts at one commit and gains purely LOCAL ones
+            # (a tick, a battery artifact, act's push simulation), which is
+            # exactly the copy that used to flip from UNVERIFIED to a hard FAIL
+            # here. Observable anchor: a ref under refs/remotes/* (something was
+            # actually fetched). With none, the copy's history is entirely its
+            # own and cannot refute an absent value.
             SINGLE_ROOT=0
+            H3_LOCAL_COMMITS=$H3_HEAD_COMMITS
             H3_HEAD_COMMITS=
-            A_UNVERIFIED_CTX=''
+            H3_UPSTREAM_REF=$(git -C "$ROOT" for-each-ref --format='%(refname)' refs/remotes 2>/dev/null | head -n 1 || true)
+            if [ -z "$H3_UPSTREAM_REF" ]; then
+                UNANCHORED=1
+                A_UNVERIFIED_CTX='unanchored-history copy (no refs/remotes/*)'
+                echo "$NAME: git context — UNANCHORED history: HEAD carries $H3_LOCAL_COMMITS purely local commit(s) and this copy has NO ref under refs/remotes/* (no upstream lineage was ever fetched — the archive+git-init fresh-install shape, which gains local commits as soon as any work lands in the copy), so last_commit provenance may be unavailable (an unresolvable value may name a commit from a lineage this copy never had)"
+            else
+                UNANCHORED=0
+                A_UNVERIFIED_CTX=''
+            fi
             ;;
     esac
 fi
@@ -341,6 +399,18 @@ else
             # unavailable. Same degrade, its own reason.
             A_UNVERIFIED=1
             echo "$NAME: A UNVERIFIED — last_commit '$LAST_COMMIT' does not resolve in this history-less copy (HEAD carries ${H3_HEAD_COMMITS:-0} commit(s), so the header's upstream commit is not in this history); freshness NOT verified"
+        elif [ "$UNANCHORED" -eq 1 ]; then
+            # QA-H3-20: NOT shallow and NOT single-root — the copy has two or
+            # more commits, but every one of them is LOCAL: this copy has no
+            # ref under refs/remotes/*, so no upstream lineage was ever fetched
+            # and its history is purely its own. The header names a commit from
+            # the lineage the archive was taken from, which this copy never
+            # carried, so the absence refutes nothing. Measured shape: the
+            # archive+init sync copy AFTER any work lands in it (a tick, a
+            # battery artifact) — before this bound it hard-FAILed here with
+            # B/C/D all green.
+            A_UNVERIFIED=1
+            echo "$NAME: A UNVERIFIED — last_commit '$LAST_COMMIT' does not resolve and this copy's history is UNANCHORED (no ref under refs/remotes/*, HEAD carries ${H3_LOCAL_COMMITS:-0} purely local commit(s)), so the value cannot be refuted here (the archive+git-init fresh-install shape); freshness NOT verified"
         else
             fail "A: last_commit '$LAST_COMMIT' does not resolve to a commit in this repo"
         fi
@@ -435,9 +505,12 @@ if [ "$FAIL" -eq 0 ] && [ "$A_UNVERIFIED" -eq 0 ]; then
     exit 0
 fi
 
-# QA-H3-18/QA-H3-21: nothing failed, but check A could not verify freshness
-# because this copy does not carry the header's commit object — shallow/grafted
-# (QA-H3-18) or history-less, i.e. fewer than two commits (QA-H3-21). Degraded,
+# QA-H3-18/QA-H3-20/QA-H3-21: nothing failed, but check A could not verify
+# freshness because this copy does not carry the header's commit object —
+# shallow/grafted (QA-H3-18), history-less with fewer than two commits
+# (QA-H3-21), or unanchored: two or more commits, all of them local, with no ref
+# under refs/remotes/* (QA-H3-20 — the archive+git-init copy after any work has
+# landed in it). Degraded,
 # never a pass: the greppable line tells fleet tooling that provenance was
 # unavailable, and the verdict says UNVERIFIED rather than VERIFIED — make
 # verify stays usable on the copy without claiming a verification it did not

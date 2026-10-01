@@ -97,6 +97,13 @@
 #                       SCOPE: staleness and holes only — it cannot prove the named
 #                       commit is the CORRECT pushed one, and it does not read the
 #                       event log for anything but tick coverage.
+#                       On a copy whose history cannot adjudicate the named commit
+#                       it reports UNVERIFIED and exits 0 instead of FAILing:
+#                       shallow/grafted, fewer than two commits, or UNANCHORED (no
+#                       ref under refs/remotes/* — the archive+git-init sync shape
+#                       the fresh-install battery uses, however many local commits
+#                       that copy has since gained; QA-H3-20). A resolvable stale
+#                       header still FAILs with the PUBLIC-HEAD-VERIFY-FAIL line.
 #                       Negative proof: make verify-board-header-selftest.
 #
 # THE BOARD-WRITING CLOSE-OUT (DF-H3-25) — `make board-close`
