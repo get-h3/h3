@@ -378,11 +378,10 @@ cannot be committed.
 
 Install (after `boardctl install` has set up the shared pre-commit hook):
 
-    cat scripts/pre-commit-board-close.sh >> .git/hooks/pre-commit
+    bash scripts/install-board-close-hook.sh
 
-Or invoke it from an existing hook block:
-
-    bash scripts/pre-commit-board-close.sh
+The installer inserts the managed block BEFORE the hook's final `exit` line
+(appending after it would be unreachable dead code) and is idempotent.
 
 It skips cleanly when no board files are staged or the sync script is missing;
 it fails the commit only if `scripts/sync-board-header.sh` itself fails. The
