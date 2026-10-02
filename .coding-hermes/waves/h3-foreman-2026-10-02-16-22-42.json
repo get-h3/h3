@@ -1,0 +1,21 @@
+{
+  "scheduler_tick_id": "h3-foreman-2026-10-02-16-22-42",
+  "created_at_utc": "2026-10-02T21:35:00Z",
+  "wave_budget": 1,
+  "mode": "serial-fallback",
+  "tasks": [
+    {
+      "task_id": "H3-PM-019",
+      "repo": "/home/kara/get-h3/shim",
+      "worktree": "/home/kara/worktrees/shim-H3-PM-019",
+      "branch": "wt/H3-PM-019",
+      "base": "origin/main",
+      "base_sha": "b417959",
+      "worker_model": "glm-5.3-flash",
+      "worker_provider": "zai-glm-default",
+      "gitreins_task": "h3-pm019",
+      "brief": "/tmp/h3-pm019-brief.md",
+      "reason": "battery (compliance gate) missing DELETE /v1/sessions coverage; fix lives in shim repo per row detail; serial because WAVE_BUDGET=1"
+    }
+  ]
+}
