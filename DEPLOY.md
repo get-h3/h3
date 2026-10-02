@@ -366,3 +366,26 @@ hermes-h3 verify --harness my-harness
 See `protocol/versions.yaml` for the full Hermes↔H3 compatibility matrix.
 
 H3 follows the protocol. The shim translates. The harness decides. Hermes executes. That's the loop.
+
+## Board Header Pre-Commit Hook (QA-H3-22)
+
+Board-writing ticks must run `make board-close` before committing board files
+(see the Makefile's DF-H3-25 section). The pre-commit hook
+`scripts/pre-commit-board-close.sh` makes this structural: when
+`.coding-hermes/board/board.jsonl` or `events.jsonl` is staged, it re-pins the
+header's `last_commit` to the current HEAD and re-stages it, so a stale header
+cannot be committed.
+
+Install (after `boardctl install` has set up the shared pre-commit hook):
+
+    cat scripts/pre-commit-board-close.sh >> .git/hooks/pre-commit
+
+Or invoke it from an existing hook block:
+
+    bash scripts/pre-commit-board-close.sh
+
+It skips cleanly when no board files are staged or the sync script is missing;
+it fails the commit only if `scripts/sync-board-header.sh` itself fails. The
+hook is not tracked (`.git/hooks/` never is) — each clone installs it. Verify
+with `bash scripts/pre-commit-board-close-selftest.sh`.
+
