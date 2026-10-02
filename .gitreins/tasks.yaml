@@ -142,3 +142,13 @@ tasks:
   status: complete
   created_at: '2026-09-30T01:08:50.636521+00:00'
   completed_at: '2026-09-30T01:18:07.883080+00:00'
+- id: H3-QA22-HOOK
+  title: Board-header auto-sync pre-commit hook (QA-H3-22 structural prevention)
+  criteria:
+  - 'A board-writing commit can no longer leave board.jsonl header last_commit stale:
+    a tracked scripts/pre-commit-board-close.sh re-pins the header when board files
+    are staged, an installer chains it into .git/hooks/pre-commit without clobbering
+    the boardctl block, and make verify stays ALL PASS'
+  status: complete
+  created_at: '2026-10-02T03:08:45.590488+00:00'
+  completed_at: '2026-10-02T03:15:13.847437+00:00'
