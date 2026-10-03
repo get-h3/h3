@@ -8,7 +8,7 @@
 
 ## 1. Purpose
 
-The H3 Conformance Certification program provides **public, verifiable proof** that a harness implements the H3 protocol correctly. When a developer runs `h3-test` and all 46 tests pass, they earn a badge. That badge is verifiable by anyone — Hermes instances, end users, CI systems — without re-running the test battery.
+The H3 Conformance Certification program provides **public, verifiable proof** that a harness implements the H3 protocol correctly. When a developer runs `h3-test` and all 48 tests pass, they earn a badge. That badge is verifiable by anyone — Hermes instances, end users, CI systems — without re-running the test battery.
 
 ### Design Principles
 
@@ -17,7 +17,7 @@ The H3 Conformance Certification program provides **public, verifiable proof** t
 | Principle | Rationale |
 |-----------|-----------|
 | **No central authority** | Badge validity is cryptographic, not permission-based. Anyone can issue a self-signed badge; the registry lists badges others can choose to trust. |
-| **Test battery is the gate** | Badges are only issued for 46/46 pass on the exact tagged `h3-test` version. Partial passes don't qualify. |
+| **Test battery is the gate** | Badges are only issued for 48/48 pass on the exact tagged `h3-test` version. Partial passes don't qualify. |
 | **Verifiable offline** | A badge carries enough information (test version, timestamp, harness endpoint, signature) to verify without calling home. |
 | **Opt-in registry** | Harness developers can optionally submit their badge to a public registry (`get-h3.github.io/h3/registry`) for discoverability. **Planned — not implemented**: the published site has no `/registry` path (HTTP 404 today). |
 | **Revocable** | If a certified harness is later found non-compliant (via a protocol update), its badge is revoked and the registry is updated. |
@@ -30,7 +30,7 @@ The H3 Conformance Certification program provides **public, verifiable proof** t
 Harness Developer                          Public (get-h3.github.io/h3)
        │                                        │
        │ 1. Run h3-test --endpoint URL           │
-       │    46/46 PASS                          │
+       │    48/48 PASS                          │
        │                                        │
        ▼                                        │
   ┌─────────┐    2. Generate badge              │
@@ -88,8 +88,8 @@ The canonical badge is a signed JSON document. The SVG image is derived from it.
     "version": "1.0.0"
   },
   "results": {
-    "total": 46,
-    "passed": 46,
+    "total": 48,
+    "passed": 48,
     "failed": 0,
     "duration_ms": 180,
     "regions": {
@@ -97,7 +97,7 @@ The canonical badge is a signed JSON document. The SVG image is derived from it.
       "process_flows": {"passed": 8, "total": 8},
       "decision_types": {"passed": 6, "total": 6},
       "result_handling": {"passed": 7, "total": 7},
-      "edge_cases": {"passed": 13, "total": 13},
+      "edge_cases": {"passed": 15, "total": 15},
       "stress": {"passed": 5, "total": 5}
     }
   },
@@ -115,7 +115,7 @@ A shields.io-style badge showing the certification status:
 
 ```
 ┌─────────────────────────────────────┐
-│  H3  │  COMPLIANT  │  46/46  180ms │
+│  H3  │  COMPLIANT  │  48/48  180ms │
 └─────────────────────────────────────┘
 ```
 
@@ -123,8 +123,8 @@ Three badge variants:
 
 | Badge | Color | Meaning |
 |-------|-------|---------|
-| `h3-compliant-brightgreen` | ✅ Green | 46/46 pass, badge valid |
-| `h3-compliant-yellow` | 🟡 Yellow | 46/46 pass, badge expired |
+| `h3-compliant-brightgreen` | ✅ Green | 48/48 pass, badge valid |
+| `h3-compliant-yellow` | 🟡 Yellow | 48/48 pass, badge expired |
 | `h3-unverified-lightgrey` | ⚫ Grey | Not tested / no badge |
 
 The SVG is self-contained (no external image assets) and fits in a README.md **once a badge
@@ -141,7 +141,7 @@ broken until Phase 3 of §12 ships — do not paste it into a README yet:
 
 | Stage | Description | Duration |
 |-------|-------------|----------|
-| **Issued** | Fresh 46/46 pass | 90 days |
+| **Issued** | Fresh 48/48 pass | 90 days |
 | **Expiring** | 30 days before expiry, badge shows yellow | 60-90 days |
 | **Expired** | Past expiry date, badge shows grey | After 90 days |
 | **Revoked** | Manual revocation (protocol version mismatch, vulnerability) | Instant |
@@ -171,7 +171,7 @@ h3-test --endpoint http://localhost:9191 --json > report.json
 ```
 .badge/
 ├── badge.json             ← Signed JSON badge
-├── h3-compliant.svg       ← Green badge (46/46)
+├── h3-compliant.svg       ← Green badge (48/48)
 ├── h3-compliant-yellow.svg ← Yellow badge (expiring)
 ├── verify.json            ← Verification payload (for get-h3.github.io/h3/verify — planned, not published)
 └── submit.json            ← Submission payload (for get-h3.github.io/h3/api/badges — planned, not published)
@@ -181,8 +181,8 @@ h3-test --endpoint http://localhost:9191 --json > report.json
 
 The badge is signed with the `h3 cert` keypair. Generation flow:
 
-1. `h3-test` runs all 46 tests
-2. If 46/46 pass, generates badge template
+1. `h3-test` runs all 48 tests
+2. If 48/48 pass, generates badge template
 3. Prompts for signing key (or reads from `H3_SIGNING_KEY` env var)
 4. Signs `badge.json` with Ed25519
 5. Outputs SVG + JSON + verification URL
@@ -441,7 +441,7 @@ this dashboard is **planned — not implemented** (HTTP 404 today):
 │  │ Go Echo 1.0  │ │ Py Echo 1.0  │ │ TS Echo  │ │
 │  │ H3 Compliant │ │ H3 Compliant │ │ v1.0     │ │
 │  │ Green Badge  │ │ Green Badge  │ │ Compliant│ │
-│  │ 180ms 46/46  │ │ 210ms 46/46  │ │ 195ms    │ │
+│  │ 180ms 48/48  │ │ 210ms 48/48  │ │ 195ms    │ │
 │  └──────────────┘ └──────────────┘ └──────────┘ │
 │                                                  │
 │  Stats bar: 42 certified | 3 revoked | 12 expired│
@@ -473,7 +473,7 @@ Badge Details
 │ Harness:   My Echo Harness v1.0.0       │
 │ Language:  Go                           │
 │ Endpoint:  https://my-harness.com:9191  │
-│ Tests:     46/46 in 180ms               │
+│ Tests:     48/48 in 180ms               │
 │ Issued:    2026-07-22                   │
 │ Expires:   2026-10-22                   │
 │                                           │
@@ -541,7 +541,7 @@ CI pipelines can enforce certification as a gate:
 - name: Verify badge before deploy
   run: |
     hermes-h3 verify .badge/badge.json --strict
-    # Fails unless: 46/46, valid signature, not expired, 
+    # Fails unless: 48/48, valid signature, not expired, 
     # compatible protocol version, all regions 100%
 ```
 
@@ -597,8 +597,8 @@ hermes-h3 badge sign .badge/badge.json --key-file ~/.h3/signing-key.pem
 
 | ID | Test | Verifies |
 |----|------|----------|
-| CERT-01-01 | Generate badge from 46/46 results | Badge JSON has correct structure, all fields populated |
-| CERT-01-02 | Generate badge from partial results (40/46) | Badge generation rejects with error for <46/46 |
+| CERT-01-01 | Generate badge from 48/48 results | Badge JSON has correct structure, all fields populated |
+| CERT-01-02 | Generate badge from partial results (40/48) | Badge generation rejects with error for <48/48 |
 | CERT-01-03 | Sign badge with Ed25519 | Signature is valid and verifiable |
 | CERT-01-04 | Verify self-signed badge | Self-signed badge validates with embedded pubkey |
 | CERT-01-05 | Reject tampered badge | Test fails after modifying a single field |
@@ -680,7 +680,7 @@ hermes-h3 badge sign .badge/badge.json --key-file ~/.h3/signing-key.pem
 | 2.2 | Implement verification algorithm (all 11 checks) | Each check returns correct pass/fail |
 | 2.3 | Add `--deep` verification mode | Deep verify probes harness endpoint |
 | 2.4 | Add expiration detection + yellow SVG variant | Expiring badges correctly flagged |
-| **Gate** | Full verification loop: generate → sign → verify | End-to-end pass with 46/46 test battery |
+| **Gate** | Full verification loop: generate → sign → verify | End-to-end pass with 48/48 test battery |
 
 ### Phase 3: Registry Server (get-h3.github.io/h3) — planned, not implemented
 

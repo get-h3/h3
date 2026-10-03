@@ -111,7 +111,7 @@ result_error           → Handles result.type="error" gracefully
 result_wait_timeout    → Handles result.type="wait_timeout"
 ```
 
-### Region 5: Error & Edge Cases (13 tests)
+### Region 5: Error & Edge Cases (15 tests)
 Tests error handling and boundary conditions.
 
 ```
@@ -128,6 +128,8 @@ cancel_unknown_session   → cancel with unknown session_id → 404
 session_not_found        → GET nonexistent session → 404
 session_status_completed → session reports status='completed'
 session_get_after_process → GET session after process → 200 with session_id + started_at
+session_delete_terminates  → DELETE /v1/sessions/{id} → 200 with {terminated, session_id}
+session_get_after_delete   → GET after DELETE → 404 or terminated; still-live 200 fails
 ```
 
 ### Region 6: Stress (5 tests)
@@ -207,9 +209,9 @@ Transport: REST
   Process Basic Flows                 8/8  ✅ PASSED
   Decision Types                      6/6  ✅ PASSED
   Result Handling                     7/7  ✅ PASSED
-  Error & Edge Cases                  13/13  ✅ PASSED
+  Error & Edge Cases                  15/15  ✅ PASSED
   Stress & Performance                5/5  ✅ PASSED
-  TOTAL                               46/46  PASSED
+  TOTAL                               48/48  PASSED
   Duration                            0.38s
   Latency p50/p95                     0.97ms / 57.84ms
 ```
@@ -221,14 +223,14 @@ Nothing is written to disk by default — the report goes to stdout. Redirect it
 
 The whole payload is `dataclasses.asdict(TestReport)` plus two fields the CLI adds
 (`all_passing`, `latency`). Captured verbatim from a live run against the Go echo
-example (46/46, exit code 0); the `results` array is shortened to its first two
+example (48/48, exit code 0); the `results` array is shortened to its first two
 entries so the block parses as JSON:
 
 ```json
 {
   "timestamp": "2026-09-18T09:58:16.120158+00:00",
-  "total": 46,
-  "passed": 46,
+  "total": 48,
+  "passed": 48,
   "failed": 0,
   "duration_ms": 319.6196659700945,
   "all_passing": true,
@@ -277,7 +279,7 @@ them**. The grouped per-region roll-up, `pass_rate` and `harness_endpoint` are
 **planned** (design intent, no implementation artifact yet) — as is the `--html`
 format below. Never gate on the planned keys: `jq '.summary.failed'` returns
 `null`, `[ "null" != "0" ]` is TRUE, so a gate copied from the old text reports
-failure on a clean 46/46 run. The endpoint is not in the payload either — it is
+failure on a clean 48/48 run. The endpoint is not in the payload either — it is
 passed to `--endpoint` and echoed only in the terminal form.
 
 For a grouped, human-readable region view, fold the flat list yourself:

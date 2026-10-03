@@ -23,7 +23,7 @@ Test Battery (src/h3_shim/test_battery.py)
   │
   │── HTTP client ──► Harness Endpoint (localhost:9191)
   │
-  │── Runs 46 tests across 6 categories
+  │── Runs 48 tests across 6 categories
   │── Produces JSON report + terminal output
   │── Exit code 0 = all passing, non-zero = failures
 ```
@@ -42,10 +42,10 @@ Transport: REST
   Process Basic Flows           8/8  ✅
   Decision Types                6/6  ✅
   Result Handling               7/7  ✅
-  Error & Edge Cases           13/13 ✅
+  Error & Edge Cases           15/15 ✅
   Stress & Performance          5/5  ✅
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  TOTAL                        46/46 ✅  PASSED
+  TOTAL                        48/48 ✅  PASSED
 
 Report: ~/.hermes/cache/h3_test_report_20260712_223000.json
 ```
@@ -109,7 +109,7 @@ Report: ~/.hermes/cache/h3_test_report_20260712_223000.json
 | 4.6 | `result_error` | Harness handles `result.type: "error"` gracefully |
 | 4.7 | `result_wait_timeout` | Harness handles `result.type: "wait_timeout"` |
 
-### Category 5: Error & Edge Cases (13 tests)
+### Category 5: Error & Edge Cases (15 tests)
 
 | # | Test | What It Verifies |
 |---|---|---|
@@ -126,6 +126,8 @@ Report: ~/.hermes/cache/h3_test_report_20260712_223000.json
 | 5.10 | `session_not_found` | `GET /v1/sessions/nonexistent` returns 404 |
 | 5.11 | `session_status_completed` | A finished session reports `status: "completed"` (not `"active"`); asserted only when the harness both ends the session and emits a status |
 | 5.12 | `session_get_after_process` | `GET /v1/sessions/{id}` exists for a session that just accepted a process call: 200, echoed `session_id`, ISO-8601 `started_at` |
+| 5.13 | `session_delete_terminates` | `DELETE /v1/sessions/{id}` returns 200 with an object echoing `session_id` and a boolean `terminated: true`; a harness that does not implement the route fails |
+| 5.14 | `session_get_after_delete` | `GET /v1/sessions/{id}` after DELETE reflects termination — the session is forgotten (404) or reports a terminated status; a still-live 200 fails (a 405 GET-route-absent passes) |
 
 ### Category 6: Stress & Performance (5 tests)
 

@@ -23,7 +23,7 @@ get-h3.github.io/h3
 ├── How It Works         ← Animated sequence: Telegram → Hermes → H3 → Your Harness
 ├── Quickstart           ← Language picker (Go | Python | TypeScript) → copy-paste code
 ├── Protocol Reference   ← Full API docs (generated from OpenAPI)
-├── Test Battery         ← "Run 46 tests against your harness in 5 seconds"
+├── Test Battery         ← "Run 48 tests against your harness in 5 seconds"
 ├── SDKs                 ← Links to each SDK repo + npm/PyPI/Go badges
 ├── Compliance Badges    ← "Put this in your README to show you're H3-compliant"
 └── Community            ← Discord, GitHub discussions, X
@@ -115,7 +115,7 @@ published tree (HTTP 404), i.e. **planned — not implemented**.
 ## 5. Compliance Badge System
 
 **Status (2026-09-18):** the three static SVGs under `/badge/` are published and served
-(`/badge/compliant.svg` → HTTP 200, reading `H3 | 46/46 ✓ | Compliant v1.0`). The verify
+(`/badge/compliant.svg` → HTTP 200, reading `H3 | 48/48 ✓ | Compliant v1.0`). The verify
 endpoint in §5 below and per-harness badge generation are **planned — not implemented**:
 `/api/verify` and `/badges/v1/...` return HTTP 404.
 
@@ -138,7 +138,7 @@ returns HTTP 404 today, so the JSON is the intended response shape, not a live o
 ```
 # PLANNED — /api/verify is not routed on get-h3.github.io/h3 yet (HTTP 404 today)
 GET https://get-h3.github.io/h3/api/verify?repo=github.com/user/harness
-→ {"compliant": true, "protocol_version": "1.0", "tests_passed": 46, "tests_total": 46, "last_verified": "2026-07-12T22:30:00Z"}
+→ {"compliant": true, "protocol_version": "1.0", "tests_passed": 48, "tests_total": 48, "last_verified": "2026-07-12T22:30:00Z"}
 ```
 
 ### Badge Generation
@@ -148,7 +148,7 @@ per harness on demand is **planned — not implemented**.
 
 ```
 GET https://get-h3.github.io/h3/badge/compliant.svg
-→ SVG badge: "H3 v1.0 — 46/46 ✅"
+→ SVG badge: "H3 v1.0 — 48/48 ✅"
 ```
 
 ---

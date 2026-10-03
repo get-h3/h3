@@ -41,7 +41,7 @@ Expected result: every guard prints PASS, the run ends with
 |-------|--------|
 | `verify-docs` | every relative `.md` link in `README.md` and `specs/_index.md` resolves to a file in the repo |
 | `verify-specs` | every spec file under `specs/` is listed in `specs/_index.md`, and every listed spec exists |
-| `verify-count` | the compliance-test count (46) in `scripts/test-count.txt` agrees with the sibling battery and the per-region lists in specs 05/09/25; no current-state doc quotes a retired count |
+| `verify-count` | the compliance-test count (48) in `scripts/test-count.txt` agrees with the sibling battery and the per-region lists in specs 05/09/25; no current-state doc quotes a retired count |
 | `verify-json-fences` | every JSON fenced block in the tracked markdown parses, and an abbreviated payload says so on the failing line |
 | `verify-qa-target` | the QA target is a real checkout of THIS repo — zero cells is UNVERIFIED, never a pass |
 | `verify-tick-chain` | the DuckBrain tick-key census (H3-GAP-098): the bare `/tick/<N>` chain is complete from 418 to the board's `ticks_total - 1`, and no unknown-shaped tick key exists — the #459 backfill twins 452/453 are allowlisted, the pre-#418 legacy series and timestamped slugs are reported non-fatally. Reports UNVERIFIED when DuckBrain, `jq`, `curl`, the token or the board header is absent. Negative proof: `make verify-tick-chain-selftest` |

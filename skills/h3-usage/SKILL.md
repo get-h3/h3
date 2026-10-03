@@ -67,9 +67,9 @@ Error shape: `{"error": {"code", "message", "details"}}` (codes in specs/02 §9)
 - Local SDK development only: editable install with
   `uv pip install --python .venv/bin/python -e $HOME/get-h3/sdk-python`.
 
-## Fastest verified path to 46/46 (Go)
+## Fastest verified path to 48/48 (Go)
 
-# Battery count is 46 as of 2026-09-08 (GAP-045 wave); "44" anywhere = stale.
+# Battery count is 48 as of 2026-10-02 (H3-PM-019 DELETE coverage); "44"/"46" anywhere = stale.
 
 ```bash
 cd /tmp && hermes-h3 scaffold --lang go --output-dir /tmp
@@ -79,10 +79,10 @@ cd /tmp && hermes-h3 scaffold --lang go --output-dir /tmp
 # (DOGFOOD-07/08/09 landed). go scaffold pins sdk-go v0.1.1 (cancel-404 fix
 # addb017 is in v0.1.1+); py scaffold 404s on unknown-session cancel; ts
 # scaffold installs via github:get-h3/sdk-typescript (npm E404 workaround).
-# Battery is 46 tests since 2026-09-08 (GAP-045 wave). Fresh go + py scaffolds
+# Battery is 48 tests since 2026-10-02 (H3-PM-019 wave). Fresh go + py scaffolds
 # verified battery-clean exit 0 (was 44/44 at tick #317, 2026-08-17; count grew):
 #   cd /tmp/h3-harness-go && go mod tidy && go run . &
-#   h3-test --endpoint http://localhost:9191   # 46/46, exit 0
+#   h3-test --endpoint http://localhost:9191   # 48/48, exit 0
 ```
 
 ## Verified battery-clean paths (SDK examples)
@@ -90,16 +90,16 @@ cd /tmp && hermes-h3 scaffold --lang go --output-dir /tmp
 ```bash
 # Go (sdk-go main has the 404 fix):
 git clone https://github.com/get-h3/sdk-go && cd sdk-go/examples/echo && go run . &
-h3-test --endpoint http://localhost:9191   # 46/46, exit 0
+h3-test --endpoint http://localhost:9191   # 48/48, exit 0
 
 # Python:
 cd sdk-python && python3 -m venv .venv && . .venv/bin/activate && pip install -e .
 python src/h3_harness/examples/echo.py &   # (script runner — NOT `uvicorn ...:app`)
-h3-test --endpoint http://localhost:9191   # 46/46
+h3-test --endpoint http://localhost:9191   # 48/48
 
 # TypeScript:
 cd sdk-typescript && npx tsx src/examples/echo.ts &
-h3-test --endpoint http://localhost:9191   # 46/46
+h3-test --endpoint http://localhost:9191   # 48/48
 ```
 
 ## Verified battery-clean paths (published routes, no repo clone)
@@ -113,7 +113,7 @@ with NO local get-h3 checkout uses.
 mkdir dgconsumer && cd dgconsumer && go mod init dgconsumer
 go get github.com/get-h3/sdk-go        # resolves latest semver tag via proxy
 go build -o echo-go . && PORT=9291 ./echo-go &
-h3-test --endpoint http://127.0.0.1:9291   # 46/46, exit 0 (local go1.26.5)
+h3-test --endpoint http://127.0.0.1:9291   # 48/48, exit 0 (local go1.26.5)
 # Fresh-machine proof (bunker, bare Debian, toolchain extracted to ~/go-toolchain):
 #   go get 11s, build 19s, serve+smoke OK — see docs/dogfood/2026-09-24-integration.md
 
@@ -123,15 +123,15 @@ npm install github:get-h3/sdk-typescript   # prepare script builds dist/ (5-16s)
 npm i @hono/node-server && npm i -D @types/node typescript
 # harness per README Quickstart + Partial turns + Serving sections, then:
 npx tsc -p . && PORT=9292 node harness.ts &
-h3-test --endpoint http://127.0.0.1:9292   # 46/46, exit 0 (Node v22.22.3)
+h3-test --endpoint http://127.0.0.1:9292   # 48/48, exit 0 (Node v22.22.3)
 # tsc consumers NEED tsconfig with "types": ["node"] — bare `tsc file.ts`
 # fails even with @types/node installed (TS2591). tsx/Bun consumers skip this.
 ```
 
 ## Custom harness from the spec (Python, no SDK)
 
-Read `specs/02-Protocol-Specification.md` — it is sufficient for ~41/46
-immediately. To reach 46/46 you need TWO conventions that are only in SDK
+Read `specs/02-Protocol-Specification.md` — it is sufficient for most of the battery
+immediately. To reach 48/48 you need TWO conventions that are only in SDK
 example code (see docs/dogfood/2026-08-02-integration.md):
 
 1. **History echo:** include a top-level `history` in the decision response,
@@ -164,7 +164,7 @@ form everywhere.
 ### Pitfall: the battery has undocumented trigger phrases (DF-H3-7)
 `h3-test` sends messages containing "do not finish", "start a thought",
 "...", "incomplete", "partial" and expects `finished:false` (continuation);
-a harness that always sets `finished:true` fails ~15/46 with confusing
+a harness that always sets `finished:true` fails ~15 tests with confusing
 detail lines, and `end.reason` must be the schema enum (`task_complete`,
 NOT "completed"). **Read the echo example for your SDK before writing
 onProcess/onResult — the example IS the spec for the battery.**

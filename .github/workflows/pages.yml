@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v4
 
       # Best-effort, so the umbrella never blocks on a sibling's availability:
-      # enables the sibling-drift half of the guard (46 -> 47). If the checkout
+      # enables the sibling-drift half of the guard (48 -> 49). If the checkout
       # fails, the guard still runs the doc sweep and reports parity as skipped.
       - name: Checkout sibling shim battery (parity source)
         id: shim

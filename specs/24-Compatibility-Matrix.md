@@ -72,7 +72,7 @@ Everything in the table is **planned design intent** for the protocol-v2 migrati
 specified here so the work can be scoped, not a description of shipped CI. Each section
 that names one of those artifacts carries the same marker inline (§4.4, §5.3, §6.1, §6.2,
 §7.1–§7.3, §8, §9, §12). What CI actually gates on today is the single-version
-compliance battery — `h3-test --endpoint <url>`, 46 tests (specs/09 §6).
+compliance battery — `h3-test --endpoint <url>`, 48 tests (specs/09 §6).
 
 ---
 
@@ -268,7 +268,7 @@ condition.
 
 ```yaml
 # PLANNED — design reference only. No workflow loads this file, no release is gated on
-# it, and the gate CI runs today is the 46-test compliance battery (specs/09 §6).
+# it, and the gate CI runs today is the 48-test compliance battery (specs/09 §6).
 # compat-matrix.yml — GitHub Actions matrix strategy
 compat_matrix:
   protocol_versions: [v1, v2]
@@ -378,7 +378,7 @@ When a migration is rolled back, the shim must gracefully downgrade active sessi
 > migration: read every command below as a plan, not as something to run.
 
 What runs today is the single-version compliance battery — `h3-test --endpoint <url>`
-(46 tests, specs/09 §6) — in the SDK and shim CI workflows.
+(48 tests, specs/09 §6) — in the SDK and shim CI workflows.
 
 ### 7.1 Compatibility CI Workflow (planned — not implemented)
 
@@ -602,7 +602,7 @@ h3 migrate dry-run                          # Validate plan without executing
 | ID | Test | Description |
 |----|------|-------------|
 | COMPAT-E2E-01 | compat_matrix_all_green | Full CI matrix passes for all supported combos |
-| COMPAT-E2E-02 | cross_version_test_battery | h3-test 46/46 on v1 AND v2 harnesses |
+| COMPAT-E2E-02 | cross_version_test_battery | h3-test 48/48 on v1 AND v2 harnesses |
 | COMPAT-E2E-03 | migration_blue_green | Blue v1, Green v2, migrate, rollback, verify |
 
 ---

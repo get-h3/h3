@@ -1,7 +1,7 @@
 #!/bin/sh
 # check-test-count.sh — single source for the H3 compliance-test count (GAP-072).
 #
-# The battery ships 46 tests today. Every current-state doc that quotes the
+# The battery ships 48 tests today. Every current-state doc that quotes the
 # number must agree with -> scripts/test-count.txt <- (the ONE place the
 # number is written down) and with the battery itself.
 #
@@ -9,7 +9,7 @@
 #   a. read the canonical count from scripts/test-count.txt
 #   b. sibling parity  — if ../shim/src/h3_shim/test_battery.py exists, its
 #      EXPECTED_TEST_COUNT must equal the canonical count (this is what catches
-#      the battery going 46 -> 47 before the docs notice). Override the path
+#      the battery going 48 -> 49 before the docs notice). Override the path
 #      with H3_SHIM_BATTERY=<file> when the sibling is not at ../shim (CI checks
 #      get-h3/shim out into a subdirectory and points this at it).
 #   c. stale-literal sweep — no current-state doc may still advertise the old
@@ -134,7 +134,7 @@ sum_regions_09() {
     #   ### Region N: <name> (N tests)
     # each followed by a fenced list of test names. Only those headings are
     # summed, so the ASCII tree in §2, the fenced name lists and the report's
-    # "TOTAL 46/46" summary line can never leak into the arithmetic.
+    # "TOTAL 48/48" summary line can never leak into the arithmetic.
     # Prints: "<heading-count> <sum> <headings-without-a-count> <region-numbers>".
     awk '
          /^### Region / {

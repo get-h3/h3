@@ -68,7 +68,7 @@ h3-test --endpoint http://localhost:9191
 > the CLI on PATH (it runs `hermes-h3`, then `h3-test` from inside the generated
 > `h3-harness-go/`):
 
-46 tests — 6 categories — exit code 0 means your harness is H3-compliant. For 46/46: a message containing `do not finish` must return `text` with `finished: false` — see [docs/integration.md §5.1](docs/integration.md#51-conventions-the-battery-enforces).
+48 tests — 6 categories — exit code 0 means your harness is H3-compliant. For 48/48: a message containing `do not finish` must return `text` with `finished: false` — see [docs/integration.md §5.1](docs/integration.md#51-conventions-the-battery-enforces).
 
 Or scaffold a new harness in 30 seconds:
 
@@ -148,7 +148,7 @@ truth, and the examples in these docs are validated against them.
 |------|---------|----------|
 | [h3](https://github.com/get-h3/h3) | **You are here.** Spec hub, task board, documentation website | Markdown |
 | [protocol](https://github.com/get-h3/protocol) | OpenAPI 3.1 spec + JSON Schema — single source of truth | YAML/JSON |
-| [shim](https://github.com/get-h3/shim) | Hermes plugin: shim loop, 46-test battery, CLI (`hermes-h3`; `hermes h3` plugin form is WIRING-01-gated) | Python |
+| [shim](https://github.com/get-h3/shim) | Hermes plugin: shim loop, 48-test battery, CLI (`hermes-h3`; `hermes h3` plugin form is WIRING-01-gated) | Python |
 | [sdk-go](https://github.com/get-h3/sdk-go) | Go SDK for building harnesses | Go |
 | [sdk-python](https://github.com/get-h3/sdk-python) | Python SDK for building harnesses | Python |
 | [sdk-typescript](https://github.com/get-h3/sdk-typescript) | TypeScript SDK for building harnesses — **not on npm** (GitHub dependency) | TypeScript |
@@ -161,7 +161,7 @@ H3 follows a **spec-driven, protocol-first** architecture:
 protocol/  (OpenAPI 3.1 — single source of truth)
     │
     ├──► shim/           (Hermes-side plugin — Python)
-    │     └── test_battery.py  (46 compliance tests)
+    │     └── test_battery.py  (48 compliance tests)
     │
     ├──► sdk-go/         (Harness Go SDK — generated types)
     ├──► sdk-python/     (Harness Python SDK — generated types)
@@ -227,13 +227,13 @@ deleted, so that a clean `git status` means something:
 
 ## Compliance
 
-A harness is H3-compliant when it passes all 46 tests in the [test battery](https://github.com/get-h3/shim). Current compliance status across SDK examples:
+A harness is H3-compliant when it passes all 48 tests in the [test battery](https://github.com/get-h3/shim). Current compliance status across SDK examples:
 
 | Language | Evidence | CI-verified | Published |
 |----------|----------|:-----------:|-----------|
-| Go (echo) | 46/46 — foreman E2E tick #355 ran the battery against the Go echo harness on :9191 (p50 1.31ms / p95 45.93ms) | ✅ | source (`go get github.com/get-h3/sdk-go`) |
-| Python (echo) | 46/46 — local battery run | — | PyPI: `pip install h3-harness-sdk` |
-| TypeScript (echo) | 46/46 — local battery run | — | **not published on npm** (`npm view @get-h3/h3-harness-sdk` → E404) — install from source (GitHub dependency) |
+| Go (echo) | 48/48 — battery run against the Go echo harness on a fresh port (0.20s, p50 0.88ms / p95 26.17ms; 2026-10-03) | ✅ | source (`go get github.com/get-h3/sdk-go`) |
+| Python (echo) | 48/48 — local battery run against the Python echo example (0.25s; 2026-10-03) | — | PyPI: `pip install h3-harness-sdk` |
+| TypeScript (echo) | 48/48 — local battery run against the compiled TS echo example (0.20s; 2026-10-03) | — | **not published on npm** (`npm view @get-h3/h3-harness-sdk` → E404) — install from source (GitHub dependency) |
 
 **CI-verified** means the run is captured in repo CI or a foreman E2E tick; Go is currently the only SDK with in-repo E2E evidence (tick #355 on :9191). Python and TypeScript pass locally but have no in-repo runnable CI evidence yet.
 

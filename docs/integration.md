@@ -9,7 +9,7 @@ to your agent over plain HTTP.
 This guide is for integrators who already HAVE an agent system and want to
 wire it into Hermes. It covers the harness side: exposing your agent as an
 H3 endpoint, translating its decisions into H3's Decision envelope, and
-proving compliance with the 46-test battery.
+proving compliance with the 48-test battery.
 
 If you instead want to install and manage the Hermes side (registering
 harnesses, routing sessions, the `hermes-h3` CLI), see the shim's own
@@ -396,7 +396,7 @@ export PATH="/path/to/shim/.venv/bin:$PATH"          # or export the venv's bin 
 /path/to/shim/.venv/bin/h3-test --endpoint http://localhost:9191   # or call the script by path
 ```
 
-Then run the 46-test compliance battery (6 categories — exact
+Then run the 48-test compliance battery (6 categories — exact
 `--categories` names: health, process, decisions, results, errors, stress)
 against your harness:
 
@@ -407,7 +407,7 @@ h3-test --endpoint http://localhost:9191 --json   # machine-readable
 
 | Exit | Meaning |
 |------|---------|
-| `0` | Compliant — the target is an H3 endpoint and all 46 checks passed. |
+| `0` | Compliant — the target is an H3 endpoint and all 48 checks passed. |
 | `1` | Compliance failure — the target answered `/v1/health` correctly but some protocol checks failed. Fix the harness (run with `--json` for per-test detail). |
 | `2` | NOT an H3 endpoint — connection refused, non-JSON body, HTTP ≥ 400, or a `/v1/health` payload missing required fields. This is not a protocol regression: check the URL and that the harness is running. |
 
@@ -423,7 +423,7 @@ protocol-correct can still fail them. Implement these deliberately; they are
 the behaviours the battery asserts, quoted from the shipped source.
 
 Line references are to the shipped battery
-(`get-h3/shim` → `src/h3_shim/test_battery.py`, 46 tests — the count is pinned
+(`get-h3/shim` → `src/h3_shim/test_battery.py`, 48 tests — the count is pinned
 by `EXPECTED_TEST_COUNT`, `test_battery.py:104`) and to the CLI
 (`get-h3/shim` → `src/h3_shim/cli.py`).
 
@@ -515,14 +515,14 @@ one of three codes, defined in `shim/src/h3_shim/cli.py`:
 | `2` | NOT an H3 endpoint — connection refused, non-JSON body, HTTP ≥ 400, or a `/v1/health` payload missing required fields (`cli.py:384`). Also returned for an unknown `--categories` token (`cli.py:393-401`). | `cli.py:384`, `cli.py:401` |
 
 **The 6 categories and their counts.** Health & Protocol 7, Process Basic Flows
-8, Decision Types 6, Result Handling 7, Error & Edge Cases 13, Stress &
-Performance 5 — 46 total. The category lists are registered in the battery at
+8, Decision Types 6, Result Handling 7, Error & Edge Cases 15, Stress &
+Performance 5 — 48 total. The category lists are registered in the battery at
 `test_battery.py:321-327`, `:470-477`, `:738-743`, `:1048-1054`, `:1298-1310`
 and `:1741-1745`; the total is pinned at `:104`.
 
 ## 6. SDKs and scaffolding
 
-| SDK | Install | Echo example (reference, passes 46/46) |
+| SDK | Install | Echo example (reference, passes 48/48) |
 |-----|---------|----------------------------------------|
 | Go | `go get github.com/get-h3/sdk-go` | `sdk-go/examples/echo` → `go run .` on :9191 |
 | Python | `pip install git+https://github.com/get-h3/sdk-python` | `sdk-python/src/h3_harness/examples/echo.py` |
