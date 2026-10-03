@@ -496,13 +496,15 @@ by `EXPECTED_TEST_COUNT`, `test_battery.py:104`) and to the CLI
   the client's per-request ceiling is 10 s (`:123`).
 
 **Where the normative text lives.** The protocol-level statements of these
-conventions are [specs/02 §4](../specs/02-Protocol-Specification.md)
+conventions are [specs/02 §4](https://github.com/get-h3/h3/blob/main/specs/02-Protocol-Specification.md)
 (`finished` doubles as the streaming marker; the battery convention is spelled
 out at `specs/02-Protocol-Specification.md:268`) and
-[specs/05 §3](../specs/05-Test-Battery.md) (test 2.4 at
+[specs/05 §3](https://github.com/get-h3/h3/blob/main/specs/05-Test-Battery.md) (test 2.4 at
 `specs/05-Test-Battery.md:76`, the compliance conventions at `:82-85`). This
 subsection is the integrator-side summary of what the shipped battery does
 when you run it.
+
+**Spec links point to GitHub by design** — the published site (get-h3.github.io/h3) serves only `docs/`, so spec references are out-of-repo URLs; the repo's own links guard validates README and specs/index links, and a CI link check over the docs/ Pages artifact to catch this whole class of dead link is proposed but not yet installed.
 
 **Running it, and the exit code.** `h3-test --endpoint http://localhost:9191`
 (add `--json` for a machine-readable report). The process exits with exactly
@@ -552,7 +554,7 @@ routing, and type generation are handled for you.
 ## 7. Next steps
 
 - **Full protocol spec**: `get-h3/protocol` → `h3-protocol.yaml` (OpenAPI 3.1) + `schemas/v1/`
-- **Specs**: `get-h3/h3` → `specs/02-Protocol-Specification.md`, `specs/04-SDK-Libraries.md`, `specs/05-Test-Battery.md`, `specs/06-Hermes-Core-Integration.md`
+- **Specs**: [`specs/02-Protocol-Specification.md`](https://github.com/get-h3/h3/blob/main/specs/02-Protocol-Specification.md), [`specs/04-SDK-Libraries.md`](https://github.com/get-h3/h3/blob/main/specs/04-SDK-Libraries.md), [`specs/05-Test-Battery.md`](https://github.com/get-h3/h3/blob/main/specs/05-Test-Battery.md), [`specs/06-Hermes-Core-Integration.md`](https://github.com/get-h3/h3/blob/main/specs/06-Hermes-Core-Integration.md)
 - **Hermes-side wiring** (config, session routing, circuit breaker): shim `docs/integration.md`
 - **Live example end to end**: `docs/dogfood/2026-08-02-integration.md`
 
