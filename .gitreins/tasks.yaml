@@ -151,4 +151,31 @@ tasks:
     the boardctl block, and make verify stays ALL PASS'
   status: complete
   created_at: '2026-10-02T03:08:45.590488+00:00'
-  completed_at: '2026-10-02T03:15:13.847437+00:00'
+  completed_at: '2026-10-02T03:20:07.019679+00:00'
+- id: REVIEW-H3-001
+  title: 'make verify-roundtrip not hermetic: roundtrip.sh never npm-installs sdk-typescript'
+  criteria:
+  - roundtrip.sh installs Python SDK deps but NOT TypeScript SDK deps, so Phase 3
+    fails 'Cannot find module zod' on fresh clone; after fix, make verify-roundtrip
+    passes 6/6 on fresh clone without manual npm install
+  status: in_progress
+  created_at: '2026-10-03T03:02:55.901867+00:00'
+- id: H3-GAP-078
+  title: "Battery count drift 46\u219248 blocks make verify"
+  criteria:
+  - scripts/test-count.txt and all docs updated from 46 to 48 to match shim EXPECTED_TEST_COUNT=48;
+    make verify exits 0; commit pushed to origin/main
+  status: complete
+  created_at: '2026-10-03T15:28:59.889853+00:00'
+  completed_at: '2026-10-03T15:50:32.424463+00:00'
+- id: DF-H3-44
+  title: releases.md Tags table + CHANGELOG tag dates stale vs 3 pushed tags (v0.2.0/v0.3.0);
+    guard the table against drift
+  criteria:
+  - docs/releases.md Tags table lists v0.1.0/v0.2.0/v0.3.0 with dates matching git
+    ls-remote --tags origin and CHANGELOG.md; fresh-clone pin-verify flow executes
+    verbatim on v0.3.0 with make verify ALL PASS rc=0; a drift-check (guard or make
+    target) fails when the table and real tags disagree
+  status: complete
+  created_at: '2026-10-03T17:26:11.617487+00:00'
+  completed_at: '2026-10-03T18:07:09.419961+00:00'

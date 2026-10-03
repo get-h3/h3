@@ -1,0 +1,1 @@
+{"tick_id":"","dispatched_at":"2026-10-03T17:21:39Z","base_sha":"92b5836","tasks":[{"task_id":"H3-PM-021","row":"H3-PM-021 (duplicate of H3-GAP-078, closed)","kind":"verification-only-close"},{"task_id":"DF-H3-44","row":"DF-H3-44","kind":"wave-worker","worktree":"/home/kara/worktrees/h3-DF-H3-44","branch":"wt/DF-H3-44","step":"task-1"}],"budget":{"wave_budget":1,"workers":1}}
