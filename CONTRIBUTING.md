@@ -84,6 +84,7 @@ The cross-repo task board is `.coding-hermes/board/tasks.jsonl` (JSONL canonical
 - **h3-test** — 48-test compliance battery across 6 categories
 - **roundtrip.sh** — cross-language wire format verification
 - **redocly lint** — OpenAPI schema validation
+- **check-tags-table.sh** — the `docs/releases.md` tags table names exactly the tags git has (`make verify-tags`); a pushed tag missing from the table, or a phantom table row, fails the gate
 
 ### Targeting this repo for QA / verification
 

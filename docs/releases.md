@@ -20,6 +20,8 @@ regression can be bisected with `git bisect` between two tags.
 | Tag | Date | Notes |
 |-----|------|-------|
 | `v0.1.0` | 2026-09-18 | First tagged release of the umbrella repo — spec hub, 46-test battery era |
+| `v0.2.0` | 2026-09-20 | Second tagged release — release driver + docs guards era |
+| `v0.3.0` | 2026-09-29 | Third tagged release — tick-chain census + board-guard hardening era |
 
 List them from any clone with `git ls-remote --tags origin`.
 
@@ -42,6 +44,7 @@ Expected result: every guard prints PASS, the run ends with
 | `verify-docs` | every relative `.md` link in `README.md` and `specs/_index.md` resolves to a file in the repo |
 | `verify-specs` | every spec file under `specs/` is listed in `specs/_index.md`, and every listed spec exists |
 | `verify-count` | the compliance-test count (48) in `scripts/test-count.txt` agrees with the sibling battery and the per-region lists in specs 05/09/25; no current-state doc quotes a retired count |
+| `verify-tags` | the `## Tags` table in this file names exactly the tag set git reports — `git ls-remote --tags origin`, degrading to `git tag -l` when origin is unreachable (the verdict then reads `PASS (local degrade)`); a pushed tag missing from the table, or a table row naming a tag git does not have, fails. Negative proof: `sh scripts/check-tags-table.sh --selftest` |
 | `verify-json-fences` | every JSON fenced block in the tracked markdown parses, and an abbreviated payload says so on the failing line |
 | `verify-qa-target` | the QA target is a real checkout of THIS repo — zero cells is UNVERIFIED, never a pass |
 | `verify-tick-chain` | the DuckBrain tick-key census (H3-GAP-098): the bare `/tick/<N>` chain is complete from 418 to the board's `ticks_total - 1`, and no unknown-shaped tick key exists — the #459 backfill twins 452/453 are allowlisted, the pre-#418 legacy series and timestamped slugs are reported non-fatally. Reports UNVERIFIED when DuckBrain, `jq`, `curl`, the token or the board header is absent. Negative proof: `make verify-tick-chain-selftest` |

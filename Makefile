@@ -105,6 +105,18 @@
 #                       that copy has since gained; QA-H3-20). A resolvable stale
 #                       header still FAILs with the PUBLIC-HEAD-VERIFY-FAIL line.
 #                       Negative proof: make verify-board-header-selftest.
+#   9. tags-table    — the '## Tags' table in docs/releases.md names EXACTLY the
+#                       tag set git reports, two-directionally: every tag from
+#                       `git ls-remote --tags origin` (peeled ^{} lines dropped)
+#                       must appear in the table, and every table row must name
+#                       a tag git actually has. docs/releases.md is on the
+#                       pages.yml publish path, so a stale table is PUBLIC —
+#                       this is the guard for the drift DF-H3-44 closed
+#                       (v0.2.0/v0.3.0 cut+pushed while the table listed only
+#                       v0.1.0). When origin is unreachable it degrades honestly
+#                       to `git tag -l` and the verdict reads "PASS (local
+#                       degrade)". Negative proof:
+#                       sh scripts/check-tags-table.sh --selftest
 #
 # THE BOARD-WRITING CLOSE-OUT (DF-H3-25) — `make board-close`
 #
@@ -205,9 +217,9 @@
 # that never executed code. That filter is a deliberate design, not an accident;
 # the naming above is what makes the difference visible. See CONTRIBUTING.md.
 
-.PHONY: verify verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-qa-target-selftest verify-tick-chain verify-tick-chain-selftest verify-tree-census-selftest verify-board-header verify-board-header-selftest verify-board-sync-selftest board-close verify-commit-msg verify-roundtrip verify-all release
+.PHONY: verify verify-docs verify-specs verify-count verify-tags verify-json-fences verify-qa-target verify-qa-target-selftest verify-tick-chain verify-tick-chain-selftest verify-tree-census-selftest verify-board-header verify-board-header-selftest verify-board-sync-selftest board-close verify-commit-msg verify-roundtrip verify-all release
 
-verify: verify-docs verify-specs verify-count verify-json-fences verify-qa-target verify-tick-chain verify-board-header verify-commit-msg
+verify: verify-docs verify-specs verify-count verify-tags verify-json-fences verify-qa-target verify-tick-chain verify-board-header verify-commit-msg
 	@echo "make verify: ALL PASS — umbrella repo is self-consistent"
 	@echo "make verify: SCOPE — docs + repo-consistency checks only (no code executed; both DuckBrain checks are read-only and report UNVERIFIED when their substrate is absent — jq/curl/token-file/board for the tick-chain guard, python3/token env/board for the independent tree-census walker); code-level verification is 'make verify-roundtrip' (CI: roundtrip.yml)."
 
@@ -242,6 +254,10 @@ verify-specs:
 verify-count:
 	@echo "make verify: compliance-test count guard"
 	@sh scripts/check-test-count.sh
+
+verify-tags:
+	@echo "make verify: release tags-table guard (docs/releases.md vs git, DF-H3-44)"
+	@sh scripts/check-tags-table.sh
 
 verify-json-fences:
 	@echo "make verify: json-fence payload guard"
