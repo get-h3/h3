@@ -1,0 +1,9 @@
+{
+  "tick": "h3-foreman-2026-10-04-10-32-23",
+  "budget": 7,
+  "workers": [
+    {"task": "DF-H3-45", "worktree": "/home/kara/worktrees/h3-DF-H3-45", "branch": "wt/DF-H3-45"},
+    {"task": "REVIEW-H3-001", "worktree": "/home/kara/worktrees/h3-REVIEW-H3-001", "branch": "wt/REVIEW-H3-001"}
+  ],
+  "note": "mutually independent: docs/integration.md link fix vs integration/roundtrip/roundtrip.sh npm install; no depends_on edges"
+}
