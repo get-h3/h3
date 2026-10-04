@@ -272,10 +272,8 @@ verify-qa-target-selftest:
 	@sh scripts/check-qa-target-selftest.sh
 
 verify-tick-chain:
-	@echo "make verify: DuckBrain tick-chain drift/window census (H3-GAP-098)"
-	@sh scripts/check-duckbrain-tick-chain.sh
-	@echo "make verify: independent DuckBrain tree-census walker (H3-GAP-099)"
-	@if command -v python3 >/dev/null 2>&1; then python3 scripts/duckbrain-tree-census.py h3 --start 418 --end auto --url http://localhost:3000 $${H3_TREE_CENSUS_ARGS:-}; else echo "duckbrain-tree-census: UNVERIFIED — python3 not found on PATH (the independent census was not run)"; fi
+	@echo "make verify: DuckBrain census composition — tick-chain guard + independent walker, verdict-classified (DF-H3-46)"
+	@sh scripts/verify-duckbrain-census.sh
 
 verify-tick-chain-selftest:
 	@echo "make verify-tick-chain-selftest: positive + negative proof for the tick-chain checker (H3-GAP-098)"
