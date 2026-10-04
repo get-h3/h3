@@ -217,11 +217,11 @@
 # that never executed code. That filter is a deliberate design, not an accident;
 # the naming above is what makes the difference visible. See CONTRIBUTING.md.
 
-.PHONY: verify verify-docs verify-specs verify-count verify-tags verify-json-fences verify-qa-target verify-qa-target-selftest verify-tick-chain verify-tick-chain-selftest verify-tree-census-selftest verify-board-header verify-board-header-selftest verify-board-sync-selftest board-close verify-commit-msg verify-roundtrip verify-all release
+.PHONY: verify verify-docs verify-specs verify-count verify-tags verify-json-fences verify-qa-target verify-qa-target-selftest verify-tick-chain verify-tick-chain-selftest verify-tree-census-selftest verify-verdict-census verify-verdict-census-selftest verify-board-header verify-board-header-selftest verify-board-sync-selftest board-close verify-commit-msg verify-roundtrip verify-all release
 
-verify: verify-docs verify-specs verify-count verify-tags verify-json-fences verify-qa-target verify-tick-chain verify-board-header verify-commit-msg
+verify: verify-docs verify-specs verify-count verify-tags verify-json-fences verify-qa-target verify-tick-chain verify-board-header verify-commit-msg verify-verdict-census
 	@echo "make verify: ALL PASS — umbrella repo is self-consistent"
-	@echo "make verify: SCOPE — docs + repo-consistency checks only (no code executed; both DuckBrain checks are read-only and report UNVERIFIED when their substrate is absent — jq/curl/token-file/board for the tick-chain guard, python3/token env/board for the independent tree-census walker); code-level verification is 'make verify-roundtrip' (CI: roundtrip.yml)."
+	@echo "make verify: SCOPE — docs + repo-consistency checks only (no code executed; both DuckBrain checks are read-only and report UNVERIFIED when their substrate is absent — jq/curl/token-file/board for the tick-chain guard, python3/token env/board for the independent tree-census walker); code-level verification is 'make verify-roundtrip' (CI: roundtrip.yml). VERDICT CENSUS (DF-H3-41/DF-H3-46): the DuckBrain guards are honest ALONE (absent substrate = UNVERIFIED lines, exit 0), but the composite used to end with ALL PASS regardless, so scripts/release.sh step 2 (exit code + this literal ALL PASS line) passed releases over a substrate nobody checked — measured on a real fresh machine as 6 UNVERIFIED lines + ALL PASS rc=0. The LAST prerequisite, verify-verdict-census (scripts/check-verdict-census.sh), re-derives both guards' UNVERIFIED conditions read-only and is what makes ALL PASS honest: it prints the census line 'N verified / M unverified (guard: <names>)', and ALL PASS only ever follows a clean census — M > 0 fails `make verify` with an explicit FAIL line naming the guards, and only H3_ALLOW_UNVERIFIED=1 accepts the degraded run explicitly ('PASS (local degrade: M UNVERIFIED accepted via H3_ALLOW_UNVERIFIED)'), the same absent-substrate vocabulary the guards themselves use. The census mirrors the guards' degrade predicates (token/jq/curl/python3/board/args) and does not re-fetch the tree, so a reachable-but-truncated or unparseable DuckBrain answer remains the guards' own runtime UNVERIFIED output. Negative proof: make verify-verdict-census-selftest."
 
 verify-docs:
 	@echo "make verify: docs-link check"
@@ -284,6 +284,20 @@ verify-tick-chain-selftest:
 verify-tree-census-selftest:
 	@echo "make verify-tree-census-selftest: positive + negative proof for the tree-census walker (H3-GAP-099)"
 	@sh scripts/check-duckbrain-tree-census-selftest.sh
+
+# The composite verdict census (DF-H3-41 / DF-H3-46). The LAST prerequisite of
+# `verify`: it re-derives the DuckBrain guards' UNVERIFIED conditions for this
+# run and fails the composite when any guard would have printed UNVERIFIED, so
+# the ALL PASS line above is only ever printed over a substrate whose guards
+# would all have said VERIFIED. H3_ALLOW_UNVERIFIED=1 is the explicit local
+# escape hatch (see the SCOPE line and the guard's header).
+verify-verdict-census:
+	@echo "make verify: DuckBrain verdict census — the composite must not say ALL PASS over UNVERIFIED (DF-H3-41/DF-H3-46)"
+	@sh scripts/check-verdict-census.sh
+
+verify-verdict-census-selftest:
+	@echo "make verify-verdict-census-selftest: positive + negative proof for the verdict census (DF-H3-41/DF-H3-46)"
+	@sh scripts/check-verdict-census.sh --selftest
 
 verify-board-header:
 	@echo "make verify: board-header self-consistency guard (H3-GAP-099)"
