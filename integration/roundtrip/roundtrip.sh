@@ -13,6 +13,7 @@ UMBRELLA_DIR="$(cd "$ROOT_DIR/.." && pwd)"   # get-h3/ umbrella
 
 SDK_PYTHON="${UMBRELLA_DIR}/sdk-python"
 SDK_GO="${UMBRELLA_DIR}/sdk-go"
+SDK_TYPESCRIPT="${UMBRELLA_DIR}/sdk-typescript"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -71,6 +72,36 @@ section "SETUP: Go SDK"
 cd "$SDK_GO"
 echo "Go version: $(go version)"
 echo "Go SDK at ${SDK_GO}"
+
+# GAP-H3-REVIEW-001: install the TypeScript SDK dependencies before Phase 3.
+# verify_go_fixtures.ts imports the SDK's protocol.ts (src), which imports
+# zod — without an sdk-typescript/node_modules, `npx tsx verify_go_fixtures.ts`
+# dies with "Cannot find module 'zod'" on a fresh clone (CI's roundtrip.yml
+# has its own npm step; this script is the source of truth for the local
+# `make verify-roundtrip` path).
+# Idempotent + quiet-ish: npm ci / npm install are no-ops when node_modules
+# already satisfies package-lock.json / package.json; npx reuses its cache
+# so the tsx fetch only happens on first run.
+section "SETUP: TypeScript SDK"
+if [ ! -f "${SDK_TYPESCRIPT}/package.json" ]; then
+    echo -e "${RED}ERROR${NC}: ${SDK_TYPESCRIPT}/package.json not found"
+    exit 1
+fi
+cd "$SDK_TYPESCRIPT"
+if [ -f package-lock.json ]; then
+    echo "Installing TypeScript SDK dependencies (npm ci, lockfile present)..."
+    if ! npm ci --no-audit --no-fund --loglevel=error; then
+        echo -e "${RED}ERROR${NC}: npm ci failed in ${SDK_TYPESCRIPT}"
+        exit 1
+    fi
+else
+    echo "Installing TypeScript SDK dependencies (npm install, no lockfile)..."
+    if ! npm install --no-audit --no-fund --loglevel=error; then
+        echo -e "${RED}ERROR${NC}: npm install failed in ${SDK_TYPESCRIPT}"
+        exit 1
+    fi
+fi
+echo "TypeScript SDK dependencies installed."
 
 # ─── Phase 1: Python → Go ───────────────────────────────────────
 
