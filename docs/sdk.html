@@ -757,7 +757,8 @@ app.include_router(create_router(Echo()))</textarea>
             <div class="install-block">
               <h4>Install</h4>
               <code>npm install github:get-h3/sdk-typescript</code>
-              <div class="install-note">Also available via <code>bun add github:get-h3/sdk-typescript</code>. Works with Node, Bun, and Deno. Depends on Hono and Zod.</div>
+              <div class="install-note">Also available via <code>bun add github:get-h3/sdk-typescript</code>. Depends on Hono and Zod.</div>
+              <div class="install-note">Runtime support: the SDK is <strong>ESM-only</strong> (CommonJS <code>require()</code> throws <code>ERR_REQUIRE_ESM</code> on Node &lt; 20.19; CJS consumers need dynamic <code>import()</code>). CI covers <strong>Node 20 and 22</strong> only. Bun install is documented but <em>not</em> CI-covered; Deno is unverified. See the <a href="https://github.com/get-h3/sdk-typescript#runtime-support" target="_blank" rel="noreferrer">Runtime-support table</a> in the SDK README for details.</div>
             </div>
 
             <div class="api-block">
