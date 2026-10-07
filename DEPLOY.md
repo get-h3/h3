@@ -21,7 +21,7 @@ Harness (the brain)
 - Hermes Agent (any version compatible per `protocol/versions.yaml`)
 - Python 3.11+ (for the shim)
 - Python, Go, or TypeScript runtime (for the harness — pick your SDK language)
-- `h3-test` (bundled with the shim; install from source: `git clone https://github.com/get-h3/shim && cd shim && pip install -e .`)
+- `h3-test` (bundled with the shim; `pip install hermes-h3-shim`, or from source: `git clone https://github.com/get-h3/shim && cd shim && pip install -e .`)
 
 > **CLI note (WIRING-01):** the shipped standalone CLI is `hermes-h3` (subcommands:
 > `install`, `list`, `pre-update-check`, `route`, `scaffold`, `test`, `uninstall`,
@@ -32,8 +32,9 @@ Harness (the brain)
 ## Step 1: Install the H3 Shim
 
 ```bash
-# Install the shim from source (PyPI publishing pending — tracked as P3-10)
-git clone https://github.com/get-h3/shim && cd shim && pip install -e .
+# Install the shim from PyPI (published v0.1.0), or from source as fallback
+pip install hermes-h3-shim
+# source fallback: git clone https://github.com/get-h3/shim && cd shim && pip install -e .
 
 # Verify the CLI installed
 hermes-h3 --help
@@ -123,7 +124,7 @@ func main() {
 go run .
 ```
 
-**Python** — `github.com/get-h3/sdk-python` (PyPI publishing pending — install from source)
+**Python** — `github.com/get-h3/sdk-python` (install from source; PyPI publishing pending)
 
 ```python
 from h3_harness import (
