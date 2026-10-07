@@ -12,6 +12,10 @@
 #   b. every tag row in the table names a tag git actually has;
 #   c. origin unreachable  -> degrade honestly to `git tag -l`, note it in the
 #      output, and mark the verdict "PASS (local degrade)";
+#   c2. degraded AND the local tag set is empty while the table HAS rows ->
+#      UNVERIFIED exit 0 (a history-less sync/git-init copy has no tags to
+#      compare; ruling every table row phantom here is a false verdict —
+#      QA-H3-24). Keep hard FAIL for real local-vs-table drift.
 #   d. misconfigured inputs (docs/releases.md missing, git unusable) -> exit 2.
 #
 # PASS = the tag set and the table name exactly each other.
@@ -106,6 +110,15 @@ if [ "${1:-}" = "--selftest" ]; then
     write_table "$R1" "$R2" "$R3"
     expect "4 local-degrade" 0 "PASS (local degrade)" sh "$G"
 
+    # arm 4b — QA-H3-24: history-less copy (no tags at all, no origin) with a
+    # populated table must degrade to UNVERIFIED exit 0, NOT a phantom-tag FAIL.
+    git -C "$TMP" tag -d v0.1.0 v0.2.0 v0.3.0 >/dev/null
+    write_table "$R1" "$R2" "$R3"
+    expect "4b no-tags-no-origin" 0 "UNVERIFIED" sh "$G"
+    git -C "$TMP" tag -a v0.1.0 -m t1
+    git -C "$TMP" tag -a v0.2.0 -m t2
+    git -C "$TMP" tag -a v0.3.0 -m t3
+
     # arm 5 — misconfigured: docs/releases.md missing -> exit 2
     rm "$TMP/docs/releases.md"
     expect "5 missing-releases-md" 2 "" sh "$G"
@@ -168,6 +181,16 @@ printf '%s\n' "$TABLE_ROWS" | sed -n 's/^[0-9][0-9]*://p' | grep -E . | sort -u 
 
 # ---- compare both directions --------------------------------------------------
 DRIFT=0
+if [ "$DEGRADED" -eq 1 ] && [ ! -s "$WORK/git.tags" ] && [ -s "$WORK/table.tags" ]; then
+    # QA-H3-24: a network-less fresh copy (tar+git-init sync, ephemeral sandbox)
+    # has NO local tags but the table lists the real released ones. There is no
+    # tag set to compare against — emit UNVERIFIED (exit 0) instead of a
+    # phantom-tag FAIL, matching the board-header guard's UNVERIFIED-degrade
+    # vocabulary and the DF-H3-41/46 verdict-census degrade predicates.
+    N_TABLE=$(wc -l < "$WORK/table.tags" | tr -d ' ')
+    echo "$NAME: UNVERIFIED — origin unreachable/empty AND this copy has no local tags; docs/releases.md lists $N_TABLE tag(s) with nothing to compare against (history-less fresh copy?)"
+    exit 0
+fi
 if [ ! -s "$WORK/git.tags" ] && [ ! -s "$WORK/table.tags" ]; then
     # nothing on either side (fresh fork, no tags yet): consistent, nothing to list
     echo "$NAME: no vX.Y.Z tags in git and no tag rows in docs/releases.md — nothing to verify"
