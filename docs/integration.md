@@ -422,37 +422,40 @@ creates — not only your status codes. A harness that is otherwise
 protocol-correct can still fail them. Implement these deliberately; they are
 the behaviours the battery asserts, quoted from the shipped source.
 
-Line references are to the shipped battery
+References are to named symbols in the shipped battery
 (`get-h3/shim` → `src/h3_shim/test_battery.py`, 48 tests — the count is pinned
-by `EXPECTED_TEST_COUNT`, `test_battery.py:104`) and to the CLI
-(`get-h3/shim` → `src/h3_shim/cli.py`).
+by the `EXPECTED_TEST_COUNT` constant) and to the CLI
+(`get-h3/shim` → `src/h3_shim/cli.py`). Test references use the battery's own
+test-method names (`test_<category>_<n>_<slug>`), so they survive line drift.
 
 **Unfinished-text trigger**
 
 - The battery sends exactly `"Just start a thought, do not finish it yet."` —
-  `test_battery.py:565` (the same string is sent again by the cancel test,
-  `:1506`).
+  in `test_2_4_process_text_finished_false` (the same string is sent again by
+  the cancel test, `test_5_9_cancel_mid_processing`).
 - It asserts the reply is a `text` decision whose `text.finished` is `false` —
-  `test_battery.py:576-587`.
+  `test_2_4_process_text_finished_false`.
 - Trigger detection is a **substring check on the message content**: the prompt
   contains both `"do not finish"` and `"start a thought"`, so matching either
   one is sufficient. The battery never sends `"incomplete"` or `"partial"` —
   those two extra keywords exist only in the TypeScript echo example's
   heuristic (`sdk-typescript/src/examples/echo.ts:23-28`), not in the battery.
 - ⚠️ The test **skips and passes** when your harness answers that prompt with a
-  non-`text` decision such as `end` — `test_battery.py:576-580`. It fails only
-  when the answer *is* `text` and `finished` is not `false` (`:582-586`). So
+  non-`text` decision such as `end` — the skip branch of
+  `test_2_4_process_text_finished_false`. It fails only
+  when the answer *is* `text` and `finished` is not `false` (the same test's
+  `Expected finished=false` branch). So
   `finished=false` is required of harnesses that answer this prompt with text;
   it is not a hard failure for every harness.
 
 **Finished-text counterpart**
 
-- `"Give me the final answer in one short sentence."` — `test_battery.py:597`.
+- `"Give me the final answer in one short sentence."` — sent by
+  `test_2_5_process_text_finished_true`.
 - It must come back as a `text` decision with `finished: true` —
-  `test_battery.py:608-618` (same skip rule at `:608-612`).
+  `test_2_5_process_text_finished_true` (same skip rule as test 2.4).
 - These two prompts are the battery's only phrasing-sensitive pair: a hardcoded
-  `finished: true` fails 2.4 (`test_battery.py:582-586`) and a hardcoded
-  `finished: false` fails 2.5 (`:614-617`).
+  `finished: true` fails 2.4 and a hardcoded `finished: false` fails 2.5.
 
 **Multi-turn continuation contract**
 
@@ -460,40 +463,46 @@ by `EXPECTED_TEST_COUNT`, `test_battery.py:104`) and to the CLI
   posts seven result types — `tool_result` (success and failure),
   `llm_response`, `text_sent`, `delegate_result`, `error`, `wait_timeout` —
   keyed by `decision_id`, and requires a response below HTTP 400
-  (`test_battery.py:1189-1210` for `text_sent`; `:1240-1262` for `error`, where
+  (`test_4_4_result_text_sent`; `test_4_6_result_error`, where
   any non-5xx passes). An unreachable result endpoint fails the test
-  (`:1204-1205`).
+  (`Result endpoint unreachable` branch of test 4.4).
 - **A `/v1/result` response may itself be the next decision.** The battery stops
   its round-trip loop early when the response carries `decision: "end"` —
-  `test_battery.py:1631` (5.11) and `:1031` (3.6).
+  `test_6_3_loop_convergence` and `test_3_6_decision_end`.
 - **The battery does not post `/v1/result` after the "do not finish" prompt.**
   What it asserts after unfinished text is the **cancel path**: test 5.9
   creates a session with that prompt specifically to keep the session in flight
-  (`test_battery.py:1500-1507`) and then requires `POST /v1/cancel` → 200 for
-  that session (`:1514-1524`). If your harness treats an unfinished turn as
+  (`test_5_9_cancel_mid_processing`) and then requires `POST /v1/cancel` → 200 for
+  that session. If your harness treats an unfinished turn as
   "done" and discards the session, cancel answers 404 and the test fails — the
-  source comment at `:1500-1504` names exactly this failure mode ("a
+  source comment in `test_5_9_cancel_mid_processing` names exactly this failure mode ("a
   non-streaming session completes in <1ms and can be purged before the cancel
   lands, causing an intermittent 404 race").
 - **Unknown sessions must 404.** `POST /v1/cancel` for a session that never
-  existed must return 404 (any 4xx accepted) — `test_battery.py:1528-1546`;
-  `GET /v1/sessions/{unknown}` must return 404 or 405 — `:1550-1568`. A session
+  existed must return 404 (any 4xx accepted) —
+  `test_5_9b_cancel_unknown_session`;
+  `GET /v1/sessions/{unknown}` must return 404 or 405 —
+  `test_5_10_session_not_found`. A session
   that just accepted a process call must still be retrievable: 200, the echoed
-  `session_id`, and an ISO-8601 `started_at` — `:1669-1731`.
+  `session_id`, and an ISO-8601 `started_at` —
+  `test_5_12_session_get_after_process`.
 - **Turn-to-turn state.** Ten consecutive `/v1/process` calls on one
-  `session_id` must each return 200 — `test_battery.py:622-650`; two sessions
-  must not bleed state into each other (`:654-687`); and each decision should
+  `session_id` must each return 200 — `test_2_6_process_multiple_turns`; two
+  sessions must not bleed state into each other
+  (`test_2_7_process_session_isolation`); and each decision should
   echo a top-level `history` list that does not shrink relative to the
-  request's `context.history` (`:691-728` — an absent `history` reads as `[]`
-  and fails).
+  request's `context.history` (`test_2_8_process_preserves_history` — an absent
+  `history` reads as `[]` and fails).
 - **Not ending is not a failure.** 5.11 and 6.3 soft-pass when a session never
-  reaches `end` (`test_battery.py:1634-1638`, `:1838-1843`) — but when your
+  reaches `end` (`test_5_11_session_status_completed`,
+  `test_6_3_loop_convergence`) — but when your
   harness *does* emit `end`, `end.reason` must be one of `task_complete`,
   `user_requested`, `error`, `timeout`, `rate_limited`, `cancelled`
-  (`:978-985`).
-- **Timing budgets.** `/v1/health` under 500 ms (`test_battery.py:436`), each
-  `/v1/process` under 5 s (`:1867`), 50 process calls inside 10 s (`:1776`);
-  the client's per-request ceiling is 10 s (`:123`).
+  (the valid-reasons list asserted by `test_3_6_decision_end`).
+- **Timing budgets.** `/v1/health` under 500 ms (`test_1_6_health_latency`), each
+  `/v1/process` under 5 s (`test_6_4_decision_latency`), 50 process calls
+  inside 10 s (`test_6_2_rapid_process_calls`); the client's per-request
+  ceiling is the battery's `H3TestBattery.PER_TEST_TIMEOUT_S` constant (10 s).
 
 **Where the normative text lives.** The protocol-level statements of these
 conventions are [specs/02 §4](https://github.com/get-h3/h3/blob/main/specs/02-Protocol-Specification.md)
@@ -512,15 +521,15 @@ one of three codes, defined in `shim/src/h3_shim/cli.py`:
 
 | Exit | Meaning | Source |
 |------|---------|--------|
-| `0` | Compliant — the target is an H3 endpoint and every check passed. | `cli.py:417`; epilog at `cli.py:462` |
-| `1` | Compliance failure — the target answered `/v1/health` correctly but protocol checks failed. | `cli.py:417`; epilog at `cli.py:463-464` |
-| `2` | NOT an H3 endpoint — connection refused, non-JSON body, HTTP ≥ 400, or a `/v1/health` payload missing required fields (`cli.py:384`). Also returned for an unknown `--categories` token (`cli.py:393-401`). | `cli.py:384`, `cli.py:401` |
+| `0` | Compliant — the target is an H3 endpoint and every check passed. | `_run_battery()` in `cli.py` returns `0 if report.all_passing else 1`; epilog in `main()` |
+| `1` | Compliance failure — the target answered `/v1/health` correctly but protocol checks failed. | `_run_battery()` (all_passing false); epilog in `main()` |
+| `2` | NOT an H3 endpoint — connection refused, non-JSON body, HTTP ≥ 400, or a `/v1/health` payload missing required fields (the `NotH3EndpointError` branch of `_run_battery()`). Also returned for an unknown `--categories` token (the `category_token()` validation loop in `_run_battery()`). | `_run_battery()` |
 
 **The 6 categories and their counts.** Health & Protocol 7, Process Basic Flows
 8, Decision Types 6, Result Handling 7, Error & Edge Cases 15, Stress &
-Performance 5 — 48 total. The category lists are registered in the battery at
-`test_battery.py:321-327`, `:470-477`, `:738-743`, `:1048-1054`, `:1298-1310`
-and `:1741-1745`; the total is pinned at `:104`.
+Performance 5 — 48 total. The categories are registered in the battery's
+single `CATEGORIES` dict (token → display label); the total is pinned by the
+`EXPECTED_TEST_COUNT` constant.
 
 ### 5.2 Integrator CLI flag reference
 
