@@ -3,9 +3,26 @@
   "project": "h3",
   "wave_budget": 11,
   "workers": [
-    {"task_id": "QA-H3-25", "worktree": "/home/kara/worktrees/h3-QA-H3-25", "branch": "wt/QA-H3-25", "base_sha": "cc43b6c"},
-    {"task_id": "DOC-3", "worktree": "/home/kara/worktrees/h3-DOC-3", "branch": "wt/DOC-3", "base_sha": "cc43b6c"},
-    {"task_id": "DOC-4", "worktree": "/home/kara/worktrees/h3-DOC-4", "branch": "wt/DOC-4", "base_sha": "cc43b6c"}
+    {
+      "task_id": "QA-H3-25",
+      "worktree": "/home/kara/worktrees/h3-QA-H3-25",
+      "branch": "wt/QA-H3-25",
+      "base_sha": "cc43b6c"
+    },
+    {
+      "task_id": "DOC-3",
+      "worktree": "/home/kara/worktrees/h3-DOC-3",
+      "branch": "wt/DOC-3",
+      "base_sha": "cc43b6c"
+    },
+    {
+      "task_id": "DOC-4",
+      "worktree": "/home/kara/worktrees/h3-DOC-4",
+      "branch": "wt/DOC-4",
+      "base_sha": "cc43b6c"
+    }
   ],
-  "note": "3 mutually independent rows, disjoint file sets verified (QA-H3-25: README.md+scripts/verify-duckbrain-census.sh; DOC-3: docs/integration.md; DOC-4: docs/{sdk,index,guide}.html). DOC-5 excluded (overlaps docs/sdk.html with DOC-4)."
+  "note": "3 mutually independent rows, disjoint file sets verified (QA-H3-25: README.md+scripts/verify-duckbrain-census.sh; DOC-3: docs/integration.md; DOC-4: docs/{sdk,index,guide}.html). DOC-5 excluded (overlaps docs/sdk.html with DOC-4).",
+  "finished_at": "2026-10-07T10:45:28.263343",
+  "recovery": "merged+pushed pre-recovery (all 3 shas ancestors of origin/main); worktrees+branches removed 2026-10-07T15:47"
 }
