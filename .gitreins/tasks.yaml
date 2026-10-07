@@ -222,3 +222,39 @@ tasks:
   status: complete
   created_at: '2026-10-07T03:50:48.344211+00:00'
   completed_at: '2026-10-07T03:50:54.881695+00:00'
+- id: DF-H3-37
+  title: verify prints Pydantic enum repr instead of protocol value
+  criteria:
+  - 'hermes-h3 verify on a healthy harness prints ''status: HealthStatus.OK'' instead
+    of ''status: ok''. Fix: model_dump(mode=''json'') in verify handler or str(payload[''status''].value).
+    Verify: ''hermes-h3 verify <healthy-harness>'' shows ''status: ok'' matching the
+    raw /v1/health payload.'
+  status: in_progress
+  created_at: '2026-10-07T07:59:46.616296+00:00'
+- id: qa-h3-24
+  title: check-tags-table UNVERIFIED degrade for history-less fresh copies
+  criteria:
+  - On a network-less copy with no local tags and a populated docs/releases.md Tags
+    table, sh scripts/check-tags-table.sh exits 0 with an UNVERIFIED line (not a phantom-tag
+    FAIL rc=2); selftest arm 4b passes; real fresh-copy repro exits 0; live repo check
+    still PASS.
+  status: complete
+  created_at: '2026-10-07T08:18:42.451241+00:00'
+  completed_at: '2026-10-07T08:19:27.817781+00:00'
+- id: DOC-2
+  title: Integrator CLI flag reference in docs/integration.md
+  criteria:
+  - docs/integration.md carries a 5.2 section documenting hermes-h3/h3-test real flags
+    (--set-harness --remove --expect-fresh --fallback --timeout-ms --transport --config
+    --versions-yaml), each verified against live --help output
+  status: complete
+  created_at: '2026-10-07T09:51:04.958995+00:00'
+  completed_at: '2026-10-07T09:51:32.484593+00:00'
+- id: QA-H3-25
+  title: census gate UNVERIFIED substrate
+  criteria:
+  - 'token-less machine: census gate exits 0 with disclosed UNVERIFIED skip; FAILED
+    still fatal; selftest passes'
+  status: complete
+  created_at: '2026-10-07T14:02:24.021281+00:00'
+  completed_at: '2026-10-07T14:08:26.841862+00:00'
