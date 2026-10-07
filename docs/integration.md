@@ -522,6 +522,50 @@ Performance 5 — 48 total. The category lists are registered in the battery at
 `test_battery.py:321-327`, `:470-477`, `:738-743`, `:1048-1054`, `:1298-1310`
 and `:1741-1745`; the total is pinned at `:104`.
 
+### 5.2 Integrator CLI flag reference
+
+Every flag the integrator-facing CLI actually exposes, verified against
+`hermes-h3 <cmd> --help` and `h3-test --help` (shim `cli.py` is the source of
+truth; if this table drifts, the `--help` output wins).
+
+**`h3-test`** (legacy argparse entry point; same battery as `hermes-h3 test`):
+
+| Flag | Meaning |
+|------|---------|
+| `--endpoint URL` | Required. H3 harness endpoint (e.g. `http://localhost:9191`). |
+| `--json` | Machine-readable JSON report only. |
+| `--categories LIST` | Comma-separated subset — protocol tokens (`health,process,decisions,results,errors,stress`) or the display labels the battery prints (e.g. `"Stress & Performance"`). Unknown token → exit 2. |
+| `--expect-fresh` | Refuse to run when the target's `/v1/health` uptime exceeds 300s (stale co-tenant harness guard); exits 1 before the first test. |
+| `--version` | Show version and package install path, then exit. |
+
+Exit codes: `0` compliant · `1` compliance failure · `2` not an H3 endpoint
+(full table in §5 above).
+
+**`hermes-h3`** (Click group; `--config FILE` is available on the group and on
+every subcommand — overrides `$HERMES_H3_CONFIG`, default `~/.hermes/h3/config.yaml`):
+
+| Command | Flags | Meaning |
+|---------|-------|---------|
+| `install [NAME]` | `--name TEXT` | Harness name (alias for the positional `NAME`). |
+| | `--endpoint URL` | Required. Harness endpoint URL. |
+| | `--transport TEXT` | Transport protocol; only `rest` is implemented (default `rest`). |
+| | `--timeout-ms INT` | Default request timeout in milliseconds (default 30000). |
+| | `--set-default / --no-set-default` | Promote this harness to `default_harness`. |
+| `verify [NAME]` | `-h/--harness TEXT` | Named harness from config (default: `default_harness`); ignored when positional `NAME` is given. |
+| | `--endpoint URL` | Override endpoint URL (skips config lookup). |
+| | `--fallback` | Also test the native fallback path — show what happens when the harness is unreachable and native is available. |
+| `test` | `-h/--harness TEXT` | Named harness from config. |
+| | `--endpoint URL` | Override endpoint URL. |
+| | `--json` | Emit JSON report. |
+| | `--categories LIST` | Same subset syntax as `h3-test`. |
+| | `--expect-fresh` | Same stale-harness guard as `h3-test`. |
+| `route` | `--session TEXT` | Show only the binding for this session id (or name the session for `--set-harness`/`--remove`). |
+| | `--set-harness NAME` | Bind `--session` to harness NAME and persist to the config file. |
+| | `--remove` | Delete `--session`'s binding from the config file. |
+| `use NAME` | — | Set the default harness (positional only). |
+| `scaffold` | `--force` | Overwrite an existing config file or project directory. |
+| `pre-update-check TARGET_VERSION` | `--versions-yaml FILE` | Path to `versions.yaml` (default: bundled package data, falls back to the protocol repo in a monorepo checkout). |
+
 ## 6. SDKs and scaffolding
 
 | SDK | Install | Echo example (reference, passes 48/48) |
