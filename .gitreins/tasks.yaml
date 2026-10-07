@@ -214,3 +214,11 @@ tasks:
   status: complete
   created_at: '2026-10-04T11:17:33.089628+00:00'
   completed_at: '2026-10-04T11:17:40.791594+00:00'
+- id: H3-PM-022
+  title: 'make verify fails: /tick/524 missing from tick chain'
+  criteria:
+  - make verify exits 0; both census paths report VERIFIED with 0 missing ticks in
+    418..524
+  status: complete
+  created_at: '2026-10-07T03:50:48.344211+00:00'
+  completed_at: '2026-10-07T03:50:54.881695+00:00'
