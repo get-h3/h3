@@ -31,6 +31,7 @@ pip install hermes-h3-shim
 #   git clone https://github.com/get-h3/shim && cd shim && pip install -e .
 
 # Start a Go echo harness — the echo example lives in the sdk-go repo, not in the shim
+# Requires the Go toolchain (1.21+): https://go.dev/dl/
 git clone https://github.com/get-h3/sdk-go
 cd sdk-go/examples/echo && go run .
 
@@ -231,7 +232,7 @@ A harness is H3-compliant when it passes all 48 tests in the [test battery](http
 
 | Language | Evidence | CI-verified | Published |
 |----------|----------|:-----------:|-----------|
-| Go (echo) | 48/48 — battery run against the Go echo harness on a fresh port (0.20s, p50 0.88ms / p95 26.17ms; 2026-10-03) | ✅ | source (`go get github.com/get-h3/sdk-go`) |
+| Go (echo) | 48/48 — battery run against the Go echo harness on a fresh port (0.20s, p50 0.88ms / p95 26.17ms; 2026-10-03) | ✅ | module: `go get github.com/get-h3/sdk-go` (resolves on the module proxy — v0.1.8 as of 2026-10-07); source fallback: `git clone https://github.com/get-h3/sdk-go` |
 | Python (echo) | 48/48 — local battery run against the Python echo example (0.25s; 2026-10-03) | — | PyPI: `pip install h3-harness-sdk` |
 | TypeScript (echo) | 48/48 — local battery run against the compiled TS echo example (0.20s; 2026-10-03) | — | **not published on npm** (`npm view @get-h3/h3-harness-sdk` → E404) — install from source (GitHub dependency) |
 
