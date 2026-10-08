@@ -258,11 +258,13 @@ tasks:
   status: complete
   created_at: '2026-10-07T14:02:24.021281+00:00'
   completed_at: '2026-10-07T14:08:26.841862+00:00'
-- id: DF-H3-43
-  title: PyPI hermes-h3-shim 0.2.0 cut (fix CI lint + uptime-dependent test first)
+- id: DF-H3-40
+  title: Re-run DF-H3-40 bunker install leg on bunker-las-02 (las-03 offline)
   criteria:
-  - PyPI hermes-h3-shim serves 0.2.0 (live pypi.org check) after the shim tree went
-    green (ruff + 587 pytest) and tag v0.2.0 pushed; umbrella board row DF-H3-43 closed
-    verification-only with live PyPI witness
-  status: in_progress
-  created_at: '2026-10-08T03:46:07.539836+00:00'
+  - 'Fresh bunker battery at shim HEAD 5703348: fresh-install cell OK (pip install
+    -e clean) and ci-pass cell OK (native pytest suite green uncapped) in the committed
+    evidence artifact qa-ev-DF-H3-40/evidence.jsonl; umbrella board row DF-H3-40 closed
+    with this live evidence'
+  status: complete
+  created_at: '2026-10-08T09:49:59.034205+00:00'
+  completed_at: '2026-10-08T09:51:27.449376+00:00'
