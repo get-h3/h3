@@ -258,3 +258,11 @@ tasks:
   status: complete
   created_at: '2026-10-07T14:02:24.021281+00:00'
   completed_at: '2026-10-07T14:08:26.841862+00:00'
+- id: DF-H3-43
+  title: PyPI hermes-h3-shim 0.2.0 cut (fix CI lint + uptime-dependent test first)
+  criteria:
+  - PyPI hermes-h3-shim serves 0.2.0 (live pypi.org check) after the shim tree went
+    green (ruff + 587 pytest) and tag v0.2.0 pushed; umbrella board row DF-H3-43 closed
+    verification-only with live PyPI witness
+  status: in_progress
+  created_at: '2026-10-08T03:46:07.539836+00:00'
