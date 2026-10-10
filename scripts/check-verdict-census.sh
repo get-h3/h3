@@ -61,6 +61,36 @@
 #   Zero cells / absent board is UNVERIFIED, never a pass (QA-H3-1) — the
 #   same vocabulary as the tick-chain guard.
 #
+# TOKEN-LESS MACHINE (DF-H3-48 — the mirror of the composite's QA-H3-25 skip)
+#   scripts/verify-duckbrain-census.sh (the composite) runs EARLIER in
+#   `make verify` — verify-tick-chain precedes verify-verdict-census in the
+#   recipe's prerequisite list — and on a machine with no DuckBrain token dir
+#   at all it degrades an UNVERIFIED composition to the disclosed
+#       make verify: SKIP — DuckBrain census UNVERIFIED on a token-less machine
+#   line and exits 0. That skip had no counterpart here, so the same fresh
+#   clone printed the composite's SKIP and then this census's FAIL, and make
+#   verify exited 2 on a machine with nothing to verify WITH (reproduced in
+#   this worktree at HEAD: HOME=<empty home> make verify -> composite SKIP,
+#   then "verdict census FAIL — 2 unverified guard(s): tick-chain tree-census",
+#   make Error 1, rc=2).
+#   The predicate below is the composite's, verbatim — the two stages must
+#   agree on what a token-less machine IS, and this census's skip must fire
+#   whenever the composite's does. That is why the predicate is DIRECTORY
+#   EXISTENCE and deliberately not narrower: had it additionally required
+#   H3OPS_DUCKBRAIN_API_KEY to be unset, a machine with a token in the env and
+#   no token dir would SKIP in the composite and FAIL here — the same DF-H3-48
+#   disagreement, by construction. A *.token that exists but is empty or
+#   unreadable likewise leaves the composite's predicate FALSE (the dir
+#   exists), so this census stays strict there too; in that state make verify
+#   stops at the composite's own FAIL before this guard is reached at all.
+#   Nothing is hidden by the skip: the census line and every guard's own fact
+#   line (printed above it) name each unverified leg and its degrade reason,
+#   and the skip line names the token dirs that were looked for.
+#   A FAILED guard verdict cannot reach this guard at all — make aborts on the
+#   guard's nonzero exit before the census target runs (the composite exits 1
+#   on FAILED, 2 on a guard shape change), so the skip can never convert a
+#   real failure into a green run.
+#
 # RESIDUAL (documented, deliberate)
 #   A degrade that depends on the ANSWER rather than the pre-flight substrate
 #   — a reachable DuckBrain that returns truncated (total >= limit) or
@@ -78,9 +108,15 @@
 # ALL PASS only after this guard passed):
 #   make verify: verdict census — N verified / M unverified (guard: <names>)
 #   M = 0:                     "make verify: verdict census PASS"; exit 0
-#   M > 0, no H3_ALLOW_UNVERIFIED:
+#   M > 0, no DuckBrain token dir on the machine (DF-H3-48; mirrors the
+#   composite's QA-H3-25 skip and, like H3_GATE_ALLOW_UNVERIFIED there, is
+#   evaluated BEFORE the hatch below):
+#                              "make verify: verdict census SKIP — DuckBrain
+#                              census UNVERIFIED on a token-less machine: no
+#                              DuckBrain token dir at <dir> ..."; exit 0
+#   M > 0, token dir PRESENT, no H3_ALLOW_UNVERIFIED:
 #                              "make verify: verdict census FAIL — ..." exit 1
-#   M > 0, H3_ALLOW_UNVERIFIED=1:
+#   M > 0, token dir present, H3_ALLOW_UNVERIFIED=1:
 #                              "make verify: verdict census PASS (local
 #                              degrade: M UNVERIFIED accepted via
 #                              H3_ALLOW_UNVERIFIED)"; exit 0
@@ -98,16 +134,19 @@
 # SELFTEST
 #   ./scripts/check-verdict-census.sh --selftest   (or: make
 #   verify-verdict-census-selftest) — positive + negative proof: clean
-#   substrate PASS, blocked-token FAIL naming both guards, the
-#   H3_ALLOW_UNVERIFIED degrade acceptance, single-guard attribution, and
+#   substrate PASS, blocked-token FAIL naming both guards, the DF-H3-48
+#   token-less SKIP (with a token dir that EXISTS but carries no token staying
+#   strict, in both directions), the H3_ALLOW_UNVERIFIED degrade acceptance,
+#   single-guard attribution, and
 #   both drift directions of the census counter via mutated copies of this
 #   script (an under-count that would wrongly PASS a blocked substrate and
 #   an over-count that would wrongly FAIL a clean one — the mutated copy
 #   MUST produce the drifted verdict, proving the composite verdict is
 #   driven by this census counter and nothing else).
 #
-# Exit codes: 0 = census passed (possibly with the explicit degrade), 1 =
-# census failed (M > 0 without the escape hatch), 2 = usage error.
+# Exit codes: 0 = census passed (possibly with the explicit degrade, or the
+# disclosed token-less skip of DF-H3-48), 1 = census failed (M > 0 with a
+# token dir present and no escape hatch), 2 = usage error.
 # Dependencies: POSIX sh + coreutils. jq is invoked ONLY where the tick-chain
 # mirror checks tree-file parseability — and jq's absence degrades that guard
 # earlier anyway, so the census never NEEDS jq to count correctly. READ ONLY.
@@ -480,6 +519,31 @@ if [ "$n_unverified" -eq 0 ]; then
     echo "make verify: verdict census PASS"
     exit 0
 fi
+
+# ---- DF-H3-48: the token-less machine — the composite's skip, mirrored ------
+# The predicate is scripts/verify-duckbrain-census.sh's (QA-H3-25, 87aed41)
+# verbatim, because that is the contract `make verify` already publishes: on a
+# machine with no DuckBrain token dir at all there is nothing to verify with,
+# so the composite degrades to a disclosed skip and this census must reach the
+# SAME verdict on the same machine state — otherwise the two stages disagree
+# and `make verify` fails on a fresh clone (which is exactly DF-H3-48). Directory
+# existence, not the token env and not token readability: any extra condition
+# here would make this skip fire LESS often than the composite's, and every
+# such gap is the same bug again. A token dir present keeps the strict FAIL
+# below. See the header's TOKEN-LESS MACHINE section.
+TC_TOKEN_DIR=${H3_TICK_CHAIN_TOKEN_DIR:-${HOME:-}/.duckbrain}
+WALK_TOKEN_DIR=${H3_TREE_CENSUS_TOKEN_DIR:-${HOME:-}/.duckbrain}
+if [ ! -d "$TC_TOKEN_DIR" ] && [ ! -d "$WALK_TOKEN_DIR" ] && [ ! -d "$ROOT/scripts/.duckbrain" ]; then
+    NOR=
+    for d in "$WALK_TOKEN_DIR" "$ROOT/scripts/.duckbrain"; do
+        [ "$d" != "$TC_TOKEN_DIR" ] || continue
+        case " $NOR " in *" $d "*) continue ;; esac
+        NOR="${NOR:+$NOR, }$d"
+    done
+    echo "make verify: verdict census SKIP — DuckBrain census UNVERIFIED on a token-less machine: no DuckBrain token dir at $TC_TOKEN_DIR${NOR:+ (nor: $NOR)}; the tick-chain and tree census were NOT verified (install a token in ${HOME:-}/.duckbrain or set H3_TICK_CHAIN_TOKEN_DIR/H3_TREE_CENSUS_TOKEN_DIR to enable this guard)."
+    exit 0
+fi
+
 if [ "${H3_ALLOW_UNVERIFIED:-}" = "1" ]; then
     echo "make verify: verdict census PASS (local degrade: $n_unverified UNVERIFIED accepted via H3_ALLOW_UNVERIFIED)"
     exit 0

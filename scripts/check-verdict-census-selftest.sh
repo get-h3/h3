@@ -9,6 +9,13 @@
 #   * a BLOCKED substrate (no readable token anywhere the guards look) exits 1
 #     and NAMES both unverified guards in the census line and the FAIL line —
 #     the composite must NOT reach ALL PASS over an unchecked substrate;
+#   * a TOKEN-LESS machine (DF-H3-48: no DuckBrain token dir anywhere either
+#     guard looks — the same predicate scripts/verify-duckbrain-census.sh
+#     applies before its own QA-H3-25 skip) exits 0 with the disclosed
+#     "make verify: verdict census SKIP — ... token-less machine" line naming
+#     the missing token dir, so `make verify` is green on a fresh clone; a
+#     machine whose token dir EXISTS — even one carrying no *.token at all —
+#     keeps the strict FAIL;
 #   * H3_ALLOW_UNVERIFIED=1 turns that same blocked run into an explicit
 #     degrade acceptance: exit 0 with the "(local degrade: N UNVERIFIED
 #     accepted via H3_ALLOW_UNVERIFIED)" line; any other value (0) does NOT;
@@ -27,7 +34,13 @@
 #
 # HERMETIC: every case pins its own H3_TICK_CHAIN_* / H3_TREE_CENSUS_*
 # variables explicitly (empty where the census must ignore the ambient
-# value), so an inherited environment cannot change an outcome. No network,
+# value), so an inherited environment cannot change an outcome. DF-H3-48 adds
+# the MACHINE's token state to that list: the census now has a token-less
+# skip arm, so HOME (with no .duckbrain in it) and one EXISTING token dir are
+# pinned for the whole run below and re-pinned by every arm that asserts a
+# FAIL/hatch verdict — without those pins a fresh CI host would silently
+# re-classify those arms as the skip arm and the proof would be vacuous. No
+# network,
 # no DuckBrain contact, no jq requirement (the offline fixtures take both
 # mirrors down the tree-file path; the blocked case degrades on the token
 # before any tool lookup matters). Dependencies: POSIX sh + coreutils + sed.
@@ -53,6 +66,26 @@ fi
 
 WORK=$(mktemp -d "${TMPDIR:-/tmp}/verdict-census-selftest.XXXXXX")
 trap 'rm -rf "$WORK"' EXIT HUP INT TERM
+
+# ---- DF-H3-48 machine-state pins ---------------------------------------------
+# The census now takes the composite's token-less skip (see its header), so
+# every arm below runs on a PINNED machine state rather than an inherited one:
+# HOME holds no .duckbrain, and one really-existing token dir stands in for a
+# host that has a DuckBrain token. $TOKDIR (exported as
+# H3_TREE_CENSUS_TOKEN_DIR) is what makes the strict arms prove "token dir
+# present + UNVERIFIED substrate -> FAIL"; the two token-less arms further
+# down override both pins with their own absent/empty dirs. Ambient token and
+# arg inputs are cleared here so no inherited value can move an arm between
+# the skip and the FAIL verdicts.
+FAKE_HOME="$WORK/home"            # HOME with no .duckbrain in it
+TOKDIR="$WORK/token-dir"          # existing token dir WITH one readable token
+EMPTYDIR="$WORK/empty-token-dir"  # existing token dir with NO *.token in it
+mkdir -p "$FAKE_HOME" "$TOKDIR" "$EMPTYDIR"
+printf 'not-a-real-token\n' > "$TOKDIR/h3.token"
+HOME="$FAKE_HOME"; export HOME
+H3_TREE_CENSUS_TOKEN_DIR="$TOKDIR"; export H3_TREE_CENSUS_TOKEN_DIR
+unset H3OPS_DUCKBRAIN_API_KEY H3_TICK_CHAIN_TOKEN_DIR H3_TICK_CHAIN_TREE_FILE \
+    H3_TREE_CENSUS_ARGS H3_ALLOW_UNVERIFIED
 
 pass=0
 fail=0
@@ -105,7 +138,9 @@ case_run "clean substrate -> PASS 2/0" 0 \
 # Blocked: no readable token anywhere either mirror looks. The tick-chain
 # guard degrades first ("no readable token: no *.token file in ..."), the
 # walker mirror via its explicit --token-file (missing) — hermetic on any
-# host, including one whose ~/.duckbrain carries real tokens.
+# host, including one whose ~/.duckbrain carries real tokens. DF-H3-48: the
+# pinned $TOKDIR (an EXISTING token dir) is exactly the "a token dir exists
+# but the substrate is unverified" state, which must stay a strict FAIL.
 
 case_run "blocked token -> FAIL naming both guards" 1 \
     "make verify: verdict census — 0 verified / 2 unverified (guard: tick-chain tree-census)|make verify: verdict census FAIL — 2 unverified guard(s): tick-chain tree-census|no readable token: no *.token file in /nonexistent-h3-census-selftest|token file is missing: /nonexistent-h3-census-selftest/h3.token|DF-H3-41/DF-H3-46" \
@@ -132,6 +167,54 @@ case_run "blocked token + H3_ALLOW_UNVERIFIED=0 -> still FAIL" 1 \
         H3_TICK_CHAIN_TOKEN_DIR=/nonexistent-h3-census-selftest \
         H3_TREE_CENSUS_ARGS="--token-file /nonexistent-h3-census-selftest/h3.token" \
         H3_ALLOW_UNVERIFIED=0 \
+        sh "$CENSUS"
+
+# ---- DF-H3-48: the token-less machine (mirror of the composite's skip) -------
+
+# No token dir anywhere either guard looks -> the census must reach the SAME
+# verdict scripts/verify-duckbrain-census.sh reaches on this machine (its
+# "SKIP — ... token-less machine" line, exit 0) instead of failing the fresh
+# clone. The subtests name both the census count line and the disclosure; the
+# guards' own fact lines (still printed above the skip) keep naming what was
+# not verified.
+
+case_run "token-less machine -> disclosed SKIP, exit 0 (DF-H3-48)" 0 \
+    "make verify: verdict census — 0 verified / 2 unverified (guard: tick-chain tree-census)|make verify: verdict census SKIP — DuckBrain census UNVERIFIED on a token-less machine: no DuckBrain token dir at /nonexistent-h3-census-selftest|the tick-chain and tree census were NOT verified|no readable token: no *.token file in /nonexistent-h3-census-selftest" \
+    env HOME="$FAKE_HOME" \
+        H3_TICK_CHAIN_TOKEN_DIR=/nonexistent-h3-census-selftest \
+        H3_TREE_CENSUS_TOKEN_DIR= \
+        H3_TICK_CHAIN_TREE_FILE= \
+        H3_TREE_CENSUS_ARGS="--token-file /nonexistent-h3-census-selftest/h3.token" \
+        H3_ALLOW_UNVERIFIED= \
+        sh "$CENSUS"
+
+# The SAME blocked substrate with a token dir that EXISTS (but holds no
+# *.token) is NOT token-less: strictness is unchanged, and the skip must not
+# fire on a directory that simply does not resolve a token.
+
+case_run "existing but empty token dir -> still strict FAIL, no skip (DF-H3-48)" 1 \
+    "make verify: verdict census — 0 verified / 2 unverified (guard: tick-chain tree-census)|make verify: verdict census FAIL — 2 unverified guard(s): tick-chain tree-census" \
+    env HOME="$FAKE_HOME" \
+        H3_TICK_CHAIN_TOKEN_DIR=/nonexistent-h3-census-selftest \
+        H3_TREE_CENSUS_TOKEN_DIR="$EMPTYDIR" \
+        H3_TICK_CHAIN_TREE_FILE= \
+        H3_TREE_CENSUS_ARGS="--token-file /nonexistent-h3-census-selftest/h3.token" \
+        sh "$CENSUS"
+
+# The predicate is the composite's DIRECTORY EXISTENCE test, deliberately not
+# "is there a token anywhere": a token in H3OPS_DUCKBRAIN_API_KEY with no
+# token dir still takes the composite's skip, so it must take this census's
+# skip too (a narrower predicate here would re-open the DF-H3-48
+# disagreement). The walker mirror counts its leg VERIFIED off the env token
+# and the tick-chain leg is the one that degrades — the skip still fires.
+
+case_run "env token, no token dir -> composite's SKIP is mirrored (DF-H3-48)" 0 \
+    "make verify: verdict census — 1 verified / 1 unverified (guard: tick-chain)|make verify: verdict census SKIP — DuckBrain census UNVERIFIED on a token-less machine" \
+    env HOME="$FAKE_HOME" H3OPS_DUCKBRAIN_API_KEY=not-a-real-token \
+        H3_TICK_CHAIN_TOKEN_DIR=/nonexistent-h3-census-selftest \
+        H3_TREE_CENSUS_TOKEN_DIR= \
+        H3_TICK_CHAIN_TREE_FILE= \
+        H3_TREE_CENSUS_ARGS= \
         sh "$CENSUS"
 
 # ---- single-guard attribution, both directions -------------------------------
