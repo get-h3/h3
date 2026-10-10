@@ -16,14 +16,21 @@
 #      UNVERIFIED exit 0 (a history-less sync/git-init copy has no tags to
 #      compare; ruling every table row phantom here is a false verdict —
 #      QA-H3-24). Keep hard FAIL for real local-vs-table drift.
+#   c3. $ROOT is not a git work tree at all (fresh-install shape: `git archive
+#      HEAD | tar -x` into a plain directory, history-less sync copy) ->
+#      UNVERIFIED exit 0. There is no history to enumerate tags from, so the
+#      table's rows cannot be ruled phantom — same false-verdict class as (c2).
 #   d. misconfigured inputs (docs/releases.md missing, git unusable) -> exit 2.
 #
 # PASS = the tag set and the table name exactly each other.
 #
-# Exit codes: 0 = pass, 1 = drift, 2 = guard misconfigured (bad/missing inputs).
+# Exit codes: 0 = pass or an honest UNVERIFIED degrade, 1 = drift,
+#             2 = guard misconfigured (docs/releases.md missing, git unusable).
 # Zero dependencies: POSIX sh + git + grep + coreutils (sed/awk/sort/comm).
 # No network beyond `git ls-remote`. Selftest: `--selftest` builds a throwaway
-# fixture repo and proves both drift directions fail and the clean state passes.
+# fixture repo and proves both drift directions fail, the clean state passes, and
+# every degrade (ls-remote-unreachable local-only tags, history-less empty tag
+# set, no git work tree at all) reports honestly instead of failing.
 
 set -eu
 
@@ -119,7 +126,25 @@ if [ "${1:-}" = "--selftest" ]; then
     git -C "$TMP" tag -a v0.2.0 -m t2
     git -C "$TMP" tag -a v0.3.0 -m t3
 
-    # arm 5 — misconfigured: docs/releases.md missing -> exit 2
+    # arm 4c — H3-GAP-100: the fresh-install shape. `git archive HEAD | tar -x`
+    # into a plain directory (and every history-less sync copy) leaves a tree
+    # with NO .git at all. With a populated table this must degrade to
+    # UNVERIFIED exit 0 — NOT `FAIL: <dir> is not a git work tree` exit 2, which
+    # is what turned `make verify` into rc=2 on the QA fresh copy.
+    rm -rf "$TMP/.git"
+    write_table "$R1" "$R2" "$R3"
+    expect "4c non-git-tree" 0 "UNVERIFIED — not a git work tree" sh "$G"
+    expect "4c non-git-tree names the doc" 0 "cannot enumerate tags to compare against docs/releases.md" sh "$G"
+
+    # arm 4d — same non-git tree with an EMPTY table: still UNVERIFIED, never a
+    # PASS the guard cannot back (it cannot enumerate this tree's tags at all).
+    write_table
+    expect "4d non-git-tree-empty-table" 0 "UNVERIFIED — not a git work tree" sh "$G"
+
+    # arm 5 — misconfigured: docs/releases.md missing -> exit 2. Re-init a .git
+    # so this arm exercises the doc-missing path on a git tree (arm 4c consumed
+    # the only non-git fixture).
+    git -C "$TMP" init -q
     rm "$TMP/docs/releases.md"
     expect "5 missing-releases-md" 2 "" sh "$G"
 
@@ -127,7 +152,7 @@ if [ "${1:-}" = "--selftest" ]; then
         echo "$NAME: SELFTEST FAIL — $FAILS arm(s) failed above" >&2
         exit 1
     fi
-    echo "$NAME: SELFTEST PASS — clean passes (ls-remote + local degrade), both drift directions fail, misconfigured exits 2"
+    echo "$NAME: SELFTEST PASS — clean passes (ls-remote + local degrade), both drift directions fail, non-git tree reports UNVERIFIED exit 0 (4c/4d), misconfigured exits 2"
     exit 0
 fi
 
@@ -136,11 +161,35 @@ command -v git >/dev/null 2>&1 ||
     { echo "$NAME: FAIL: git not found on PATH" >&2; exit 2; }
 [ -f "$DOC" ] ||
     { echo "$NAME: FAIL: docs/releases.md missing: $DOC" >&2; exit 2; }
-git -C "$ROOT" rev-parse --git-dir >/dev/null 2>&1 ||
-    { echo "$NAME: FAIL: $ROOT is not a git work tree" >&2; exit 2; }
 
 WORK=$(mktemp -d "${TMPDIR:-/tmp}/h3-tags.XXXXXX")
 trap 'rm -rf "$WORK"' EXIT INT TERM
+
+# ---- collect the table's tag rows (file:line + name) -------------------------
+# Read before the tree check: the not-a-git-work-tree degrade (c3) below reports
+# against the table, so the table must be collected while the doc is known good.
+TABLE_ROWS=$(awk '
+    insec && /^## / { exit }
+    /^## Tags/ { insec = 1; next }
+    insec && /^\|/ && match($0, /`v[0-9]+\.[0-9]+\.[0-9]+`/) {
+        print NR ":" substr($0, RSTART + 1, RLENGTH - 2)
+    }
+' "$DOC" || true)
+printf '%s\n' "$TABLE_ROWS" | sed -n 's/^[0-9][0-9]*://p' | grep -E . | sort -u > "$WORK/table.tags" || true
+
+# ---- (c3) no git work tree at all -> honest UNVERIFIED, never a hard FAIL ----
+if ! git -C "$ROOT" rev-parse --git-dir >/dev/null 2>&1; then
+    # H3-GAP-100: fresh-install shape (`git archive HEAD | tar -x` into a plain
+    # directory, a history-less sync copy, an ephemeral sandbox). There is no
+    # history in this tree to enumerate tags from, so "the table names tags this
+    # copy does not have" is not a finding about the table — it is the guard's
+    # own blind spot, and hard-failing make verify here (rc=2) blocks exactly
+    # the copies QA runs on. Degrade to UNVERIFIED exit 0 in the same vocabulary
+    # as the QA-H3-24 history-less-tag-set degrade (c2).
+    N_TABLE=$(wc -l < "$WORK/table.tags" | tr -d ' ')
+    echo "$NAME: UNVERIFIED — not a git work tree; cannot enumerate tags to compare against docs/releases.md (docs/releases.md lists $N_TABLE tag row(s); history-less fresh copy?)"
+    exit 0
+fi
 
 # ---- collect the tag set git reports ----------------------------------------
 # Degrade rule: ls-remote must succeed AND actually list tags. When the named
@@ -169,16 +218,8 @@ else
         sort -u > "$WORK/git.tags" || true
 fi
 
-# ---- collect the table's tag rows (file:line + name) -------------------------
-TABLE_ROWS=$(awk '
-    insec && /^## / { exit }
-    /^## Tags/ { insec = 1; next }
-    insec && /^\|/ && match($0, /`v[0-9]+\.[0-9]+\.[0-9]+`/) {
-        print NR ":" substr($0, RSTART + 1, RLENGTH - 2)
-    }
-' "$DOC" || true)
-printf '%s\n' "$TABLE_ROWS" | sed -n 's/^[0-9][0-9]*://p' | grep -E . | sort -u > "$WORK/table.tags" || true
-
+# (the table's tag rows were collected above, before the tree check)
+#
 # ---- compare both directions --------------------------------------------------
 DRIFT=0
 if [ "$DEGRADED" -eq 1 ] && [ ! -s "$WORK/git.tags" ] && [ -s "$WORK/table.tags" ]; then
