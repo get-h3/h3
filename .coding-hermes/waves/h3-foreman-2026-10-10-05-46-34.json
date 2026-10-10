@@ -1,0 +1,25 @@
+{
+  "tick_id": "h3-foreman-2026-10-10-05-46-34",
+  "project": "h3",
+  "composed_at": "2026-10-10T05:55:00Z",
+  "wave_budget": 7,
+  "workers": 2,
+  "tasks": [
+    {
+      "task_id": "DF-H3-48",
+      "repo": "/home/kara/get-h3/h3",
+      "worktree": "/home/kara/worktrees/h3-DF-H3-48",
+      "branch": "wt/DF-H3-48",
+      "model": "deepseek-v4-flash",
+      "provider": "deepseek-foreman"
+    },
+    {
+      "task_id": "H3-GAP-100",
+      "repo": "/home/kara/get-h3/h3",
+      "worktree": "/home/kara/worktrees/h3-H3-GAP-100",
+      "branch": "wt/H3-GAP-100",
+      "model": "deepseek-v4-flash",
+      "provider": "deepseek-foreman"
+    }
+  ]
+}
