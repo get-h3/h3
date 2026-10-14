@@ -48,7 +48,9 @@ Expected result: every guard prints PASS, the run ends with
 | `verify-json-fences` | every JSON fenced block in the tracked markdown parses, and an abbreviated payload says so on the failing line |
 | `verify-qa-target` | the QA target is a real checkout of THIS repo — zero cells is UNVERIFIED, never a pass |
 | `verify-tick-chain` | the DuckBrain tick-key census (H3-GAP-098): the bare `/tick/<N>` chain is complete from 418 to the board's `ticks_total - 1`, and no unknown-shaped tick key exists — the #459 backfill twins 452/453 are allowlisted, the pre-#418 legacy series and timestamped slugs are reported non-fatally. Reports UNVERIFIED when DuckBrain, `jq`, `curl`, the token or the board header is absent. Negative proof: `make verify-tick-chain-selftest` |
+| `verify-board-header` | the board-header self-consistency guard (H3-GAP-099): `last_commit` resolves and is HEAD or HEAD's parent, `ticks_total` never trails the highest event-log tick, every tick in the recent window has an event, working-tree header equals committed header. Negative proof: `make verify-board-header-selftest` |
 | `verify-commit-msg` | the HEAD commit message carries no workflow-skip directive |
+| `verify-verdict-census` | the composite DuckBrain verdict census (DF-H3-41/DF-H3-46): the composite must not say ALL PASS over UNVERIFIED. Re-derives both DuckBrain guards' UNVERIFIED conditions read-only, prints `make verify: verdict census — N verified / M unverified (guard: <names>)`. `ALL PASS` only follows a clean census; `M > 0` fails the run naming the unverified guards. On a token-less machine degrades to the same disclosed SKIP the individual guards take. Negative proof: `make verify-verdict-census-selftest` |
 
 It does **not** execute SDK code: these are docs/repo-consistency guards, which is what
 keeps them runnable on a dependency-free clone (the one exception is the tick-chain
