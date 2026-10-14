@@ -196,7 +196,9 @@ class TestRunner:
 
 Verbatim output of `h3-test --endpoint http://localhost:9191` against the Go echo
 example — a plain per-category table, no color and no progress bars. `v0.1.0` is the
-installed `hermes-h3-shim` package version. A region with failing tests prints
+`hermes-h3-shim` version this sample was captured against (it is an output snapshot,
+not the current release — later versions print their own version on that line). A
+region with failing tests prints
 `❌ FAILED` on its row, and the `TOTAL` row prints `PASSED`/`FAILED` without an icon.
 
 ```
@@ -315,7 +317,8 @@ jobs:
         run: go run . & sleep 3
       - name: Run compliance
         run: |
-          # or: pip install hermes-h3-shim (published v0.1.0) — source install below as fallback
+          # PyPI (primary path): pip install hermes-h3-shim
+          # source fallback (unreleased commit / local shim development):
           git clone https://github.com/get-h3/shim && cd shim && pip install -e .
           h3-test --endpoint http://localhost:9191 --json > report.json
       - name: Verify

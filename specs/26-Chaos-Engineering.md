@@ -550,7 +550,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run network partition experiments
         run: |
-          # or: pip install hermes-h3-shim (published v0.1.0) — source install below as fallback
+          # PyPI (primary path): pip install hermes-h3-shim
+          # source fallback (unreleased commit / local shim development):
           git clone https://github.com/get-h3/shim && cd shim && pip install -e .
           hermes h3 chaos run --category network --json > chaos-network.json
       - name: Upload results
@@ -566,7 +567,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run malformed response experiments
         run: |
-          # or: pip install hermes-h3-shim (published v0.1.0) — source install below as fallback
+          # PyPI (primary path): pip install hermes-h3-shim
+          # source fallback (unreleased commit / local shim development):
           git clone https://github.com/get-h3/shim && cd shim && pip install -e .
           hermes h3 chaos run --category malformed --json > chaos-malformed.json
 
@@ -577,7 +579,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run out-of-sequence experiments
         run: |
-          # or: pip install hermes-h3-shim (published v0.1.0) — source install below as fallback
+          # PyPI (primary path): pip install hermes-h3-shim
+          # source fallback (unreleased commit / local shim development):
           git clone https://github.com/get-h3/shim && cd shim && pip install -e .
           hermes h3 chaos run --category sequence --json > chaos-sequence.json
 
@@ -588,7 +591,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run partial response experiments
         run: |
-          # or: pip install hermes-h3-shim (published v0.1.0) — source install below as fallback
+          # PyPI (primary path): pip install hermes-h3-shim
+          # source fallback (unreleased commit / local shim development):
           git clone https://github.com/get-h3/shim && cd shim && pip install -e .
           hermes h3 chaos run --category partial --json > chaos-partial.json
 

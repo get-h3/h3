@@ -32,7 +32,7 @@ Harness (the brain)
 ## Step 1: Install the H3 Shim
 
 ```bash
-# Install the shim from PyPI (published v0.1.0), or from source as fallback
+# Install the shim from PyPI (`pip install hermes-h3-shim`), or from source as fallback
 pip install hermes-h3-shim
 # source fallback: git clone https://github.com/get-h3/shim && cd shim && pip install -e .
 
@@ -124,7 +124,7 @@ func main() {
 go run .
 ```
 
-**Python** — `github.com/get-h3/sdk-python` (install from source; PyPI publishing pending)
+**Python** — `github.com/get-h3/sdk-python` (published on PyPI as `h3-harness-sdk`; source fallback: `pip install git+https://github.com/get-h3/sdk-python`)
 
 ```python
 from h3_harness import (
@@ -146,11 +146,11 @@ app.include_router(create_router(MyHarness()))
 ```
 
 ```bash
-pip install git+https://github.com/get-h3/sdk-python
+pip install h3-harness-sdk          # source fallback: pip install git+https://github.com/get-h3/sdk-python
 uvicorn main:app --port 9191
 ```
 
-**TypeScript** — `github.com/get-h3/sdk-typescript` (npm publishing pending — install from source; imports use the package name `@get-h3/h3-harness-sdk`)
+**TypeScript** — `github.com/get-h3/sdk-typescript` (not yet on npm — install from source; imports use the package name `@get-h3/h3-harness-sdk`)
 
 ```typescript
 import { Hono } from 'hono';

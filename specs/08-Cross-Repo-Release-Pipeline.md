@@ -105,7 +105,8 @@ jobs:
         run: |
           make run-example &
           sleep 3
-          # or: pip install hermes-h3-shim (published v0.1.0) — source install below as fallback
+          # PyPI (primary path): pip install hermes-h3-shim
+          # source fallback (unreleased commit / local shim development):
           git clone https://github.com/get-h3/shim && cd shim && pip install -e .
           h3-test --endpoint http://localhost:9191
       - name: Commit generated code

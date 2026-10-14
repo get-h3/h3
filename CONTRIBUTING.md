@@ -155,4 +155,4 @@ Pick up a task from the board. If you're new to H3, start with:
    git clone https://github.com/get-h3/sdk-python.git
    git clone https://github.com/get-h3/sdk-typescript.git
    ```
-4. Run the test battery: `git clone https://github.com/get-h3/shim && cd shim && pip install -e . && h3-test --endpoint http://localhost:9191` (source install — PyPI publishing pending, see P3-10)
+4. Run the test battery: `pip install hermes-h3-shim && h3-test --endpoint http://localhost:9191` (published on PyPI, so this is the primary path; source fallback for a commit that is not in a release yet — `git clone https://github.com/get-h3/shim && cd shim && pip install -e .`)

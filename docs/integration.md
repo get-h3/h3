@@ -352,7 +352,7 @@ class ChainHarness(BaseHarness):
 
 ## 5. Step 4 — prove compliance: `h3-test`
 
-Install the shim from PyPI — `hermes-h3-shim` (0.1.0) is published, so the
+Install the shim from PyPI — `hermes-h3-shim` is published, so the
 package install is the primary path. Use a virtual environment: on PEP 668
 managed Pythons (Ubuntu 24.04+, Debian 12+) a bare `pip install` fails with
 externally-managed-environment:
