@@ -293,3 +293,33 @@ tasks:
   status: complete
   created_at: '2026-10-13T15:41:15.896229+00:00'
   completed_at: '2026-10-13T15:43:12.480069+00:00'
+- id: QA-H3-26
+  title: "[P3] upgrade cell UNVERIFIED on synced trees: repo has 3 release tags but\
+    \ the QA-synced copy carries no history and no installable previous release \u2014\
+    \ upgrade path never exercised"
+  criteria:
+  - Either a harness change (previous-release artifact bundled into the sync) or an
+    h3 packaging change (sdist the cell auto-detects) makes the upgrade leg VERIFIED
+    on a network-less fresh copy
+  status: pending
+  created_at: '2026-10-14T04:08:19.882406+00:00'
+- id: DOC-6
+  title: "P4 \u2014 rot \u2014 repository install guidance still labels published\
+    \ packages as pending or pins obsolete versions"
+  criteria:
+  - grep of current-state docs/specs has no stale publishing pending, P3-10 install
+    caveat, or published-v0.1.0 claim, and each install path names the working registry
+    route plus source fallback where appropriate
+  status: complete
+  created_at: '2026-10-14T04:08:58.517782+00:00'
+  completed_at: '2026-10-14T04:26:28.451267+00:00'
+- id: DOC-7
+  title: "P4 \u2014 missing-reference \u2014 release verification docs omit the independent\
+    \ verdict-census guard and current make verify scope"
+  criteria:
+  - every target in Makefile verify prerequisites has a discoverable description in
+    README or docs/releases.md, and a token-less run's documented output names the
+    two unverified DuckBrain guards
+  status: complete
+  created_at: '2026-10-14T04:10:05.980326+00:00'
+  completed_at: '2026-10-14T04:30:51.705532+00:00'

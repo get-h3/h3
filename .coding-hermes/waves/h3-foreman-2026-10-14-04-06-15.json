@@ -1,0 +1,36 @@
+{
+  "wave_id": "h3-foreman-2026-10-14-04-06-15",
+  "tick_id": "h3-foreman-2026-10-14-04-06-15",
+  "project": "h3",
+  "workdir": "/home/kara/get-h3/h3",
+  "tasks": [
+    {
+      "id": "DOC-6",
+      "title": "P4 \u2014 rot \u2014 repository install guidance still labels published packages as pending or pins obsolete versions",
+      "priority": "P4",
+      "complexity": 2,
+      "worktree": "/home/kara/worktrees/h3-DOC-6",
+      "branch": "wt/DOC-6",
+      "worker_model": "deepseek-v4-flash",
+      "worker_provider": "deepseek-foreman",
+      "gitreins_task": "DOC-6",
+      "brief_file": "/tmp/brief-DOC-6.txt"
+    },
+    {
+      "id": "DOC-7",
+      "title": "P4 \u2014 missing-reference \u2014 release verification docs omit the independent verdict-census guard and current make verify scope",
+      "priority": "P4",
+      "complexity": 2,
+      "worktree": "/home/kara/worktrees/h3-DOC-7",
+      "branch": "wt/DOC-7",
+      "worker_model": "deepseek-v4-flash",
+      "worker_provider": "deepseek-foreman",
+      "gitreins_task": "DOC-7",
+      "brief_file": "/tmp/brief-DOC-7.txt"
+    }
+  ],
+  "created_at": "2026-10-14T04:06:15-05:00",
+  "status": "complete",
+  "finished_at": "2026-10-14T12:10:00-05:00",
+  "recovered_by": "h3-foreman-2026-10-14-16-55-22"
+}
