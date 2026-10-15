@@ -217,11 +217,75 @@
 # that never executed code. That filter is a deliberate design, not an accident;
 # the naming above is what makes the difference visible. See CONTRIBUTING.md.
 
-.PHONY: verify verify-docs verify-specs verify-count verify-tags verify-json-fences verify-qa-target verify-qa-target-selftest verify-tick-chain verify-tick-chain-selftest verify-tree-census-selftest verify-verdict-census verify-verdict-census-selftest verify-board-header verify-board-header-selftest verify-board-sync-selftest board-close verify-commit-msg verify-roundtrip verify-all release
+.PHONY: verify verify-prereqs verify-prereqs-early verify-docs verify-specs verify-count verify-tags verify-json-fences verify-qa-target verify-qa-target-selftest verify-tick-chain verify-tick-chain-selftest verify-tree-census-selftest verify-verdict-census verify-verdict-census-selftest verify-board-header verify-board-header-selftest verify-board-sync-selftest board-close verify-commit-msg verify-roundtrip verify-all release
 
-verify: verify-docs verify-specs verify-count verify-tags verify-json-fences verify-qa-target verify-tick-chain verify-board-header verify-commit-msg verify-verdict-census
+# PERF-1: make verify — bounded parallel prerequisites.
+#
+# The 10 guard prerequisites are independent read-only checks; run serially the
+# composite is process-orchestration bound (hyperfine at bd4c5fa, 20 runs warm:
+# MAKEFLAGS=-j1 2.901s ± 1.128s vs -j8 1.484s ± 0.362s — ~1.95x, and strace
+# showed 83% of traced time in wait4, not in any single guard). The
+# parallelism is therefore the DEFAULT of the target itself, not a caller-side
+# flag, with a knob:
+#
+#   VERIFY_JOBS ?= 8                      # bounded fan-out for verify-prereqs
+#   make VERIFY_JOBS=16 verify            # wider/narrower without editing
+#
+# `verify` carries NO direct guard prerequisites — the guards live ONLY in the
+# fan-out graph below (verify-prereqs / verify-prereqs-early / the census
+# edge). Their recipes (and each guard's verdict lines) are unchanged and
+# byte-identical. Giving `verify` both the guard list AND the recursive recipe
+# would run every guard twice — once serially as prerequisites of the outer
+# make, once in the bounded-parallel sub-make (measured here first: the first
+# cut of this change produced 2x the guard output and a slower run than the
+# baseline). The recipe re-invokes make on the real prerequisite list,
+# bounded:
+#
+#   $(MAKE) --no-print-directory -j$(VERIFY_JOBS) --output-sync=recurse \
+#       verify-prereqs
+#
+# --output-sync=recurse (-Orecurse) is REQUIRED: it holds each guard's output
+# whole, so no verdict line ever interleaves with a sibling's and every PASS /
+# FAIL / UNVERIFIED stays attributable to the guard that printed it.
+#
+# CALLER-PINNED PARALLELISM WINS. When the caller (hyperfine leg, CI, a human)
+# pinned -j via MAKEFLAGS (-j1, -jN or bare -j), the recipe delegates the
+# flags unmodified — a literal -j$(VERIFY_JOBS) on the sub-make argv would
+# OVERRIDE the caller's MAKEFLAGS value (measured on GNU Make 4.4.1: env
+# MAKEFLAGS=-j1 + argv -j8 runs the sub-make at 8, so a -j1 timing leg would
+# silently measure parallel and the speedup number would be fake). Detected on
+# $(MAKEFLAGS), which carries exactly what the caller set (the sub-make's copy
+# is never consulted): a -j token present -> pass-through; absent -> apply
+# -j$(VERIFY_JOBS) -Orecurse. Output-sync is NOT caller-dependent: a caller
+# -j never had it, and recursion adds no interleaving of its own.
+#
+# ORDERING CONTRACT (DF-H3-41/DF-H3-46, unchanged by the fan-out). The verdict
+# census (verify-verdict-census) re-derives — read-only — whether the two
+# DuckBrain guards degraded to UNVERIFIED on THIS run, so ALL PASS is only
+# honest when it runs after them and after every other guard. In the serial
+# target that was left-prerequisite order; here it is explicit graph order,
+# encoded so it cannot depend on make's scheduling luck:
+#   verify-prereqs-early — the 8 plain guards;
+#   verify-verdict-census : verify-prereqs-early — runs after the early group;
+#   verify-prereqs        : early group + census — always last.
+# The census and tick-chain targets keep their own recipes untouched; the
+# census was never named standalone by any script or workflow (grep at PERF-1),
+# so the added edge changes no other invocation.
+VERIFY_JOBS ?= 8
+
+verify:
+	@$(MAKE) --no-print-directory $(if $(findstring -j,$(MAKEFLAGS)),,-j$(VERIFY_JOBS) --output-sync=recurse) verify-prereqs
 	@echo "make verify: ALL PASS — umbrella repo is self-consistent"
 	@echo "make verify: SCOPE — docs + repo-consistency checks only (no code executed; both DuckBrain checks are read-only and report UNVERIFIED when their substrate is absent — jq/curl/token-file/board for the tick-chain guard, python3/token env/board for the independent tree-census walker); code-level verification is 'make verify-roundtrip' (CI: roundtrip.yml). VERDICT CENSUS (DF-H3-41/DF-H3-46): the DuckBrain guards are honest ALONE (absent substrate = UNVERIFIED lines, exit 0), but the composite used to end with ALL PASS regardless, so scripts/release.sh step 2 (exit code + this literal ALL PASS line) passed releases over a substrate nobody checked — measured on a real fresh machine as 6 UNVERIFIED lines + ALL PASS rc=0. The LAST prerequisite, verify-verdict-census (scripts/check-verdict-census.sh), re-derives both guards' UNVERIFIED conditions read-only and is what makes ALL PASS honest: it prints the census line 'N verified / M unverified (guard: <names>)', and ALL PASS only ever follows a clean census — M > 0 fails 'make verify' with an explicit FAIL line naming the guards whenever a DuckBrain token dir exists, and (DF-H3-48) degrades to the same disclosed token-less SKIP the composite takes when none does (single quotes here, not backticks: a backtick inside this double-quoted recipe would command-substitute and recursively re-invoke make verify — QA'd in tick-524), and only H3_ALLOW_UNVERIFIED=1 accepts the degraded run explicitly ('PASS (local degrade: M UNVERIFIED accepted via H3_ALLOW_UNVERIFIED)'), the same absent-substrate vocabulary the guards themselves use. The census mirrors the guards' degrade predicates (token/jq/curl/python3/board/args) and does not re-fetch the tree, so a reachable-but-truncated or unparseable DuckBrain answer remains the guards' own runtime UNVERIFIED output. Negative proof: make verify-verdict-census-selftest."
+
+# The fan-out target. Prerequisite ORDER (left-to-right) is the honest-census
+# contract made explicit: the 8 plain guards first, then the census, which
+# itself waits on the early group (see the ordering block above). All targets
+# are .PHONY (declared on the .PHONY line above), so the sub-make rebuilds
+# every guard on every run.
+verify-prereqs: verify-prereqs-early verify-verdict-census
+
+verify-prereqs-early: verify-docs verify-specs verify-count verify-tags verify-json-fences verify-qa-target verify-tick-chain verify-board-header verify-commit-msg
 
 verify-docs:
 	@echo "make verify: docs-link check"
