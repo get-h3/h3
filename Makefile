@@ -358,7 +358,7 @@ verify-tree-census-selftest:
 # machine with no DuckBrain token dir at all it takes the SAME disclosed
 # token-less skip the composite gate takes, instead of failing the fresh clone
 # the composite had just skipped (both stages must agree on that machine).
-verify-verdict-census:
+verify-verdict-census: verify-prereqs-early
 	@echo "make verify: DuckBrain verdict census — the composite must not say ALL PASS over UNVERIFIED (DF-H3-41/DF-H3-46)"
 	@sh scripts/check-verdict-census.sh
 
