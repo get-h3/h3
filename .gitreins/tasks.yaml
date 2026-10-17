@@ -334,3 +334,18 @@ tasks:
   status: complete
   created_at: '2026-10-15T11:58:53.412743+00:00'
   completed_at: '2026-10-15T11:58:53.842141+00:00'
+- id: DF-H3-50
+  title: Verdict-census header read rejects the real spaced board header (make verify
+    rc=2 at HEAD)
+  criteria:
+  - '1) scripts/check-verdict-census-selftest.sh passes with 0 failures and includes
+    a NEW case that proves a SPACED board header (e.g. {"project": "H3", ..., "ticks_total":
+    545, ...}) on a clean substrate yields ''verdict census - 2 verified / 0 unverified''
+    and exit 0; the case must be shown RED against the pre-fix script (git show <base>:scripts/check-verdict-census.sh)
+    and GREEN after. 2) make verify exits 0 (run WITHOUT a pipe) at the fix HEAD,
+    and .coding-hermes/board/board.jsonl is not reformatted by the fix. 3) scripts/check-verdict-census.sh
+    stays POSIX sh: the header read works with grep alone (no jq required) and the
+    13 pre-existing selftest cases still pass.'
+  status: complete
+  created_at: '2026-10-17T19:36:29.865197+00:00'
+  completed_at: '2026-10-17T19:47:20.458270+00:00'
