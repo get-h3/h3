@@ -181,12 +181,19 @@ py_rc2() {
 }
 
 # The board header's ticks_total, read the way both guards read it: line 1
-# only, integer value (grep form of the guards' jq/JSON reads on the compact
-# header object the board-header guard canonicalizes).
+# only, integer value. The guards read the same line with jq (".ticks_total //
+# empty"), which accepts whatever JSON whitespace the header's writer emitted
+# — and the writer controls that spacing: board commits exist in both compact
+# and spaced forms (scripts/sync-board-header.sh rewrites line 1 into place
+# without canonicalizing separators), so the mirror must tolerate any run of
+# blanks around the colon. POSIX grep only, on purpose: the census must count
+# correctly on a host without jq (see the dependencies note above), and the
+# match is anchored on the leading quote so only a bare ticks_total key can
+# satisfy it (DF-H3-50).
 board_ticks_total() { # $1 = board path; prints the integer or nothing
     [ -f "$1" ] || return 0
     head -n 1 "$1" 2>/dev/null |
-        grep -o '"ticks_total":[0-9][0-9]*' 2>/dev/null |
+        grep -o '"ticks_total"[[:space:]]*:[[:space:]]*[0-9][0-9]*' 2>/dev/null |
         head -n 1 |
         grep -o '[0-9][0-9]*' 2>/dev/null ||
         true

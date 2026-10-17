@@ -281,6 +281,38 @@ else
     pass=$((pass + 1))
 fi
 
+# ---- DF-H3-50: the header's JSON spacing is the writer's choice ----------------
+# The live board header has appeared in both COMPACT and SPACED JSON
+# (scripts/sync-board-header.sh rewrites line 1 into place and never
+# canonicalizes separators), and the guard this mirror mirrors reads the same
+# line with jq — which accepts both. The census must therefore reach its board
+# read WITHOUT the H3_TICK_CHAIN_TICKS_TOTAL override on a SPACED header too.
+# The fixture harness tree pins the mirror's own $ROOT: it carries a copy of
+# the census script plus a board whose line 1 is spaced-JSON, so the tick-chain
+# mirror resolves $ROOT/.coding-hermes/board/board.jsonl INSIDE the harness
+# (never the repo's live board) and the header count 421 is what the clean
+# fixture window needs. A census that only matched the compact form (pre-fix,
+# DF-H3-50) reports tick-chain UNVERIFIED here (header "carries no
+# ticks_total") and FAILs this substrate — a substrate identical to the clean
+# arm but reached through a real board read instead of an override.
+
+HARNESS="$WORK/harness"
+mkdir -p "$HARNESS/scripts" "$HARNESS/.coding-hermes/board"
+cp "$CENSUS" "$HARNESS/scripts/check-verdict-census.sh"
+HARNESS_BOARD="$HARNESS/.coding-hermes/board/board.jsonl"
+{
+    printf '{"project": "H3", "namespace": "h3", "version": 2, "last_tick": "2026-10-17 04:12:19", "ticks_total": 421, "ticks_idle": 0, "cooldown_s": 43200, "last_commit": "0000000000000000000000000000000000000000"}\n'
+    printf '# fixture: a SPACED-JSON header (DF-H3-50) and no other content — only line 1 is read\n'
+} > "$HARNESS_BOARD"
+
+case_run "spaced header board -> PASS 2/0 without any override (DF-H3-50)" 0 \
+    "make verify: verdict census — 2 verified / 0 unverified (guard: none)|make verify: verdict census PASS" \
+    env HOME="$FAKE_HOME" \
+        H3_TICK_CHAIN_TREE_FILE="$CLEAN" \
+        H3_TICK_CHAIN_TICKS_TOTAL= \
+        H3_TREE_CENSUS_ARGS="--tree-file $CLEAN" \
+        sh "$HARNESS/scripts/check-verdict-census.sh"
+
 # ---- usage error --------------------------------------------------------------
 
 case_run "unknown flag -> usage error (exit 2)" 2 \
