@@ -553,8 +553,10 @@ Exit codes: `0` compliant · `1` compliance failure · `2` not an H3 endpoint
 **`hermes-h3`** (Click group; `--config FILE` is available on the group and on
 every subcommand — overrides `$HERMES_H3_CONFIG`, default `~/.hermes/h3/config.yaml`):
 
+| Group-level | `--version` | Show version and package install path, then exit. Available on every subcommand. |
 | Command | Flags | Meaning |
 |---------|-------|---------|
+| `list` | `--config FILE` | List harnesses known to the config. |
 | `install [NAME]` | `--name TEXT` | Harness name (alias for the positional `NAME`). |
 | | `--endpoint URL` | Required. Harness endpoint URL. |
 | | `--transport TEXT` | Transport protocol; only `rest` is implemented (default `rest`). |
@@ -568,11 +570,15 @@ every subcommand — overrides `$HERMES_H3_CONFIG`, default `~/.hermes/h3/config
 | | `--json` | Emit JSON report. |
 | | `--categories LIST` | Same subset syntax as `h3-test`. |
 | | `--expect-fresh` | Same stale-harness guard as `h3-test`. |
+| `uninstall NAME` | `--config FILE` | Remove a harness from the config. |
 | `route` | `--session TEXT` | Show only the binding for this session id (or name the session for `--set-harness`/`--remove`). |
 | | `--set-harness NAME` | Bind `--session` to harness NAME and persist to the config file. |
 | | `--remove` | Delete `--session`'s binding from the config file. |
 | `use NAME` | — | Set the default harness (positional only). |
-| `scaffold` | `--force` | Overwrite an existing config file or project directory. |
+| `scaffold` | `--config FILE` | Override config path (default: `$HERMES_H3_CONFIG` or `~/.hermes/h3/config.yaml`). |
+| | `--force` | Overwrite an existing config file or project directory. |
+| | `--lang [go|py|ts|python|typescript]` | Generate a complete harness project for the given language (go, py, ts; python/typescript aliases accepted) in a new `h3-harness-<lang>/` subdirectory. Without `--lang`, an empty config skeleton is written instead. |
+| | `--output-dir DIRECTORY` | Parent directory under which the new project is created.  [default: (current directory)] |
 | `pre-update-check TARGET_VERSION` | `--versions-yaml FILE` | Path to `versions.yaml` (default: bundled package data, falls back to the protocol repo in a monorepo checkout). |
 
 ## 6. SDKs and scaffolding
