@@ -349,3 +349,82 @@ tasks:
   status: complete
   created_at: '2026-10-17T19:36:29.865197+00:00'
   completed_at: '2026-10-17T19:47:20.458270+00:00'
+- id: H3-REVIEW-20261014-02
+  title: Add securitySchemes to OpenAPI protocol doc
+  criteria:
+  - protocol/h3-protocol.yaml contains a securitySchemes field defining at least one
+    authentication scheme (e.g. bearerAuth); grep -c securitySchemes protocol/h3-protocol.yaml
+    returns >= 1
+  status: complete
+  created_at: '2026-10-18T14:56:55.418696+00:00'
+  completed_at: '2026-10-18T15:01:33.074614+00:00'
+- id: DOC-9
+  title: correct SECURITY.md Security Model
+  criteria:
+  - 'SECURITY.md must not claim auth/TLS/schema-validation as implemented when specs
+    12/14 call them unimplemented. PASS: SECURITY.md either (a) marks those controls
+    as PLANNED/NOT-YET-IMPLEMENTED with spec cross-refs, or (b) removes the false
+    claims entirely; grep for ''auth.*implemented\|TLS.*enabled\|schema.*validated''
+    in SECURITY.md returns 0 false claims.'
+  status: complete
+  created_at: '2026-10-20T01:44:01.611731+00:00'
+  completed_at: '2026-10-20T01:47:34.235583+00:00'
+- id: DOC-11
+  title: Fix DEPLOY.md Python prerequisite (says 3.11+, shim pyproject declares >=3.10)
+  criteria:
+  - DEPLOY.md Python floor equals requires-python in shim/pyproject.toml (>=3.10);
+    no 3.11-only features found
+  status: complete
+  created_at: '2026-10-20T04:31:18.586172+00:00'
+  completed_at: '2026-10-20T04:32:40.861019+00:00'
+- id: DOC-12
+  title: 'DOC-12: prd.html banner stops quoting a retired compliance count; README
+    stops calling the snapshot canonical'
+  criteria:
+  - 'prd.html line 243''s present-tense banner sentence quotes no stale compliance
+    count (the canonical count is 48 per scripts/test-count.txt) and README.md''s
+    prd.html description agrees with prd.html''s own ''Historical snapshot'' status;
+    run: grep -n ''live compliance bar'' prd.html and grep -n ''prd.html'' README.md
+    and make verify ends ''make verify: ALL PASS'''
+  status: complete
+  created_at: '2026-10-20T16:01:44.289440+00:00'
+  completed_at: '2026-10-20T16:12:30.867198+00:00'
+- id: DOC-14
+  title: 'DOC-14: migration guide leads with registry installs and the current battery
+    version'
+  criteria:
+  - 'docs/migration.html documents pip install h3-harness-sdk (Python SDK) and pip
+    install hermes-h3-shim (battery) as the primary routes with any git+/clone route
+    explicitly labelled a source fallback, and the file contains no ''v0.1.0'' string
+    (current published shim version is 0.2.0); run: grep -n ''v0.1.0'' docs/migration.html
+    must return nothing and make verify ends ''make verify: ALL PASS'''
+  status: complete
+  created_at: '2026-10-20T16:01:44.946707+00:00'
+  completed_at: '2026-10-20T16:12:50.856059+00:00'
+- id: DOGFOOD-15
+  title: 'DOGFOOD-15: integration.md scaffold dir pattern names the canonical language
+    code'
+  criteria:
+  - 'docs/integration.md section 5.2''s --lang row states a directory pattern that
+    matches what the shipped CLI actually creates for every accepted value (h3-harness-go,
+    h3-harness-py, h3-harness-ts), verified against shim src/h3_shim/cli.py; run:
+    grep -n ''h3-harness-'' docs/integration.md and make verify ends ''make verify:
+    ALL PASS'''
+  status: complete
+  created_at: '2026-10-20T16:01:45.306931+00:00'
+  completed_at: '2026-10-20T16:13:14.952798+00:00'
+- id: DOGFOOD-14
+  title: CLI reports config write errors without traceback
+  criteria:
+  - 'Implement DOGFOOD-14 in the owning satellite checkout get-h3/shim: make the CLI''s
+    config persistence path fail as a Click user-facing error rather than a Python
+    traceback when parent-directory creation or file writing raises OSError. Add a
+    regression test exercising the real CLI install path with an unwritable/non-creatable
+    config path; it must exit 1, name the configured path and the OS reason, and contain
+    no traceback. Preserve successful config writes and existing error handling. Include
+    a repository-local trace marker or evidence artifact resolving row DOGFOOD-14,
+    the source anchor save_config in src/h3_shim/cli.py, the regression test, and
+    the committed SHA. '
+  status: complete
+  created_at: '2026-10-20T19:45:32.662807+00:00'
+  completed_at: '2026-10-20T20:03:59.741750+00:00'
