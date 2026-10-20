@@ -437,7 +437,7 @@ func (h *MyHarness) OnProcess(
         </tr>
         <tr style="border-bottom:1px solid rgba(30,30,56,0.5);">
           <td style="padding:8px 12px;font-weight:700;">Python</td>
-          <td style="padding:8px 12px;"><code>pip install git+https://github.com/get-h3/sdk-python</code></td>
+          <td style="padding:8px 12px;"><code>pip install h3-harness-sdk</code> (source fallback: <code>pip install git+https://github.com/get-h3/sdk-python</code>)</td>
           <td style="padding:8px 12px;">Quick prototypes, ML/AI, existing Python code</td>
         </tr>
         <tr>
@@ -536,13 +536,16 @@ sessions:
     <div class="step-title"><span class="step-num">6</span> Run the Test Battery</div>
     <p>The H3 test battery validates 48 protocol behaviors. Run it against your harness to catch edge cases.</p>
 
-    <pre><code>git clone https://github.com/get-h3/shim && cd shim
-pip install -e .
-h3-test --endpoint http://localhost:9191</code></pre>
+    <pre><code>pip install hermes-h3-shim
+h3-test --endpoint http://localhost:9191
 
-    <p>Your run prints the same category rows and the same <code>48/48</code> total. The <code>Duration</code> and <code>Latency</code> lines are illustrative — the exact timings vary per machine and per run:</p>
+# source fallback:
+git clone https://github.com/get-h3/shim && cd shim
+pip install -e .</code></pre>
 
-    <pre><code>H3 Compliance Test Battery v0.1.0
+    <p>Your run prints the same category rows and the same <code>48/48</code> total. The sample below is an illustrative run — the <code>Duration</code> and <code>Latency</code> values vary per machine and per run, and the header version simply reflects the currently published battery, not a pinned requirement:</p>
+
+    <pre><code>H3 Compliance Test Battery v0.2.0
 Target: http://localhost:9191
 Transport: REST
 
