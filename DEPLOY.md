@@ -19,7 +19,7 @@ Harness (the brain)
 ## Prerequisites
 
 - Hermes Agent (any version compatible per `protocol/versions.yaml`)
-- Python 3.11+ (for the shim)
+- Python 3.10+ (for the shim)
 - Python, Go, or TypeScript runtime (for the harness — pick your SDK language)
 - `h3-test` (bundled with the shim; `pip install hermes-h3-shim`, or from source: `git clone https://github.com/get-h3/shim && cd shim && pip install -e .`)
 
