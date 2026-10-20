@@ -183,7 +183,7 @@ All SDKs generate their types from the same OpenAPI spec. A change to the protoc
 
 - **Website:** [get-h3.github.io/h3/](https://get-h3.github.io/h3/) — landing page, language picker, quickstart (old marketing domain is dead — NXDOMAIN)
 - **Specs:** [`specs/`](specs/) — 26 specs, ~320 pages covering architecture, protocol, SDKs, installer, test battery, release pipeline, website, and upgrade survival
-- **PRD:** [`prd.html`](prd.html) — the product requirements document (canonical)
+- **PRD:** [`prd.html`](prd.html) — the product requirements document (historical snapshot)
 - **Protocol reference:** [`docs/protocol.html`](docs/protocol.html) — auto-generated from OpenAPI
 - **SDK reference:** [`docs/sdk.html`](docs/sdk.html) — auto-generated
 - **Build guide:** [`docs/guide.html`](docs/guide.html) — "Build Your First H3 Harness" tutorial
@@ -201,7 +201,7 @@ hand-maintained or checked by `make verify`.
 | Path | What lives there |
 |------|------------------|
 | Root docs — `README.md`, `AGENTS.md`, `CONTRIBUTING.md`, `DEPLOY.md`, `GOVERNANCE.md`, `SECURITY.md`, `SUPPORT.md`, `CODE_OF_CONDUCT.md`, `TRADEMARK_POLICY.md`, `CODEOWNERS`, `CHANGELOG.md`, `LICENSE`, `NOTICE` | Governance, onboarding, deployment and release history |
-| [prd.html](prd.html) | The canonical product requirements document |
+| [prd.html](prd.html) | The product requirements document (historical snapshot) |
 | [journey-narrative.md](journey-narrative.md) | How a Hermes agent bootstrapped its own coding fleet — the narrative behind the foreman workflow below |
 | [specs/](specs/) | The specification set; [specs/_index.md](specs/_index.md) is its manifest, and `make verify` keeps index and files in agreement |
 | [docs/](docs/) | The published site (`index.html`, `guide.html`, `protocol.html`, `sdk.html`, `migration.html`) plus the guides [docs/integration.md](docs/integration.md), [docs/releases.md](docs/releases.md) and [docs/qa-target-contract.md](docs/qa-target-contract.md) |
