@@ -86,5 +86,13 @@
     }
   ],
   "independence": "file-disjoint: {prd.html,README.md} / {docs/migration.html} / {docs/integration.md} / {shim: src/h3_shim/cli.py, tests/test_cli.py}. No depends_on edges on any row. One worker per merge unit.",
-  "status": "dispatched"
+  "status": "complete",
+  "finished_at": "2026-10-20T16:35:00Z",
+  "results": {
+    "DOC-12": {"commit": "0b2759d", "verdict": "d1d74839", "tier2": "PASS"},
+    "DOC-14": {"commit": "edb0637", "verdict": "7386c51b", "tier2": "PASS", "worker_commit": "7bd94e8"},
+    "DOGFOOD-15": {"commit": "dd068e3", "verdict": "f0a2c805", "tier2": "PASS", "worker_commit": "433eafc"},
+    "DOGFOOD-13": {"repo": "get-h3/shim", "commit": "a0a24a1", "verdict": "a1d2623b", "tier2": "PASS"}
+  },
+  "notes": "All four worker branches rebased onto the merged main where needed (blobs diffed byte-identical), merged --ff-only, ancestry asserted with merge-base --is-ancestor, content read back from the merged tree. make verify red at the merged HEAD only on the stale board header before make board-close (expected pre-closeout)."
 }
