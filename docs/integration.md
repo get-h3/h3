@@ -577,7 +577,7 @@ every subcommand — overrides `$HERMES_H3_CONFIG`, default `~/.hermes/h3/config
 | `use NAME` | — | Set the default harness (positional only). |
 | `scaffold` | `--config FILE` | Override config path (default: `$HERMES_H3_CONFIG` or `~/.hermes/h3/config.yaml`). |
 | | `--force` | Overwrite an existing config file or project directory. |
-| | `--lang [go|py|ts|python|typescript]` | Generate a complete harness project for the given language (go, py, ts; python/typescript aliases accepted) in a new `h3-harness-<lang>/` subdirectory. Without `--lang`, an empty config skeleton is written instead. |
+| | `--lang [go|py|ts|python|typescript]` | Generate a complete harness project for the given language (go, py, ts; python/typescript aliases accepted) in a new `h3-harness-<canonical-lang>/` subdirectory — the directory is named after the canonical code: go → `h3-harness-go/`, py/python → `h3-harness-py/`, ts/typescript → `h3-harness-ts/`. Without `--lang`, an empty config skeleton is written instead. |
 | | `--output-dir DIRECTORY` | Parent directory under which the new project is created.  [default: (current directory)] |
 | `pre-update-check TARGET_VERSION` | `--versions-yaml FILE` | Path to `versions.yaml` (default: bundled package data, falls back to the protocol repo in a monorepo checkout). |
 
