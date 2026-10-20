@@ -16,6 +16,18 @@ H3 (Hermes Harness Hooks) is an open protocol that lets external agent systems �
 └─────────────┘     decisions        └──────────────┘
 ```
 
+## End-User Overview
+
+<!-- ch:trace row=DOC-16 spec=specs/01-Overview-Architecture.md#1 wave=h3-foreman-2026-10-20-20-46-25#DOC-16 test=none:documentation-only doc=README.md prompt=none:worker-brief evidence=none:pre-judge-doc-change witness=none:no-end-user-live-session verdict=none:pre-judge commit=none:worker-commit memory=none:not-written -->
+
+H3 connects an external agent harness to Hermes over one small contract: Hermes stays the body — gateways, tools, credentials, scheduling — and a harness you choose becomes the brain that decides what happens next. The user-visible deal is simple: keep the Hermes platform, swap the thinking.
+
+You must supply the harness. Hermes needs something answering the H3 endpoints (`/v1/health`, `/v1/process`, `/v1/result`, and the rest), so you either run an existing H3-compliant harness or build one with the Go, Python, or TypeScript SDKs.
+
+What H3 does not provide: H3 is a protocol/spec hub and harness integration layer. It is not an LLM provider, it does not host or run a harness for you, and it does not run agent workloads as a hosted service. Your harness runs where you put it, and model access comes from your own provider configuration.
+
+Next action: follow [Quick Start](README.md#quick-start) to run an example harness and pass the 48-test compliance battery, or read the [integration guide](docs/integration.md) if you are wiring your own system into Hermes.
+
 ## Quick Start
 
 The fastest way to see H3 in action:
@@ -181,6 +193,7 @@ All SDKs generate their types from the same OpenAPI spec. A change to the protoc
 
 ## Documentation
 
+- **End-user overview:** [End-User Overview](README.md#end-user-overview) — what H3 gives you, what you must supply (a harness), and what it does not provide
 - **Website:** [get-h3.github.io/h3/](https://get-h3.github.io/h3/) — landing page, language picker, quickstart (old marketing domain is dead — NXDOMAIN)
 - **Specs:** [`specs/`](specs/) — 26 specs, ~320 pages covering architecture, protocol, SDKs, installer, test battery, release pipeline, website, and upgrade survival
 - **PRD:** [`prd.html`](prd.html) — the product requirements document (historical snapshot)
