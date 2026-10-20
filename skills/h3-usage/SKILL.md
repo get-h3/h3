@@ -303,13 +303,31 @@ hermes-h3 verify NAME --fallback  # + failover narrative; exit 0 either way
 hermes-h3 use NAME             # promote to default_harness
 hermes-h3 route --session "<platform:chat[:thread]>" --set-harness NAME
 hermes-h3 route --session "..." --remove
-hermes-h3 uninstall NAME       # demotes default_harness if it was default
+hermes-h3 uninstall NAME       # removes the harness (see pitfall: leaves its routes behind)
 ```
 
 Behavioral contract (verified, rely on it): every lookup fails closed —
 unknown harness/session → exit 1 naming what exists; `verify` against a
 dead endpoint → exit 1 (clean error, config untouched); `--fallback`
 prints the ENGAGED/STANDBY narrative and exits 0.
+
+### Pitfall: `uninstall` leaves dangling `sessions:` routes and a `null` default (DOGFOOD-12/13)
+`hermes-h3 uninstall NAME` removes `harnesses.NAME` but does NOT touch
+`config["sessions"]`: after `install echo --set-default` → `route --session s1
+--set-harness echo` → `uninstall echo`, the file still reads
+`sessions: {s1: {harness: echo}}` and `hermes-h3 route` still prints
+`s1 -> echo` (exit 0, no warning). `H3Loader.resolve()` then returns `"echo"`
+while `loader.harnesses.get("echo")` is `None` — per the loader contract a
+`None` client means *native*, so those sessions silently fall back to native
+instead of erroring. Uninstalling the DEFAULT harness also writes
+`default_harness: null`, and for unmatched sessions `resolve()` then returns
+`None`, even though its docstring on `resolve` promises it "never returns
+`None`" (with the key ABSENT the loader answers `"native"` as documented).
+Workaround until fixed: after any `uninstall`, re-read `sessions:` and delete
+the removed harness's bindings by hand, and prefer `hermes-h3 use <other>`
+over uninstalling the default. Same class: an unwritable `--config` path
+(e.g. `/etc/...`) exits with a raw `PermissionError` traceback rather than a
+clean error (DOGFOOD-14).
 
 ### Pitfall: `verify` prints `HealthStatus.OK`, not `ok` (DF-H3-37)
 The status line is a Pydantic enum repr. If you grep verify's output,

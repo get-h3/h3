@@ -358,3 +358,55 @@ answers: "does this project actually work for a real user, and is it worth it?"
 - install leg: bunker-las-02 agent c47f6034 (bunker3 was UNREACHABLE — ssh timeout; bunker4 also down; sibling substitution per ephemeral-install-leg). tar-over-ssh tree copy (https clone prompts for username, no TTY; ssh key not present and NOT minted per hard rule). make verify on tar tree: 3/4 PASS then FAIL (the finding). Fresh git clone (https, public): make verify all repo-consistency PASS, 2 DuckBrain gates honestly UNVERIFIED, H3_ALLOW_UNVERIFIED=1 degraded PASS rc=0 as documented.
 - perf: h3-test full battery ~0.7s warm; make verify 1.3s (git tree). Nothing slow enough for a PERF row.
 - teardown: agent destroyed, key removed (bunker list confirms 0).
+
+## 2026-10-20 — dogfood tick h3-dogfood-2026-10-20-04-07-28 (run 16) — the documented CLI transport lifecycle
+
+- Lane: h3-dogfood. Angle (NEW surface): `docs/integration.md` 5.2's DOC-8
+  CLI table (`list`/`uninstall`/`scaffold --lang`/`--output-dir`) plus the §6
+  scaffold -> build -> run -> `h3-test` flow, consumed as an INTEGRATOR for the
+  first time. Runs 1-15 covered the battery, the SDKs, the docs site, PyPI and
+  fresh-user quickstarts; no run had ever driven the verb table DOC-8 wrote,
+  nor driven the loader side of the config the CLI produces.
+- Verdict: **PROMISING-BUT-ROUGH** — the documented CLI works end to end on a
+  clean PyPI 0.2.0 install (every verb exits 0, scaffold output passes 48/48
+  first try), but the transport layer rots state it does not clean up.
+- Found (DOGFOOD-12, P2): `hermes-h3 uninstall NAME` removes the harness and
+  LEAVES every `sessions:` binding pointing at it. `hermes-h3 route` still
+  prints `s1 -> echo` (exit 0, no dangling marker); `H3Loader.resolve()` returns
+  the removed name whose `harnesses.get()` is None, which the loader contract
+  reads as *native* -> silent fallback. Non-default harness case identical.
+- Found (DOGFOOD-13, P2): uninstalling the DEFAULT harness writes
+  `default_harness: null`, after which `resolve()` returns `None` for unmatched
+  sessions while docs/api.md promises "never returns `None`"; with the key
+  ABSENT the loader answers `"native"` as documented (A/B in one session).
+- Found (DOGFOOD-14, P3): unwritable `--config` path -> raw `PermissionError`
+  traceback (cli.py:140/141) instead of a clean error naming the path.
+- Found (DOGFOOD-15, P4): §5.2 says scaffold lands in `h3-harness-<lang>/`;
+  `--lang python` actually creates `h3-harness-py/` (canonical), so the
+  documented `cd h3-harness-python` fails.
+- Re-proofs (no new rows): SHIM-GAP-014 fixed (`list --config X` exit 0),
+  DOGFOOD-11 fixed (`verify NAME` positional), and all 7 other DOC-8 rows
+  accurate on first read.
+- Not a finding (recorded so it is not re-chased): the control host's
+  `hermes-h3 --version` prints `0.1.0` because its on-PATH copy is a stale
+  editable install (dist-info 0.1.0, pre-2.0 bump) pointing at current repo src;
+  a clean PyPI install prints `0.2.0` on both hosts.
+- Install leg EXECUTED on a fresh box (agent df-h3-261020 @ bunker-mvp,
+  destroyed, absence re-verified ~90 s later; key removed): Ubuntu 24.04.4 /
+  py3.12.3; bare pip -> PEP 668 refusal rc=1 (documented wall); venv + PyPI
+  install rc=0 INSTALL_SECONDS=10; scaffold rc=0; generated harness serves
+  /v1/health; `h3-test` **48/48 PASSED exit 0** in 1.02 s; the DOGFOOD-12/13
+  delta reproduced on the fresh box with only documented commands.
+- Step 2b (perf): battery 1.08 s cold / 0.76-0.89 s warm wall (0.70 / 0.48-0.58 s
+  internal, n=3), 2 s on the fresh box; scaffold 0.27 s; PyPI install 9-10 s
+  (network). p50 1.7-4.3 ms, p95 68-131 ms; slowest cells are the battery's own
+  deliberate stress probes. NOTHING a user would feel -> no PERF row, filed
+  deliberately (a win nobody can feel is not a finding).
+- Friction (4): the four rows above.
+- Foreman: NOT woken (read-only lane; scheduler state untouched, no cooldown
+  or enablement change).
+- Artifacts: docs/dogfood/2026-10-20-integration.md; board rows DOGFOOD-12..15
+  (boardctl validate: RESULT OK, warning count unchanged at 966 — zero new
+  warnings); skills/h3-usage/SKILL.md pitfall on the uninstall contract; this
+  entry.
+2026-10-20 (run 16, CLI-transport angle) | PROMISING-BUT-ROUGH | install_seconds=10(fresh Ubuntu 24.04: venv + PyPI hermes-h3-shim 0.2.0) | bunker=bunker-mvp agent df-h3-261020 destroyed(absence re-verified) | smoke=ok(48/48 PASS exit 0, fresh box AND local PyPI 0.2.0; 4 findings DOGFOOD-12..15) | angle: the DOC-8 CLI verb table + scaffold->run->battery flow driven as an integrator, plus the loader side of the config the CLI writes | perf: battery 0.76-1.08s, nothing user-feelable, no PERF row
