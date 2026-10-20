@@ -37,27 +37,71 @@ Expected result: every guard prints PASS, the run ends with
 `make verify: ALL PASS — umbrella repo is self-consistent`, and the exit code is
 0 (`echo $?` → `0`) — on a bare clone of the tag: no venv, no network, no siblings.
 
-## What `make verify` covers — and what it does not
+## Verification targets — command and proof boundary
 
-| Guard | Checks |
-|-------|--------|
-| `verify-docs` | every relative `.md` link in `README.md` and `specs/_index.md` resolves to a file in the repo |
-| `verify-specs` | every spec file under `specs/` is listed in `specs/_index.md`, and every listed spec exists |
-| `verify-count` | the compliance-test count (48) in `scripts/test-count.txt` agrees with the sibling battery and the per-region lists in specs 05/09/25; no current-state doc quotes a retired count |
-| `verify-tags` | the `## Tags` table in this file names exactly the tag set git reports — `git ls-remote --tags origin`, degrading to `git tag -l` when origin is unreachable (the verdict then reads `PASS (local degrade)`); a pushed tag missing from the table, or a table row naming a tag git does not have, fails. Negative proof: `sh scripts/check-tags-table.sh --selftest` |
-| `verify-json-fences` | every JSON fenced block in the tracked markdown parses, and an abbreviated payload says so on the failing line |
-| `verify-qa-target` | the QA target is a real checkout of THIS repo — zero cells is UNVERIFIED, never a pass |
-| `verify-tick-chain` | the DuckBrain tick-key census (H3-GAP-098): the bare `/tick/<N>` chain is complete from 418 to the board's `ticks_total - 1`, and no unknown-shaped tick key exists — the #459 backfill twins 452/453 are allowlisted, the pre-#418 legacy series and timestamped slugs are reported non-fatally. Reports UNVERIFIED when DuckBrain, `jq`, `curl`, the token or the board header is absent. Negative proof: `make verify-tick-chain-selftest` |
-| `verify-board-header` | the board-header self-consistency guard (H3-GAP-099): `last_commit` resolves and is HEAD or HEAD's parent, `ticks_total` never trails the highest event-log tick, every tick in the recent window has an event, working-tree header equals committed header. Negative proof: `make verify-board-header-selftest` |
-| `verify-commit-msg` | the HEAD commit message carries no workflow-skip directive |
-| `verify-verdict-census` | the composite DuckBrain verdict census (DF-H3-41/DF-H3-46): the composite must not say ALL PASS over UNVERIFIED. Re-derives both DuckBrain guards' UNVERIFIED conditions read-only, prints `make verify: verdict census — N verified / M unverified (guard: <names>)`. `ALL PASS` only follows a clean census; `M > 0` fails the run naming the unverified guards. On a token-less machine degrades to the same disclosed SKIP the individual guards take. Negative proof: `make verify-verdict-census-selftest` |
+`make verify` is the docs/repo-consistency composite; it is not the whole
+verification surface. A release operator needs to distinguish three proof
+classes — docs/repo checks, DuckBrain verification (read-only over HTTP), and
+cross-language code execution — plus the orchestration, write-side and
+release-driver targets around them. The complete surface, per the current
+`Makefile`:
 
-It does **not** execute SDK code: these are docs/repo-consistency guards, which is what
-keeps them runnable on a dependency-free clone (the one exception is the tick-chain
-census, which reads DuckBrain's key tree read-only over HTTP and prints UNVERIFIED when
-it cannot). Code-level verification is
-`make verify-roundtrip` — the cross-language round-trip suite, run in CI by
-`.github/workflows/roundtrip.yml` against the sibling SDK repos; `make verify-all` runs both.
+**Docs/repo-consistency checks** (static, dependency-free on a fresh clone):
+
+| Target | Proves | Does not prove |
+|--------|--------|----------------|
+| `verify-docs` | every relative `.md` link in `README.md` and `specs/_index.md` resolves to a file in the repo | that linked files' content is correct |
+| `verify-specs` | every spec file under `specs/` is listed in `specs/_index.md`, and every listed spec exists | that spec prose matches implementation |
+| `verify-count` | the compliance-test count (48) in `scripts/test-count.txt` agrees with the sibling battery and the per-region lists in specs 05/09/25; no current-state doc quotes a retired count | that any listed test passes |
+| `verify-tags` | the `## Tags` table in this file names exactly the tag set git reports — `git ls-remote --tags origin`, degrading to `git tag -l` when origin is unreachable (the verdict then reads `PASS (local degrade)`); a pushed tag missing from the table, or a table row naming a tag git does not have, fails. Negative proof: `sh scripts/check-tags-table.sh --selftest` | that a listed Release object exists (RELEASE-H3-002 is checked by the driver, not here) |
+| `verify-json-fences` | every JSON fenced block in the tracked markdown parses, and an abbreviated payload says so on the failing line | that payloads are semantically correct |
+| `verify-qa-target` | the QA target is a real checkout of THIS repo — zero cells is UNVERIFIED, never a pass | that QA cells exist or passed |
+| `verify-commit-msg` | the HEAD commit message carries no workflow-skip directive | that earlier commits are clean |
+
+**DuckBrain verification** (read-only over HTTP; UNVERIFIED when their substrate
+is absent — never silent green):
+
+| Target | Proves | Does not prove |
+|--------|--------|----------------|
+| `verify-tick-chain` | the DuckBrain tick-key census (H3-GAP-098): the bare `/tick/<N>` chain is complete from 418 to the board's `ticks_total - 1`, and no unknown-shaped tick key exists — the #459 backfill twins 452/453 are allowlisted, the pre-#418 legacy series and timestamped slugs are reported non-fatally. Reports UNVERIFIED when DuckBrain, `jq`, `curl`, the token or the board header is absent. Negative proof: `make verify-tick-chain-selftest` | anything about DuckBrain content beyond key-shape/chain completeness |
+| `verify-board-header` | the board-header self-consistency guard (H3-GAP-099): `last_commit` resolves and is HEAD or HEAD's parent, `ticks_total` never trails the highest event-log tick, every tick in the recent window has an event, working-tree header equals committed header. Negative proof: `make verify-board-header-selftest` | that the board content itself is correct |
+| `verify-verdict-census` | the composite DuckBrain verdict census (DF-H3-41/DF-H3-46): the composite must not say ALL PASS over UNVERIFIED. Re-derives both DuckBrain guards' UNVERIFIED conditions read-only, prints `make verify: verdict census — N verified / M unverified (guard: <names>)`. `ALL PASS` only follows a clean census; `M > 0` fails the run naming the unverified guards. On a token-less machine degrades to the same disclosed SKIP the individual guards take. Negative proof: `make verify-verdict-census-selftest` | that an accepted local degrade (H3_ALLOW_UNVERIFIED=1) was verified |
+
+**Orchestration** (run other targets; prove nothing themselves):
+
+| Target | Composes |
+|--------|----------|
+| `verify-prereqs-early` | the seven docs/repo guards above + `verify-tick-chain` + `verify-board-header` (the early group) |
+| `verify-prereqs` | `verify-prereqs-early` + `verify-verdict-census` — always last inside `verify` |
+| `verify` | `verify-prereqs` + the ALL PASS / SCOPE lines. Docs/repo-consistency ONLY: it does **not** execute SDK code (the one exception is the DuckBrain pair above, read-only over HTTP). Code-level verification is `make verify-roundtrip` (CI: `.github/workflows/roundtrip.yml` against the sibling SDK repos) |
+| `verify-all` | `verify` + `verify-roundtrip` — the complete surface: docs/repo checks, DuckBrain verification, and cross-language code execution |
+| `verify-verdict-census` (standalone) | the census reruns on demand; inside `verify` it is the last prerequisite, waiting on the early group |
+
+**Write-side and code execution** (not part of `make verify` — verify is
+read-only and runs on a fresh clone):
+
+| Target | Proves | Does not prove |
+|--------|--------|----------------|
+| `board-close` | writes line 1 of the board header (DF-H3-25) — run after board edits and BEFORE the board commit | anything: it is the header WRITER, not a check (negative proof: `make verify-board-sync-selftest`) |
+| `verify-roundtrip` | the cross-language round-trip suite executes against the sibling SDK repos (`integration/roundtrip/roundtrip.sh`) | docs/repo consistency — this runs code, the guards above do not |
+
+**Release driver:**
+
+| Target | Proves | Does not prove |
+|--------|--------|----------------|
+| `release` | DRY-RUN by default: runs `make verify`, derives the next version from conventional commits, proves the tag is unused locally and at origin, prints the plan. Nothing is tagged, pushed or written (see "Cutting the next release" below) | that a cut happened — `--execute` is the explicit opt-in, and its verdict binds per-job CI evidence, not this table |
+
+Self-tests (`verify-qa-target-selftest`, `verify-tick-chain-selftest`,
+`verify-tree-census-selftest`, `verify-verdict-census-selftest`,
+`verify-board-header-selftest`, `verify-board-sync-selftest`) are negative
+proofs for their guards, not part of `make verify`.
+
+<!-- ch:trace row=DOC-15 spec=specs/08-Cross-Repo-Release-Pipeline.md#4 wave=h3-foreman-2026-10-20-20-46-25#DOC-15 test=none:documentation-only doc=docs/releases.md prompt=none:worker-brief evidence=none:pre-judge-doc-change witness=none:no-live-release-cut verdict=none:pre-judge commit=none:worker-commit memory=none:not-written -->
+
+One consequence of the split worth naming: a green `make verify` on a bare
+clone is **not** proof the SDKs work — it proves the repo is self-consistent
+and, when the DuckBrain substrate is present, that the tick chain and board
+header verify. Only `verify-roundtrip` (or its CI equivalent) exercises code.
 
 ## Establishing "CI green on this commit"
 
