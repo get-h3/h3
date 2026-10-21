@@ -368,7 +368,7 @@ See `protocol/versions.yaml` for the full Hermes↔H3 compatibility matrix.
 
 H3 follows the protocol. The shim translates. The harness decides. Hermes executes. That's the loop.
 
-## Board Header Pre-Commit Hook (QA-H3-22)
+## Board Header Pre-Commit Hook (QA-H3-22 / QA-H3-22-R2)
 
 Board-writing ticks must run `make board-close` before committing board files
 (see the Makefile's DF-H3-25 section). The pre-commit hook
@@ -381,11 +381,56 @@ Install (after `boardctl install` has set up the shared pre-commit hook):
 
     bash scripts/install-board-close-hook.sh
 
-The installer inserts the managed block BEFORE the hook's final `exit` line
-(appending after it would be unreachable dead code) and is idempotent.
+### Where the hook goes (and why that is the fix)
+
+**git only runs hooks from the directory it resolves, and `core.hooksPath`
+replaces `.git/hooks` entirely.** The installer therefore resolves the hooks
+directory with `git rev-parse --git-path hooks` and installs into THAT:
+
+| host state | hooks dir git uses | where the block lands |
+|---|---|---|
+| `core.hooksPath` unset | `<repo>/.git/hooks` | `<repo>/.git/hooks/pre-commit` |
+| `core.hooksPath` absolute | that path | that path |
+| `core.hooksPath` relative | `<repo>/<value>` | `<repo>/<value>/pre-commit` |
+| linked worktree | the COMMON git dir | `<main-repo>/.git/hooks/pre-commit` |
+
+Until QA-H3-22-R2 the installer wrote `$repo/.git/hooks/pre-commit`
+unconditionally. On a host whose global gitconfig sets `core.hooksPath`, that
+file is never read: the block installed, printed OK, and did nothing — the
+generator defect behind eight recurrences of the stale-header class (DF-H3-25,
+DF-H3-32, QA-H3-18, QA-H3-20, QA-H3-21, QA-H3-2026-09-26-001, QA-H3-22,
+QA-H3-22-R2).
+
+**Host-global step, stated explicitly:** when `core.hooksPath` is set
+host-globally (for example `core.hooksPath=~/.hermes/hooks`, shared by every
+repo on the machine), running the installer puts the managed block in that
+SHARED directory, not in the clone. That is intended and safe: the block looks
+for `scripts/pre-commit-board-close.sh` at the committing repo's toplevel and is
+completely silent — no output, no non-zero exit — in any repo that does not
+carry the script. Installing it once covers every h3 clone on the host.
+`git config --get core.hooksPath` reports which shape you are in, and the
+installer prints the resolved directory it used plus the `core.hooksPath` value.
+
+The block is INSERTED BEFORE the hook's final `exit` line (appending after it
+would be unreachable dead code), every existing block is preserved, an existing
+hook in a shared directory is backed up first, and the install is idempotent. If
+a stale copy of the block is sitting in `.git/hooks/pre-commit` while git is
+looking elsewhere, the installer warns — that dead copy is the recurrence's
+fingerprint.
 
 It skips cleanly when no board files are staged or the sync script is missing;
 it fails the commit only if `scripts/sync-board-header.sh` itself fails. The
-hook is not tracked (`.git/hooks/` never is) — each clone installs it. Verify
-with `bash scripts/pre-commit-board-close-selftest.sh`.
+hook is not tracked (`<hooks dir>/pre-commit` never is) — each clone (or its
+host's shared hooks dir) installs it. Verification:
+
+    bash scripts/install-board-close-hook-selftest.sh   # or: make verify-board-close-hook-selftest
+    bash scripts/pre-commit-board-close-selftest.sh
+
+The installer battery exercises every resolution shape above and makes a real
+board-only commit twice: RED with no hook in the resolved dir (the commit
+succeeds and the header is left stale — the defect) and GREEN with the block
+installed (the same commit leaves `last_commit` equal to the commit's parent
+sha). It isolates `GIT_CONFIG_GLOBAL`, so it gives the same verdict on a host
+with a global `core.hooksPath` and on one without.
+
 

@@ -159,6 +159,19 @@
 # check-board-header-consistency.sh). Negative proof, including the syncer:
 # make verify-board-sync-selftest.
 #
+# A hook is only structural where git LOOKS. `core.hooksPath` overrides
+# `.git/hooks` entirely, and a linked worktree has no hooks dir of its own, so
+# the installer (scripts/install-board-close-hook.sh) resolves the hooks
+# directory with `git rev-parse --git-path hooks` and installs THERE. Before
+# QA-H3-22-R2 it hardcoded `.git/hooks/pre-commit`: on a host with a global
+# hooks path the block installed, printed OK, and never ran — which is why this
+# class came back eight times. The managed block is silent in repos that do not
+# carry scripts/pre-commit-board-close.sh, so installing it into a SHARED hooks
+# dir cannot affect unrelated repos. Proof: make verify-board-close-hook-selftest
+# (its RED arm fails a board commit that leaves the header stale while
+# core.hooksPath is set; its GREEN arm shows the same commit re-pinning the
+# header to the commit's parent).
+#
 # The board's OTHER closeout write is the namespace tick record,
 # scripts/duckbrain-tick-record.sh <N> (DF-H3-23) — the canonical writer for the
 # `/tick/<N>` memory key. A board-writing tick's close-out is therefore two
@@ -217,7 +230,7 @@
 # that never executed code. That filter is a deliberate design, not an accident;
 # the naming above is what makes the difference visible. See CONTRIBUTING.md.
 
-.PHONY: verify verify-prereqs verify-prereqs-early verify-docs verify-specs verify-count verify-tags verify-json-fences verify-qa-target verify-qa-target-selftest verify-tick-chain verify-tick-chain-selftest verify-tree-census-selftest verify-verdict-census verify-verdict-census-selftest verify-board-header verify-board-header-selftest verify-board-sync-selftest board-close verify-commit-msg verify-roundtrip verify-all release
+.PHONY: verify verify-prereqs verify-prereqs-early verify-docs verify-specs verify-count verify-tags verify-json-fences verify-qa-target verify-qa-target-selftest verify-tick-chain verify-tick-chain-selftest verify-tree-census-selftest verify-verdict-census verify-verdict-census-selftest verify-board-header verify-board-header-selftest verify-board-close-hook-selftest verify-board-sync-selftest board-close verify-commit-msg verify-roundtrip verify-all release
 
 # PERF-1: make verify — bounded parallel prerequisites.
 #
@@ -375,6 +388,18 @@ verify-board-header-selftest:
 	@sh scripts/check-board-header-consistency-selftest.sh
 	@echo "make verify-board-header-selftest: positive + negative proof for the header WRITER, and the guard on its output (DF-H3-25)"
 	@sh scripts/sync-board-header-selftest.sh
+	@echo "make verify-board-header-selftest: positive + negative proof that the WRITER-SIDE HOOK installs where git actually looks (core.hooksPath / worktrees) and re-pins a real board commit (QA-H3-22-R2)"
+	@bash scripts/install-board-close-hook-selftest.sh
+
+# The installer's own battery, on its own (QA-H3-22-R2). It is part of
+# verify-board-header-selftest; this target is for running it in isolation.
+# It isolates GIT_CONFIG_GLOBAL, so it gives the same verdict on a host whose
+# global core.hooksPath points at a shared hooks dir and on one with no hooks
+# path at all — and its RED arm fails when a board commit leaves the header
+# stale, which is the recurrence this row closes.
+verify-board-close-hook-selftest:
+	@echo "make verify-board-close-hook-selftest: the board-close hook installer resolves core.hooksPath and fires (QA-H3-22-R2)"
+	@bash scripts/install-board-close-hook-selftest.sh
 
 # The board-writing close-out (DF-H3-25). Not part of `make verify` — verify is
 # read-only and runs on a fresh clone; this WRITES line 1 of the board header.
