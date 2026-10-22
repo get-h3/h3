@@ -577,9 +577,9 @@ const app = new Hono(); app.route("/", createH3Router(echo)); export default app
           <h3>Quick health check</h3>
           <p>In another terminal, hit the health endpoint to confirm your harness is alive:</p>
           <div class="code-shell">
-            <pre><code>curl http://localhost:9191/health</code></pre>
+            <pre><code>curl http://localhost:9191/v1/health</code></pre>
             <button class="copy-button" type="button" data-copy="health-check">copy</button>
-            <textarea id="health-check" hidden>curl http://localhost:9191/health</textarea>
+            <textarea id="health-check" hidden>curl http://localhost:9191/v1/health</textarea>
           </div>
           <p style="margin-top:10px;">Expected response: <code>{"status":"ok","version":"1.0.0","transport":"rest","protocol_version":"1.0","capabilities":["text","end"]}</code></p>
         </div>

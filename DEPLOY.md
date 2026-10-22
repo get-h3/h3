@@ -349,7 +349,7 @@ hermes-h3 verify --harness my-harness
 | `h3-test` returns non-zero | Harness doesn't implement full protocol | Check failed test region for missing handlers |
 | Session not routing through harness | Session not in routing table | Add the session to `sessions` in `~/.hermes/h3/config.yaml` |
 | 422 on /v1/process | Pydantic models too strict | Update to latest sdk-python (lenient defaults) or pass all optional fields |
-| Hermes falls back to native loop | Harness unreachable | Check harness is running: `curl http://localhost:9191/health` |
+| Hermes falls back to native loop | Harness unreachable | Check harness is running: `curl http://localhost:9191/v1/health` |
 
 ## Reference Repos
 
