@@ -201,11 +201,22 @@
 #
 #   make verify-roundtrip — runs bash integration/roundtrip/roundtrip.sh from the
 #                       repo root and PROPAGATES its exit code (no `|| true`).
-#                       It needs the sibling SDK repos next to this one on disk
-#                       (../sdk-python, ../sdk-go, ../sdk-typescript) plus
-#                       go/node/npx; when a sibling is missing the script's own
-#                       "requires the sibling SDK repos, which are missing: ..."
-#                       message reaches the user unchanged.
+#                       SELF-CONTAINED (H3-REVIEW-20261021-01): the suite stages
+#                       a declared temporary workspace, resolving the sibling
+#                       SDK repos (sdk-python, sdk-go, sdk-typescript) from local
+#                       checkouts when they exist next to this repo and otherwise
+#                       fetching them at the revisions pinned in
+#                       integration/roundtrip/siblings.lock. A tree with ONLY h3/
+#                       checked out therefore runs the code-level gate (needs
+#                       git+network for the fetch, plus go/node/npx); pass
+#                       ROUNDTRIP_WORKSPACE=<dir> to declare the workspace
+#                       yourself, and see the script header for the
+#                       H3_ROUNDTRIP_* / H3_SDK_*_REF knobs.
+#   make verify-roundtrip-selftest — positive + negative proof for that
+#                       workspace resolution (offline, resolve-only): pins are
+#                       real SHAs, an h3-only tree fetches them from a file://
+#                       mirror, local siblings are reused, and an unreachable
+#                       mirror fails loudly naming sdk-python.
 #   make verify-all   — verify verify-roundtrip (composite: docs guards + code).
 #
 #   make release      — the RELEASE DRIVER (scripts/release.sh), RELEASE-H3-003.
@@ -230,7 +241,7 @@
 # that never executed code. That filter is a deliberate design, not an accident;
 # the naming above is what makes the difference visible. See CONTRIBUTING.md.
 
-.PHONY: verify verify-prereqs verify-prereqs-early verify-docs verify-specs verify-count verify-tags verify-json-fences verify-qa-target verify-qa-target-selftest verify-tick-chain verify-tick-chain-selftest verify-tree-census-selftest verify-verdict-census verify-verdict-census-selftest verify-board-header verify-board-header-selftest verify-board-close-hook-selftest verify-board-sync-selftest board-close verify-commit-msg verify-roundtrip verify-all release
+.PHONY: verify verify-prereqs verify-prereqs-early verify-docs verify-specs verify-count verify-tags verify-json-fences verify-qa-target verify-qa-target-selftest verify-tick-chain verify-tick-chain-selftest verify-tree-census-selftest verify-verdict-census verify-verdict-census-selftest verify-board-header verify-board-header-selftest verify-board-close-hook-selftest verify-board-sync-selftest board-close verify-commit-msg verify-roundtrip verify-roundtrip-selftest verify-all release
 
 # PERF-1: make verify — bounded parallel prerequisites.
 #
@@ -464,9 +475,18 @@ verify-commit-msg:
 	@echo "make verify: commit-message skip-directive guard (HEAD)"
 	@sh scripts/check-ci-skip-tokens.sh
 
+# ROUNDTRIP_WORKSPACE: declare the round-trip workspace instead of letting the
+# script pick a temp dir. A declared workspace is KEPT after the run (so its
+# MANIFEST.txt and generated fixtures can be inspected); a temp one is removed.
+ROUNDTRIP_WORKSPACE ?=
+
 verify-roundtrip:
-	@echo "make verify-roundtrip: cross-language round-trip code suite (needs the sibling SDK repos)"
-	bash integration/roundtrip/roundtrip.sh
+	@echo "make verify-roundtrip: cross-language round-trip code suite (stages a workspace; sibling SDKs reused locally or fetched at integration/roundtrip/siblings.lock pins)"
+	bash integration/roundtrip/roundtrip.sh $(if $(ROUNDTRIP_WORKSPACE),--workspace "$(ROUNDTRIP_WORKSPACE)")
+
+verify-roundtrip-selftest:
+	@echo "make verify-roundtrip-selftest: positive + negative proof for the round-trip workspace resolution (H3-REVIEW-20261021-01)"
+	@sh scripts/check-roundtrip-selftest.sh
 
 verify-all: verify verify-roundtrip
 

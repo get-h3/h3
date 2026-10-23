@@ -1,0 +1,19 @@
+# Pinned sibling SDK revisions for the cross-language round-trip suite.
+#
+# H3-REVIEW-20261021-01: `integration/roundtrip/roundtrip.sh` stages a temporary
+# workspace that reproduces the umbrella layout, and fetches any sibling SDK that
+# is not already checked out next to this repo at the revision pinned here. A
+# fresh clone of `h3/` alone therefore runs the code-level gate against a known,
+# reproducible SDK revision instead of whatever HEAD happens to be.
+#
+# Format: <repo-name> <git-ref>
+#   <git-ref> may be a full commit SHA (verified exactly after checkout), a tag,
+#   or a branch name. Full SHAs are strongly preferred: only a SHA is a pin.
+#   Override per run with H3_SDK_PYTHON_REF / H3_SDK_GO_REF / H3_SDK_TS_REF.
+#
+# Bumping a pin: fetch the sibling, read its HEAD, update the line, then run
+# `make verify-roundtrip` (the suite verifies the pin it actually used and prints
+# it in <workspace>/MANIFEST.txt) before committing.
+sdk-python d507ecd297bd6b2d175697fe2aae2f1823a60834
+sdk-go 639106c812a9d5182c423a481260dd172adde920
+sdk-typescript d5d156f798db507ea44034f0debb61ee8766574a

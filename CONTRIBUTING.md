@@ -24,25 +24,55 @@ This repo (get-h3/h3) is the **umbrella coordination hub** — specs, cross-repo
 
 ## Running the Round-Trip Verification
 
-> **Prerequisite:** the sibling SDK repos (`sdk-python`, `sdk-go`, `sdk-typescript`)
-> must exist next to this repo on disk — `roundtrip.sh` resolves them as siblings
-> of the umbrella directory (e.g. `../sdk-python`). A standalone clone of `h3/`
-> alone cannot run it; clone the SDKs from the repo table above first. The script
-> exits 1 with a clear message if any sibling is missing.
+The suite needs three sibling SDK repos (`sdk-python`, `sdk-go`, `sdk-typescript`)
+because the fixture programs resolve them by relative path. You do **not** have
+to arrange that layout yourself: `roundtrip.sh` stages a declared workspace that
+reproduces it — reusing local checkouts when the sibling repos exist next to this
+repo, and otherwise fetching each SDK at the revision pinned in
+[`integration/roundtrip/siblings.lock`](integration/roundtrip/siblings.lock). A
+tree with only `h3/` checked out therefore runs the code-level gate.
 
 ```bash
-# Canonical invocation — from the repo root:
+# Canonical invocation — from the repo root (works on a bare clone of h3/):
 make verify-roundtrip
 
-# Equivalent, if you are already in the directory:
-cd integration/roundtrip
-./roundtrip.sh
+# Declare the workspace yourself; a declared workspace is kept after the run:
+make verify-roundtrip ROUNDTRIP_WORKSPACE=/tmp/h3-roundtrip
+
+# Stage the workspace and report what was resolved, executing nothing:
+bash integration/roundtrip/roundtrip.sh --resolve-only
 ```
 
 `make verify-roundtrip` is the advertised entry point for code-level
 verification and propagates the script's exit code — a failed round-trip fails
-the make target. It also requires `go`, `node` and `npx` on `PATH` (the
-TypeScript phase runs through `npx tsx`).
+the make target. It requires `go`, `node` and `npx` on `PATH` (the TypeScript
+phase runs through `npx tsx`), and — when the sibling SDKs are not already on
+disk — `git` plus network access to fetch the pinned revisions.
+
+Everything runs inside the workspace, not in your checkout:
+
+- `<workspace>/MANIFEST.txt` records the revision used for each sibling and
+  whether it was a local reuse (`source=local`) or a fetch (`source=fetched`),
+  so a green run states exactly what it verified against.
+- Generated fixtures land in `<workspace>/h3/integration/roundtrip/fixtures`, so
+  a run no longer rewrites the tracked fixtures in this checkout. After a green
+  run, `bash integration/roundtrip/roundtrip.sh --sync-fixtures` (or
+  `H3_ROUNDTRIP_SYNC_FIXTURES=1`) copies them back.
+- The workspace is a temp directory, removed on exit. `--workspace DIR` (or
+  `H3_ROUNDTRIP_WORKSPACE=DIR`) declares one instead, and a declared workspace
+  is kept.
+
+Other knobs: `H3_ROUNDTRIP_REPO_BASE=<base>` (fetch source; a `file://` base
+points at bare sibling checkouts and works offline),
+`H3_ROUNDTRIP_FORCE_FETCH=1` (ignore local siblings and use the pins),
+`H3_ROUNDTRIP_KEEP_WORKSPACE=1`, and `H3_SDK_PYTHON_REF` / `H3_SDK_GO_REF` /
+`H3_SDK_TS_REF` to override a pin for one run.
+
+`make verify-roundtrip-selftest` proves that resolution without network access or
+SDK execution: the pins are full SHAs, an h3-only tree fetches them from a
+`file://` mirror, local siblings are reused, a temp workspace is removed and a
+declared one is kept, and an unreachable mirror fails loudly naming `sdk-python`
+with the required layout and bootstrap command.
 
 ### What `make verify` does *not* cover
 
@@ -62,11 +92,14 @@ explicit `UNVERIFIED` and exits 0 — absent tooling is UNVERIFIED, never a pass
 ### Why CI only runs this on `integration/roundtrip/**`
 
 `.github/workflows/roundtrip.yml` is path-filtered to `integration/roundtrip/**`
-on purpose: the round-trip needs the sibling SDK repos and the Go/Node
-toolchains, so it is gated to pushes that actually change it rather than run on
-every docs edit. The consequence is that a docs-only push gets green CI without
-any code having executed there — which is exactly why the local targets above
-are named so the difference is visible.
+on purpose: the round-trip runs real Go/Node/Python toolchains, so it is gated to
+pushes that actually change it rather than run on every docs edit. The workflow
+has two jobs: `roundtrip` (sibling SDK checkouts laid out explicitly, plus
+`make verify-roundtrip-selftest`) and `fresh-clone` (checks out **only** `h3`
+and runs `make verify-roundtrip`, which fetches the pinned siblings — the shape a
+new contributor gets). The consequence of the filter is that a docs-only push
+gets green CI without any code having executed there — which is exactly why the
+local targets above are named so the difference is visible.
 
 This verifies Python → Go, Go → Python, and Go → TypeScript fixture consistency. All three language pairs must pass.
 

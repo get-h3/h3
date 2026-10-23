@@ -83,3 +83,52 @@ jobs:
       - name: Run round-trip verification
         working-directory: h3/integration/roundtrip
         run: bash roundtrip.sh
+
+      # H3-REVIEW-20261021-01 — the workspace resolution (pinned sibling fetch,
+      # local reuse, loud failure) has its own offline proof.
+      - name: Round-trip workspace selftest
+        working-directory: h3
+        run: make verify-roundtrip-selftest
+
+  # H3-REVIEW-20261021-01 — the shape a new contributor actually gets: ONLY the
+  # h3 repo is checked out, no sibling SDK directories on disk. The suite must
+  # stage its own workspace and fetch the pinned SDK revisions to pass; if this
+  # job ever goes red, `make verify-roundtrip` on a fresh public clone is broken
+  # again regardless of what the `roundtrip` job above reports.
+  fresh-clone:
+    name: Fresh clone (h3 only, pinned siblings fetched)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout ONLY h3 (no sibling SDK checkouts)
+        uses: actions/checkout@v4
+        with:
+          repository: get-h3/h3
+          path: h3
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Assert the workspace has no sibling SDK checkouts
+        run: |
+          test ! -d sdk-python && test ! -d sdk-go && test ! -d sdk-typescript \
+            || { echo "fresh-clone job must not have sibling checkouts on disk"; exit 1; }
+
+      - name: Run the self-contained round-trip (make verify-roundtrip)
+        working-directory: h3
+        run: make verify-roundtrip

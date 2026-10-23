@@ -73,7 +73,7 @@ is absent — never silent green):
 |--------|----------|
 | `verify-prereqs-early` | the seven docs/repo guards above + `verify-tick-chain` + `verify-board-header` (the early group) |
 | `verify-prereqs` | `verify-prereqs-early` + `verify-verdict-census` — always last inside `verify` |
-| `verify` | `verify-prereqs` + the ALL PASS / SCOPE lines. Docs/repo-consistency ONLY: it does **not** execute SDK code (the one exception is the DuckBrain pair above, read-only over HTTP). Code-level verification is `make verify-roundtrip` (CI: `.github/workflows/roundtrip.yml` against the sibling SDK repos) |
+| `verify` | `verify-prereqs` + the ALL PASS / SCOPE lines. Docs/repo-consistency ONLY: it does **not** execute SDK code (the one exception is the DuckBrain pair above, read-only over HTTP). Code-level verification is `make verify-roundtrip` (CI: `.github/workflows/roundtrip.yml`, which runs both the explicit-sibling job and a fresh-clone job) |
 | `verify-all` | `verify` + `verify-roundtrip` — the complete surface: docs/repo checks, DuckBrain verification, and cross-language code execution |
 | `verify-verdict-census` (standalone) | the census reruns on demand; inside `verify` it is the last prerequisite, waiting on the early group |
 
@@ -83,7 +83,7 @@ read-only and runs on a fresh clone):
 | Target | Proves | Does not prove |
 |--------|--------|----------------|
 | `board-close` | writes line 1 of the board header (DF-H3-25) — run after board edits and BEFORE the board commit | anything: it is the header WRITER, not a check (negative proof: `make verify-board-sync-selftest`) |
-| `verify-roundtrip` | the cross-language round-trip suite executes against the sibling SDK repos (`integration/roundtrip/roundtrip.sh`) | docs/repo consistency — this runs code, the guards above do not |
+| `verify-roundtrip` | the cross-language round-trip suite executes against the sibling SDK repos (`integration/roundtrip/roundtrip.sh`), staged in a declared workspace at the revisions pinned in `integration/roundtrip/siblings.lock` (local checkouts reused when present); negative proof `make verify-roundtrip-selftest` | docs/repo consistency — this runs code, the guards above do not |
 
 **Release driver:**
 
