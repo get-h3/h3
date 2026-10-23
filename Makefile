@@ -317,8 +317,13 @@
 # are 1.276 vs 1.203 — the earlier sweep that "found" 4 best was overlapping
 # noise, which is the trap this block exists to stop re-deriving).
 #
-# Acceptance (the row's own command, this host, /tmp/perf-2-baseline.json vs
-# /tmp/perf-2-serial.json): default 1.2698 s vs MAKEFLAGS=-j1 2.3799 s = 1.87x,
+# Acceptance (the row's own command, two independent -w 3 -r 6 runs on this
+# host, /tmp/perf-2-baseline.json vs /tmp/perf-2-serial.json, the files hold
+# run 2): the margin holds with room in both, and moves only with host load,
+# never with the setting —
+#   run 1  default 1.2698 s  serial 2.3799 s  = 1.87x
+#   run 2  default 1.4875 s  serial 3.2255 s  = 2.17x  (higher host load:
+#          user+sys per run rose ~0.4 s, both legs together)
 # against the 1.15x floor. The remaining headroom is inside the tags guard's
 # network round-trip (1.06 s of remote reach, ~0.25 s of git + shell), not in
 # the orchestration: caching or deduping `git ls-remote` would change what that
