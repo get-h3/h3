@@ -284,6 +284,48 @@
 # The census and tick-chain targets keep their own recipes untouched; the
 # census was never named standalone by any script or workflow (grep at PERF-1),
 # so the added edge changes no other invocation.
+# PERF-2: the DEFAULT IS RE-MEASURED AND STAYS 8. hyperfine 1.20.0, GNU Make
+# 4.4.1, 16 cores, -w 3 -r 6 per leg, /tmp/perf-2-sweep.json:
+#
+#   MAKEFLAGS=-j1 (serial control)   2.210 s ± 0.372
+#   VERIFY_JOBS=2                    1.481 s ± 0.158
+#   VERIFY_JOBS=4                    1.276 s ± 0.281
+#   VERIFY_JOBS=6                    1.271 s ± 0.173
+#   VERIFY_JOBS=8 (this default)     1.203 s ± 0.041   <- best mean AND tightest spread
+#   VERIFY_JOBS=12                   1.233 s ± 0.107
+#   VERIFY_JOBS=16                   1.249 s ± 0.163
+#
+# 8 is not a lucky number: it is where the critical path stops moving. Nine
+# early guards fan out, but the composite's wall time is the SLOWEST REQUIRED
+# GUARD plus the census tail — not the fan-out width. Per-guard on the same
+# host (/tmp/perf-2-parts-fast.json, -w 1 -r 8; /tmp/perf-2-parts.json, -w 2 -r 5):
+#
+#   verify-tags (git ls-remote --tags origin)      1.314 s ± 0.118   <- the floor
+#   verify-tick-chain (DuckBrain chain + walker)   0.545 s ± 0.074
+#   verify-board-header                            0.141 s ± 0.053
+#   verify-specs / -count / -json-fences           0.12-0.15 s each
+#   verify-docs / -qa-target / -commit-msg         0.016-0.034 s each
+#   verify-verdict-census (script, the tail)       0.029 s ± 0.009
+#   full `make verify` at -j8                      1.267 s ± 0.079
+#   raw `git ls-remote --tags origin`, no guard    1.063 s ± 0.096
+#
+# The parallel composite IS the tags guard (1.267 s wall against a 1.314 s
+# prerequisite, inside their spreads): no VERIFY_JOBS value can compose below
+# that, which is why the sweep is flat from 4 upward while the serial control
+# stays at sum-of-guards. Raising the width past 8 only adds scheduler and
+# -Orecurse buffering; lowering it to 4 buys nothing and costs spread (4 and 8
+# are 1.276 vs 1.203 — the earlier sweep that "found" 4 best was overlapping
+# noise, which is the trap this block exists to stop re-deriving).
+#
+# Acceptance (the row's own command, this host, /tmp/perf-2-baseline.json vs
+# /tmp/perf-2-serial.json): default 1.2698 s vs MAKEFLAGS=-j1 2.3799 s = 1.87x,
+# against the 1.15x floor. The remaining headroom is inside the tags guard's
+# network round-trip (1.06 s of remote reach, ~0.25 s of git + shell), not in
+# the orchestration: caching or deduping `git ls-remote` would change what that
+# guard verifies — a guard-semantics decision, not a scheduling one. Measured
+# and left alone, deliberately.
+#
+# ch:trace row=PERF-2 spec=Makefile:235-291 wave=none:serial-tick test=hyperfine-benchmark doc=none:perf-evidence prompt=none:perf-work evidence=/tmp/perf-2-baseline.json,/tmp/perf-2-serial.json,/tmp/perf-2-sweep.json,/tmp/perf-2-parts.json witness=commit verdict=none:pending commit=none:pending memory=none:perf-tuning
 VERIFY_JOBS ?= 8
 
 verify:
