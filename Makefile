@@ -140,8 +140,26 @@
 # The close-out contract, in order:
 #
 #   1. append the tick's events (and any board rows) to the board files
-#   2. make board-close                       <- the header names the current HEAD
+#   2. make board-close                       <- reasserts the hook, then the
+#                                                header names the current HEAD
 #   3. git commit the board files             <- the commit that carries the header
+#
+# Step 2 is TWO writes on purpose (QA-H3-27). scripts/ensure-board-close-hook.sh
+# re-asserts the pre-commit block in the hooks directory git resolves — because
+# installing it once is a one-shot: the block lives inside a pre-commit file this
+# project does not own, and a reinstall of a SHARED hooks file (the gitreins hook
+# on this host rewrites /var/tmp/foreign-hooks/pre-commit from its own template)
+# silently removes it. Measured: 9th recurrence, a fresh public clone at 22bc708
+# failed `make verify` with last_commit six commits behind because the two board
+# commits before it ran with no block at all. So the close-out itself must not
+# assume the block is still installed: it verifies it, reasserts it through the
+# tracked installer when it is gone, and FAILS LOUDLY (non-zero, remedy printed)
+# when it cannot — the board close-out stops before a stale header can land,
+# instead of leaving the discovery to the next fresh-clone verify.
+# scripts/sync-board-header.sh then writes the header. Proof:
+# make verify-board-close-hook-selftest (its arm 11 reinstalls a gitreins-style
+# hook over the resolved dir, proves the header goes stale without the block,
+# then proves the close-out path puts it back and the next board commit re-pins).
 #
 # Step 3 is what makes check 8 pass at rest: the header then names the commit
 # the board was written against — the board commit's parent — which is the
@@ -463,8 +481,16 @@ verify-board-close-hook-selftest:
 # read-only and runs on a fresh clone; this WRITES line 1 of the board header.
 # Run it after the board edits and BEFORE the board commit (see the close-out
 # contract in the header comment at the top of this Makefile).
+#
+# QA-H3-27: it first re-asserts the board-close pre-commit block in the hooks dir
+# git resolves (ensure-board-close-hook.sh). That step is why a reinstall of a
+# shared hooks file can no longer cost a board commit its header write-back; if
+# the block cannot be reasserted the target FAILS, loudly, before the header is
+# written. H3_SKIP_HOOK_ENSURE=1 (handled inside the ensure script, which prints
+# a warning naming the now-unguarded close-out) is for a host whose shared hooks
+# dir must not be touched.
 board-close:
-	@echo "make board-close: board-header write-back (DF-H3-25) — run this as the last step before the board commit"
+	@echo "make board-close: board-header write-back (DF-H3-25) + board-close hook reassert (QA-H3-27) — run this as the last step before the board commit" && bash scripts/ensure-board-close-hook.sh
 	@sh scripts/sync-board-header.sh
 
 verify-board-sync-selftest:

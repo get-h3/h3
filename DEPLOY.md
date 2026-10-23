@@ -381,6 +381,37 @@ Install (after `boardctl install` has set up the shared pre-commit hook):
 
     bash scripts/install-board-close-hook.sh
 
+### The install is a one-shot; the close-out re-asserts it (QA-H3-27)
+
+The block lives **inside a pre-commit file this project does not own**. When the
+resolved hooks dir is shared (a host-global `core.hooksPath`) or re-installed by
+another tool, that file is rewritten from *its* template and the block is gone —
+no warning, no error, nothing this repo can hook. That is the 9th recurrence of
+this class: on 2026-10-23 a fresh public clone at `22bc708` failed `make verify`
+with `last_commit` six commits behind, because the gitreins hook install had
+re-created the shared hook without the block and the two board commits before it
+(`1b6f49f`, `4bd9265`) ran with no header write-back at all.
+
+So the guarantee is not "installed once". `make board-close` — the close-out step
+every board-writing tick runs — first calls:
+
+    bash scripts/ensure-board-close-hook.sh          # reassert if missing
+    bash scripts/ensure-board-close-hook.sh --check  # probe only, never writes
+
+It resolves the hooks dir the same way the installer does, and:
+
+* **already there** → no-op, nothing written (`--check` prints `PASS`, exit 0);
+* **gone** (the reinstall case) → reasserts it through the tracked installer,
+  which backs the file up, inserts the block before the final `exit`, and
+  preserves every other line of the foreign hook; then re-verifies the file;
+* **cannot be repaired** → exits non-zero and names the remedy, so the board
+  close-out **stops before a stale header is written** instead of leaving the
+  discovery to the next fresh-clone `make verify`.
+
+`H3_SKIP_HOOK_ENSURE=1 make board-close` skips the reassert for a host where the
+shared hooks dir must not be touched; it prints a warning that the close-out is
+then unguarded. Both halves are proven by the reinstall arm of the battery below.
+
 ### Where the hook goes (and why that is the fix)
 
 **git only runs hooks from the directory it resolves, and `core.hooksPath`
@@ -430,7 +461,11 @@ The installer battery exercises every resolution shape above and makes a real
 board-only commit twice: RED with no hook in the resolved dir (the commit
 succeeds and the header is left stale — the defect) and GREEN with the block
 installed (the same commit leaves `last_commit` equal to the commit's parent
-sha). It isolates `GIT_CONFIG_GLOBAL`, so it gives the same verdict on a host
-with a global `core.hooksPath` and on one without.
+sha). A third pair reproduces the **reinstall** (arm 11): the resolved hook is
+overwritten with a gitreins-style hook, the block disappears, a board commit is
+proven to leave the header stale (RED), then `ensure-board-close-hook.sh`
+reasserts the block without clobbering the foreign hook and the next board
+commit re-pins the header (GREEN). It isolates `GIT_CONFIG_GLOBAL`, so it gives
+the same verdict on a host with a global `core.hooksPath` and on one without.
 
 
