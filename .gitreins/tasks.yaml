@@ -442,5 +442,13 @@ tasks:
   - README explains user purpose, harness relationship, non-provided hosted/LLM boundaries,
     next action, link resolves, and committed ch:trace links row/spec/test/evidence/commit.
   status: complete
-  completed_at: '2026-10-22T01:12:49.000000+00:00'
   created_at: '2026-10-20T20:57:46.442993+00:00'
+  completed_at: '2026-10-22T01:12:49.000000+00:00'
+- id: QA-H3-27
+  title: Reinstall-resistant board-close hook
+  criteria:
+  - Fresh clone make verify passes; generator reasserts board-close after hook reinstall;
+    reinstall-then-board-commit selftest proves header repin
+  status: complete
+  created_at: '2026-10-23T15:09:44.313602+00:00'
+  completed_at: '2026-10-23T15:33:55.112277+00:00'
