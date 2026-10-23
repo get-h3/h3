@@ -428,3 +428,19 @@ tasks:
   status: complete
   created_at: '2026-10-20T19:45:32.662807+00:00'
   completed_at: '2026-10-20T20:03:59.741750+00:00'
+- id: DOC-15
+  title: Enumerate release verification proof boundary
+  criteria:
+  - Docs release guide enumerates every make verify prerequisite plus verify-roundtrip/verify-all/board-close/release
+    scope; includes committed ch:trace row/spec/test/evidence/commit links.
+  status: complete
+  created_at: '2026-10-20T20:57:46.047340+00:00'
+  completed_at: '2026-10-22T01:25:59.036411+00:00'
+- id: DOC-16
+  title: Add end-user H3 overview
+  criteria:
+  - README explains user purpose, harness relationship, non-provided hosted/LLM boundaries,
+    next action, link resolves, and committed ch:trace links row/spec/test/evidence/commit.
+  status: complete
+  completed_at: '2026-10-22T01:12:49.000000+00:00'
+  created_at: '2026-10-20T20:57:46.442993+00:00'
