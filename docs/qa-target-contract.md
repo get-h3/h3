@@ -90,7 +90,33 @@ Step 3 is the whole finding in one command: the incident's target path,
 evaluated by a repo-owned script, produces a **non-zero exit with a named
 reason** — it can no longer be read as "nothing to report, therefore fine".
 
-## 4. Scope: what this contract does and does not cover
+## 4. Local `act` credential path
+
+`act` is a local workflow runner, not GitHub Actions. This repository's
+workflows use `actions/checkout`, which needs a GitHub token to read the
+repositories named by the workflow. Hosted GitHub Actions supplies its
+short-lived `GITHUB_TOKEN` automatically; a local `act` run must receive a
+personally authorized token as an environment-backed secret.
+
+Use `act`'s interactive secret input so the value is neither printed nor
+written to shell history, a workflow, or a tracked file:
+
+```bash
+# act prompts for the secret value without echoing it.
+act workflow_dispatch -W .github/workflows/roundtrip.yml --secret GITHUB_TOKEN
+```
+
+Keep the token in an approved local secret store or environment only; this
+repository cannot mint, disclose, or commit one. Do not add a token value to
+this document, a workflow, a command transcript, or version control.
+
+A token-less `act` run that stops at `actions/checkout` is a harness limitation,
+not evidence that the workflow or product passed. Record that run as
+**UNVERIFIED** — consistent with the zero-cell rule in §1 — rather than green.
+The existing `workflow_dispatch` workflow path remains the supported manual
+entry point.
+
+## 5. Scope: what this contract does and does not cover
 
 **Covered here (repo-owned, executable):** target existence, target identity
 (this repository, not a sibling), and the "empty ≠ green" rule as a
@@ -112,7 +138,7 @@ rule 1.2 (resolve from the checkout or the scheduler row) is normative for lane
 configuration, and why the guard's job is to make a *candidate* target fail
 loudly for any runner that does hold one.
 
-## 5. Incident record
+## 6. Incident record
 
 | | |
 |---|---|
@@ -124,7 +150,7 @@ loudly for any runner that does hold one.
 | Lane-side note | a QA-lane comment of 2026-09-18 (`events.jsonl` id 206) records that the then-current lane resolved the target correctly and drove cells, i.e. the original premise no longer reproduced; the row stayed open because nothing repo-owned stated the target contract, which is what this page adds |
 | Sibling rows (not this one) | `QA-H3-2` — battery silently reports no cells instead of failing loudly; pipeline-side |
 
-## 6. Verifying this page
+## 7. Verifying this page
 
 The contract is only credible if it is re-runnable, so the checks of §3 are the
 gate: `make verify` (which now includes `verify-qa-target`),
