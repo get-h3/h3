@@ -600,10 +600,14 @@ cd h3-harness-go && go mod tidy && go run .
 > the three invocation forms in §5 (re-activate, PATH export, or the explicit
 > `/path/to/shim/.venv/bin/hermes-h3` path) before running this block.
 
-> **Echo, then scaffold — one at a time.** The Go echo example and a freshly
-> scaffolded Go harness both bind `:9191`; stop one (Ctrl-C) before starting the
-> other, or the second fails with `listen tcp :9191: bind: address already in
-> use`. py/ts scaffolds honor `PORT`; Go echo and Go scaffold hardcode it (DF-H3-9).
+> **Echo, then scaffold — one at a time.** Both Go quick-start targets (echo
+> example and fresh scaffold) default to `:9191`; stop one (Ctrl-C) before
+> starting the other, or the second fails with `listen tcp :9191: bind: address
+> already in use`. All four targets honor `PORT` — Go echo, Go scaffold, py
+> scaffold, and ts scaffold alike — e.g. `PORT=9291 go run .` for either Go
+> target, `PORT=9291 python main.py` for the py scaffold, or `PORT=9291
+> npm run dev` for the ts scaffold; stop the first harness or give the second
+> a different port.
 
 Each SDK implements the `Harness` interface (Go: 5 methods — `OnProcess`,
 `OnResult`, `OnCancel`, `OnSessionTerminate`, `Health`); you implement those
