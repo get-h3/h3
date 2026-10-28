@@ -480,3 +480,12 @@ tasks:
   status: complete
   created_at: '2026-10-28T20:38:15.185925+00:00'
   completed_at: '2026-10-28T20:49:29.075269+00:00'
+- id: H3-REVIEW-20261028-02
+  title: Reconcile stale QA blocker review
+  criteria:
+  - Verify QA-H3-FOREMAN-1 and QA-H3-FOREMAN-2 each carry current foreman-run closure
+    evidence referencing H3-REVIEW-20261028-02, and RELEASE-H3-013 is re-scoped to
+    its remaining changelog, CI, and owner-gated blockers.
+  status: complete
+  created_at: '2026-10-28T21:01:45.779795+00:00'
+  completed_at: '2026-10-28T21:02:45.860802+00:00'
