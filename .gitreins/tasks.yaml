@@ -452,3 +452,23 @@ tasks:
   status: complete
   created_at: '2026-10-23T15:09:44.313602+00:00'
   completed_at: '2026-10-23T15:33:55.112277+00:00'
+- id: QA-H3-FOREMAN-1
+  title: "fresh-install produces no runnable artifact despite rc=0 (P1) \u2014 foreman\
+    \ re-verification 2026-10-28"
+  criteria:
+  - Fresh venv pip install hermes-h3-shim yields runnable console scripts h3-test
+    and hermes-h3 (both --help exit 0) per the row's own acceptance command; row closed
+    with command+output evidence at HEAD; sibling contradiction rows noted
+  status: complete
+  created_at: '2026-10-28T19:59:36.322057+00:00'
+  completed_at: '2026-10-28T20:03:25.501619+00:00'
+- id: QA-H3-FOREMAN-2
+  title: "CI gate passes vacuously with zero tests executed (P1) \u2014 foreman re-verification\
+    \ 2026-10-28"
+  criteria:
+  - 'make verify-roundtrip exits 0 with literal ''QV-PROTO-04: Cross-language protocol
+    round-trip verification PASSED'' and RESULTS ''Passed: 6  Failed: 0'' per the
+    row''s own acceptance; row closed with log evidence at HEAD'
+  status: complete
+  created_at: '2026-10-28T19:59:36.752869+00:00'
+  completed_at: '2026-10-28T20:04:19.058755+00:00'
