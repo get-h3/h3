@@ -586,7 +586,7 @@ every subcommand — overrides `$HERMES_H3_CONFIG`, default `~/.hermes/h3/config
 | SDK | Install | Echo example (reference, passes 48/48) |
 |-----|---------|----------------------------------------|
 | Go | `go get github.com/get-h3/sdk-go` | `sdk-go/examples/echo` → `go run .` on :9191 |
-| Python | `pip install git+https://github.com/get-h3/sdk-python` | `sdk-python/src/h3_harness/examples/echo.py` |
+| Python | `pip install h3-harness-sdk` (source fallback: `pip install git+https://github.com/get-h3/sdk-python`) | `sdk-python/src/h3_harness/examples/echo.py` |
 | TypeScript | `npm install github:get-h3/sdk-typescript` | `sdk-typescript/src/examples/echo.ts` |
 
 Or scaffold a fresh harness project:

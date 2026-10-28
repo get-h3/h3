@@ -346,7 +346,9 @@ jobs:
           sleep 3
       - name: Run H3 test battery
         run: |
-          git clone https://github.com/get-h3/shim && cd shim && pip install -e .
+          pip install hermes-h3-shim   # PyPI primary
+          # source fallback (commit not in a release yet):
+          # git clone https://github.com/get-h3/shim && cd shim && pip install -e .
           h3-test --endpoint http://localhost:9191 --json > report.json
       - name: Check results
         run: |

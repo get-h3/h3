@@ -231,7 +231,8 @@ For production isolation or running on separate hosts.
 
 ```dockerfile
 FROM python:3.11-slim
-RUN pip install git+https://github.com/get-h3/sdk-python
+RUN pip install h3-harness-sdk
+# source fallback: RUN pip install git+https://github.com/get-h3/sdk-python
 COPY harness.py .
 EXPOSE 9191
 CMD ["python", "harness.py"]
@@ -323,12 +324,13 @@ GET  /health      200 1ms
 # 1. Check compatibility
 hermes-h3 pre-update-check 0.19.0
 
-# 2. Upgrade shim (source install)
-cd shim && git pull && pip install -e .
+# 2. Upgrade shim (PyPI primary)
+pip install --upgrade hermes-h3-shim
+# source fallback (commit not in a release yet): cd shim && git pull && pip install -e .
 
 # 3. Upgrade SDK in harness
 # Go:  go get github.com/get-h3/sdk-go@latest
-# Python: pip install --upgrade git+https://github.com/get-h3/sdk-python
+# Python: pip install --upgrade h3-harness-sdk  (source fallback: pip install --upgrade git+https://github.com/get-h3/sdk-python)
 # TS:   npm install github:get-h3/sdk-typescript@latest
 
 # 4. Rerun test battery
@@ -342,7 +344,7 @@ hermes-h3 verify --harness my-harness
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `hermes-h3 install my-harness` fails | Shim not installed | `pip install -e .` from the shim checkout (Step 1) |
+| `hermes-h3 install my-harness` fails | Shim not installed | `pip install hermes-h3-shim` in the active venv (or `pip install -e .` from the shim checkout — Step 1) |
 | Plugin loads but no harness config | Config not created | `hermes-h3 scaffold` to regenerate config |
 | "Protocol version mismatch" | SDK too old/new | Install matching SDK version (check `versions.yaml`) |
 | Health check timeout | Harness not running | `hermes-h3 scaffold --lang go` then `go run .` |
