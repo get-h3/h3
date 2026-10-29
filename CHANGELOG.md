@@ -2,9 +2,39 @@
 
 All notable changes to the H3 protocol and umbrella project.
 
-## [Unreleased] — 2026-09-29
+## [Unreleased] — 2026-10-29
 
-Nothing yet.
+Patch-candidate sweep since v0.3.0: docs/audit fixes from the 2026-10-25..10-28
+review-lane and stand-in PM cycles. No protocol, SDK, or CLI behavior changes.
+
+### Fixed
+- `DEPLOY.md` health-route example pointed at a non-existent endpoint; corrected
+  to the live `/v1/health` path verified against a running harness
+  (REVIEW-H3-20261028-01).
+- `docs/integration.md` Go echo + Go scaffold quickstart hardcoded `:9191`
+  regardless of the harness's actual bind port; now documents the port as
+  harness-configurable and matches the README's guidance (README-4).
+- `docs/diagnostics.md` current-state claims had drifted from the live battery
+  (test count, guard names); refreshed against HEAD (DOC-18).
+- `docs/guide.html` / `DEPLOY.md` `make verify` prerequisites listed tools that
+  are no longer required (jq for most guards); aligned with the actual
+  `Makefile` dependency list (DOC-17).
+- Python SDK quickstart now prepends the venv step (`python3 -m venv .venv &&
+  source .venv/bin/activate`) before `pip install -e .`, matching the pattern
+  already in `docs/integration.md` and required on PEP 668 hosts
+  (Ubuntu 24.04+, Debian 12+) (DOC-20).
+
+### Added
+- `qa: record h3 clean-machine battery 2026-10-28` — dated snapshot of the
+  clean-machine probe run, kept as a point-in-time record under
+  `docs/qa/` (not a behavior change).
+
+### Changed
+- `make verify` release-tags-table guard (`scripts/check-tags-table.sh`) now
+  reads the live `git ls-remote --tags origin` and reconciles against
+  `docs/releases.md`; empty-remote degrades to UNVERIFIED rather than passing
+  silently (DF-H3-44 follow-through, already present in v0.3.0 tooling, now
+  exercised on every verify).
 
 ## [0.3.0] — 2026-09-29
 
