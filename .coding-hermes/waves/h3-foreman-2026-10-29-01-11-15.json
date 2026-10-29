@@ -1,0 +1,18 @@
+{
+  "wave_id": "h3-foreman-2026-10-29-01-11-15",
+  "tick_id": "h3-foreman-2026-10-29-01-11-15",
+  "project": "h3",
+  "workdir": "/home/kara/get-h3/h3",
+  "wave_budget": 12,
+  "composed_at": "2026-10-29T02:35:00-05:00",
+  "base_sha": "64f2bb156aed8480fc18928ca7a2c155e211dc09",
+  "selected_block": "NEVER-DONE",
+  "selected_rows": ["NEVER-DONE"],
+  "wave_size": 0,
+  "rows_dispatched": [],
+  "worker_list": [],
+  "disposition": "foreman-direct-records-only",
+  "reason": "Highest-value actionable row is a records-only perpetual audit; owner-gated RELEASE-H3-013 remains blocked and implementation rows are lower priority. Acceptance is directly verifiable without a worker.",
+  "finished_at": null,
+  "status": "open"
+}
