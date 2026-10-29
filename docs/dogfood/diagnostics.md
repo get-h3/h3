@@ -4,12 +4,20 @@ Not raw logs — an explanation of how the get-h3 fleet is put together, what
 broke during a real use run (2026-08-02), and the correct patterns. Written
 from the perspective of someone who used the system, not built it.
 
+**Current state (2026-10-28):** sections 1-2 and 5 describe the system AS IT
+IS NOW — the battery ships 48 tests and the packages are published (PyPI:
+`hermes-h3-shim` 0.2.0, `h3-harness-sdk` 0.1.6, as of 2026-10-28; the npm
+name `@get-h3/h3-harness-sdk` was still unpublished as of 2026-10-28).
+Sections 3 onward are DATED field reports from each dogfood run: they are
+preserved as evidence and the numbers in them were true when written, not
+necessarily now.
+
 ## 1. How the thing is built
 
 ```
 protocol/  (OpenAPI 3.1 h3-protocol.yaml — single source of truth)
     │   generates Pydantic/Zod/Go types into the SDKs
-    ├──► shim/          Python: client, loader, shim_loop, test_battery (44 tests)
+    ├──► shim/          Python: client, loader, shim_loop, test_battery (48 tests)
     │        │          exposes: h3-test, hermes-h3 (CLI)
     │        └── templates/ (go/py/ts scaffold generators)
     ├──► sdk-go/        Go harness SDK (protocol/ + harness/ packages)
@@ -22,10 +30,12 @@ context) → harness returns a Decision (`tool_call` / `llm_call` / `text` /
 `wait` / `delegate` / `end`) → Hermes executes → `POST /v1/result` →
 harness returns the next Decision → ... → `end`.
 
-**The gate:** `h3-test --endpoint URL` runs 44 tests in 6 categories
-(health, process flows, decision types, result handling, errors, stress).
+**The gate:** `h3-test --endpoint URL` runs 48 tests in 6 categories
+(health, process flows, decision types, result handling, edge cases, stress).
 Exit 0 = compliant. The battery is transport-agnostic (REST today; gRPC is
-PERF-04).
+PERF-04). (Current-state count — 48 since the battery's later waves; see
+`scripts/test-count.txt`, the single source of truth. Counts in the dated
+field reports below are the numbers that were true when they were written.)
 
 **Fleet topology:** 6 repos, each with its own coding-hermes foreman cron;
 the umbrella `h3` repo holds the specs, the cross-repo board
@@ -64,12 +74,20 @@ the umbrella `h3` repo holds the specs, the cross-repo board
 ## 3. Errors hit during the run, and the right way
 
 ### E1. Installing the shim package → "No matching distribution found"
-**Why:** the package was never published to PyPI (P3-10 blocked on
-credentials). Same for the Python SDK's PyPI name (`h3-harness-sdk`).
+*(Historical — observed 2026-08-02. Both PyPI names have since been
+published; see the current-state note at the top of this document and the
+2026-08-14 update in §7.)*
+**Why (at the time):** the package was not yet published to PyPI (2026-08-02;
+P3-10 blocked on credentials). Same for the Python SDK's PyPI
+name (`h3-harness-sdk`).
 **Right way:** install from source — shim: `git clone
 https://github.com/get-h3/shim && cd shim && pip install -e .`; SDKs:
 `pip install git+https://github.com/get-h3/sdk-python` /
-`npm install github:get-h3/sdk-typescript`. Or wait for the publish (P3-10).
+`npm install github:get-h3/sdk-typescript`. (Current state, 2026-10-28:
+`pip install hermes-h3-shim` and `pip install h3-harness-sdk` both work —
+PyPI latest 0.2.0 and 0.1.6 respectively. The npm name
+`@get-h3/h3-harness-sdk` was still unpublished as of 2026-10-28, so TS
+installs keep using the GitHub ref.)
 
 
 ### E2. `go mod tidy` → `unknown revision v0.0.0`
@@ -115,10 +133,12 @@ fresh `running` row; check its age first.
 - Battery exit codes: 0 pass / 1 fail; `--json` report is schema-valid and
   includes per-test `passed/detail/duration_ms/category`.
 - Three independent implementations (Go scaffold, Python SDK, stdlib
-  spec-only) all reach 44/44 against the same battery — the gate is
-  consistent and language-agnostic.
-- Spec-only implementability: 41/43 from `specs/02` alone (the 2 missing
-  conventions are documented above).
+  spec-only) all reached 44/44 in the 2026-08-02 run — the gate is
+  consistent and language-agnostic. (Battery size grew after that run:
+  46/46 verified 2026-09-08, 48 tests as of 2026-10-28 — see the
+  dated anchors below and `scripts/test-count.txt`.)
+- Spec-only implementability: 41/43 from `specs/02` alone, measured in the
+  2026-08-02 run (the 2 missing conventions are documented above).
 - Management CLI (install/list/verify/test) behaves consistently, respects
   `--config`, and `verify` correctly reports harness health/caps/version.
 - The board's claim "fleet green" matches reality for the tested paths.
@@ -132,38 +152,43 @@ fresh `running` row; check its age first.
    `task_complete`).
 4. `POST /v1/cancel` → `{cancelled: true}`; `GET|DELETE /v1/sessions/:id`.
 5. Errors as `{"error": {code, message, details}}` with the §9 codes.
-6. Run `h3-test --endpoint http://localhost:9191` until 44/44.
+6. Run `h3-test --endpoint http://localhost:9191` until 48/48 (the battery
+   ships 48 tests as of 2026-10-28; older reports in this document quote the
+   smaller batteries of their day).
 
 ## 6. 2026-08-14 run — what changed, new errors, the right way
 
 Second dogfood run (fresh clones, fresh venv, network-resolved deps). The
 2026-08-02 blockers are GONE: shim installs from source, sdk-go has release
-tags (v0.1.0/v0.1.1), README Quick Start works end-to-end (44/44 in 0.22s).
-New findings below.
+tags (v0.1.0/v0.1.1), README Quick Start works end-to-end (44/44, 2026-08-14
+battery, in 0.22s). New findings below.
 
 ### E7. Scaffolded Go harness → 43/44, `cancel_unknown_session` "Expected 404, got 200"
 **Why:** `templates/go/go.mod` pins `sdk-go v0.1.0`. The 404-on-unknown-cancel
 fix (`addb017`, GAP-DOG-002) landed 2026-08-08 and is only in **v0.1.1**.
 The SDK's own `examples/echo` compiles against sdk-go `main` (fixed), so the
-fleet's E2E ticks kept passing 44/44 while every fresh scaffold resolved the
-broken v0.1.0 from the module proxy. **Right way:** template must require
+fleet's E2E ticks kept passing 44/44 (2026-08-14 battery-of-the-day) while
+every fresh scaffold resolved the broken v0.1.0 from the module proxy.
+**Right way:** template must require
 v0.1.1+ (one-line bump, DOGFOOD-07); more broadly, verify scaffold output per
 release, not just SDK examples (DOGFOOD-10).
 
 ### E8. Scaffolded Python harness → 43/44, same test
 **Why:** `templates/py/main.py` `on_cancel` (L265) always returns
 `CancelResponse(cancelled=True)` — no session lookup, so `/v1/cancel` never
-404s. The sdk-python `BaseHarness` (44/44 example) tracks sessions and 404s;
+404s. The sdk-python `BaseHarness` (a 44/44 example on the 2026-08-14
+battery) tracks sessions and 404s;
 the template doesn't use that pattern. **Right way:** session check + 404
 `SESSION_NOT_FOUND` in the template's cancel route (DOGFOOD-08).
 
 ### E9. Scaffolded TS harness → `npm install` E404
 **Why:** `templates/ts/package.json` depends on `@get-h3/h3-harness-sdk@^0.1.0`
-— never published to npm (verified live). The sdk-typescript AGENTS.md
-documents the working fallback `github:get-h3/sdk-typescript`; the template
-ships the dead ref (same class as GAP-005/007/008, which fixed the docs but
-not the template). **Right way:** template dep → `github:get-h3/sdk-typescript`
-until published (DOGFOOD-09).
+— not published to npm (verified live 2026-08-14; still unpublished
+2026-10-28 — TS installs use the GitHub ref instead). The sdk-typescript
+AGENTS.md documents the working fallback `github:get-h3/sdk-typescript`; the
+template ships the dead ref (same class as GAP-005/007/008, which fixed the
+docs but not the template). **Right way:** template dep →
+`github:get-h3/sdk-typescript` until published (DOGFOOD-09).
 
 ### E10. Why the 43/44 regression survived 8 days (process lesson)
 sdk-go v0.1.1 tagged 2026-08-08; E2E ticks #280-#305 all ran the battery
@@ -180,13 +205,15 @@ argument". **Right way:** accept an optional positional (DOGFOOD-11).
 
 ## 7. Updated trust anchors (2026-08-14)
 
-- README Quick Start: ✅ works end-to-end from fresh clones (~3 min to 44/44).
-- SDK echo examples: ✅ 44/44 in Go, Python, TypeScript (all verified live).
+- README Quick Start: ✅ ~3 min to 44/44 from fresh clones (2026-08-14 battery).
+- SDK echo examples: ✅ 44/44 on 2026-08-14 in Go, Python, TypeScript
+  (all verified live that day; the battery is now 48 — see current state).
 - Scaffold path: ❌ 43/44 / 43/44 / uninstallable (DOGFOOD-07/08/09) — the
   README's "30 seconds" claim does NOT hold as of 2026-08-14.
 - Battery speed/exit-code discipline: ✅ unchanged (0.2-0.5s, exit 0/1/2).
 - h3-harness-sdk 0.1.2 IS on PyPI (2026-08-08) — `pip install h3-harness-sdk`
-  works; `hermes-h3-shim` still not published (P3-10).
+  works; `hermes-h3-shim` was still unpublished as of 2026-08-14 (P3-10) —
+  since published: 0.2.0 is the latest PyPI release (verified 2026-10-28).
 
 ## 8. 2026-09-08 dogfood additions (E12-E14)
 
