@@ -1,0 +1,64 @@
+{
+  "wave_id": "h3-foreman-2026-10-28-22-10-46",
+  "tick_id": "h3-foreman-2026-10-28-22-10-46",
+  "project": "h3",
+  "workdir": "/home/kara/get-h3/h3",
+  "wave_budget": 11,
+  "composed_at": "2026-10-28T22:10:46-05:00",
+  "base_sha": "622ec20",
+  "tasks": [
+    {
+      "id": "DOC-17",
+      "worktree": "/home/kara/worktrees/h3-DOC-17",
+      "branch": "wt/DOC-17",
+      "worker_commit": "3d2196cd5f11857a784f8bd44dc76b788f52bff2",
+      "landed_commit": "32960d3647505f9e6de45158c9e23c86380ae9be",
+      "disposition": "merged-product-only",
+      "verdict": "8d5dbb51 FAIL: judge found missing board evidence; docs content passed",
+      "gates": "targeted acceptance PASS; make verify rc=2 on pre-existing stale board header; guard degraded PASS (docs-only)",
+      "note": "Worker branch mixed stale board events with product docs; board path was refused and product docs were landed only in a fresh detached worktree. Tier-2 judged the landed docs content but correctly left the row open pending evidence bookkeeping."
+    },
+    {
+      "id": "DOC-18",
+      "worktree": "/home/kara/worktrees/h3-DOC-18",
+      "branch": "wt/DOC-18",
+      "worker_commit": "4e5136df72f013a081431f19bcfaa502d2bebc8b",
+      "landed_commit": "73f3537e767f9410b5283d8c5eeb66f8f3ee6531",
+      "disposition": "merged-product-only",
+      "verdict": "d01f73eb PASS",
+      "gates": "targeted acceptance PASS; make verify rc=2 on pre-existing stale board header; guard degraded PASS (docs-only)"
+    },
+    {
+      "id": "DOC-20",
+      "worktree": "/home/kara/worktrees/h3-DOC-20",
+      "branch": "wt/DOC-20",
+      "worker_commit": "e6cf1784cc6efdb600d50ee8b895baa6cbe62d82",
+      "landed_commit": "b341b3f15c05f3fec77f0d02c055512dfba508ad",
+      "disposition": "merged-product-only",
+      "verdict": "52d61d9c PASS",
+      "gates": "targeted acceptance PASS; make verify rc=2 on pre-existing stale board header; guard degraded PASS (docs-only)"
+    },
+    {
+      "id": "REVIEW-H3-20261028-01",
+      "worktree": "/home/kara/worktrees/h3-REVIEW-H3-20261028-01",
+      "branch": "wt/REVIEW-H3-20261028-01",
+      "worker_commit": "0348c76e21e494233d22f914c21851e8df8813f6",
+      "landed_commit": "969e47eafdd67eda49bbcd18327ffe2c72d9e5ac",
+      "disposition": "merged-product-only",
+      "verdict": "c48c9cf8 FAIL: route passed; conjunctive make verify failed on stale board header",
+      "gates": "route acceptance PASS; make verify rc=2 on pre-existing stale board header; guard degraded PASS (docs-only)"
+    }
+  ],
+  "status": "recovered_product_commits",
+  "finished_at": "2026-10-29T02:00:00-05:00",
+  "board_closeout": "pending: shared canonical board has pre-existing local edits and is behind origin/main; no board bookkeeping was copied from stale worker branches",
+  "canonical_head": "969e47eafdd67eda49bbcd18327ffe2c72d9e5ac",
+  "remote_parity": "origin/main=969e47eafdd67eda49bbcd18327ffe2c72d9e5ac; detached landing ahead=0 behind=0",
+  "ci": "GitHub get-h3/h3 latest three runs success on 969e47e, b341b3f, 73f3537e",
+  "remaining": [
+    "DOC-17 board completion evidence remains pending because Tier-2 verdict requires recording make verify rc=2 and current board closeout",
+    "REVIEW-H3-20261028-01 Tier-2 remains FAIL only because make verify rc=2; route fix is landed",
+    "canonical board closeout and header re-pin must be performed from a fresh worktree at origin/main; current shared checkout is intentionally untouched because it has sibling dirty edits",
+    "preserved worker worktrees and branches remain as evidence and were not deleted"
+  ]
+}
