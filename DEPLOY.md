@@ -301,7 +301,7 @@ POST /v1/process 200 12ms
 POST /v1/result  200 8ms
 POST /v1/process 200 15ms
 POST /v1/result  200 9ms
-GET  /health      200 1ms
+GET  /v1/health    200 1ms
 ```
 
 ## Production Checklist
