@@ -27,6 +27,8 @@ Headline operations were measured without changing the target:
 Nothing measured was slow enough to justify a new PERF row. No profile was run because the repeatable user-facing operations were sub-second to low-seconds and the only multi-second operation was a one-time cross-language verification/install workflow with no demonstrated user-noticeable hot path.
 
 ## Findings and open coverage
-No new product finding was filed. Existing board rows remain the owning records for open coverage questions, including QA-H3-28 (generic QA battery vacuity), QA-H3-PERF-1 (prior uncollected battery), and QA-H3-FOREMAN-4 (generic missing-config detector coverage). This run did not re-file or alter those rows. The local and bunker evidence above proves the documented H3 path, not closure of those separate QA-harness rows.
+No new product finding was filed. Existing board rows remain the owning records for open coverage questions, including QA-H3-28 (generic QA battery vacuity), QA-H3-PERF-1 (prior uncollected battery), QA-H3-FOREMAN-4 (generic missing-config detector coverage), and README-5 (the documented Go 1.21+ prerequisite is below sdk-go's go 1.22 floor). This run did not re-file or alter those rows. The local and bunker evidence above proves the documented H3 path, not closure of those separate QA, documentation, or release rows.
+
+The prior tracked usage skill still contained stale coaching saying the Go example and scaffold ignored PORT even though DF-H3-9 was fixed. The verified correction is included in this run's tracked `skills/h3-usage/SKILL.md` artifact; no duplicate board row was created because DF-H3-9/README-4 already own that defect class.
 
 The stand-in path `/home/kara/.hermes/stand-in/dogfood/h3` has no `tasks.jsonl`; canonical board resolution was `/home/kara/get-h3/h3/.coding-hermes/board/tasks.jsonl`. The canonical board was not modified.

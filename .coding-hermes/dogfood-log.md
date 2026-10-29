@@ -411,4 +411,15 @@ answers: "does this project actually work for a real user, and is it worth it?"
   entry.
 2026-10-20 (run 16, CLI-transport angle) | PROMISING-BUT-ROUGH | install_seconds=10(fresh Ubuntu 24.04: venv + PyPI hermes-h3-shim 0.2.0) | bunker=bunker-mvp agent df-h3-261020 destroyed(absence re-verified) | smoke=ok(48/48 PASS exit 0, fresh box AND local PyPI 0.2.0; 4 findings DOGFOOD-12..15) | angle: the DOC-8 CLI verb table + scaffold->run->battery flow driven as an integrator, plus the loader side of the config the CLI writes | perf: battery 0.76-1.08s, nothing user-feelable, no PERF row
 
+## 2026-10-29 — dogfood tick h3-dogfood-2026-10-29-12-06-47
+
+- **Promise:** A fresh integrator can clone H3, install `hermes-h3-shim` in a venv, start the documented Go echo harness, and prove H3 compliance with `h3-test`; the repo's verification surfaces also provide `make verify` and `make verify-roundtrip`.
+- **Verdict:** **SHIPPABLE** for the exercised path. Fresh bunker clone at HEAD `120308c`, PyPI `hermes-h3-shim 0.2.0`, Go echo on `PORT=9297`, `/v1/health` HTTP 200, and `h3-test` 48/48 passed, exit 0. Local `make verify` and `make verify-roundtrip` also passed.
+- **Install leg:** Executed on `bunker-mvp`, agent `df-h3-20261029-120647`; documented path `INSTALL_SECONDS=39`; battery `BATTERY_RC=0`, `TOTAL 48/48 PASSED`, 0.49s; destroy + `bunker info not_found` + fresh census verified. No credentials, visibility, or permissions changed.
+- **Performance:** clean-clone `make verify` hyperfine mean 848.5ms ± 227.4ms (2 warmups, 7 runs); local `make verify` 1.52s; `make verify-roundtrip` 10.79s; fresh battery 0.49s with p50 2.27ms / p95 59.03ms. Nothing user-noticeable enough for a PERF row; no profile run.
+- **Findings:** No new row. Existing ownership retained: QA-H3-28, QA-H3-PERF-1, QA-H3-FOREMAN-4, and README-5. Corrected stale tracked `skills/h3-usage/SKILL.md` coaching that still claimed Go ignored `PORT`; no board mutation.
+- **Canonical resolution:** prompt stand-in lacked `tasks.jsonl`; canonical board was `/home/kara/get-h3/h3/.coding-hermes/board/tasks.jsonl`. Board files were not modified.
+
+2026-10-29 (run 17, documented quickstart angle) | SHIPPABLE | install_seconds=39(fresh bunker-mvp: clone+venv+PyPI shim 0.2.0+sdk-go clone+harness start) | bunker=bunker-mvp agent df-h3-20261029-120647 destroyed(absence verified) | smoke=ok(48/48 PASS exit 0; health 200; local make verify+roundtrip PASS) | angle: fresh public clone and documented Go/PyPI quickstart; perf=verify mean 848.5ms, roundtrip 10.79s, battery 0.49s; no PERF row
+
 2026-10-29 (run 17, clean-clone + fresh-bunker quickstart) | SHIPPABLE | install_seconds=39 (bunker-mvp agent df-h3-20261029-120647, destroyed and absence verified) | smoke=ok (public clone HEAD 120308c; PyPI hermes-h3-shim 0.2.0; Go echo PORT=9297; h3-test 48/48 exit 0; make verify rc=0; make verify-roundtrip 6/6 rc=0) | angle: README Quick Start and umbrella verification surfaces exercised end to end | perf: make verify 848.5ms mean clean clone; roundtrip 10.79s; battery 0.49s, nothing user-feelable, no PERF row | report=docs/dogfood/2026-10-29-integration.md
