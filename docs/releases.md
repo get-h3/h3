@@ -46,7 +46,12 @@ cross-language code execution — plus the orchestration, write-side and
 release-driver targets around them. The complete surface, per the current
 `Makefile`:
 
-**Docs/repo-consistency checks** (static, dependency-free on a fresh clone):
+**Docs/repo-consistency checks** (static — no SDK code is executed; the tool
+baseline is `make`, `git`, `awk`, `jq`, `curl`, `python3`, POSIX
+shell/coreutils and a usable temporary directory — no SDK toolchains, venv or
+outbound network. When the DuckBrain substrate is absent, the census guards
+report a disclosed SKIP/UNVERIFIED naming what was not proven, never a silent
+pass):
 
 | Target | Proves | Does not prove |
 |--------|--------|----------------|
@@ -77,8 +82,8 @@ is absent — never silent green):
 | `verify-all` | `verify` + `verify-roundtrip` — the complete surface: docs/repo checks, DuckBrain verification, and cross-language code execution |
 | `verify-verdict-census` (standalone) | the census reruns on demand; inside `verify` it is the last prerequisite, waiting on the early group |
 
-**Write-side and code execution** (not part of `make verify` — verify is
-read-only and runs on a fresh clone):
+**Write-side and code execution** (not part of `make verify` — `verify` is
+read-only and stays within the tool baseline listed above):
 
 | Target | Proves | Does not prove |
 |--------|--------|----------------|
