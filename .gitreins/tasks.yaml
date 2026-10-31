@@ -497,3 +497,20 @@ tasks:
   status: complete
   created_at: '2026-10-28T21:47:39.179000+00:00'
   completed_at: '2026-10-28T21:55:15.624816+00:00'
+- id: RELEASE-H3-013
+  title: Verify v0.3.1 release readiness
+  criteria:
+  - make verify passes; release dry-run passes; exact-head pages and roundtrip CI
+    succeed; owner-gated execute remains pending
+  status: complete
+  created_at: '2026-10-29T08:57:32.358780+00:00'
+  completed_at: '2026-10-29T08:57:54.744060+00:00'
+- id: QA-H3-FOREMAN-4
+  title: Verify missing-config behavior
+  criteria:
+  - From /home/kara/get-h3/shim, .venv/bin/python -m pytest tests/test_cli.py -k ConfigPath
+    exits 0 and reports 14 passed; this verifies the HERMES_H3_CONFIG override and
+    blank-fallback missing-config path.
+  status: complete
+  created_at: '2026-10-30T21:57:51.627656+00:00'
+  completed_at: '2026-10-30T21:58:08.587198+00:00'
