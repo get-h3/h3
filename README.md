@@ -43,7 +43,7 @@ pip install hermes-h3-shim
 #   git clone https://github.com/get-h3/shim && cd shim && pip install -e .
 
 # Start a Go echo harness — the echo example lives in the sdk-go repo, not in the shim
-# Requires the Go toolchain (1.21+): https://go.dev/dl/
+# Requires the Go toolchain (1.22+): https://go.dev/dl/
 git clone https://github.com/get-h3/sdk-go
 cd sdk-go/examples/echo && go run .
 
