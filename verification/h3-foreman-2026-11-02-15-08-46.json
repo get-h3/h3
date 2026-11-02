@@ -1,0 +1,49 @@
+{
+  "tick_id": "h3-foreman-2026-11-02-15-08-46",
+  "tick_number": 564,
+  "selected_row": "RELEASE-H3-013",
+  "status": "PENDING",
+  "mode": "verification-only",
+  "tested_commit": "32c08c4e095a4d24349c0b9dde84d6b57a2c3f6a",
+  "origin_parity": {
+    "ahead": 0,
+    "behind": 0
+  },
+  "local_verification": [
+    {
+      "command": "make verify (fresh detached worktree of origin/main 32c08c4, pristine tree)",
+      "exit_code": 0,
+      "result": "ALL PASS — umbrella repo is self-consistent; board-header VERIFIED (ticks_total=563 last_commit=57eb981); tick-chain VERIFIED (0 holes in 418..562); tree-census VERIFIED (0 holes, 3 allowlisted twins); release tags-table PASS (3 tags); verdict census PASS (2 verified / 0 unverified)"
+    },
+    {
+      "command": "bash scripts/release.sh --dry-run (same fresh detached tree)",
+      "exit_code": 0,
+      "result": "PASS (dry-run) — DRY-RUN COMPLETE, 0 mutations; proposes v0.3.1 PATCH (265 commits since v0.3.0, 0 feat, 0 breaking); tag v0.3.1 unused locally and at origin; step 3 dispatchable at 32c08c4 = origin/main head; rollback anchor v0.3.0; CHANGELOG.md byte-identical; no gh call, no workflow dispatched"
+    },
+    {
+      "command": "make verify-roundtrip (carried evidence, not re-run)",
+      "exit_code": 0,
+      "result": "tick h3-foreman-2026-11-02-13-59-20 recorded PASS rc=0 (Passed: 6; Failed: 0; QV-PROTO-04 PASSED) at content identical to tested_commit; byte-identical re-probe skipped per owner-gated-highest-priority repeat-probe rule"
+    }
+  ],
+  "dependency_assessment": "QA-H3-FOREMAN-1 and QA-H3-FOREMAN-2 are board status=complete; accepted as resolved. No remaining dependency blocks the readiness claim; only owner authorization blocks execution.",
+  "ci": {
+    "recent_health": "GREEN",
+    "recent_query": "gh run list --repo get-h3/h3 --limit 3 --json status,conclusion,displayTitle,headBranch,createdAt,headSha",
+    "recent_runs": "3 completed/success runs (6b58c5a x2 workflows, bbcdc29); no recent failure to file",
+    "exact_head": "no workflow runs on bookkeeping SHAs (pages.yml/roundtrip.yml are path-filtered); both workflows support workflow_dispatch and would be dispatched on the release commit by scripts/release.sh --verify-ci at execute time"
+  },
+  "dispatch": {
+    "worker_count": 0,
+    "eligible_independent": 0,
+    "reason": "The highest-priority executable release action is owner-gated (release --execute requires explicit authorization); per owner-gated-highest-priority the tick stays verification-only with no lower-priority substitution; no worker may create a tag, GitHub Release, or dispatch release workflows.",
+    "wave": "none:owner-gated-release"
+  },
+  "ownership_fold": {
+    "finding": "Tick start found 4 dirty paths (unstaged board.jsonl + events.jsonl edits, untracked wave manifest h3-foreman-2026-11-02-13-59-20.json, zero-byte .gitreins/tasks.yaml.lock); prior tick h3-foreman-2026-11-02-14-58-01 blocked on the same set as pending-external-handoff.",
+    "proof": "All board/event residue is provably the landed bookkeeping of producing tick h3-foreman-2026-11-02-13-59-20: origin/main 32c08c4 ('board: close h3 foreman tick 563') contains event id 867 byte-identical to the unstaged tail line (cmp) and the wave manifest as a tracked blob byte-identical to the untracked copy (cmp); the unstaged header edit was an earlier draft of the same tick's published header update (differs only in stamp timestamps). Per the foreman core carve-out (leftover board line whose producing tick is provable from committed history = owned bookkeeping with a documented fold disposition, not a blocker) the residue was folded: superseded drafts discarded, main fast-forwarded to the published closeout 32c08c4. Zero-byte .gitreins/tasks.yaml.lock left in place untracked (stray-tooling noise, never staged). No content lost; no live owner process existed.",
+    "receipt_superseded": "h3-foreman-2026-11-02-14-58-01-blocked-receipt.json (classification superseded by the byte-subsumption proof above)"
+  },
+  "owner_action_required": "All local readiness gates PASS at 32c08c4 and the cut is dispatchable. Explicitly authorize scripts/release.sh --execute for v0.3.1 (tag push, GitHub Release creation, CHANGELOG promote), then verify remote annotated tag, GitHub Release object, assets policy, and tag-sha CI (--verify-ci dispatches pages.yml + roundtrip.yml on the cut and asserts per-job/per-step success).",
+  "ch_trace": "ch:trace row=RELEASE-H3-013 spec=releng:v0.3.1-readiness wave=.coding-hermes/waves/h3-foreman-2026-11-02-15-08-46.json#RELEASE-H3-013 test=make-verify+release-dry-run doc=CHANGELOG.md evidence=verification/h3-foreman-2026-11-02-15-08-46.json witness=live:detached-32c08c4-make-verify-rc0-dryrun-rc0 verdict=planned:RELEASE-H3-013-R1 commit=none:verification-only memory=/project/h3/tick/564"
+}
