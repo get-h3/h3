@@ -1,0 +1,45 @@
+{
+  "tick_id": "h3-foreman-2026-11-02-13-20-49",
+  "selected_row": "RELEASE-H3-013",
+  "status": "PENDING",
+  "mode": "verification-only",
+  "tested_commit": "7c07cf4b9f0924e35307565fa77506a1dba41958",
+  "origin_parity": {
+    "ahead": 0,
+    "behind": 0
+  },
+  "local_verification": [
+    {
+      "command": "make verify-roundtrip",
+      "exit_code": 0,
+      "result": "Passed: 6; Failed: 0; QV-PROTO-04: Cross-language protocol round-trip verification PASSED"
+    },
+    {
+      "command": "make verify",
+      "exit_code": 0,
+      "result": "ALL PASS; board-header, tick-chain, verdict-census, release-tags-table guards passed"
+    },
+    {
+      "command": "scripts/release.sh --dry-run",
+      "exit_code": 0,
+      "result": "PASS; proposes v0.3.1 PATCH; 0 mutations; no tag, release, workflow dispatch, or CHANGELOG write"
+    }
+  ],
+  "ci": {
+    "recent_health": "GREEN",
+    "recent_query": "gh run list --repo get-h3/h3 --limit 3 --json status,conclusion,displayTitle,headBranch,createdAt",
+    "recent_runs": "3 completed/success runs; no recent failure to file",
+    "exact_head": "UNVERIFIED for the release cut because --execute was not authorized and no release-tag CI was dispatched"
+  },
+  "dispatch": {
+    "worker_count": 0,
+    "reason": "The highest-priority executable release action is owner-gated; no worker may create a tag, GitHub Release, or dispatch release workflows without explicit authorization.",
+    "worker_attempt": "A verification worktree worker launch produced no source or artifact diff and no commit; no completion claim is made. The verification artifact was authored foreman-direct in the clean worktree.",
+    "wave": "none:owner-gated-release"
+  },
+  "owner_action_required": "Explicitly authorize scripts/release.sh --execute for v0.3.1 on the verified candidate, including tag push, GitHub Release creation, and release CI dispatch/readback.",
+  "ch_trace": "ch:trace row=RELEASE-H3-013 spec=releng:v0.3.1-readiness wave=none:owner-gated-release test=make-verify+make-verify-roundtrip+release-dry-run doc=CHANGELOG.md evidence=verification/h3-foreman-2026-11-02-13-20-49.json witness=none:release-execute-unauthorized verdict=none:owner-gated commit=none:verification-artifact memory=none:pending-tick-write",
+  "STATUS": "pending",
+  "TIER": "T3",
+  "EVIDENCE": "verification/h3-foreman-2026-11-02-13-20-49.json"
+}
