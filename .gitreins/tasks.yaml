@@ -514,3 +514,11 @@ tasks:
   status: complete
   created_at: '2026-10-30T21:57:51.627656+00:00'
   completed_at: '2026-10-30T21:58:08.587198+00:00'
+- id: README-5
+  title: Correct README Go toolchain floor
+  criteria:
+  - README.md says Go 1.22+ and preserves the go.dev link; focused grep and git diff
+    --check pass; fresh quickstart acceptance is reported honestly; ch:trace row=README-5
+    is present in the worker closeout.
+  status: in_progress
+  created_at: '2026-11-01T03:28:04.332909+00:00'
