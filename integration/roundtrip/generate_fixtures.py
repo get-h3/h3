@@ -10,7 +10,9 @@ import os
 import sys
 
 # Ensure the Python SDK is importable
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "..", "sdk-python", "src"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "..", "sdk-python", "src")
+)
 
 from h3_harness.protocol import (  # noqa: E402
     Attachment,
@@ -68,7 +70,9 @@ print("Generating Python fixtures → fixtures/python/")
 
 # Attachment
 dump(
-    Attachment(type="image", url="https://example.com/photo.png", mime_type="image/png"),
+    Attachment(
+        type="image", url="https://example.com/photo.png", mime_type="image/png"
+    ),
     "attachment",
 )
 
@@ -104,7 +108,13 @@ dump(
 
 # SessionState
 dump(
-    SessionState(turn_count=3, total_tool_calls=5, total_llm_calls=2, cost_so_far=0.125, started_at=TS),
+    SessionState(
+        turn_count=3,
+        total_tool_calls=5,
+        total_llm_calls=2,
+        cost_so_far=0.125,
+        started_at=TS,
+    ),
     "session_state",
 )
 
@@ -122,7 +132,13 @@ dump(
 
 # Identity
 dump(
-    Identity(platform="telegram", chat_id="-1001234567890", thread_id="12345", user_name="testuser", user_id="987654"),
+    Identity(
+        platform="telegram",
+        chat_id="-1001234567890",
+        thread_id="12345",
+        user_name="testuser",
+        user_id="987654",
+    ),
     "identity",
 )
 
@@ -133,8 +149,14 @@ dump(
         content="Please analyze this image.",
         timestamp=TS,
         attachments=[
-            Attachment(type="image", url="https://example.com/img.png", mime_type="image/png"),
-            Attachment(type="file", url="https://example.com/doc.pdf", mime_type="application/pdf"),
+            Attachment(
+                type="image", url="https://example.com/img.png", mime_type="image/png"
+            ),
+            Attachment(
+                type="file",
+                url="https://example.com/doc.pdf",
+                mime_type="application/pdf",
+            ),
         ],
     ),
     "message",
@@ -151,7 +173,10 @@ dump(
             Tool(
                 name="read_file",
                 description="Read a file",
-                parameters={"type": "object", "properties": {"path": {"type": "string"}}},
+                parameters={
+                    "type": "object",
+                    "properties": {"path": {"type": "string"}},
+                },
             ),
         ],
         models=[
@@ -174,14 +199,24 @@ dump(
             max_tool_calls_per_turn=10,
             temperature=0.7,
         ),
-        session_state=SessionState(turn_count=1, total_tool_calls=0, total_llm_calls=0, cost_so_far=0.0, started_at=TS),
+        session_state=SessionState(
+            turn_count=1,
+            total_tool_calls=0,
+            total_llm_calls=0,
+            cost_so_far=0.0,
+            started_at=TS,
+        ),
     ),
     "context",
 )
 
 # ToolCall (decision payload)
 dump(
-    ToolCall(name="read_file", params={"path": "/tmp/config.yaml"}, reasoning="Need to check configuration"),
+    ToolCall(
+        name="read_file",
+        params={"path": "/tmp/config.yaml"},
+        reasoning="Need to check configuration",
+    ),
     "tool_call_payload",
 )
 
@@ -192,7 +227,9 @@ dump(
         system_prompt="You are a helpful assistant.",
         messages=[
             LLMMessage(role="user", content="What is the weather?").model_dump(),
-            LLMMessage(role="assistant", content="Let me check that for you.").model_dump(),
+            LLMMessage(
+                role="assistant", content="Let me check that for you."
+            ).model_dump(),
         ],
         temperature=0.7,
         max_tokens=4096,
@@ -201,10 +238,20 @@ dump(
 )
 
 # TextResponse
-dump(TextResponse(content="Here is the result of your query.", finished=True), "text_response")
+dump(
+    TextResponse(content="Here is the result of your query.", finished=True),
+    "text_response",
+)
 
 # Wait (decision payload)
-dump(Wait(reason="Waiting for file upload to complete", duration_seconds=30, poll_endpoint="https://example.com/status"), "wait_payload")
+dump(
+    Wait(
+        reason="Waiting for file upload to complete",
+        duration_seconds=30,
+        poll_endpoint="https://example.com/status",
+    ),
+    "wait_payload",
+)
 
 # Delegate (decision payload)
 dump(
@@ -219,15 +266,32 @@ dump(
 )
 
 # End (decision payload)
-dump(End(reason="task_complete", summary="All requested tasks have been completed successfully."), "end_payload")
+dump(
+    End(
+        reason="task_complete",
+        summary="All requested tasks have been completed successfully.",
+    ),
+    "end_payload",
+)
 
 # ErrorDetail
-dump(ErrorDetail(code="SESSION_NOT_FOUND", message="Session sess-999 was not found", field="session_id"), "error_detail")
+dump(
+    ErrorDetail(
+        code="SESSION_NOT_FOUND",
+        message="Session sess-999 was not found",
+        field="session_id",
+    ),
+    "error_detail",
+)
 
 # ErrorResponse
 dump(
     ErrorResponse(
-        error=ErrorDetail(code="INVALID_REQUEST", message="Missing required field: session_id", field="session_id").model_dump()
+        error=ErrorDetail(
+            code="INVALID_REQUEST",
+            message="Missing required field: session_id",
+            field="session_id",
+        ).model_dump()
     ),
     "error_response",
 )
@@ -235,7 +299,11 @@ dump(
 # ResultPayload
 dump(
     ResultPayload(
-        type="tool_result", tool_name="read_file", data={"content": "file contents\nline 2\nline 3"}, duration_ms=150, success=True
+        type="tool_result",
+        tool_name="read_file",
+        data={"content": "file contents\nline 2\nline 3"},
+        duration_ms=150,
+        success=True,
     ),
     "result_payload",
 )
@@ -258,10 +326,20 @@ dump(
             content="Please analyze this image.",
             timestamp=TS,
             attachments=[
-                Attachment(type="image", url="https://example.com/img.png", mime_type="image/png"),
+                Attachment(
+                    type="image",
+                    url="https://example.com/img.png",
+                    mime_type="image/png",
+                ),
             ],
         ),
-        identity=Identity(platform="telegram", chat_id="-1001234567890", thread_id="12345", user_name="testuser", user_id="987654"),
+        identity=Identity(
+            platform="telegram",
+            chat_id="-1001234567890",
+            thread_id="12345",
+            user_name="testuser",
+            user_id="987654",
+        ),
         context=Context(
             history=[
                 HistoryEntry(role="user", content="Hello"),
@@ -271,7 +349,10 @@ dump(
                 Tool(
                     name="read_file",
                     description="Read a file",
-                    parameters={"type": "object", "properties": {"path": {"type": "string"}}},
+                    parameters={
+                        "type": "object",
+                        "properties": {"path": {"type": "string"}},
+                    },
                 ),
             ],
             models=[
@@ -294,7 +375,13 @@ dump(
                 max_tool_calls_per_turn=10,
                 temperature=0.7,
             ),
-            session_state=SessionState(turn_count=1, total_tool_calls=0, total_llm_calls=0, cost_so_far=0.0, started_at=TS),
+            session_state=SessionState(
+                turn_count=1,
+                total_tool_calls=0,
+                total_llm_calls=0,
+                cost_so_far=0.0,
+                started_at=TS,
+            ),
         ),
     ),
     "process_request",
@@ -310,7 +397,11 @@ for dtype, payload_name, payload_obj in [
     (
         DecisionType.TOOL_CALL,
         "tool_call",
-        ToolCall(name="read_file", params={"path": "/tmp/config.yaml"}, reasoning="Need to check configuration"),
+        ToolCall(
+            name="read_file",
+            params={"path": "/tmp/config.yaml"},
+            reasoning="Need to check configuration",
+        ),
     ),
     (
         DecisionType.LLM_CALL,
@@ -328,7 +419,11 @@ for dtype, payload_name, payload_obj in [
     (
         DecisionType.WAIT,
         "wait",
-        Wait(reason="Waiting for external API response", duration_seconds=60, poll_endpoint="https://api.example.com/status"),
+        Wait(
+            reason="Waiting for external API response",
+            duration_seconds=60,
+            poll_endpoint="https://api.example.com/status",
+        ),
     ),
     (
         DecisionType.DELEGATE,

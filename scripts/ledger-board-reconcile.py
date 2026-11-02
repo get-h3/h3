@@ -13,8 +13,12 @@ import subprocess
 import sys
 
 CANONICAL_ENV = "LEDGER_RECONCILE_CANONICAL"
-CANONICAL_SOURCE = "ops/pm-standin/ledger_board_reconcile.py (coding-hermes-scheduler repo)"
-CANONICAL_DEFAULT = os.path.join("~", ".hermes", "stand-in", "ledger_board_reconcile.py")
+CANONICAL_SOURCE = (
+    "ops/pm-standin/ledger_board_reconcile.py (coding-hermes-scheduler repo)"
+)
+CANONICAL_DEFAULT = os.path.join(
+    "~", ".hermes", "stand-in", "ledger_board_reconcile.py"
+)
 
 HELP = """\
 ledger-board-reconcile.py — compatibility shim, not an implementation.
@@ -52,17 +56,25 @@ def main(argv):
         return 0
     path = canonical_path()
     if not os.path.isfile(path):
-        print("ledger-board-reconcile: canonical reconciler not found at %s (canonical source: "
-              "%s) — this shim has no reconciliation logic of its own" % (path, CANONICAL_SOURCE),
-              file=sys.stderr)
+        print(
+            "ledger-board-reconcile: canonical reconciler not found at %s (canonical source: "
+            "%s) — this shim has no reconciliation logic of its own"
+            % (path, CANONICAL_SOURCE),
+            file=sys.stderr,
+        )
         return 2
-    print("ledger-board-reconcile: DEPRECATED shim — delegating to the canonical reconciler at %s"
-          % path, file=sys.stderr)
+    print(
+        "ledger-board-reconcile: DEPRECATED shim — delegating to the canonical reconciler at %s"
+        % path,
+        file=sys.stderr,
+    )
     try:
         os.execv(path, [path] + list(argv))
     except OSError as exc:  # not executable, or a broken symlink target
-        print("ledger-board-reconcile: exec failed (%s) — retrying via subprocess" % exc,
-              file=sys.stderr)
+        print(
+            "ledger-board-reconcile: exec failed (%s) — retrying via subprocess" % exc,
+            file=sys.stderr,
+        )
         return subprocess.run([sys.executable, path] + list(argv)).returncode
 
 

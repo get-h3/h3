@@ -122,9 +122,7 @@ DEFAULT_TOKEN_ENV = "H3OPS_DUCKBRAIN_API_KEY"
 # Token-dir fallback (sibling guard convention: check-duckbrain-tick-chain.sh
 # reads H3_TICK_CHAIN_TOKEN_DIR, default ~/.duckbrain, first *.token wins).
 DEFAULT_TOKEN_DIR_ENV = "H3_TREE_CENSUS_TOKEN_DIR"
-LOCAL_TOKEN_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), ".duckbrain"
-)
+LOCAL_TOKEN_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".duckbrain")
 DEFAULT_LIMIT = 20000
 # Known wrong-shaped tick numbers, mirrored from the sibling guard's default
 # (check-duckbrain-tick-chain.sh: H3_TICK_CHAIN_ALLOWLIST=452,453,464). They are
@@ -233,12 +231,16 @@ def resolve_token(args):
             with open(args.token_file, "r", encoding="utf-8", errors="replace") as fh:
                 token = fh.read().strip()
         except OSError as exc:
-            return None, "file:%s" % args.token_file, (
-                "token file could not be read (%s: %s)" % (args.token_file, exc)
+            return (
+                None,
+                "file:%s" % args.token_file,
+                ("token file could not be read (%s: %s)" % (args.token_file, exc)),
             )
         if not token:
-            return None, "file:%s" % args.token_file, (
-                "token file is empty: %s" % args.token_file
+            return (
+                None,
+                "file:%s" % args.token_file,
+                ("token file is empty: %s" % args.token_file),
             )
         return token, "file:%s" % args.token_file, None
 
@@ -263,8 +265,10 @@ def resolve_token(args):
             with open(tpath, "r", encoding="utf-8", errors="replace") as fh:
                 token = fh.read().strip()
         except OSError as exc:
-            return None, "file:%s" % tpath, (
-                "token file could not be read (%s: %s)" % (tpath, exc)
+            return (
+                None,
+                "file:%s" % tpath,
+                ("token file could not be read (%s: %s)" % (tpath, exc)),
             )
         if not token:
             return None, "file:%s" % tpath, "token file is empty: %s" % tpath
@@ -288,9 +292,14 @@ def load_tree(args):
             with open(path, "r", encoding="utf-8", errors="replace") as fh:
                 return fh.read(), "file:%s" % path, None
         except OSError as exc:
-            return None, "file:%s" % path, "tree file could not be read (%s: %s)" % (
-                path,
-                exc,
+            return (
+                None,
+                "file:%s" % path,
+                "tree file could not be read (%s: %s)"
+                % (
+                    path,
+                    exc,
+                ),
             )
 
     token, token_source, tok_err = resolve_token(args)
@@ -399,8 +408,7 @@ def main(argv=None) -> int:
             "comma-separated KNOWN wrong-shaped tick numbers, tolerated and "
             "reported (default: %s — the sibling guard's known-twin list: the "
             "452/453 backfill twins plus the #466-backfilled chain-A key 464). "
-            "Pass --allowlist '' to see the raw drift class."
-            % DEFAULT_ALLOWLIST
+            "Pass --allowlist '' to see the raw drift class." % DEFAULT_ALLOWLIST
         ),
     )
     parser.add_argument(
@@ -414,7 +422,9 @@ def main(argv=None) -> int:
         default=None,
         help="override the board read when resolving --end auto",
     )
-    parser.add_argument("--timeout", type=float, default=15.0, help="HTTP timeout seconds")
+    parser.add_argument(
+        "--timeout", type=float, default=15.0, help="HTTP timeout seconds"
+    )
     args = parser.parse_args(argv)
 
     if args.start < 0:
@@ -448,7 +458,8 @@ def main(argv=None) -> int:
             end = args.start
         window_basis = (
             "END=%d = ticks_total %d - 1 (source: %s); the header counts the "
-            "in-flight tick, whose record may not be written yet" % (end, total, total_source)
+            "in-flight tick, whose record may not be written yet"
+            % (end, total, total_source)
         )
     else:
         try:
@@ -465,7 +476,9 @@ def main(argv=None) -> int:
     try:
         document = json.loads(body)
     except ValueError as exc:
-        return unverified("answer is not parseable JSON (%s) (source: %s)" % (exc, source))
+        return unverified(
+            "answer is not parseable JSON (%s) (source: %s)" % (exc, source)
+        )
     if not isinstance(document, dict) or not isinstance(document.get("tree"), list):
         return unverified(
             "answer carries no top-level 'tree' list (source: %s)" % source
@@ -544,14 +557,12 @@ def main(argv=None) -> int:
 
     # ---- report -------------------------------------------------------------
     print(
-        "%s: namespace=%s start=%d source=%s" % (NAME, args.namespace, args.start, source)
+        "%s: namespace=%s start=%d source=%s"
+        % (NAME, args.namespace, args.start, source)
     )
     print("total leaf keys: %d | tick-shaped keys: %d" % (len(keys), len(tickish)))
     if end_mode == "empty":
-        print(
-            "window %d..%d (required 0; %s)"
-            % (args.start, end, window_basis)
-        )
+        print("window %d..%d (required 0; %s)" % (args.start, end, window_basis))
     else:
         print(
             "window %d..%d (required %d; %s)"
@@ -580,8 +591,7 @@ def main(argv=None) -> int:
             print("%s: drift-known-key %d %s" % (NAME, n, path))
     print(
         "%s: legacy %d keys (/project/%s/tick/<N> with N <= %d — tolerated, "
-        "non-fatal, bounded)"
-        % (NAME, len(legacy), args.namespace, args.legacy_max)
+        "non-fatal, bounded)" % (NAME, len(legacy), args.namespace, args.legacy_max)
     )
     print(
         "%s: other %d (tick-like keys with no bare tick number — timestamped "

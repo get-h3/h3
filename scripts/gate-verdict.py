@@ -15,13 +15,17 @@ The caller (Makefile verify-tick-chain target) turns exit 3 into a loud
 H3_GATE_ALLOW_UNVERIFIED=1 opt-in or a hard FAIL. UNVERIFIED is honest as a
 report and corrosive as an exit code — it never passes through as 0.
 """
+
 import subprocess
 import sys
 
 
 def main() -> int:
     if len(sys.argv) < 2:
-        print("gate-verdict: usage: gate-verdict.py <guard-cmd> [args...]", file=sys.stderr)
+        print(
+            "gate-verdict: usage: gate-verdict.py <guard-cmd> [args...]",
+            file=sys.stderr,
+        )
         return 2
     try:
         p = subprocess.run(sys.argv[1:], capture_output=True, text=True, timeout=300)
@@ -35,10 +39,15 @@ def main() -> int:
             return 0
         if line.startswith("VERDICT: FAILED"):
             return 1
-        if line.startswith("VERDICT: UNVERIFIED") or line.startswith("VERDICT: UNVERIFIED".replace("UNVERIFIED", "UNVERIFIED")):
+        if line.startswith("VERDICT: UNVERIFIED") or line.startswith(
+            "VERDICT: UNVERIFIED".replace("UNVERIFIED", "UNVERIFIED")
+        ):
             return 3
     # No verdict line at all: the guard changed shape — treat as refusal.
-    print("gate-verdict: guard produced no VERDICT line — refusing (gate shape changed)", file=sys.stderr)
+    print(
+        "gate-verdict: guard produced no VERDICT line — refusing (gate shape changed)",
+        file=sys.stderr,
+    )
     return 3
 
 
