@@ -1,0 +1,15 @@
+{
+  "tick_id": "h3-foreman-2026-11-03-04-31-51",
+  "tick_number": 565,
+  "tested_commit": "93097152ad0d82c8a5bb2c34fd6c5ee7c61ac80e",
+  "selected_row": "RELEASE-H3-013",
+  "class": "verification-only-owner-gated",
+  "gates": {
+    "make_verify": "PASS rc=0 ALL PASS",
+    "release_dry_run": "PASS rc=0 DRY-RUN COMPLETE 0 mutations; proposes v0.3.1 PATCH",
+    "make_verify_roundtrip": "carried from tick 564 (PASS 6/6)",
+    "ci": "recent 5 runs on main all success"
+  },
+  "owner_action_required": "Authorize scripts/release.sh --execute for v0.3.1",
+  "row_status": "RELEASE-H3-013 remains pending"
+}
