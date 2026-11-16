@@ -10,6 +10,13 @@ regex = '''(?i)h3_[A-Za-z0-9_-]{32}'''
 paths = [
   '''specs/.*\.md$''',
 ]
+# h3_harness_* snake_case Prometheus metric names are 32+ chars of [a-z_] and
+# trip this rule (e.g. h3_harness_request_duration_seconds) — they are metric
+# identifiers, never secrets. Secret-level allowlist, not path-level, so the
+# board and docs stay scanned for real key shapes.
+regexes = [
+  '''h3_harness_[a-z_]+''',
+]
 
 [[rules]]
 id = "h3-example-hermes-tokens"
