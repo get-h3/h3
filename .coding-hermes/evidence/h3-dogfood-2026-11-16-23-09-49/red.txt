@@ -1,0 +1,15 @@
+Target health: version=0.1.5 uptime_seconds=88 active_sessions=522
+
+H3 Compliance Test Battery v0.1.0
+Target: http://127.0.0.1:9192
+Transport: REST
+
+  Health & Protocol                   7/7  ✅ PASSED
+  Process Basic Flows                 6/8  ❌ FAILED
+  Decision Types                      6/6  ✅ PASSED
+  Result Handling                     7/7  ✅ PASSED
+  Error & Edge Cases                  12/15  ❌ FAILED
+  Stress & Performance                5/5  ✅ PASSED
+  TOTAL                               43/48  FAILED
+  Duration                            0.33s
+  Latency p50/p95                     2.65ms / 30.13ms
