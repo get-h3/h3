@@ -94,9 +94,15 @@ h3-test --endpoint http://localhost:9191
 > **Run one harness at a time — both quick-start paths bind `:9191`.** The Go
 > echo example and a freshly scaffolded harness use the same default port, so
 > stop the running one (Ctrl-C) before starting the other; otherwise the second
-> exits with `listen tcp :9191: bind: address already in use`. All four targets
-> honor `PORT` (`PORT=9291 python main.py`, `PORT=9291 npm run dev`, `PORT=9291
-> go run .`), so stop the first harness or give the second one a different port.
+> exits with `listen tcp :9191: bind: address already in use`. To give the
+> second harness a different port, use the override that harness actually
+> implements: `PORT=9291 go run .` for the Go echo example
+> (`sdk-go/examples/echo`), `python echo.py 9291` for the Python echo example
+> (`sdk-python/src/h3_harness/examples`) — the port is an argument there and the
+> process never reads `PORT` — and `PORT=9291 npx tsx src/examples/echo.ts` for
+> the TypeScript echo example (`sdk-typescript`). Harnesses produced by
+> `hermes-h3 scaffold` read `PORT` in all three languages, so the Go form above
+> also separates the Go echo example from the Go scaffold.
 
 > The CLI is `hermes-h3` (standalone binary with `install`, `scaffold`, `test`,
 > `verify`, and more). The `hermes h3` plugin form requires H3 wired into a
