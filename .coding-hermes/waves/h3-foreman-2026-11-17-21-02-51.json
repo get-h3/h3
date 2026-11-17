@@ -1,0 +1,32 @@
+{
+  "wave_id": "h3-foreman-2026-11-17-21-02-51",
+  "project": "h3",
+  "repo": "/home/kara/get-h3/h3",
+  "created": "2026-11-17T21:26:00Z",
+  "base_ref": "origin/main",
+  "base_sha": "57e3a6c",
+  "worker_model": "openai/gpt-6.1-terra",
+  "worker_provider": "xkiro",
+  "independent": true,
+  "independence_proof": "README-6 touches README.md only; DOC-19 touches docs/index.html + docs/guide.html only. Disjoint file sets, no depends_on edges on either row.",
+  "tasks": [
+    {
+      "id": "README-6",
+      "priority": "P4",
+      "worktree": "/home/kara/worktrees/h3-README-6",
+      "branch": "wt/README-6",
+      "files": ["README.md"],
+      "brief": "/tmp/h3-brief-README-6-2117.txt"
+    },
+    {
+      "id": "DOC-19",
+      "priority": "P4",
+      "worktree": "/home/kara/worktrees/h3-DOC-19",
+      "branch": "wt/DOC-19",
+      "files": ["docs/index.html", "docs/guide.html"],
+      "brief": "/tmp/h3-brief-DOC-19-2117.txt"
+    }
+  ],
+  "merge_order": ["README-6", "DOC-19"],
+  "merge_policy": "serial, ff-only after rebase onto origin/main; make verify green on each branch before merge"
+}
