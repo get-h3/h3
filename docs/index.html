@@ -585,7 +585,8 @@ func main() { fmt.Println("H3 harness listening on :9191"); http.ListenAndServe(
           </div>
 
           <div class="tab-panel" id="panel-python" role="tabpanel" aria-labelledby="tab-python" data-panel="python" hidden>
-            <div class="panel-head"><span class="panel-label">Python · FastAPI echo harness</span><span class="install">pip install h3-harness-sdk fastapi uvicorn</span></div>
+            <div class="panel-head"><span class="panel-label">Python · FastAPI echo harness</span><span class="install">python3 -m venv .venv &amp;&amp; source .venv/bin/activate &amp;&amp; pip install h3-harness-sdk fastapi uvicorn</span></div>
+            <div class="run-row" style="margin-top:0;margin-bottom:12px;"><span>Create the venv first — PEP 668 systems (Ubuntu 24.04+, Debian 12+, Homebrew Python) reject a bare <code>pip install</code> with <code>externally-managed-environment</code>.</span></div>
             <div class="code-shell">
               <pre><code><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
 <span class="kw">from</span> h3_harness <span class="kw">import</span> BaseHarness, Decision, DecisionType, End, TextResponse, create_router
@@ -618,6 +619,7 @@ app.include_router(create_router(Echo()))</textarea>
 
           <div class="tab-panel" id="panel-typescript" role="tabpanel" aria-labelledby="tab-typescript" data-panel="typescript" hidden>
             <div class="panel-head"><span class="panel-label">TypeScript · Hono echo harness</span><span class="install">npm install github:get-h3/sdk-typescript hono</span></div>
+            <div class="run-row" style="margin-top:0;margin-bottom:12px;"><span>h3-harness-sdk is not published to the npm registry — <code>npm install h3-harness-sdk</code> fails with 404 Not Found, so install from GitHub with the command above.</span></div>
             <div class="code-shell">
               <pre><code><span class="kw">import</span> { Hono } <span class="kw">from</span> <span class="str">"hono"</span>;
 <span class="kw">import</span> { createH3Router } <span class="kw">from</span> <span class="str">"@get-h3/h3-harness-sdk"</span>;
