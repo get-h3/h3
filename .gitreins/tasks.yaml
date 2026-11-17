@@ -538,3 +538,26 @@ tasks:
   status: complete
   created_at: '2026-11-02T15:39:56.668928+00:00'
   completed_at: '2026-11-02T15:56:09.589793+00:00'
+- id: README-6
+  title: 'README port-override forms must be real: name only executable forms'
+  criteria:
+  - 'README.md:94-99 names only port-override forms that exist at the published tip
+    and were executed: Go ''PORT=9291 go run .'', Python ''python echo.py 9291'' (argv,
+    not PORT), TypeScript ''PORT=9291 npx tsx src/examples/echo.ts''; grep -n ''npm
+    run dev|python main.py'' README.md returns no hit; make verify still exits 0.'
+  status: complete
+  created_at: '2026-11-17T21:21:31.262125+00:00'
+  completed_at: '2026-11-17T21:44:06.066806+00:00'
+- id: DOC-19
+  title: 'Website install guidance: venv step for Python, npm-registry unavailability
+    for TypeScript'
+  criteria:
+  - 'grep -c ''python3 -m venv'' docs/index.html returns >= 1 (0 today): each Python
+    quickstart panel showing ''pip install h3-harness-sdk'' shows a venv create-and-activate
+    step before the pip command; grep -c -i -E ''not.{0,30}npm registry|not on npm|not
+    available on npm'' docs/index.html docs/guide.html returns >= 1 combined (0 today),
+    with the TS panels using ''npm install github:get-h3/sdk-typescript''; make verify
+    exits 0.'
+  status: complete
+  created_at: '2026-11-17T21:21:34.106836+00:00'
+  completed_at: '2026-11-17T21:47:47.731598+00:00'
