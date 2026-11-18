@@ -231,7 +231,7 @@ For production isolation or running on separate hosts.
 
 ```dockerfile
 FROM python:3.11-slim
-RUN pip install git+https://github.com/get-h3/sdk-python
+RUN pip install h3-harness-sdk
 COPY harness.py .
 EXPOSE 9191
 CMD ["python", "harness.py"]
@@ -312,10 +312,31 @@ GET  /v1/health    200 1ms
 - [ ] Harness runs behind a process manager (systemd, Docker restart policy, k8s)
 - [ ] Only specific sessions routed through H3 (not all sessions)
 - [ ] Fallback tested: if harness is unreachable, sessions fall back to native Hermes loop
-- [ ] Harness API keys configured (TLS if over public network)
+- [ ] Harness API keys configured (TLS if over public network) — see "Harness API keys" below
 - [ ] Harness deployed on same network as Hermes (< 5ms latency)
 - [ ] `hermes-h3 verify` responds within 10s
 - [ ] `versions.yaml` checked — Hermes and H3 versions are compatible
+
+### Harness API keys
+
+The shim authenticates to a harness with a bearer token. The shim client reads
+the key from the `H3_API_KEY` environment variable — an explicit `hermes_token`
+argument to the client takes priority over the env var. Every request carries it
+in the `Authorization` header, in the exact form:
+
+```bash
+Authorization: Bearer <key>
+```
+
+The key is either a per-harness API key (`h3_<base64url>`) or a Hermes identity
+token (`h3_hx_<token>`). The harness validates it server-side against the
+protocol's `bearerAuth` security scheme (`securitySchemes.bearerAuth` in
+`protocol/h3-protocol.yaml`: `type: http, scheme: bearer, bearerFormat: h3_*`);
+unknown or revoked tokens are rejected with HTTP 401.
+
+```bash
+export H3_API_KEY='h3_<base64url>'   # or 'h3_hx_<token>'
+```
 
 ## Upgrade Flow
 
@@ -328,7 +349,7 @@ cd shim && git pull && pip install -e .
 
 # 3. Upgrade SDK in harness
 # Go:  go get github.com/get-h3/sdk-go@latest
-# Python: pip install --upgrade git+https://github.com/get-h3/sdk-python
+# Python: pip install --upgrade h3-harness-sdk
 # TS:   npm install github:get-h3/sdk-typescript@latest
 
 # 4. Rerun test battery

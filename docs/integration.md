@@ -553,9 +553,9 @@ Exit codes: `0` compliant · `1` compliance failure · `2` not an H3 endpoint
 **`hermes-h3`** (Click group; `--config FILE` is available on the group and on
 every subcommand — overrides `$HERMES_H3_CONFIG`, default `~/.hermes/h3/config.yaml`):
 
-| Group-level | `--version` | Show version and package install path, then exit. Available on every subcommand. |
 | Command | Flags | Meaning |
 |---------|-------|---------|
+| Group-level | `--version` | Show version and package install path, then exit. Group-level only — `hermes-h3 list`, `route`, `use`, `scaffold`, `verify` all refuse `--version` with "Error: No such option '--version'". |
 | `list` | `--config FILE` | List harnesses known to the config. |
 | `install [NAME]` | `--name TEXT` | Harness name (alias for the positional `NAME`). |
 | | `--endpoint URL` | Required. Harness endpoint URL. |
@@ -586,7 +586,7 @@ every subcommand — overrides `$HERMES_H3_CONFIG`, default `~/.hermes/h3/config
 | SDK | Install | Echo example (reference, passes 48/48) |
 |-----|---------|----------------------------------------|
 | Go | `go get github.com/get-h3/sdk-go` | `sdk-go/examples/echo` → `go run .` on :9191 |
-| Python | `pip install git+https://github.com/get-h3/sdk-python` | `sdk-python/src/h3_harness/examples/echo.py` |
+| Python | `pip install h3-harness-sdk` (source fallback: `pip install git+https://github.com/get-h3/sdk-python`) | `sdk-python/src/h3_harness/examples/echo.py` |
 | TypeScript | `npm install github:get-h3/sdk-typescript` | `sdk-typescript/src/examples/echo.ts` |
 
 Or scaffold a fresh harness project:
