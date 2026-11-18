@@ -34,6 +34,14 @@
 #        e  GREEN - the next board commit re-pins the header to its parent
 #      Installing once is a one-shot; this arm is what makes the battery see
 #      the difference between "installed" and "still installed".
+#  12  TASKS-ONLY BOARD STAGE (DF-H3-055, the 10th recurrence): a tick that
+#      stages ONLY .coding-hermes/board/tasks.jsonl (the most common board-
+#      writing shape) used to skip the header re-pin because the staged-file
+#      detector in pre-commit-board-close.sh named board.jsonl and events.jsonl
+#      but not tasks.jsonl. This arm stages ONLY tasks.jsonl against a one-
+#      commit-stale header, runs the close script directly, and asserts the
+#      header is re-pinned and re-staged. H3_PRECOMMIT_UNDER_TEST points the
+#      arm at an explicit script copy (e.g. `git show 48fc994:...`) for RED.
 #
 # Run: bash scripts/install-board-close-hook-selftest.sh
 set -u
@@ -49,6 +57,9 @@ REPO="$(CDPATH= cd -- "$HERE/.." && pwd)"
 # against a pre-fix installer and watch it FAIL (the battery must be able to
 # see the defect, or it proves nothing).
 INSTALLER="${H3_INSTALLER_UNDER_TEST:-$REPO/scripts/install-board-close-hook.sh}"
+# H3_PRECOMMIT_UNDER_TEST is the same seam for arm 12's hook-under-test: point
+# it at a copy of `git show 48fc994:scripts/pre-commit-board-close.sh` and the
+# arm FAILs (RED); leave it unset and the arm tests the repo's own script.
 SCRATCH="$(mktemp -d /tmp/h3-hookresolve-selftest.XXXXXX)"
 MARK='# >>> board-close managed block (pre-commit-board-close) >>>'
 PASS=0
@@ -362,6 +373,40 @@ eq "11h GREEN: committed header == worktree header" \
     "$(git -C "$C11" show HEAD:.coding-hermes/board/board.jsonl | head -1)" \
     "$(head -1 "$C11/.coding-hermes/board/board.jsonl")"
 has "11h the repaired hook still carries the foreign hook's own lines after a real commit" "$(cat "$HOOKS11/pre-commit")" "GITREINS-REINSTALL-SENTINEL"
+
+# ---------------------------------------------------------------------------
+# 12. a tasks-ONLY board stage re-pins the header (DF-H3-055)
+# ---------------------------------------------------------------------------
+# The third recurrence of the stale-header class with a NEW mechanism: the
+# staged-file detector in scripts/pre-commit-board-close.sh named board.jsonl
+# and events.jsonl but NOT tasks.jsonl, so a commit that staged ONLY task rows
+# (the most common board-writing shape — exactly what 394dbb8 was) hit the
+# "no board files staged" skip and never re-pinned the header. Arms 10/11 prove
+# the hook installs and fires for a board.jsonl+events.jsonl stage; this arm
+# proves the DETECTOR itself sees a tasks-only stage. It runs the close script
+# DIRECTLY (not through a commit) so the staged-file list is what is under test.
+# H3_PRECOMMIT_UNDER_TEST points the arm at an explicit copy of the script, so
+# the battery can be run against `git show 48fc994:...` and watched FAIL (RED).
+echo "== 12. a tasks-only stage re-pins the header (DF-H3-055) =="
+C12="$(new_clone c12)" || { echo "  FAIL cannot clone"; exit 1; }
+HOOK12="${H3_PRECOMMIT_UNDER_TEST:-$C12/scripts/pre-commit-board-close.sh}"
+stale12="$(git -C "$C12" rev-parse --short HEAD~1)"
+head12="$(git -C "$C12" rev-parse --short HEAD)"
+# make the header one commit stale in the WORKING TREE, uncommitted (the prior
+# commit left it behind); the tick stages only its task rows.
+jq -c --arg c "$stale12" '(.last_commit) = $c' "$C12/.coding-hermes/board/board.jsonl" > "$SCRATCH/c12.board.tmp" \
+    && mv "$SCRATCH/c12.board.tmp" "$C12/.coding-hermes/board/board.jsonl"
+printf '%s\n' '{"id": "DF-H3-055-SELFTEST", "event_type": "selftest", "actor": "selftest", "detail": "tasks-only board stage"}' \
+    >> "$C12/.coding-hermes/board/tasks.jsonl"
+git -C "$C12" add .coding-hermes/board/tasks.jsonl
+OUT12="$(cd "$C12" && bash "$HOOK12" 2>&1)"; RC12=$?
+eq "12 hook exit on a tasks-only stage" "$RC12" 0
+hasnt "12 the detector did NOT skip (tasks.jsonl is a board file now)" "$OUT12" "board-close: skipped (no board files staged)"
+has "12 the hook re-staged board.jsonl" "$OUT12" "re-staged .coding-hermes/board/board.jsonl"
+has "12 board.jsonl is re-staged (visible in git diff --cached)" \
+    "$(git -C "$C12" diff --cached --name-only)" ".coding-hermes/board/board.jsonl"
+eq "12 staged header re-pinned to the current HEAD" \
+    "$(git -C "$C12" show :.coding-hermes/board/board.jsonl | head -1 | jq -r '.last_commit')" "$head12"
 
 echo
 echo "install-board-close-hook-selftest: $PASS passed, $FAIL failed"
