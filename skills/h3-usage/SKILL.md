@@ -303,7 +303,7 @@ hermes-h3 verify NAME --fallback  # + failover narrative; exit 0 either way
 hermes-h3 use NAME             # promote to default_harness
 hermes-h3 route --session "<platform:chat[:thread]>" --set-harness NAME
 hermes-h3 route --session "..." --remove
-hermes-h3 uninstall NAME       # removes the harness AND its session bindings (verified 0.2.0)
+hermes-h3 uninstall NAME       # harness + its session bindings (main only — see pitfall below)
 ```
 
 Behavioral contract (verified, rely on it): every lookup fails closed —
@@ -321,6 +321,26 @@ repo's: the bundled `h3_shim/data/versions.yaml` names the shipped shim
 `0.1.0` while `shim/pyproject.toml` says `version = 0.2.0`. Cross-check the
 file's mtime and the protocol repo before trusting it, and pass
 `--versions-yaml` explicitly in CI.
+
+### Pitfall: released `0.2.0` `uninstall` leaves dangling session bindings (DOGFOOD-12/13)
+
+Verified against **tag `v0.2.0`**, not main: `git show v0.2.0:src/h3_shim/cli.py:1017-1029`
+(uninstall) removes only `harnesses[NAME]` and writes `default_harness: None` — there is no
+`sessions` handling, so every `route`-created binding pointing at NAME survives. Lookups then
+fail closed naming a harness that no longer exists. The fix landed **11–13 commits after the
+tag** (`d95085b` "fix(cli): drop session bindings on uninstall (DOGFOOD-12)", plus
+`a0a24a1`/`0fa40ad`; `git tag --contains d95085b` is empty, `git describe` = `v0.2.0-13-g…`),
+so it ships on main only — no release carries it yet.
+
+On released 0.2.0, clean up by hand after `uninstall`:
+
+```bash
+hermes-h3 route --session "<platform:chat[:thread]>" --remove   # per dangling binding
+```
+
+Measured on main (post-fix) for contrast: `install echo --set-default;
+route --session s1 --set-harness echo; uninstall echo` → `also removed 1 session
+binding(s) that pointed at 'echo': s1`. Do not attribute that output to 0.2.0.
 
 ### Reroute/breaker behavior
 See the loader section below (2026-09-24 run): reroute is interval-bound

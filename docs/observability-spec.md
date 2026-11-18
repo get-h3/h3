@@ -41,7 +41,7 @@ CLI/batch lanes and **a small `/metrics` endpoint** for the two HTTP/Long-runnin
 | **`logsey`** | Log-corpus indexer: `watch` tails sources into `corpus.jsonl`, `index` builds DuckDB | **Yes — `logsey watch`, every 30 s** (systemd unit shipped) | none | `corpus.jsonl`, `checkpoints.json`, `index.duckdb` | `logsey/systemd/logsey.service:1-8,47`, `logsey/internal/logsey/ingest/checkpoints.go:55-58` |
 | **`pulse`** | Metric-log sampler daemon | **Yes — running now, PID since Nov 17** | pprof only, env-gated | `~/.pulse-data/pulse-YYYY-MM-DD.jsonl` + `heartbeat.jsonl` | `pulse/cmd/pulse/pprof.go:6-28`, process `kara 3002 pulse daemon --dir /home/kara/.pulse-data` |
 | **`lore`** | Runbook compiler/validator CLI | No — invoked per command | none | `.lore/validate-history.jsonl` (append-only), stdout JSON | `lore/__main__.py:386-421`, `.lore/validate-history.jsonl` (7 871 lines, 2026-11-18; append-only — a bare number rots) |
-| **`digest`** | Daily fleet digest builder, systemd timer 07:17 | No — `Type=oneshot` | none | `digests/latest.html`, `digests/digest-YYYY-MM-DD.{md,json}` | `digest/packaging/digest.timer:1-8`, `digest/packaging/digest.service:36` |
+| **`digest`** | Daily fleet digest builder, systemd timer **08:00** installed (`digest/packaging/digest.timer:5` still ships `07:17` — the installed unit is what fires) | No — `Type=oneshot` | none | `digests/latest.html`, `digests/digest-YYYY-MM-DD.{md,json}` | `digest/packaging/digest.timer:1-8`, `digest/packaging/digest.service:36`, installed `h3-digest.timer` |
 
 **What is actually live on this host right now** — re-measured 2026-11-18 with read-only probes
 (`systemctl --user list-units`, `ps`, `ss`, `curl`, `wc -l`). Each bullet names the command to
@@ -49,15 +49,18 @@ re-run, the observed value, and the date:
 
 - `pulse` — running. `ps -eo pid,lstart,args | grep 'pulse daemon'` →
   `3002 Tue Nov 17 19:52:00 2026 /home/kara/.local/bin/pulse daemon --dir /home/kara/.pulse-data`.
-  `wc -l ~/.pulse-data/heartbeat.jsonl` → `580,027` lines; last line `ts`
-  `2026-11-18T02:52:37Z` (mtime `2026-11-17 21:52:37 -05`) — the heartbeat is written now,
-  not frozen since Oct 20.
+  `wc -l ~/.pulse-data/heartbeat.jsonl` → `577,372` lines at `2026-11-18T03:07Z` — a **dated
+  snapshot**, not a current figure: the file is append-only and grows every second, so re-run
+  the command instead of trusting the count. What does not rot is the last line's `ts`
+  (`2026-11-18T02:52:37Z` at that reading, mtime `2026-11-17 21:52:37 -05`) — the heartbeat is
+  written now, not frozen since Oct 20.
 - `logsey watch` — **running**, not absent. `systemctl --user list-units | grep logsey` →
   `logsey-watch.service loaded active running` (ExecStart `/home/kara/.local/bin/logsey watch`,
   `ActiveEnterTimestamp Tue 2026-11-17 19:52:01 -05`, PID 2992);
   `logsey-index.timer loaded active waiting` (`OnCalendar=*:0/30` — every 30 minutes);
   `logsey-index.service loaded inactive dead`. Corpus:
-  `wc -l ~/.local/share/logsey/corpus.jsonl` → `7,693,541` lines.
+  `wc -l ~/.local/share/logsey/corpus.jsonl` → `7,700,573` lines at `2026-11-18T03:07Z` (dated
+  snapshot — append-only, grows by ~1k lines/minute while `watch` tails; re-run the command).
 - `digest` — **installed and scheduled**, not "NOT installed". `systemctl --user list-units |
   grep digest` → `h3-digest.timer loaded active waiting` (`OnCalendar=*-*-* 08:00:00` — daily
   08:00; last `Tue 2026-11-17 08:00:00 -05`, next `Wed 2026-11-18 08:00:00 -05`);
@@ -79,8 +82,9 @@ Re-measured 2026-11-18: `pulse` and `logsey watch` are both running as systemd u
 `digest` and `lore` both have installed timers firing on schedule, and a harness answers on
 `:9191`. Only `h3`'s `make verify` control plane runs on invocation (CI/foreman ticks) — by
 design. What survives is the monitoring gap, and that is the real finding: none of these
-surfaces exports a scrapeable `/metrics`, and `pulse`'s heartbeat — 580,027 lines and counting —
-is still never read. Running is not the same as monitored.
+surfaces exports a scrapeable `/metrics`, and `pulse`'s heartbeat — hundreds of thousands of
+append-only lines (577,372 at `2026-11-18T03:07Z`, still growing) — is still never read.
+Running is not the same as monitored.
 
 ---
 
@@ -337,9 +341,12 @@ Run these in order; a reviewer who gets all of them green may close the rows.
 
 ## 9. Open questions / unverified
 
-- `logsey`'s `watch` loop is the only *intended* daemon in this org besides `pulse`; it is not
-  installed here, so its `last_tick` heartbeat has never run and there is no live `checkpoints.json`.
-  Its metric names above are derived from code, not observed traffic.
+- `logsey`'s `watch` loop is the only *intended* daemon in this org besides `pulse`; **it is
+  installed and running here** (`logsey-watch.service`, PID 2992, active since 2026-11-17
+  19:52 -05), and its live `~/.local/share/logsey/checkpoints.json` exists (14,105 bytes,
+  mtime `2026-11-17 22:01 -05`), so the loop's checkpoints are real, not hypothetical. What
+  remains unverified is narrower: its metric names above are derived from code, not observed
+  traffic — nobody has scraped the emitted counters.
 - Whether fleet-monitor already has a pushgateway endpoint reachable from this host was not
   verified (no network/tool access in the audit) — the textfile path is specified as the
   fallback, but the exact URL and token are the monitoring owner's to supply.

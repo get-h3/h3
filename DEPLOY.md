@@ -319,23 +319,33 @@ GET  /v1/health    200 1ms
 
 ### Harness API keys
 
-The shim authenticates to a harness with a bearer token. The shim client reads
-the key from the `H3_API_KEY` environment variable — an explicit `hermes_token`
-argument to the client takes priority over the env var. Every request carries it
-in the `Authorization` header, in the exact form:
+> **Status: design target, not a shipped control.** `SECURITY.md` is explicit —
+> "Harness API key authentication | **NOT YET IMPLEMENTED** — design only (SEC-02 … SEC-04)",
+> and specs/12 opens with "The H3 protocol currently has zero authentication". Tick the
+> checklist item below to get the *client* path ready; do not treat the key as a security
+> boundary yet. Keep the harness behind a trusted network (and TLS if it is exposed).
 
-```bash
+The shim client reads the key from the `H3_API_KEY` environment variable — an explicit
+`hermes_token` argument to the client takes priority over the env var. When a token is
+configured, the client sends it on every request in the `Authorization` header:
+
+```
 Authorization: Bearer <key>
 ```
 
-The key is either a per-harness API key (`h3_<base64url>`) or a Hermes identity
-token (`h3_hx_<token>`). The harness validates it server-side against the
-protocol's `bearerAuth` security scheme (`securitySchemes.bearerAuth` in
-`protocol/h3-protocol.yaml`: `type: http, scheme: bearer, bearerFormat: h3_*`);
-unknown or revoked tokens are rejected with HTTP 401.
+The intended key format (specs/12:24-58) is either a per-harness API key (`h3_<base64url>`)
+or a Hermes identity token (`h3_hx_<token>`). The wire contract it targets is the protocol's
+`bearerAuth` security scheme (`type: http, scheme: bearer, bearerFormat: h3_*`), published in
+the separate [get-h3/protocol](https://github.com/get-h3/protocol) repo — **not vendored
+here**, so there is no local `protocol/h3-protocol.yaml` to inspect. No shipped harness
+validates the token today; specs/13 defines the intended rotation/revocation and 401
+behaviour for when SEC-02…SEC-04 land.
 
 ```bash
 export H3_API_KEY='h3_<base64url>'   # or 'h3_hx_<token>'
+
+# What the client puts on the wire once a key is set:
+curl -H "Authorization: Bearer $H3_API_KEY" http://localhost:9191/v1/health
 ```
 
 ## Upgrade Flow
