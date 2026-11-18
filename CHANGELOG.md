@@ -14,8 +14,8 @@ review-lane and stand-in PM cycles. No protocol, SDK, or CLI behavior changes.
 - `docs/integration.md` Go echo + Go scaffold quickstart hardcoded `:9191`
   regardless of the harness's actual bind port; now documents the port as
   harness-configurable and matches the README's guidance (README-4).
-- `docs/diagnostics.md` current-state claims had drifted from the live battery
-  (test count, guard names); refreshed against HEAD (DOC-18).
+- `docs/dogfood/diagnostics.md` current-state claims had drifted from the live
+  battery (test count, guard names); refreshed against HEAD (DOC-18).
 - `docs/guide.html` / `DEPLOY.md` `make verify` prerequisites listed tools that
   are no longer required (jq for most guards); aligned with the actual
   `Makefile` dependency list (DOC-17).
@@ -27,7 +27,7 @@ review-lane and stand-in PM cycles. No protocol, SDK, or CLI behavior changes.
 ### Added
 - `qa: record h3 clean-machine battery 2026-10-28` — dated snapshot of the
   clean-machine probe run, kept as a point-in-time record under
-  `docs/qa/` (not a behavior change).
+  `.coding-hermes/board/events.jsonl` (not a behavior change).
 
 ### Changed
 - `make verify` release-tags-table guard (`scripts/check-tags-table.sh`) now
