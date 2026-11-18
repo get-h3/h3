@@ -916,3 +916,6 @@
 {"id": 886, "event_type": "task_updated", "actor": "foreman", "task_id": "H3-OBS-04", "detail": "{\"status\":\"in_progress\"}", "timestamp": "2026-11-18T00:08:25Z", "tick_number": null}
 {"id": 887, "event_type": "task_updated", "actor": "foreman", "task_id": "DF-H3-53", "detail": "{\"status\":\"in_progress\"}", "timestamp": "2026-11-18T00:08:25Z", "tick_number": null}
 {"id": 888, "event_type": "task_completed", "actor": "foreman", "task_id": "README-7", "detail": "{\"status\":\"complete\"}", "timestamp": "2026-11-18T00:16:48Z", "tick_number": null}
+{"event_type": "task_completed", "actor": "foreman", "task_id": "H3-OBS-04", "detail": "{\"status\": \"complete\"}", "timestamp": "2026-11-18T01:25:00Z", "tick_number": null}
+{"event_type": "task_completed", "actor": "foreman", "task_id": "DF-H3-055", "detail": "{\"status\": \"complete\"}", "timestamp": "2026-11-18T01:25:00Z", "tick_number": null}
+{"event_type": "task_updated", "actor": "foreman", "task_id": "DF-H3-53", "detail": "{\"status\": \"in_progress\"}", "timestamp": "2026-11-18T01:25:00Z", "tick_number": null}
