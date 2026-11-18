@@ -583,3 +583,39 @@ tasks:
   status: complete
   created_at: '2026-11-18T00:14:47.670495+00:00'
   completed_at: '2026-11-18T00:14:48.537602+00:00'
+- id: DOC-22
+  title: 'docs accuracy: harness API-key procedure, --version scope, PyPI SDK install'
+  criteria:
+  - 'DEPLOY.md documents H3_API_KEY + ''Authorization: Bearer <key>'' reachable from
+    the line-315 checklist item (greps >=2 hits each); docs/integration.md no longer
+    says --version is on every subcommand and the stray pipe row sits below the Command/Flags/Meaning
+    header; docs/integration.md:589 leads with ''pip install h3-harness-sdk'' and
+    DEPLOY.md:234/331 no longer contradict DEPLOY.md:149; make verify-docs exits 0'
+  status: in_progress
+  created_at: '2026-11-18T02:49:44.697392+00:00'
+- id: DOC-25
+  title: observability-spec ground-truth section re-measured
+  criteria:
+  - every bullet in docs/observability-spec.md:46-58 quotes a re-runnable command
+    with observed value and the 2026-11-18 date or is a dated snapshot; logsey + digest
+    timer + :9191 + pulse PID + append-only line counts match the host; conclusion
+    follows the reading; make verify-docs exits 0
+  status: in_progress
+  created_at: '2026-11-18T02:49:45.174733+00:00'
+- id: DOC-26
+  title: h3-usage skill pits re-verified against shim 0.2.0
+  criteria:
+  - each documented pitfall re-run against the installed shim; fixed ones deleted;
+    the inline uninstall comment matches measured behaviour; surviving pre-update-check
+    guidance keeps the versions.yaml half and drops the BLOCK claim; no hand-edit-sessions
+    workaround remains; make verify-docs exits 0
+  status: in_progress
+  created_at: '2026-11-18T02:49:45.666457+00:00'
+- id: DOC-27
+  title: CHANGELOG phantom path fixed
+  criteria:
+  - CHANGELOG.md names docs/dogfood/diagnostics.md not docs/diagnostics.md; DOC-18
+    credit preserved; grep -rn over the reader-facing corpus returns no docs/diagnostics.md
+    hits; make verify-docs exits 0
+  status: in_progress
+  created_at: '2026-11-18T02:49:46.150311+00:00'

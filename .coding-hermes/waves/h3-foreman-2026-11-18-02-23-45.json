@@ -1,0 +1,69 @@
+{
+  "wave_id": "h3-foreman-2026-11-18-02-23-45",
+  "project": "h3",
+  "repo": "/home/kara/get-h3/h3",
+  "created": "2026-11-18T02:40:00Z",
+  "base_ref": "origin/main",
+  "base_sha": "f7b757b",
+  "worker_model": "deepseek-v4-pro",
+  "worker_provider": "deepseek",
+  "model_switch_reason": "AUTHORITATIVE seat openai/gpt-6.1-terra @ xkiro is HTTP 503 model_maintenance until 2026-11-19T16:25:12Z (errors.log 2026-11-17 21:43/21:45, 600s retry backoff; a live seat probe hung 180s). Actual unavailable failure per dispatch rule; deepseek-v4-pro @ deepseek answered a seat probe instantly.",
+  "independent": true,
+  "independence_proof": "Four dispatch units with disjoint file sets inside ONE repo: DOC-22+DOC-23+DOC-24 touch DEPLOY.md and docs/integration.md only; DOC-25 touches docs/observability-spec.md only; DOC-26 touches skills/h3-usage/SKILL.md only; DOC-27 touches CHANGELOG.md only. No overlap between units, no depends_on edges on any of the six rows (all six rows carry depends_on null).",
+  "excluded_candidates": {
+    "H3-OBS-02": "P0 but premise-blocked: installed pulse binary predates the feature commits; acceptance needs a sibling-service reinstall (owner repo get-h3/pulse)",
+    "H3-OBS-03": "P0 but same deployment-leg class as OBS-02 (installed logsey binary serves no :9162 endpoint)",
+    "H3-OBS-05": "owner sign-off on hub Makefile/scripts scope still open (docs/observability-spec.md sec 9)",
+    "H3-OBS-06": "depends on the OBS-02/03/05 deployment legs landing first",
+    "DF-H3-54": "shim repo row (owner repo get-h3/shim) — belongs to the h3-shim lane, not the umbrella wave",
+    "SHIM-DEPS-01": "shim repo dependency upgrade — same satellite boundary; also needs a live venv rebuild",
+    "QA-H3-29/QA-H3-30": "QA harness repo (qa-run.sh) not present on this host; runs on remote JIT agents",
+    "QA-H3-PERF-2/QA-H3-REVIEW-1": "acceptance_criteria field is empty — undispatchable as-is; repaired by foreman this tick under COS-H3-001",
+    "COS-H3-001": "board-curation row: single board writer is the foreman; executed directly in the control checkout, not in a worktree"
+  },
+  "tasks": [
+    {
+      "id": "DOC-22",
+      "also_closes": ["DOC-23", "DOC-24"],
+      "priority": "P4",
+      "repo": "/home/kara/get-h3/h3",
+      "worktree": "/home/kara/worktrees/h3-DOC-22",
+      "branch": "wt/DOC-22",
+      "base_sha": "f7b757b",
+      "files": ["DEPLOY.md", "docs/integration.md"],
+      "gate": "make verify-docs"
+    },
+    {
+      "id": "DOC-25",
+      "priority": "P4",
+      "repo": "/home/kara/get-h3/h3",
+      "worktree": "/home/kara/worktrees/h3-DOC-25",
+      "branch": "wt/DOC-25",
+      "base_sha": "f7b757b",
+      "files": ["docs/observability-spec.md"],
+      "gate": "make verify-docs"
+    },
+    {
+      "id": "DOC-26",
+      "priority": "P4",
+      "repo": "/home/kara/get-h3/h3",
+      "worktree": "/home/kara/worktrees/h3-DOC-26",
+      "branch": "wt/DOC-26",
+      "base_sha": "f7b757b",
+      "files": ["skills/h3-usage/SKILL.md"],
+      "gate": "make verify-docs"
+    },
+    {
+      "id": "DOC-27",
+      "priority": "P5",
+      "repo": "/home/kara/get-h3/h3",
+      "worktree": "/home/kara/worktrees/h3-DOC-27",
+      "branch": "wt/DOC-27",
+      "base_sha": "f7b757b",
+      "files": ["CHANGELOG.md"],
+      "gate": "make verify-docs"
+    }
+  ],
+  "merge_order": ["DOC-22", "DOC-25", "DOC-26", "DOC-27"],
+  "foreman_direct": ["COS-H3-001"]
+}
