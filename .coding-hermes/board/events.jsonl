@@ -919,3 +919,6 @@
 {"event_type": "task_completed", "actor": "foreman", "task_id": "H3-OBS-04", "detail": "{\"status\": \"complete\"}", "timestamp": "2026-11-18T01:25:00Z", "tick_number": null}
 {"event_type": "task_completed", "actor": "foreman", "task_id": "DF-H3-055", "detail": "{\"status\": \"complete\"}", "timestamp": "2026-11-18T01:25:00Z", "tick_number": null}
 {"event_type": "task_updated", "actor": "foreman", "task_id": "DF-H3-53", "detail": "{\"status\": \"in_progress\"}", "timestamp": "2026-11-18T01:25:00Z", "tick_number": null}
+{"id": 889, "event_type": "task_created", "actor": "foreman", "task_id": "DOC-22", "detail": "{\"id\":\"DOC-22\",\"status\":\"pending\"}", "timestamp": "2026-11-18T01:59:11Z", "tick_number": null}
+{"id": 890, "event_type": "task_created", "actor": "foreman", "task_id": "DOC-23", "detail": "{\"id\":\"DOC-23\",\"status\":\"pending\"}", "timestamp": "2026-11-18T01:59:11Z", "tick_number": null}
+{"id": 891, "event_type": "task_created", "actor": "foreman", "task_id": "DOC-24", "detail": "{\"id\":\"DOC-24\",\"status\":\"pending\"}", "timestamp": "2026-11-18T01:59:11Z", "tick_number": null}
