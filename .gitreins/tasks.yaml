@@ -561,3 +561,13 @@ tasks:
   status: complete
   created_at: '2026-11-17T21:21:34.106836+00:00'
   completed_at: '2026-11-17T21:47:47.731598+00:00'
+- id: DF-H3-055
+  title: Fix board-close hook staged-file detector to include tasks.jsonl
+  criteria:
+  - 'staged-file detector line in scripts/pre-commit-board-close.sh names tasks.jsonl
+    alongside board.jsonl and events.jsonl; a regression arm in the hook selftest
+    proves a tasks-only stage triggers the header re-pin (fails against 48fc994 script,
+    passes against fixed); sh scripts/install-board-close-hook-selftest.sh exits 0;
+    make verify exits 0 printing ''make verify: ALL PASS'''
+  status: in_progress
+  created_at: '2026-11-18T00:05:09.019408+00:00'

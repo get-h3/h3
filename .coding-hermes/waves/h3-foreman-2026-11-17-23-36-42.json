@@ -1,0 +1,56 @@
+{
+  "wave_id": "h3-foreman-2026-11-17-23-36-42",
+  "project": "h3",
+  "repo": "/home/kara/get-h3/h3",
+  "created": "2026-11-17T23:52:00Z",
+  "base_ref": "origin/main",
+  "worker_model": "deepseek-v4-pro",
+  "worker_provider": "deepseek",
+  "model_switch_reason": "AUTHORITATIVE seat openai/gpt-6.1-terra @ xkiro is HTTP 503 model_maintenance until 2026-11-19T16:25:12Z (errors.log 425 maintenance events; gpt-6.1-sol and gpt-6-luna equally down; probes hang in 600s retry backoff). Actual unavailable failure per dispatch rule; deepseek-v4-pro @ deepseek is the fleet's named fallback lane and answered a seat probe instantly (19:02:55).",
+  "independent": true,
+  "independence_proof": "DF-H3-055 touches only get-h3/h3 scripts/pre-commit-board-close.sh + hook selftest; H3-OBS-04 touches only get-h3/digest digest/digest/__main__.py + writer/tests; DF-H3-53 touches only get-h3/shim session-DELETE semantics + test_battery.py + tests/test_battery_delete_coverage.py. Three different repositories, disjoint file sets, no depends_on edges on any of the three rows.",
+  "excluded_candidates": {
+    "DF-H3-54": "same shim repo, plausible shared file test_battery.py with DF-H3-53 — shared-file tasks dispatch sequentially per worker-dispatch-pitfalls",
+    "H3-OBS-02": "P0 but premise-blocked: installed pulse binary predates feature commits, acceptance needs sibling-service reinstall (owner repo get-h3/pulse)",
+    "H3-OBS-03": "P0 but same deployment-leg class as OBS-02 (installed logsey binary serves no :9162 endpoint)",
+    "H3-OBS-05": "owner sign-off on hub Makefile/scripts scope still open (docs/observability-spec.md sec 9)",
+    "QA-H3-29": "QA harness repo (qa-run.sh) not present on this host — runs on remote JIT agents",
+    "DF-H3-52": "acceptance arm 1 requires a published PyPI release — release-gated",
+    "DOC-21": "acceptance_criteria field is null — undispatchable as-is"
+  },
+  "tasks": [
+    {
+      "id": "DF-H3-055",
+      "priority": "P1",
+      "repo": "/home/kara/get-h3/h3",
+      "worktree": "/home/kara/worktrees/h3-DF-H3-055",
+      "branch": "wt/DF-H3-055",
+      "base_sha": "1bab6aa",
+      "files": ["scripts/pre-commit-board-close.sh", "scripts/install-board-close-hook-selftest.sh"],
+      "brief": "/home/kara/.hermes/cache/scratch/h3f-233642-brief-DF-H3-055.md"
+    },
+    {
+      "id": "H3-OBS-04",
+      "priority": "P1",
+      "repo": "/home/kara/get-h3/digest",
+      "worktree": "/home/kara/worktrees/digest-H3-OBS-04",
+      "branch": "wt/H3-OBS-04",
+      "base_sha": "82fc83c",
+      "files": ["digest/digest/__main__.py", "digest/render.py (read-only reference)", "tests/"],
+      "brief": "/home/kara/.hermes/cache/scratch/h3f-233642-brief-H3-OBS-04.md"
+    },
+    {
+      "id": "DF-H3-53",
+      "priority": "P2",
+      "repo": "/home/kara/get-h3/shim",
+      "worktree": "/home/kara/worktrees/shim-DF-H3-53",
+      "branch": "wt/DF-H3-53",
+      "base_sha": "6288503",
+      "files": ["src/h3_shim/ (session DELETE semantics)", "src/h3_shim/test_battery.py (test_5_14)", "tests/test_battery_delete_coverage.py"],
+      "brief": "/home/kara/.hermes/cache/scratch/h3f-233642-brief-DF-H3-53.md"
+    }
+  ],
+  "merge_order": ["DF-H3-055", "H3-OBS-04", "DF-H3-53"],
+  "merge_policy": "serial, one repo at a time; rebase wt/<id> onto its repo's origin/main, run the repo gates, --no-ff merge, gitreins task complete from the canonical checkout post-merge, then push and prove 0 unpushed",
+  "foreman_direct": "README-7 (trivial one-file README.md edit in h3 canonical tree)"
+}
