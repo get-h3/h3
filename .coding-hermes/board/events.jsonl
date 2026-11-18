@@ -923,3 +923,6 @@
 {"id": 890, "event_type": "task_created", "actor": "foreman", "task_id": "DOC-23", "detail": "{\"id\":\"DOC-23\",\"status\":\"pending\"}", "timestamp": "2026-11-18T01:59:11Z", "tick_number": null}
 {"id": 891, "event_type": "task_created", "actor": "foreman", "task_id": "DOC-24", "detail": "{\"id\":\"DOC-24\",\"status\":\"pending\"}", "timestamp": "2026-11-18T01:59:11Z", "tick_number": null}
 {"event_type":"task_completed","actor":"foreman","task_id":"DF-H3-53","detail":"{\"status\": \"complete\"}","timestamp":"2026-11-18T02:10:00Z","tick_number":null}
+{"id":892,"event_type":"task_created","actor":"foreman","task_id":"DOC-25","detail":"{\"id\":\"DOC-25\",\"status\":\"pending\"}","timestamp":"2026-11-18T02:20:27Z","tick_number":null}
+{"id":893,"event_type":"task_created","actor":"foreman","task_id":"DOC-26","detail":"{\"id\":\"DOC-26\",\"status\":\"pending\"}","timestamp":"2026-11-18T02:20:27Z","tick_number":null}
+{"id":894,"event_type":"task_created","actor":"foreman","task_id":"DOC-27","detail":"{\"id\":\"DOC-27\",\"status\":\"pending\"}","timestamp":"2026-11-18T02:20:28Z","tick_number":null}
