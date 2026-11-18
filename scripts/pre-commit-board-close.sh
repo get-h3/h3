@@ -21,8 +21,10 @@ SYNC="$REPO_ROOT/scripts/sync-board-header.sh"
 # Skip cleanly when the sync script is missing or not executable.
 [ -f "$SYNC" ] && [ -x "$SYNC" ] || { echo "board-close: skipped (scripts/sync-board-header.sh missing or not executable)" >&2; exit 0; }
 
-# Detect staged board files only.
-STAGED="$(git diff --cached --name-only -- .coding-hermes/board/board.jsonl .coding-hermes/board/events.jsonl)"
+# Detect staged board files only. tasks.jsonl is the most common board-writing
+# shape (a tick appends task rows and stages ONLY it); DF-H3-055: omitting it
+# here skipped the header re-pin on every tasks-only commit (measured at 394dbb8).
+STAGED="$(git diff --cached --name-only -- .coding-hermes/board/board.jsonl .coding-hermes/board/events.jsonl .coding-hermes/board/tasks.jsonl)"
 if [ -z "$STAGED" ]; then
     echo "board-close: skipped (no board files staged)" >&2
     exit 0
