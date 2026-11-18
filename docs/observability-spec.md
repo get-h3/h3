@@ -39,24 +39,48 @@ CLI/batch lanes and **a small `/metrics` endpoint** for the two HTTP/Long-runnin
 | `sdk-typescript` | Harness SDK (not on npm) | library | (example only) | none | `h3/README.md:167` |
 | `protocol` | OpenAPI 3.1 + JSON Schema | no | no | YAML/JSON | `h3/README.md:163` |
 | **`logsey`** | Log-corpus indexer: `watch` tails sources into `corpus.jsonl`, `index` builds DuckDB | **Yes — `logsey watch`, every 30 s** (systemd unit shipped) | none | `corpus.jsonl`, `checkpoints.json`, `index.duckdb` | `logsey/systemd/logsey.service:1-8,47`, `logsey/internal/logsey/ingest/checkpoints.go:55-58` |
-| **`pulse`** | Metric-log sampler daemon | **Yes — running now, PID since Oct 20** | pprof only, env-gated | `~/.pulse-data/pulse-YYYY-MM-DD.jsonl` + `heartbeat.jsonl` | `pulse/cmd/pulse/pprof.go:6-28`, process `kara 1738357 pulse daemon --dir /home/kara/.pulse-data` |
-| **`lore`** | Runbook compiler/validator CLI | No — invoked per command | none | `.lore/validate-history.jsonl` (append-only), stdout JSON | `lore/__main__.py:386-421`, `.lore/validate-history.jsonl` (6 948 lines) |
+| **`pulse`** | Metric-log sampler daemon | **Yes — running now, PID since Nov 17** | pprof only, env-gated | `~/.pulse-data/pulse-YYYY-MM-DD.jsonl` + `heartbeat.jsonl` | `pulse/cmd/pulse/pprof.go:6-28`, process `kara 3002 pulse daemon --dir /home/kara/.pulse-data` |
+| **`lore`** | Runbook compiler/validator CLI | No — invoked per command | none | `.lore/validate-history.jsonl` (append-only), stdout JSON | `lore/__main__.py:386-421`, `.lore/validate-history.jsonl` (7 871 lines, 2026-11-18; append-only — a bare number rots) |
 | **`digest`** | Daily fleet digest builder, systemd timer 07:17 | No — `Type=oneshot` | none | `digests/latest.html`, `digests/digest-YYYY-MM-DD.{md,json}` | `digest/packaging/digest.timer:1-8`, `digest/packaging/digest.service:36` |
 
-**What is actually live on this host right now** (`ps aux`, `systemctl --user list-units`):
+**What is actually live on this host right now** — re-measured 2026-11-18 with read-only probes
+(`systemctl --user list-units`, `ps`, `ss`, `curl`, `wc -l`). Each bullet names the command to
+re-run, the observed value, and the date:
 
-- `pulse daemon --dir /home/kara/.pulse-data` — running, PID 1738357, started Oct 20.
-  `heartbeat.jsonl` last written `2026-11-03T21:22:35Z`, 553,374 lines, ~259 MB.
-- **`logsey watch` — NOT running.** No systemd unit installed on this host, no process, no
-  `/var/lib/logsey`. The systemd unit exists only in the repo.
-- **`digest` timer — NOT installed.** No user timer, no crontab entry. Newest artifact in
-  `digest/digests/` is `digest-2026-10-24.md` — the daily digest has not run for 10 days and
-  nothing noticed.
-- `lore`/`h3` run only when a foreman/CI tick invokes them. Nothing runs them on a cadence.
-- No harness (SDK echo or real) listening on `:9191` on this host.
+- `pulse` — running. `ps -eo pid,lstart,args | grep 'pulse daemon'` →
+  `3002 Tue Nov 17 19:52:00 2026 /home/kara/.local/bin/pulse daemon --dir /home/kara/.pulse-data`.
+  `wc -l ~/.pulse-data/heartbeat.jsonl` → `580,027` lines; last line `ts`
+  `2026-11-18T02:52:37Z` (mtime `2026-11-17 21:52:37 -05`) — the heartbeat is written now,
+  not frozen since Oct 20.
+- `logsey watch` — **running**, not absent. `systemctl --user list-units | grep logsey` →
+  `logsey-watch.service loaded active running` (ExecStart `/home/kara/.local/bin/logsey watch`,
+  `ActiveEnterTimestamp Tue 2026-11-17 19:52:01 -05`, PID 2992);
+  `logsey-index.timer loaded active waiting` (`OnCalendar=*:0/30` — every 30 minutes);
+  `logsey-index.service loaded inactive dead`. Corpus:
+  `wc -l ~/.local/share/logsey/corpus.jsonl` → `7,693,541` lines.
+- `digest` — **installed and scheduled**, not "NOT installed". `systemctl --user list-units |
+  grep digest` → `h3-digest.timer loaded active waiting` (`OnCalendar=*-*-* 08:00:00` — daily
+  08:00; last `Tue 2026-11-17 08:00:00 -05`, next `Wed 2026-11-18 08:00:00 -05`);
+  `h3-digest.service loaded inactive dead` (the oneshot between runs). The timer fires daily;
+  `ls -1t digest/digests/` still shows `digest-2026-10-24.md` newest, so "timer fires" is not
+  yet proof of a fresh artifact.
+- `lore` — **scheduled weekly**, not "no cadence". `systemctl --user list-units | grep lore` →
+  `lore-validate.timer loaded active waiting` (`OnCalendar=Mon *-*-* 07:30:00` — every Monday
+  07:30; last `Mon 2026-11-16 07:30:00 -05`), `lore-validate.service loaded inactive dead`.
+  `h3`'s `make verify` control plane has no unit and runs only on CI/foreman ticks.
+- A harness **is** listening on `:9191` — the earlier "no harness listening" claim is obsolete.
+  `curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:9191/v1/health` → `200`; body
+  `{"status":"ok","version":"1.0.0","transport":"rest","protocol_version":"1.0",…}`.
+  `ss -ltnp | grep 9191` → `0.0.0.0:9191` pid `1040050` — a `shim`-venv Python harness
+  (`/home/kara/.hermes/stand-in/docs/h3/qs/my-harnesses/h3-harness-py/main.py`).
 
-That gap — three of five runnable surfaces silent and unmonitored — is the finding, not a
-preface. A digest that stops for 10 days is precisely the 3 a.m. question this spec answers.
+The earlier conclusion — "three of five runnable surfaces silent and unmonitored" — is obsolete.
+Re-measured 2026-11-18: `pulse` and `logsey watch` are both running as systemd user services,
+`digest` and `lore` both have installed timers firing on schedule, and a harness answers on
+`:9191`. Only `h3`'s `make verify` control plane runs on invocation (CI/foreman ticks) — by
+design. What survives is the monitoring gap, and that is the real finding: none of these
+surfaces exports a scrapeable `/metrics`, and `pulse`'s heartbeat — 580,027 lines and counting —
+is still never read. Running is not the same as monitored.
 
 ---
 
