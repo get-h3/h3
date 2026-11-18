@@ -303,7 +303,7 @@ hermes-h3 verify NAME --fallback  # + failover narrative; exit 0 either way
 hermes-h3 use NAME             # promote to default_harness
 hermes-h3 route --session "<platform:chat[:thread]>" --set-harness NAME
 hermes-h3 route --session "..." --remove
-hermes-h3 uninstall NAME       # harness + its session bindings (main only — see pitfall below)
+hermes-h3 uninstall NAME       # released 0.2.0: harness only — main also drops its session bindings
 ```
 
 Behavioral contract (verified, rely on it): every lookup fails closed —
@@ -312,15 +312,23 @@ dead endpoint → exit 1 (clean error, config untouched); `--fallback`
 prints the ENGAGED/STANDBY narrative and exits 0.
 
 ### Pitfall: the bundled `versions.yaml` lags the shipped shim (DF-H3-36)
-`pre-update-check` answers WARN, not BLOCK, for a planned pairing — measured
+`pre-update-check` reports a planned pairing at **WARN** severity — measured
 `hermes-h3 pre-update-check 0.19.0` prints `[WARN] protocol_compat: Hermes
 0.19.0 targets a PLANNED pairing (H3 shim 1.1.0, protocol 1.0); the shipped
-shim v0.1.0 does not meet it yet.` Treat WARN as "matrix says no", not
-"protocol says no". The still-true half is a shim-repo issue, not this
-repo's: the bundled `h3_shim/data/versions.yaml` names the shipped shim
-`0.1.0` while `shim/pyproject.toml` says `version = 0.2.0`. Cross-check the
-file's mtime and the protocol repo before trusting it, and pass
-`--versions-yaml` explicitly in CI.
+shim v0.1.0 does not meet it yet.` (`src/h3_shim/upgrade_check.py:341-357`
+degrades planned rows to WARN). Read WARN as "the matrix says this pairing is
+planned", not as a verdict on the protocol itself. The still-true half is a
+shim-repo issue, not this repo's: the bundled `h3_shim/data/versions.yaml`
+names the shipped shim `0.1.0` while `shim/pyproject.toml` says
+`version = 0.2.0`. Cross-check the file's mtime and the protocol repo before
+trusting it, and pass `--versions-yaml` explicitly in CI.
+
+### Pitfall: `config_schema` INFO line is expected, not a defect (DF-H3-39)
+`upgrade_check.py:414-427` emits `[INFO] config_schema: Config schema v0
+(current is v1; no migration needed)` on an untouched config. It is
+informational and self-clearing — do **not** chase it, and do not let its
+noise train you to skim past the `harness_health` **WARN**, which is the line
+that actually reports a broken harness.
 
 ### Pitfall: released `0.2.0` `uninstall` leaves dangling session bindings (DOGFOOD-12/13)
 
@@ -330,15 +338,9 @@ Verified against **tag `v0.2.0`**, not main: `git show v0.2.0:src/h3_shim/cli.py
 fail closed naming a harness that no longer exists. The fix landed **11–13 commits after the
 tag** (`d95085b` "fix(cli): drop session bindings on uninstall (DOGFOOD-12)", plus
 `a0a24a1`/`0fa40ad`; `git tag --contains d95085b` is empty, `git describe` = `v0.2.0-13-g…`),
-so it ships on main only — no release carries it yet.
-
-On released 0.2.0, clean up by hand after `uninstall`:
-
-```bash
-hermes-h3 route --session "<platform:chat[:thread]>" --remove   # per dangling binding
-```
-
-Measured on main (post-fix) for contrast: `install echo --set-default;
+so it ships on main only — no release carries it yet. On 0.2.0 there is no CLI escape hatch for
+this: avoid `uninstall` on a harness that sessions are still routed to, or run a build that
+contains `d95085b`. Measured on main (post-fix) for contrast: `install echo --set-default;
 route --session s1 --set-harness echo; uninstall echo` → `also removed 1 session
 binding(s) that pointed at 'echo': s1`. Do not attribute that output to 0.2.0.
 

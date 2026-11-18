@@ -41,7 +41,7 @@ CLI/batch lanes and **a small `/metrics` endpoint** for the two HTTP/Long-runnin
 | **`logsey`** | Log-corpus indexer: `watch` tails sources into `corpus.jsonl`, `index` builds DuckDB | **Yes — `logsey watch`, every 30 s** (systemd unit shipped) | none | `corpus.jsonl`, `checkpoints.json`, `index.duckdb` | `logsey/systemd/logsey.service:1-8,47`, `logsey/internal/logsey/ingest/checkpoints.go:55-58` |
 | **`pulse`** | Metric-log sampler daemon | **Yes — running now, PID since Nov 17** | pprof only, env-gated | `~/.pulse-data/pulse-YYYY-MM-DD.jsonl` + `heartbeat.jsonl` | `pulse/cmd/pulse/pprof.go:6-28`, process `kara 3002 pulse daemon --dir /home/kara/.pulse-data` |
 | **`lore`** | Runbook compiler/validator CLI | No — invoked per command | none | `.lore/validate-history.jsonl` (append-only), stdout JSON | `lore/__main__.py:386-421`, `.lore/validate-history.jsonl` (7 871 lines, 2026-11-18; append-only — a bare number rots) |
-| **`digest`** | Daily fleet digest builder, systemd timer **08:00** installed (`digest/packaging/digest.timer:5` still ships `07:17` — the installed unit is what fires) | No — `Type=oneshot` | none | `digests/latest.html`, `digests/digest-YYYY-MM-DD.{md,json}` | `digest/packaging/digest.timer:1-8`, `digest/packaging/digest.service:36`, installed `h3-digest.timer` |
+| **`digest`** | Daily fleet digest builder; systemd timer **08:00** installed (`../digest/packaging/digest.timer:5` still ships `07:17` — the installed unit is what fires, running `h3-family-digest.sh`) | No — `Type=oneshot` | none | installed unit: `~/.local/share/digest/h3-family-YYYY-MM-DD.md`; packaged script: `../digest/digests/latest.html`, `digest-YYYY-MM-DD.{md,json}` | `../digest/packaging/digest.timer:1-8`, `../digest/packaging/digest.service:36`, installed `h3-digest.timer` |
 
 **What is actually live on this host right now** — re-measured 2026-11-18 with read-only probes
 (`systemctl --user list-units`, `ps`, `ss`, `curl`, `wc -l`). Each bullet names the command to
@@ -61,12 +61,16 @@ re-run, the observed value, and the date:
   `logsey-index.service loaded inactive dead`. Corpus:
   `wc -l ~/.local/share/logsey/corpus.jsonl` → `7,700,573` lines at `2026-11-18T03:07Z` (dated
   snapshot — append-only, grows by ~1k lines/minute while `watch` tails; re-run the command).
-- `digest` — **installed and scheduled**, not "NOT installed". `systemctl --user list-units |
-  grep digest` → `h3-digest.timer loaded active waiting` (`OnCalendar=*-*-* 08:00:00` — daily
+- `digest` — **installed, scheduled, and producing fresh artifacts**. `systemctl --user list-units
+  | grep digest` → `h3-digest.timer loaded active waiting` (`OnCalendar=*-*-* 08:00:00` — daily
   08:00; last `Tue 2026-11-17 08:00:00 -05`, next `Wed 2026-11-18 08:00:00 -05`);
-  `h3-digest.service loaded inactive dead` (the oneshot between runs). The timer fires daily;
-  `ls -1t digest/digests/` still shows `digest-2026-10-24.md` newest, so "timer fires" is not
-  yet proof of a fresh artifact.
+  `h3-digest.service loaded inactive dead` (the oneshot between runs). The **installed** unit runs
+  `ExecStart=/home/kara/.local/bin/h3-family-digest.sh`, whose output dir is
+  `/home/kara/.local/share/digest`: `ls -1t ~/.local/share/digest/` → `h3-family-2026-11-17.md`
+  (mtime `2026-11-17 08:00:04 -05`), `h3-family-2026-11-16.md`, `h3-family-2026-11-15.md` — a
+  fresh artifact every morning, so timer → artifact works. Do **not** judge the timer by the
+  repo-local `digests/` dir of the sibling `get-h3/digest` checkout (`../digest/digests/`, newest
+  `digest-2026-10-24.md`): that is a manually-run output of a different script, not this unit's.
 - `lore` — **scheduled weekly**, not "no cadence". `systemctl --user list-units | grep lore` →
   `lore-validate.timer loaded active waiting` (`OnCalendar=Mon *-*-* 07:30:00` — every Monday
   07:30; last `Mon 2026-11-16 07:30:00 -05`), `lore-validate.service loaded inactive dead`.
@@ -129,10 +133,13 @@ Each line names the place where the state *exists* and is never exported.
 7. **`logsey` ingest yield** — nothing counts lines indexed, bytes read, per-source lag
    (`size - offset`), or index rebuild duration. `logsey status` prints entry counts
    (`status_cmd.go:55-60`) only when a human asks.
-8. **`digest` staleness and source degradation** — `digest/digest/__main__.py:208-221,291`
-   deliberately renders `no data` rather than a fabricated zero when a source is absent — an
-   honest artifact, but there is no counter for *how many* sections degraded, and no signal at
-   all for "the timer did not fire". Last artifact is 10 days old; nobody noticed.
+8. **`digest` source degradation** — `digest/digest/__main__.py:208-221,291` (sibling
+   `get-h3/digest` checkout; the h3 repo has no `digest/` dir) deliberately renders `no data`
+   rather than a fabricated zero when a source is absent — an honest artifact, but there is no
+   counter for *how many* sections degraded. The installed unit does write a fresh
+   `~/.local/share/digest/h3-family-YYYY-MM-DD.md` every morning at 08:00, yet nothing alerts if
+   a morning is skipped: no `last_run` metric, no freshness assertion, so a missed firing would
+   be noticed only by a human opening the dir.
 9. **`lore` gate outcomes** — `.lore/validate-history.jsonl` appends
    `{class_id, drifted_orders, executed_count, outcomes, honesty_label, total_checks}`
    (`lore/__main__.py:407-421`). Failures are recorded and never counted.
