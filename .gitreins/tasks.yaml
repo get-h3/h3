@@ -571,3 +571,14 @@ tasks:
     make verify exits 0 printing ''make verify: ALL PASS'''
   status: in_progress
   created_at: '2026-11-18T00:05:09.019408+00:00'
+- id: README-7
+  title: README make-verify enumeration includes verify-tags
+  criteria:
+  - README.md make verify bullet names release tags-table guard verify-tags alongside
+    the other nine; all ten verify-prereqs-early targets plus verify-verdict-census
+    appear in the README text (ten of ten); docs/releases.md unchanged; make verify
+    on fresh clone of published tip exits 0 printing tags-table PASS and verdict-census
+    PASS; no other README claim altered
+  status: complete
+  created_at: '2026-11-18T00:14:47.670495+00:00'
+  completed_at: '2026-11-18T00:14:48.537602+00:00'
