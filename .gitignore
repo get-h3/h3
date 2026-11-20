@@ -15,6 +15,11 @@
 .vfs/*
 # Curated artifact (committed) — explicitly unignored so plain `git add` works.
 !.vfs/manifest.yaml
+# .gitreins runtime residue: rescue dirs (task records relocated by gitreins on
+# conflict) and task locks are tool-generated state, not repo content. tasks.yaml
+# itself stays tracked.
+.gitreins/rescued-*/
+.gitreins/*.lock
 # .vfs/graph/ must be re-included as well for the negation below to reach its contents.
 !.vfs/graph/
 # Everything else under .vfs/graph/ is rebuildable runtime state.

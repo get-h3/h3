@@ -623,3 +623,38 @@ tasks:
   status: complete
   created_at: '2026-11-18T02:49:46.150311+00:00'
   completed_at: '2026-11-18T03:17:58.613177+00:00'
+- id: DOC-23
+  title: docs/integration.md CLI flag reference matches shipped hermes-h3
+  criteria:
+  - 'grep -c ''Available on every subcommand'' docs/integration.md prints 0; sed -n
+    ''550,566p'' docs/integration.md shows the Command/Flags/Meaning header before
+    any pipe row and a Group-level --version row stating list/route/use/scaffold/verify
+    refuse --version (failure: the phrase still present or a stray pipe row above
+    the header); make verify-docs exits 0'
+  status: complete
+  created_at: '2026-11-18T18:56:19.360640+00:00'
+  completed_at: '2026-11-18T18:56:23.471490+00:00'
+- id: DOC-24
+  title: Python SDK install instruction matches the published package
+  criteria:
+  - 'grep -c ''pip install h3-harness-sdk'' returns >= 1 for README.md, DEPLOY.md
+    and docs/integration.md; docs/integration.md:589 leads with the published wheel
+    and labels the git+ URL as a source fallback; DEPLOY.md:234 (Dockerfile) and DEPLOY.md:331
+    (upgrade flow) do not contradict each other or DEPLOY.md:149; make verify-docs
+    exits 0 (failure: any surface presenting the git+ source build as primary, or
+    a count of 0)'
+  status: complete
+  created_at: '2026-11-18T19:14:09.760742+00:00'
+  completed_at: '2026-11-18T19:14:19.893468+00:00'
+- id: H3-OBS-05
+  title: h3 make verify writes a Prometheus textfile completion record (H3-OBS-05
+    h3 leg)
+  criteria:
+  - 'make verify still exits 0 and prints ''make verify: ALL PASS''; the verify run
+    atomically writes /var/lib/node_exporter/textfile/h3_verify.prom containing h3_verify_guard_result{guard="<name>"}
+    for 9 guards plus h3_verify_runs_total{target="verify"} and h3_verify_duration_seconds{guard="..."};
+    a self-test target proves a deliberately failing guard writes that guard''s gauge
+    as 0 with a non-zero run exit, and the record is skipped with a printed reason
+    when the textfile directory is absent'
+  status: pending
+  created_at: '2026-11-19T05:21:12.892658+00:00'
