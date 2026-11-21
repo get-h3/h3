@@ -728,7 +728,7 @@ tasks:
     and that tripped breakers move runtime sessions to default_harness; 'git diff
     origin/main 3326f23 --stat' shows DEPLOY.md is the only changed file and the change
     is additive; 'make verify-docs' PASS at 3326f23.
-  status: complete
+  status: in_progress
   created_at: '2026-11-21T09:41:07.166174+00:00'
   completed_at: '2026-11-21T09:49:48.571494+00:00'
 - id: DOC-30
@@ -772,3 +772,24 @@ tasks:
   status: complete
   created_at: '2026-11-21T09:47:27.278300+00:00'
   completed_at: '2026-11-21T09:57:32.976087+00:00'
+- id: DOC-28
+  title: DEPLOY.md routing semantics match loader.py
+  criteria:
+  - 'DEPLOY.md states the three-step match order (platform:chat_id:thread_id, platform:chat_id,
+    platform) and says an unmatched session uses default_harness (default native);
+    the unconditional native-Hermes-loop promise is removed from all three former
+    sites; max_consecutive_failures failover to default_harness is described with
+    loader.py:496 and loader.py:520-531 anchors and the no-native-fallback case stated;
+    the default_harness: null warning is present; make verify-docs exits 0'
+  status: in_progress
+  created_at: '2026-11-21T11:52:53.896836+00:00'
+- id: DOC-21
+  title: docs/guide.html harness method requirements are language-specific
+  criteria:
+  - docs/guide.html no longer says 'Every H3 harness must satisfy five methods'; the
+    list marks OnCancel and OnSessionTerminate optional for Python (BaseHarness) and
+    TypeScript (onCancel?/onSessionTerminate?) with source anchors, names Go as the
+    documented exception if it requires them, states the shim must not fail a harness
+    that omits them, and make verify-docs exits 0
+  status: in_progress
+  created_at: '2026-11-21T11:52:54.171067+00:00'

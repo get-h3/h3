@@ -1,0 +1,52 @@
+{
+  "wave_id": "h3-foreman-2026-11-21-11-47-52",
+  "scheduler_tick_id": "h3-foreman-2026-11-21-11-47-52",
+  "project": "h3",
+  "created_utc": "2026-11-21T16:55:00Z",
+  "wave_budget": 5,
+  "workers": [
+    {
+      "task_id": "DOC-28+DOC-29",
+      "priority": "P4",
+      "worktree": "/home/kara/worktrees/h3-DOC-28",
+      "branch": "wt/DOC-28",
+      "base_sha": "54a2d6c",
+      "model": "openai/gpt-6.1-terra",
+      "provider": "xkiro",
+      "scope": "DEPLOY.md only: DOC-28 routing-semantics correction (3 claim sites) then DOC-29 residual arm 4 (session_routes_path writers) + arm 3 cross-reference",
+      "files": [
+        "DEPLOY.md"
+      ],
+      "shared_file_note": "one worker owns both rows because both edit DEPLOY.md; sequential edits in a single worktree"
+    },
+    {
+      "task_id": "DOC-21",
+      "priority": "P4",
+      "worktree": "/home/kara/worktrees/h3-DOC-21",
+      "branch": "wt/DOC-21",
+      "base_sha": "54a2d6c",
+      "model": "openai/gpt-6.1-terra",
+      "provider": "xkiro",
+      "scope": "docs/guide.html only: replace the universal 'five methods' claim with language-specific required/optional, anchored to sdk-typescript/src/harness.ts:41-46 and docs/sdk.html:770-772, Go exception measured",
+      "files": [
+        "docs/guide.html"
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "task_id": "DOC-10",
+      "reason": "README half already landed 165446b; residual is AGENTS.md, a protected agent-instruction file (owner-owned, steering gate) - verification-only close this tick, no worker"
+    },
+    {
+      "task_id": "DF-H3-52",
+      "reason": "repo half already landed in get-h3/sdk-python (_version.py derives from importlib.metadata/pyproject); the published 0.1.6 wheel still serves 0.1.5, so the row is release-gated, not dispatchable"
+    },
+    {
+      "task_id": "QA-H3-29,QA-H3-30,QA-H3-031",
+      "reason": "battery-harness rows (bunker-qa.sh) that forbid h3 repo changes and need live JIT agent runs; two of them share bunker-qa.sh - serial lane work, not an umbrella wave"
+    }
+  ],
+  "independence_proof": "no depends_on edges between the picked rows; file sets disjoint (DEPLOY.md vs docs/guide.html); the DOC-28/DOC-29 pair shares one file and is therefore a single worker",
+  "status": "dispatched"
+}
