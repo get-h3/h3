@@ -687,3 +687,20 @@ tasks:
   status: complete
   created_at: '2026-11-21T01:48:57.456314+00:00'
   completed_at: '2026-11-21T01:52:46.858264+00:00'
+- id: H3-OBS-03
+  title: logsey watch serves /metrics on loopback :9162 + staleness alert signals
+  criteria:
+  - 'ACs: implementation landed in the OWNER repo get-h3/logsey at commit 598bb468054cd2a64331433641853f234a9002be,
+    pushed to origin/main (0 unpushed), per the committed evidence receipt .coding-hermes/evidence/h3-foreman-2026-11-21-02-15-24/receipt.md:
+    /metrics endpoint on loopback with LOGSEY_METRICS_ADDR override; foreman live
+    probe at :9163 returned 25 logsey_ lines with all 11 spec 5.2 families; checkpoint
+    last_tick 2026-11-21T03:03:54Z vs logsey_watch_tick_age_seconds 2.918s agree within
+    5s; SIGTERM leaves the textfile with logsey_watch_up 0 and no .tmp sibling; guard
+    tier1 PASS at that tree (build ok, lint clean, tests ok incl internal/cli 307.858s);
+    logsey gitreins verdict run afec0898 (tier1-only, passed=true) copied into the
+    evidence dir; named gap: deployed-binary refresh + systemd restart is owner-gated
+    and NOT done. Umbrella row closes verification-only with the logsey sha carried
+    in worker_summary.'
+  status: complete
+  created_at: '2026-11-21T03:52:38.216204+00:00'
+  completed_at: '2026-11-21T03:53:00.676151+00:00'
