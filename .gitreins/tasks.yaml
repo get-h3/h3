@@ -658,3 +658,32 @@ tasks:
     when the textfile directory is absent'
   status: pending
   created_at: '2026-11-19T05:21:12.892658+00:00'
+- id: H3-OBS-02-CLOSE
+  title: 'h3: close H3-OBS-02 cross-repo evidence (pulse 22834d32)'
+  criteria:
+  - 'The committed tick receipt .coding-hermes/evidence/h3-tick-2026-11-21-010508/h3-obs-02.md
+    records the landed pulse commit 22834d321527ec4fe6ef6043501335ca22dec6ea on get-h3/pulse
+    main, pushed with zero unpushed commits; the four green gates at that HEAD (go
+    build rc=0, go test rc=0, gofmt clean, go vet rc=0); live evidence that 127.0.0.1:9161/metrics
+    serves twelve pulse_ families including pulse_sampler_throttle_total with a reason
+    label and pulse_budget_over with a budget label; that /var/lib/node_exporter/textfile/h3_pulse.prom
+    holds exactly three pulse_budget_over lines and survives stopping the daemon;
+    and it explicitly names what is not proven: the non-zero throttle increase leg
+    and the absence of a Prometheus pulse scrape target. The receipt must not claim
+    monitoring-side PromQL proof.'
+  status: complete
+  created_at: '2026-11-21T01:48:33.790548+00:00'
+  completed_at: '2026-11-21T01:48:49.544754+00:00'
+- id: QA-H3-REVIEW-1
+  title: 'h3: QA-H3-REVIEW-1 clean-machine battery graded'
+  criteria:
+  - The committed battery log .coding-hermes/evidence/h3-tick-2026-11-21-010508/qa-h3-review-1.jsonl
+    must contain graded per-cell rows for the h3-review battery with real statuses
+    (OK, FAIL, UNVERIFIED, N/A, SKIPPED, INFO) rather than undifferentiated UNVERIFIED;
+    the row note must name every cell left UNVERIFIED together with the precondition
+    that refused it; and no cell may remain RUNNING. Cells that are N/A because the
+    target repo has no such surface must be listed as such rather than counted as
+    passes.
+  status: complete
+  created_at: '2026-11-21T01:48:57.456314+00:00'
+  completed_at: '2026-11-21T01:52:46.858264+00:00'

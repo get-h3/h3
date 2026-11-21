@@ -933,3 +933,6 @@
 {"id":899,"event_type":"task_completed","actor":"foreman","task_id":"DOC-23","detail":"{\"status\":\"complete\"}","timestamp":"2026-11-18T19:02:27Z","tick_number":null}
 {"id":900,"event_type":"task_completed","actor":"foreman","task_id":"DOC-27","detail":"{\"status\":\"complete\"}","timestamp":"2026-11-18T19:14:15Z","tick_number":null}
 {"id":901,"event_type":"task_completed","actor":"foreman","task_id":"DOC-24","detail":"{\"status\":\"complete\"}","timestamp":"2026-11-18T19:16:35Z","tick_number":null}
+{"id":902,"event_type":"task_created","actor":"foreman","task_id":"QA-H3-031","detail":"{\"id\":\"QA-H3-031\",\"status\":\"pending\"}","timestamp":"2026-11-21T01:48:57Z","tick_number":null}
+{"id":903,"event_type":"task_completed","actor":"foreman","task_id":"H3-OBS-02","detail":"{\"status\":\"complete\"}","timestamp":"2026-11-21T01:52:40Z","tick_number":null}
+{"id":904,"event_type":"task_completed","actor":"foreman","task_id":"QA-H3-REVIEW-1","detail":"{\"status\":\"complete\"}","timestamp":"2026-11-21T01:55:47Z","tick_number":null}
