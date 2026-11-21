@@ -755,3 +755,18 @@ tasks:
     landed at 165446b awaiting that owner disposition.
   status: in_progress
   created_at: '2026-11-21T09:41:08.127805+00:00'
+- id: DF-H3-54-VERIFY
+  title: DF-H3-54 live witness at committed evidence
+  criteria:
+  - 'The committed evidence receipt .coding-hermes/evidence/h3-foreman-2026-11-21-09-02-15/receipt.md
+    and its three captured files (df-h3-54-red-human.txt, df-h3-54-cap3-human.txt,
+    df-h3-54-cap3-json.txt) witness all five DF-H3-54 acceptance criteria against
+    shim fix 79dd355 (pushed on get-h3/shim main): (1) a red run prints failing test
+    names with first detail lines and exits 1; (2) a green run keeps 48/48 PASSED
+    output with no failure section; (3) a 19-failure run prints ''... and 9 more failures
+    (use --json for the full report)''; (4) --json exits 1 with per-test results and
+    exit codes are unchanged; (5) ''uv run pytest tests/test_cli.py -q'' in /home/kara/get-h3/shim
+    passed 175 tests. The board row DF-H3-54 closes verification-only with worker_status
+    complete naming the owning satellite commit.'
+  status: in_progress
+  created_at: '2026-11-21T09:44:08.132541+00:00'
