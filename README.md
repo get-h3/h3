@@ -264,11 +264,8 @@ This project uses **coding-hermes** foremen for spec-driven autonomous developme
 | Foreman | Watches | Cadence |
 |---------|---------|---------|
 | h3-foreman | Coordination, task board, docs | Every 6h (21600s cooldown) |
-| protocol-foreman | OpenAPI spec, JSON Schema | Every 30m (cron-managed) |
-| shim-foreman | Python plugin, test battery | Every 2h (7200s cooldown) |
-| sdk-go-foreman | Go SDK | Every 2h (7200s cooldown) |
-| sdk-python-foreman | Python SDK | Every 2h (7200s cooldown) |
-| sdk-typescript-foreman | TypeScript SDK | Every 15m (900s cooldown) |
+
+Satellite repos (`shim/`, `sdk-go/`, `sdk-python/`, `sdk-typescript/`, `protocol/`) have no per-satellite foremen in the live scheduler; h3-foreman verifies them from the umbrella via `make verify-roundtrip` and `integration/roundtrip/siblings.lock` pins.
 
 > Cadence = scheduler `cooldown_s` per project (verified live 2026-08-13). The h3 foreman's 21600s was raised deliberately after the idle-tick-flood fix (H3-GAP-003); it self-restores to 21600s after stand-in-PM wake cycles (cooldown-policy pin).
 
