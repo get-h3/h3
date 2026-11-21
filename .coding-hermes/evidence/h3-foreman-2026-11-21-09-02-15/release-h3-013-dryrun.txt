@@ -1,0 +1,737 @@
+release: mode: dry-run (repository: /home/kara/get-h3/h3, origin: https://github.com/get-h3/h3.git)
+release: step 1/10 work tree is DIRTY (3 path(s)) — a real cut (--execute) would REFUSE here. Dry-run continues: nothing is mutated, so there is nothing to refuse.
+release:            M .coding-hermes/board/events.jsonl
+release:            M .coding-hermes/board/tasks.jsonl
+release:           ?? .coding-hermes/waves/h3-foreman-2026-11-21-09-02-15.json
+release: step 2/10 running 'make verify' (the real gate; a non-zero exit stops the release)
+make verify: docs-link check
+make verify: docs-link check PASS
+make verify: QA target contract guard (QA-H3-1)
+check-qa-target: origin git@github.com:get-h3/h3.git
+check-qa-target: OK — /home/kara/get-h3/h3 is a valid QA target (git work tree, umbrella markers present)
+check-qa-target: PASS — record cells against this directory; an empty/no-cell result is UNVERIFIED, never a pass.
+make verify: commit-message skip-directive guard (HEAD)
+check-ci-skip-tokens: PASS — no workflow-skip directive in the message of commit 84967c6 (HEAD)
+make verify: board-header self-consistency guard (H3-GAP-099)
+check-board-header-consistency: board=.coding-hermes/board header=.coding-hermes/board/board.jsonl line 1 ticks_total=570 ticks_idle=0 last_commit=ecfb92a
+check-board-header-consistency: A PASS — last_commit ecfb92a is HEAD's parent (the two-phase sync ran one commit ago, the documented state)
+check-board-header-consistency: event-ticks recorded=305 max=570 (shapes: tick_number + tick + detail.tick)
+check-board-header-consistency: B PASS — ticks_total 570 == highest recorded tick in the event log
+check-board-header-consistency: C PASS — every tick 559..570 has at least one event
+check-board-header-consistency: D PASS — the working-tree header equals the committed header at HEAD
+check-board-header-consistency: PASS — header self-consistent (A freshness, B total, C tick coverage, D committed==worktree)
+VERDICT: VERIFIED (ticks_total=570 last_commit=ecfb92a; scope: staleness + holes only — NOT provenance of the named commit)
+make verify: json-fence payload guard
+check-json-fences: ALLOWED (abbreviated) specs/15-Rate-Limiting.md:603 — failing line carries a placeholder token
+                   Expecting value: line 3 column 5 (char 25)
+check-json-fences: ALLOWED (abbreviated) specs/15-Rate-Limiting.md:621 — failing line carries a placeholder token
+                   Expecting property name enclosed in double quotes: line 4 column 3 (char 44)
+check-json-fences: ALLOWED (abbreviated) specs/19-Health-Check-v2.md:214 — failing line carries a placeholder token
+                   Expecting value: line 15 column 14 (char 507)
+check-json-fences: ALLOWED (abbreviated) specs/25-Conformance-Certification.md:225 — failing line carries a placeholder token
+                   Expecting property name enclosed in double quotes: line 3 column 14 (char 32)
+check-json-fences: PASS — 71 json blocks scanned, 4 allowed (abbreviated), 0 failures
+make verify: compliance-test count guard
+check-test-count: sibling battery agrees (48 tests at /home/kara/get-h3/h3/../shim/src/h3_shim/test_battery.py)
+check-test-count: specs/05 category list sums to 48
+check-test-count: specs/25 region list sums to 48
+check-test-count: specs/25 report summary agrees with 48
+check-test-count: specs/09 region list sums to 48
+check-test-count: PASS — canonical compliance-test count is 48; no stale count literals in current-state docs
+make verify: spec-index-vs-files check
+make verify: spec-index-vs-files check PASS
+make verify: DuckBrain census composition — tick-chain guard + independent walker, verdict-classified (DF-H3-46)
+check-duckbrain-tick-chain: namespace=h3 start=418 source=http://localhost:3000/api/keys?namespace=h3&tree&limit=5000
+tick-chain: tree-paths total=1642 canonical=435 legacy=78 drift-known=3 drift-unknown=0 other=174
+tick-chain: window 418..569 (required, 152 ticks)
+tick-chain: window-basis END=569 = ticks_total 570 - 1 (source: /home/kara/get-h3/h3/.coding-hermes/board/board.jsonl line 1 (ticks_total)); the header counts the in-flight tick, whose record may not be written yet
+tick-chain: window-present 152/152
+tick-chain: holes 0
+tick-chain: beyond-end 1 (canonical keys above the required END; the in-flight tick is not required until the next tick)
+tick-chain: beyond-end-key 570 (/tick/570 present, in flight)
+tick-chain: legacy /project/h3/tick/159../project/h3/tick/427 (78 keys, pre-#418 hub convention — tolerated, non-fatal, bounded <= LEGACY_MAX=427)
+tick-chain: drift-known 3 (allowlist 452,453,464 — #459 backfill twins 452/453 + the #466-backfilled chain-A key 464)
+tick-chain: drift-known-key 453 /project/h3/h3/tick/453
+tick-chain: drift-known-key 452 /project/h3/protocol/tick/452
+tick-chain: drift-known-key 464 /project/h3/tick/464
+tick-chain: drift-unknown 0
+tick-chain: drift-below-start 138 (wrong-shaped keys below START=418 — outside the window, non-fatal)
+tick-chain: other 174 (tick-like keys without a bare tick number — timestamped slugs / supplement notes; non-fatal)
+tick-chain: other-key /foreman/h3/tick/2026-07-18-17-21
+tick-chain: other-key /foreman/h3/tick/2026-07-19-20-36
+tick-chain: other-key /foreman/h3/tick/2026-07-22-04-17
+tick-chain: other-key /foreman/h3/tick/2026-07-26-16-44
+tick-chain: other-key /foreman/h3/tick/2026-07-31-03-12
+tick-chain: other-key /h3/foreman/tick/h3-foreman-2026-10-23-02-20-56
+tick-chain: other-key /h3/tick/h3-2026-11-02-06-12-44
+tick-chain: other-key /h3/tick/h3-foreman-2026-10-28-19-48-03
+tick-chain: other-key /project/h3-shim/tick/252/status
+tick-chain: other-key /project/h3/protocol/tick/2026-09-19-08-01-12
+tick-chain: other-key /project/h3/protocol/tick/2026-09-19-08-41-17
+tick-chain: other-key /project/h3/protocol/tick/2026-09-19-12-08-28
+tick-chain: other-key /project/h3/protocol/tick/2026-09-20T06-58-04-h3-protocol-foreman
+tick-chain: other-key /project/h3/protocol/tick/2026-09-21T23-33-04
+tick-chain: other-key /project/h3/protocol/tick/h3-2026-09-19-20-45-38
+tick-chain: other-key /project/h3/protocol/tick/h3-foreman-2026-10-08-08-59-19
+tick-chain: other-key /project/h3/protocol/tick/h3-protocol-foreman-2026-09-21-01-19-21
+tick-chain: other-key /project/h3/protocol/tick/h3-protocol-foreman-sync-2026-09-20-18-36-13
+tick-chain: other-key /project/h3/protocol/tick/h3-protocol-foreman-sync-2026-09-21-07-52-24
+tick-chain: other-key /project/h3/tick/2026-07-18-17-18
+tick-chain: other-key /project/h3/tick/2026-07-19-13-50
+tick-chain: other-key /project/h3/tick/2026-07-19-bootstrap
+tick-chain: other-key /project/h3/tick/2026-07-20-13-13
+tick-chain: other-key /project/h3/tick/2026-07-21-00-39
+tick-chain: other-key /project/h3/tick/2026-07-21-03-33
+tick-chain: other-key /project/h3/tick/2026-07-21-22-05
+tick-chain: other-key /project/h3/tick/2026-07-23-21-17
+tick-chain: other-key /project/h3/tick/2026-07-24-09-10
+tick-chain: other-key /project/h3/tick/2026-07-24-14-00
+tick-chain: other-key /project/h3/tick/2026-11-18-00-54-47
+tick-chain: other-key /project/h3/tick/386/supplement
+tick-chain: other-key /project/h3/tick/398/supplement
+tick-chain: other-key /project/shim/tick/2026-07-19-10-24
+tick-chain: other-key /project/shim/tick/2026-07-20-12-58
+tick-chain: other-key /project/shim/tick/2026-07-20-14-25
+tick-chain: other-key /project/shim/tick/2026-07-20-14-54
+tick-chain: other-key /project/shim/tick/2026-07-20-15-46
+tick-chain: other-key /project/shim/tick/2026-07-20-18-12
+tick-chain: other-key /project/shim/tick/2026-07-20-22-16
+tick-chain: other-key /project/shim/tick/2026-07-21-00-28
+tick-chain: other-key /project/shim/tick/2026-07-21-16-42
+tick-chain: other-key /project/shim/tick/2026-07-21-20-30
+tick-chain: other-key /project/shim/tick/2026-07-21-22-32
+tick-chain: other-key /project/shim/tick/2026-07-22-02-02
+tick-chain: other-key /project/shim/tick/2026-07-22-06-03
+tick-chain: other-key /project/shim/tick/2026-07-22-08-04
+tick-chain: other-key /project/shim/tick/2026-07-22-10-07
+tick-chain: other-key /project/shim/tick/2026-07-22-13-33
+tick-chain: other-key /project/shim/tick/2026-07-22-16-39
+tick-chain: other-key /project/shim/tick/2026-07-22-17-16
+tick-chain: other-key /project/shim/tick/2026-07-22-20-17
+tick-chain: other-key /project/shim/tick/2026-07-22-20-49
+tick-chain: other-key /project/shim/tick/2026-07-22-21-37
+tick-chain: other-key /project/shim/tick/2026-07-22-22-09
+tick-chain: other-key /project/shim/tick/2026-07-22-22-42
+tick-chain: other-key /project/shim/tick/2026-07-22-23-21
+tick-chain: other-key /project/shim/tick/2026-07-22-23-52
+tick-chain: other-key /project/shim/tick/2026-07-23-00-25
+tick-chain: other-key /project/shim/tick/2026-07-23-01-00
+tick-chain: other-key /project/shim/tick/2026-07-23-01-43
+tick-chain: other-key /project/shim/tick/2026-07-23-02-15
+tick-chain: other-key /project/shim/tick/2026-07-23-02-49
+tick-chain: other-key /project/shim/tick/2026-07-23-03-24
+tick-chain: other-key /project/shim/tick/2026-07-23-03-56
+tick-chain: other-key /project/shim/tick/2026-07-23-04-29
+tick-chain: other-key /project/shim/tick/2026-07-23-05-05
+tick-chain: other-key /project/shim/tick/2026-07-23-05-37
+tick-chain: other-key /project/shim/tick/2026-07-23-06-10
+tick-chain: other-key /project/shim/tick/2026-07-23-07-19
+tick-chain: other-key /project/shim/tick/2026-07-23-07-52
+tick-chain: other-key /project/shim/tick/2026-07-23-08-25
+tick-chain: other-key /project/shim/tick/2026-07-23-08-57
+tick-chain: other-key /project/shim/tick/2026-07-23-10-04
+tick-chain: other-key /project/shim/tick/2026-07-23-10-49
+tick-chain: other-key /project/shim/tick/2026-07-23-11-24
+tick-chain: other-key /project/shim/tick/2026-07-23-12-18
+tick-chain: other-key /project/shim/tick/2026-07-23-12-20
+tick-chain: other-key /project/shim/tick/2026-07-23-12-52
+tick-chain: other-key /project/shim/tick/2026-07-23-13-12
+tick-chain: other-key /project/shim/tick/2026-07-23-14-28
+tick-chain: other-key /project/shim/tick/2026-07-23-14-59
+tick-chain: other-key /project/shim/tick/2026-07-23-15-44
+tick-chain: other-key /project/shim/tick/2026-07-23-16-51
+tick-chain: other-key /project/shim/tick/2026-07-23-17-31
+tick-chain: other-key /project/shim/tick/2026-07-31-18-52
+tick-chain: other-key /projects/h3/tick/2026-07-21-18-04
+tick-chain: other-key /projects/shim/tick/2026-07-18-20-29
+tick-chain: other-key /projects/shim/tick/2026-07-26-06-16
+tick-chain: other-key /projects/shim/tick/2026-07-26-06-56
+tick-chain: other-key /projects/shim/tick/2026-07-26-20-17
+tick-chain: other-key /projects/shim/tick/2026-08-10-01-21
+tick-chain: other-key /projects/shim/tick/2026-08-10-03-29
+tick-chain: other-key /projects/shim/tick/2026-08-10-05-35
+tick-chain: other-key /projects/shim/tick/2026-08-10-07-49
+tick-chain: other-key /projects/shim/tick/2026-08-10-13-30
+tick-chain: other-key /projects/shim/tick/2026-08-10-15-08
+tick-chain: other-key /projects/shim/tick/2026-08-10-17-24
+tick-chain: other-key /projects/shim/tick/2026-08-10-19-26
+tick-chain: other-key /projects/shim/tick/2026-08-10-21-52
+tick-chain: other-key /projects/shim/tick/2026-08-10-23-58
+tick-chain: other-key /projects/shim/tick/2026-08-11-02-33
+tick-chain: other-key /projects/shim/tick/2026-08-11-04-38
+tick-chain: other-key /projects/shim/tick/2026-08-11-09-11
+tick-chain: other-key /projects/shim/tick/2026-08-11-11-15
+tick-chain: other-key /projects/shim/tick/2026-08-11-15-06
+tick-chain: other-key /projects/shim/tick/2026-08-11-18-09
+tick-chain: other-key /projects/shim/tick/2026-08-11-20-54
+tick-chain: other-key /projects/shim/tick/2026-08-12-01-52
+tick-chain: other-key /projects/shim/tick/2026-08-12-04-47
+tick-chain: other-key /projects/shim/tick/2026-08-12-07-17
+tick-chain: other-key /projects/shim/tick/2026-08-12-10-11
+tick-chain: other-key /projects/shim/tick/2026-08-12-13-26
+tick-chain: other-key /projects/shim/tick/2026-08-12-16-54
+tick-chain: other-key /projects/shim/tick/2026-08-12-19-20
+tick-chain: other-key /projects/shim/tick/2026-08-12-22-32
+tick-chain: other-key /projects/shim/tick/2026-08-13-01-30
+tick-chain: other-key /projects/shim/tick/2026-08-13-03-54
+tick-chain: other-key /projects/shim/tick/2026-08-13-08-48
+tick-chain: other-key /projects/shim/tick/2026-08-13-11-16
+tick-chain: other-key /projects/shim/tick/2026-08-13-14-56
+tick-chain: other-key /projects/shim/tick/2026-08-13-17-04
+tick-chain: other-key /projects/shim/tick/2026-08-13-19-12
+tick-chain: other-key /projects/shim/tick/2026-08-13-21-20
+tick-chain: other-key /projects/shim/tick/2026-08-14-00-25
+tick-chain: other-key /projects/shim/tick/2026-08-14-05-12
+tick-chain: other-key /projects/shim/tick/2026-08-14-06-31
+tick-chain: other-key /projects/shim/tick/2026-08-14-07-16
+tick-chain: other-key /projects/shim/tick/2026-08-14-09-19
+tick-chain: other-key /projects/shim/tick/2026-08-14-11-21
+tick-chain: other-key /projects/shim/tick/2026-08-14-13-37
+tick-chain: other-key /projects/shim/tick/2026-08-14-21-05
+tick-chain: other-key /projects/shim/tick/2026-08-15-06-33
+tick-chain: other-key /projects/shim/tick/2026-08-15-12-37
+tick-chain: other-key /projects/shim/tick/2026-08-15-19-02
+tick-chain: other-key /projects/shim/tick/2026-08-16-05-21
+tick-chain: other-key /projects/shim/tick/2026-08-16-13-04
+tick-chain: other-key /projects/shim/tick/2026-08-16-19-42
+tick-chain: other-key /projects/shim/tick/2026-08-17-05-40
+tick-chain: other-key /projects/shim/tick/2026-08-17-12-00
+tick-chain: other-key /projects/shim/tick/2026-08-17-18-06
+tick-chain: other-key /projects/shim/tick/2026-08-18-00-11
+tick-chain: other-key /projects/shim/tick/2026-08-18-14-28
+tick-chain: other-key /projects/shim/tick/2026-08-19-19-08
+tick-chain: other-key /projects/shim/tick/2026-08-21-12-35
+tick-chain: other-key /projects/shim/tick/2026-08-22-17-28
+tick-chain: other-key /projects/shim/tick/2026-08-23-06-11
+tick-chain: other-key /projects/shim/tick/2026-08-23-12-29
+tick-chain: other-key /projects/shim/tick/2026-08-23-18-42
+tick-chain: other-key /projects/shim/tick/2026-08-24-00-52
+tick-chain: other-key /projects/shim/tick/2026-08-24-06-59
+tick-chain: other-key /projects/shim/tick/2026-08-24-13-08
+tick-chain: other-key /projects/shim/tick/2026-08-25-13-41
+tick-chain: other-key /projects/shim/tick/2026-08-26-18-48
+tick-chain: other-key /projects/shim/tick/2026-08-27-11-26
+tick-chain: other-key /projects/shim/tick/2026-08-27-14-00
+tick-chain: other-key /projects/shim/tick/2026-09-05-13-57
+tick-chain: other-key /projects/shim/tick/2026-09-18-07-47
+tick-chain: other-key /projects/shim/tick/2026-09-18-08-12
+tick-chain: other-key /projects/shim/tick/2026-09-18-19-50
+tick-chain: other-key /projects/shim/tick/2026-09-18-20-38
+tick-chain: other-key /projects/shim/tick/2026-09-18-21-32
+tick-chain: other-key /projects/shim/tick/2026-09-18-21-43
+tick-chain: other-key /projects/shim/tick/2026-09-18-22-11
+tick-chain: other-key /projects/shim/tick/2026-09-18-22-11-ci-correction
+tick-chain: other-key /projects/shim/tick/2026-09-18-23-18
+tick-chain: other-key /projects/shim/tick/2026-09-18-23-26
+tick-chain: other-key /projects/shim/tick/2026-09-19-02-21
+tick-chain: other-key /projects/shim/tick/2026-09-20-09-23
+tick-chain: other-key /projects/shim/tick/2026-09-21-02-37
+tick-chain: other-key /projects/shim/tick/2026-09-21-10-22
+tick-chain: other-key /tick/434/supplement
+tick-chain: other-key /tick/437/supplement
+tick-chain: other-key /tick/463/supplement
+tick-chain: other-key /tick/555-test
+tick-chain: sparse-below-start 282 (bare keys older than START=418 — outside the window, non-fatal)
+tick-chain: sparse-below-start-key 55
+tick-chain: sparse-below-start-key 56
+tick-chain: sparse-below-start-key 57
+tick-chain: sparse-below-start-key 58
+tick-chain: sparse-below-start-key 59
+tick-chain: sparse-below-start-key 60
+tick-chain: sparse-below-start-key 61
+tick-chain: sparse-below-start-key 62
+tick-chain: sparse-below-start-key 63
+tick-chain: sparse-below-start-key 64
+tick-chain: sparse-below-start-key 65
+tick-chain: sparse-below-start-key 66
+tick-chain: sparse-below-start-key 67
+tick-chain: sparse-below-start-key 68
+tick-chain: sparse-below-start-key 69
+tick-chain: sparse-below-start-key 70
+tick-chain: sparse-below-start-key 72
+tick-chain: sparse-below-start-key 73
+tick-chain: sparse-below-start-key 74
+tick-chain: sparse-below-start-key 75
+tick-chain: sparse-below-start-key 76
+tick-chain: sparse-below-start-key 77
+tick-chain: sparse-below-start-key 78
+tick-chain: sparse-below-start-key 79
+tick-chain: sparse-below-start-key 80
+tick-chain: sparse-below-start-key 81
+tick-chain: sparse-below-start-key 86
+tick-chain: sparse-below-start-key 89
+tick-chain: sparse-below-start-key 90
+tick-chain: sparse-below-start-key 91
+tick-chain: sparse-below-start-key 92
+tick-chain: sparse-below-start-key 93
+tick-chain: sparse-below-start-key 95
+tick-chain: sparse-below-start-key 97
+tick-chain: sparse-below-start-key 98
+tick-chain: sparse-below-start-key 99
+tick-chain: sparse-below-start-key 103
+tick-chain: sparse-below-start-key 104
+tick-chain: sparse-below-start-key 106
+tick-chain: sparse-below-start-key 107
+tick-chain: sparse-below-start-key 108
+tick-chain: sparse-below-start-key 109
+tick-chain: sparse-below-start-key 112
+tick-chain: sparse-below-start-key 113
+tick-chain: sparse-below-start-key 114
+tick-chain: sparse-below-start-key 116
+tick-chain: sparse-below-start-key 117
+tick-chain: sparse-below-start-key 118
+tick-chain: sparse-below-start-key 119
+tick-chain: sparse-below-start-key 120
+tick-chain: sparse-below-start-key 125
+tick-chain: sparse-below-start-key 126
+tick-chain: sparse-below-start-key 127
+tick-chain: sparse-below-start-key 128
+tick-chain: sparse-below-start-key 130
+tick-chain: sparse-below-start-key 131
+tick-chain: sparse-below-start-key 133
+tick-chain: sparse-below-start-key 134
+tick-chain: sparse-below-start-key 135
+tick-chain: sparse-below-start-key 136
+tick-chain: sparse-below-start-key 137
+tick-chain: sparse-below-start-key 138
+tick-chain: sparse-below-start-key 139
+tick-chain: sparse-below-start-key 140
+tick-chain: sparse-below-start-key 141
+tick-chain: sparse-below-start-key 142
+tick-chain: sparse-below-start-key 144
+tick-chain: sparse-below-start-key 145
+tick-chain: sparse-below-start-key 146
+tick-chain: sparse-below-start-key 147
+tick-chain: sparse-below-start-key 148
+tick-chain: sparse-below-start-key 149
+tick-chain: sparse-below-start-key 150
+tick-chain: sparse-below-start-key 151
+tick-chain: sparse-below-start-key 152
+tick-chain: sparse-below-start-key 153
+tick-chain: sparse-below-start-key 154
+tick-chain: sparse-below-start-key 155
+tick-chain: sparse-below-start-key 156
+tick-chain: sparse-below-start-key 157
+tick-chain: sparse-below-start-key 158
+tick-chain: sparse-below-start-key 160
+tick-chain: sparse-below-start-key 161
+tick-chain: sparse-below-start-key 162
+tick-chain: sparse-below-start-key 163
+tick-chain: sparse-below-start-key 164
+tick-chain: sparse-below-start-key 165
+tick-chain: sparse-below-start-key 166
+tick-chain: sparse-below-start-key 167
+tick-chain: sparse-below-start-key 168
+tick-chain: sparse-below-start-key 169
+tick-chain: sparse-below-start-key 170
+tick-chain: sparse-below-start-key 171
+tick-chain: sparse-below-start-key 172
+tick-chain: sparse-below-start-key 173
+tick-chain: sparse-below-start-key 174
+tick-chain: sparse-below-start-key 175
+tick-chain: sparse-below-start-key 176
+tick-chain: sparse-below-start-key 177
+tick-chain: sparse-below-start-key 178
+tick-chain: sparse-below-start-key 179
+tick-chain: sparse-below-start-key 180
+tick-chain: sparse-below-start-key 181
+tick-chain: sparse-below-start-key 182
+tick-chain: sparse-below-start-key 183
+tick-chain: sparse-below-start-key 184
+tick-chain: sparse-below-start-key 185
+tick-chain: sparse-below-start-key 186
+tick-chain: sparse-below-start-key 187
+tick-chain: sparse-below-start-key 188
+tick-chain: sparse-below-start-key 189
+tick-chain: sparse-below-start-key 190
+tick-chain: sparse-below-start-key 191
+tick-chain: sparse-below-start-key 192
+tick-chain: sparse-below-start-key 193
+tick-chain: sparse-below-start-key 194
+tick-chain: sparse-below-start-key 195
+tick-chain: sparse-below-start-key 196
+tick-chain: sparse-below-start-key 197
+tick-chain: sparse-below-start-key 198
+tick-chain: sparse-below-start-key 199
+tick-chain: sparse-below-start-key 200
+tick-chain: sparse-below-start-key 201
+tick-chain: sparse-below-start-key 202
+tick-chain: sparse-below-start-key 203
+tick-chain: sparse-below-start-key 204
+tick-chain: sparse-below-start-key 205
+tick-chain: sparse-below-start-key 206
+tick-chain: sparse-below-start-key 207
+tick-chain: sparse-below-start-key 208
+tick-chain: sparse-below-start-key 209
+tick-chain: sparse-below-start-key 210
+tick-chain: sparse-below-start-key 211
+tick-chain: sparse-below-start-key 212
+tick-chain: sparse-below-start-key 213
+tick-chain: sparse-below-start-key 214
+tick-chain: sparse-below-start-key 215
+tick-chain: sparse-below-start-key 216
+tick-chain: sparse-below-start-key 217
+tick-chain: sparse-below-start-key 218
+tick-chain: sparse-below-start-key 219
+tick-chain: sparse-below-start-key 220
+tick-chain: sparse-below-start-key 221
+tick-chain: sparse-below-start-key 222
+tick-chain: sparse-below-start-key 223
+tick-chain: sparse-below-start-key 224
+tick-chain: sparse-below-start-key 225
+tick-chain: sparse-below-start-key 226
+tick-chain: sparse-below-start-key 227
+tick-chain: sparse-below-start-key 228
+tick-chain: sparse-below-start-key 229
+tick-chain: sparse-below-start-key 230
+tick-chain: sparse-below-start-key 231
+tick-chain: sparse-below-start-key 232
+tick-chain: sparse-below-start-key 233
+tick-chain: sparse-below-start-key 234
+tick-chain: sparse-below-start-key 235
+tick-chain: sparse-below-start-key 236
+tick-chain: sparse-below-start-key 237
+tick-chain: sparse-below-start-key 238
+tick-chain: sparse-below-start-key 239
+tick-chain: sparse-below-start-key 240
+tick-chain: sparse-below-start-key 241
+tick-chain: sparse-below-start-key 242
+tick-chain: sparse-below-start-key 243
+tick-chain: sparse-below-start-key 244
+tick-chain: sparse-below-start-key 245
+tick-chain: sparse-below-start-key 246
+tick-chain: sparse-below-start-key 247
+tick-chain: sparse-below-start-key 248
+tick-chain: sparse-below-start-key 249
+tick-chain: sparse-below-start-key 250
+tick-chain: sparse-below-start-key 251
+tick-chain: sparse-below-start-key 252
+tick-chain: sparse-below-start-key 253
+tick-chain: sparse-below-start-key 254
+tick-chain: sparse-below-start-key 255
+tick-chain: sparse-below-start-key 256
+tick-chain: sparse-below-start-key 257
+tick-chain: sparse-below-start-key 258
+tick-chain: sparse-below-start-key 259
+tick-chain: sparse-below-start-key 260
+tick-chain: sparse-below-start-key 261
+tick-chain: sparse-below-start-key 262
+tick-chain: sparse-below-start-key 263
+tick-chain: sparse-below-start-key 264
+tick-chain: sparse-below-start-key 265
+tick-chain: sparse-below-start-key 266
+tick-chain: sparse-below-start-key 267
+tick-chain: sparse-below-start-key 268
+tick-chain: sparse-below-start-key 269
+tick-chain: sparse-below-start-key 271
+tick-chain: sparse-below-start-key 272
+tick-chain: sparse-below-start-key 302
+tick-chain: sparse-below-start-key 303
+tick-chain: sparse-below-start-key 304
+tick-chain: sparse-below-start-key 305
+tick-chain: sparse-below-start-key 306
+tick-chain: sparse-below-start-key 310
+tick-chain: sparse-below-start-key 312
+tick-chain: sparse-below-start-key 313
+tick-chain: sparse-below-start-key 315
+tick-chain: sparse-below-start-key 316
+tick-chain: sparse-below-start-key 317
+tick-chain: sparse-below-start-key 319
+tick-chain: sparse-below-start-key 323
+tick-chain: sparse-below-start-key 324
+tick-chain: sparse-below-start-key 325
+tick-chain: sparse-below-start-key 326
+tick-chain: sparse-below-start-key 327
+tick-chain: sparse-below-start-key 328
+tick-chain: sparse-below-start-key 330
+tick-chain: sparse-below-start-key 331
+tick-chain: sparse-below-start-key 333
+tick-chain: sparse-below-start-key 334
+tick-chain: sparse-below-start-key 336
+tick-chain: sparse-below-start-key 338
+tick-chain: sparse-below-start-key 339
+tick-chain: sparse-below-start-key 340
+tick-chain: sparse-below-start-key 341
+tick-chain: sparse-below-start-key 342
+tick-chain: sparse-below-start-key 343
+tick-chain: sparse-below-start-key 345
+tick-chain: sparse-below-start-key 347
+tick-chain: sparse-below-start-key 348
+tick-chain: sparse-below-start-key 350
+tick-chain: sparse-below-start-key 351
+tick-chain: sparse-below-start-key 352
+tick-chain: sparse-below-start-key 353
+tick-chain: sparse-below-start-key 354
+tick-chain: sparse-below-start-key 355
+tick-chain: sparse-below-start-key 356
+tick-chain: sparse-below-start-key 357
+tick-chain: sparse-below-start-key 358
+tick-chain: sparse-below-start-key 359
+tick-chain: sparse-below-start-key 360
+tick-chain: sparse-below-start-key 361
+tick-chain: sparse-below-start-key 362
+tick-chain: sparse-below-start-key 363
+tick-chain: sparse-below-start-key 364
+tick-chain: sparse-below-start-key 366
+tick-chain: sparse-below-start-key 368
+tick-chain: sparse-below-start-key 369
+tick-chain: sparse-below-start-key 370
+tick-chain: sparse-below-start-key 371
+tick-chain: sparse-below-start-key 372
+tick-chain: sparse-below-start-key 373
+tick-chain: sparse-below-start-key 374
+tick-chain: sparse-below-start-key 375
+tick-chain: sparse-below-start-key 376
+tick-chain: sparse-below-start-key 377
+tick-chain: sparse-below-start-key 378
+tick-chain: sparse-below-start-key 379
+tick-chain: sparse-below-start-key 380
+tick-chain: sparse-below-start-key 381
+tick-chain: sparse-below-start-key 382
+tick-chain: sparse-below-start-key 383
+tick-chain: sparse-below-start-key 384
+tick-chain: sparse-below-start-key 385
+tick-chain: sparse-below-start-key 387
+tick-chain: sparse-below-start-key 388
+tick-chain: sparse-below-start-key 390
+tick-chain: sparse-below-start-key 391
+tick-chain: sparse-below-start-key 392
+tick-chain: sparse-below-start-key 393
+tick-chain: sparse-below-start-key 394
+tick-chain: sparse-below-start-key 396
+tick-chain: sparse-below-start-key 397
+tick-chain: sparse-below-start-key 399
+tick-chain: sparse-below-start-key 402
+tick-chain: sparse-below-start-key 403
+tick-chain: sparse-below-start-key 404
+tick-chain: sparse-below-start-key 406
+tick-chain: sparse-below-start-key 407
+tick-chain: sparse-below-start-key 408
+tick-chain: sparse-below-start-key 410
+tick-chain: sparse-below-start-key 411
+tick-chain: sparse-below-start-key 412
+tick-chain: sparse-below-start-key 413
+tick-chain: sparse-below-start-key 415
+tick-chain: sparse-below-start-key 416
+tick-chain: sparse-below-start-key 417
+check-duckbrain-tick-chain: PASS — the bare chain 418..569 is complete and no unknown-shaped tick key exists (source: http://localhost:3000/api/keys?namespace=h3&tree&limit=5000)
+VERDICT: VERIFIED (0 holes in 418..569; 0 unknown drift keys; 3 allowlisted known twin(s))
+duckbrain-tree-census: namespace=h3 start=418 source=http://localhost:3000/api/keys?namespace=h3&tree&limit=20000
+total leaf keys: 3284 | tick-shaped keys: 502
+window 418..569 (required 152; END=569 = ticks_total 570 - 1 (source: /home/kara/get-h3/h3/.coding-hermes/board/board.jsonl line 1 (ticks_total=570)); the header counts the in-flight tick, whose record may not be written yet)
+present=152 missing=[] unknown_drift=[]
+duckbrain-tree-census: drift-known 3 (allowlist 452,453,464 — wrong-shaped but already backfilled, tolerated, non-fatal; the sibling guard carries the same list)
+duckbrain-tree-census: drift-known-key 452 /project/h3/protocol/tick/452
+duckbrain-tree-census: drift-known-key 453 /project/h3/h3/tick/453
+duckbrain-tree-census: drift-known-key 464 /project/h3/tick/464
+duckbrain-tree-census: legacy 78 keys (/project/h3/tick/<N> with N <= 427 — tolerated, non-fatal, bounded)
+duckbrain-tree-census: other 174 (tick-like keys with no bare tick number — timestamped slugs / supplement notes; non-fatal)
+duckbrain-tree-census: other-key /foreman/h3/tick/2026-07-18-17-21
+duckbrain-tree-census: other-key /foreman/h3/tick/2026-07-19-20-36
+duckbrain-tree-census: other-key /foreman/h3/tick/2026-07-22-04-17
+duckbrain-tree-census: other-key /foreman/h3/tick/2026-07-26-16-44
+duckbrain-tree-census: other-key /foreman/h3/tick/2026-07-31-03-12
+duckbrain-tree-census: other-key /h3/foreman/tick/h3-foreman-2026-10-23-02-20-56
+duckbrain-tree-census: other-key /h3/tick/h3-2026-11-02-06-12-44
+duckbrain-tree-census: other-key /h3/tick/h3-foreman-2026-10-28-19-48-03
+duckbrain-tree-census: other-key /project/h3-shim/tick/252/status
+duckbrain-tree-census: other-key /project/h3/protocol/tick/2026-09-19-08-01-12
+duckbrain-tree-census: other-key /project/h3/protocol/tick/2026-09-19-08-41-17
+duckbrain-tree-census: other-key /project/h3/protocol/tick/2026-09-19-12-08-28
+duckbrain-tree-census: other-key /project/h3/protocol/tick/2026-09-20T06-58-04-h3-protocol-foreman
+duckbrain-tree-census: other-key /project/h3/protocol/tick/2026-09-21T23-33-04
+duckbrain-tree-census: other-key /project/h3/protocol/tick/h3-2026-09-19-20-45-38
+duckbrain-tree-census: other-key /project/h3/protocol/tick/h3-foreman-2026-10-08-08-59-19
+duckbrain-tree-census: other-key /project/h3/protocol/tick/h3-protocol-foreman-2026-09-21-01-19-21
+duckbrain-tree-census: other-key /project/h3/protocol/tick/h3-protocol-foreman-sync-2026-09-20-18-36-13
+duckbrain-tree-census: other-key /project/h3/protocol/tick/h3-protocol-foreman-sync-2026-09-21-07-52-24
+duckbrain-tree-census: other-key /project/h3/tick/2026-07-18-17-18
+duckbrain-tree-census: other-key /project/h3/tick/2026-07-19-13-50
+duckbrain-tree-census: other-key /project/h3/tick/2026-07-19-bootstrap
+duckbrain-tree-census: other-key /project/h3/tick/2026-07-20-13-13
+duckbrain-tree-census: other-key /project/h3/tick/2026-07-21-00-39
+duckbrain-tree-census: other-key /project/h3/tick/2026-07-21-03-33
+duckbrain-tree-census: other-key /project/h3/tick/2026-07-21-22-05
+duckbrain-tree-census: other-key /project/h3/tick/2026-07-23-21-17
+duckbrain-tree-census: other-key /project/h3/tick/2026-07-24-09-10
+duckbrain-tree-census: other-key /project/h3/tick/2026-07-24-14-00
+duckbrain-tree-census: other-key /project/h3/tick/2026-11-18-00-54-47
+duckbrain-tree-census: other-key /project/h3/tick/386/supplement
+duckbrain-tree-census: other-key /project/h3/tick/398/supplement
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-19-10-24
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-20-12-58
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-20-14-25
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-20-14-54
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-20-15-46
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-20-18-12
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-20-22-16
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-21-00-28
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-21-16-42
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-21-20-30
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-21-22-32
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-22-02-02
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-22-06-03
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-22-08-04
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-22-10-07
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-22-13-33
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-22-16-39
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-22-17-16
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-22-20-17
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-22-20-49
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-22-21-37
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-22-22-09
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-22-22-42
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-22-23-21
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-22-23-52
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-00-25
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-01-00
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-01-43
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-02-15
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-02-49
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-03-24
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-03-56
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-04-29
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-05-05
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-05-37
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-06-10
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-07-19
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-07-52
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-08-25
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-08-57
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-10-04
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-10-49
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-11-24
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-12-18
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-12-20
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-12-52
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-13-12
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-14-28
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-14-59
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-15-44
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-16-51
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-23-17-31
+duckbrain-tree-census: other-key /project/shim/tick/2026-07-31-18-52
+duckbrain-tree-census: other-key /projects/h3/tick/2026-07-21-18-04
+duckbrain-tree-census: other-key /projects/shim/tick/2026-07-18-20-29
+duckbrain-tree-census: other-key /projects/shim/tick/2026-07-26-06-16
+duckbrain-tree-census: other-key /projects/shim/tick/2026-07-26-06-56
+duckbrain-tree-census: other-key /projects/shim/tick/2026-07-26-20-17
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-10-01-21
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-10-03-29
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-10-05-35
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-10-07-49
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-10-13-30
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-10-15-08
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-10-17-24
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-10-19-26
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-10-21-52
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-10-23-58
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-11-02-33
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-11-04-38
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-11-09-11
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-11-11-15
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-11-15-06
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-11-18-09
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-11-20-54
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-12-01-52
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-12-04-47
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-12-07-17
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-12-10-11
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-12-13-26
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-12-16-54
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-12-19-20
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-12-22-32
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-13-01-30
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-13-03-54
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-13-08-48
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-13-11-16
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-13-14-56
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-13-17-04
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-13-19-12
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-13-21-20
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-14-00-25
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-14-05-12
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-14-06-31
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-14-07-16
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-14-09-19
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-14-11-21
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-14-13-37
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-14-21-05
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-15-06-33
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-15-12-37
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-15-19-02
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-16-05-21
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-16-13-04
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-16-19-42
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-17-05-40
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-17-12-00
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-17-18-06
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-18-00-11
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-18-14-28
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-19-19-08
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-21-12-35
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-22-17-28
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-23-06-11
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-23-12-29
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-23-18-42
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-24-00-52
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-24-06-59
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-24-13-08
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-25-13-41
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-26-18-48
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-27-11-26
+duckbrain-tree-census: other-key /projects/shim/tick/2026-08-27-14-00
+duckbrain-tree-census: other-key /projects/shim/tick/2026-09-05-13-57
+duckbrain-tree-census: other-key /projects/shim/tick/2026-09-18-07-47
+duckbrain-tree-census: other-key /projects/shim/tick/2026-09-18-08-12
+duckbrain-tree-census: other-key /projects/shim/tick/2026-09-18-19-50
+duckbrain-tree-census: other-key /projects/shim/tick/2026-09-18-20-38
+duckbrain-tree-census: other-key /projects/shim/tick/2026-09-18-21-32
+duckbrain-tree-census: other-key /projects/shim/tick/2026-09-18-21-43
+duckbrain-tree-census: other-key /projects/shim/tick/2026-09-18-22-11
+duckbrain-tree-census: other-key /projects/shim/tick/2026-09-18-22-11-ci-correction
+duckbrain-tree-census: other-key /projects/shim/tick/2026-09-18-23-18
+duckbrain-tree-census: other-key /projects/shim/tick/2026-09-18-23-26
+duckbrain-tree-census: other-key /projects/shim/tick/2026-09-19-02-21
+duckbrain-tree-census: other-key /projects/shim/tick/2026-09-20-09-23
+duckbrain-tree-census: other-key /projects/shim/tick/2026-09-21-02-37
+duckbrain-tree-census: other-key /projects/shim/tick/2026-09-21-10-22
+duckbrain-tree-census: other-key /tick/434/supplement
+duckbrain-tree-census: other-key /tick/437/supplement
+duckbrain-tree-census: other-key /tick/463/supplement
+duckbrain-tree-census: other-key /tick/555-test
+duckbrain-tree-census: beyond-end 1 (bare keys above END=569 — the in-flight tick is not required until the next tick)
+duckbrain-tree-census: PASS — the bare chain 418..569 is complete and no unknown-shaped tick key exists (source: http://localhost:3000/api/keys?namespace=h3&tree&limit=20000)
+VERDICT: VERIFIED (0 hole(s) in 418..569; 0 unknown drift keys; 3 allowlisted known drift key(s))
+duckbrain-census-gate: PASS — both census guards VERIFIED
+make verify: release tags-table guard (docs/releases.md vs git, DF-H3-44)
+check-tags-table: PASS — docs/releases.md tags table matches all 3 tag(s) at origin [git ls-remote --tags origin]
+make verify: DuckBrain verdict census — the composite must not say ALL PASS over UNVERIFIED (DF-H3-41/DF-H3-46)
+make verify: verdict census — 2 verified / 0 unverified (guard: none)
+make verify: verdict census PASS
+make verify: ALL PASS — umbrella repo is self-consistent
+make verify: SCOPE — docs + repo-consistency checks only (no code executed; both DuckBrain checks are read-only and report UNVERIFIED when their substrate is absent — jq/curl/token-file/board for the tick-chain guard, python3/token env/board for the independent tree-census walker); code-level verification is 'make verify-roundtrip' (CI: roundtrip.yml). VERDICT CENSUS (DF-H3-41/DF-H3-46): the DuckBrain guards are honest ALONE (absent substrate = UNVERIFIED lines, exit 0), but the composite used to end with ALL PASS regardless, so scripts/release.sh step 2 (exit code + this literal ALL PASS line) passed releases over a substrate nobody checked — measured on a real fresh machine as 6 UNVERIFIED lines + ALL PASS rc=0. The LAST prerequisite, verify-verdict-census (scripts/check-verdict-census.sh), re-derives both guards' UNVERIFIED conditions read-only and is what makes ALL PASS honest: it prints the census line 'N verified / M unverified (guard: <names>)', and ALL PASS only ever follows a clean census — M > 0 fails 'make verify' with an explicit FAIL line naming the guards whenever a DuckBrain token dir exists, and (DF-H3-48) degrades to the same disclosed token-less SKIP the composite takes when none does (single quotes here, not backticks: a backtick inside this double-quoted recipe would command-substitute and recursively re-invoke make verify — QA'd in tick-524), and only H3_ALLOW_UNVERIFIED=1 accepts the degraded run explicitly ('PASS (local degrade: M UNVERIFIED accepted via H3_ALLOW_UNVERIFIED)'), the same absent-substrate vocabulary the guards themselves use. The census mirrors the guards' degrade predicates (token/jq/curl/python3/board/args) and does not re-fetch the tree, so a reachable-but-truncated or unparseable DuckBrain answer remains the guards' own runtime UNVERIFIED output. Negative proof: make verify-verdict-census-selftest.
+release: step 2/10 gate green — the 'make verify: ALL PASS' line above came from that real run (not from this script)
+release: step 3/10 CI green on 84967c6ecc0790ccd6866029f327addbb8eb9709 — DRY-RUN: nothing is dispatched (a workflow_dispatch is a mutation, so it sits behind --execute or --verify-ci)
+release: step 3/10 (execute only) would run: gh workflow run pages.yml --repo get-h3/h3 --ref main
+release: step 3/10 (execute only) would run: gh workflow run roundtrip.yml --repo get-h3/h3 --ref main
+release: step 3/10 (execute only) would then assert PER-JOB and PER-STEP success on the run dispatched for 84967c6ecc0790ccd6866029f327addbb8eb9709 and print the cited run ids
+release: step 3/10 the per-job rule is the point: pages.yml's sibling-shim checkout carries continue-on-error, so a run-level 'success' hides a failed step
+release: step 3/10 dispatchable — 84967c6ecc0790ccd6866029f327addbb8eb9709 is origin/main's head, so --execute would dispatch both workflows on it and cite the run ids
+release: step 4/10 version evidence:
+release: previous tag: v0.3.0
+release: commits since v0.3.0: 331
+release: feat commits since v0.3.0: 0
+release: breaking commits since v0.3.0: 0
+release: version bump: PATCH (no feat and no breaking commit in range)
+release: proposed tag: v0.3.1
+release: step 5/10 tag v0.3.1 is unused (absent locally and at origin)
+release: step 6/10 changelog: promote '## [Unreleased]' -> '## [0.3.1] — 2026-11-21' and re-open an empty '## [Unreleased] — 2026-11-21' above it
+release: step 7/10 (execute only) would run: git tag -a v0.3.1 -m 'H3 umbrella v0.3.1'
+release: step 8/10 (execute only) would run: git push origin refs/tags/v0.3.1   (tag only — never the branch)
+release: step 9/10 (execute only) would run: gh release create v0.3.1 --title v0.3.1 --notes-file <CHANGELOG.md [0.3.1] section> --repo get-h3/h3
+release: step 9/10 (execute only) would then verify: gh release view v0.3.1 --repo get-h3/h3   (must exit 0)
+release: step 10/10 rollback anchor: the previous tag, v0.3.0 (a pushed tag is never moved — a mistake is a new tag)
+release: CI CITATION (dry-run) — the tagged commit would be the promote commit of step 6, one commit AFTER the step-3 dispatch target 84967c6ecc0790ccd6866029f327addbb8eb9709. Push main with the [0.3.1] section written and cut with --no-changelog to cite CI on the exact tagged sha.
+release: DRY-RUN COMPLETE — 0 mutations: no tag created, nothing pushed, CHANGELOG.md byte-identical, no gh call made, no workflow dispatched.
+release: PASS (dry-run) — the plan above is gate-green and coherent; re-run with --execute to perform the cut.

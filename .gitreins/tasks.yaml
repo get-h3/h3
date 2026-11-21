@@ -647,17 +647,18 @@ tasks:
   created_at: '2026-11-18T19:14:09.760742+00:00'
   completed_at: '2026-11-18T19:14:19.893468+00:00'
 - id: H3-OBS-05
-  title: h3 make verify writes a Prometheus textfile completion record (H3-OBS-05
-    h3 leg)
+  title: verify guard telemetry recorder
   criteria:
-  - 'make verify still exits 0 and prints ''make verify: ALL PASS''; the verify run
-    atomically writes /var/lib/node_exporter/textfile/h3_verify.prom containing h3_verify_guard_result{guard="<name>"}
-    for 9 guards plus h3_verify_runs_total{target="verify"} and h3_verify_duration_seconds{guard="..."};
-    a self-test target proves a deliberately failing guard writes that guard''s gauge
-    as 0 with a non-zero run exit, and the record is skipped with a printed reason
-    when the textfile directory is absent'
-  status: pending
-  created_at: '2026-11-19T05:21:12.892658+00:00'
+  - scripts/verify-telemetry.sh exists at commit 64edea3 and 'bash scripts/verify-telemetry.sh
+    --selftest' exits 0 covering nine-guard PASS, FAIL flip, SKIP/degrade, counter
+    increment and unwritable-dir WARN; the Makefile verify recipe invokes it via 'sh
+    scripts/verify-telemetry.sh --run'; a full 'make verify' records exactly 9 h3_verify_guard_result
+    gauges plus a monotonic h3_verify_runs_total counter in /var/lib/node_exporter/textfile/h3_verify.prom;
+    deliberately breaking scripts/test-count.txt makes make verify exit non-zero and
+    records h3_verify_guard_result for verify-count as 0, and restoring the file restores
+    the gauge to 1.
+  status: in_progress
+  created_at: '2026-11-21T09:40:51.668257+00:00'
 - id: H3-OBS-02-CLOSE
   title: 'h3: close H3-OBS-02 cross-repo evidence (pulse 22834d32)'
   criteria:
@@ -714,3 +715,43 @@ tasks:
   status: complete
   created_at: '2026-11-21T08:40:03.234979+00:00'
   completed_at: '2026-11-21T08:40:48.756769+00:00'
+- id: DOC-29
+  title: DEPLOY.md loader keys config reference
+  criteria:
+  - DEPLOY.md at commit 3326f23 gains a 'Loader behavior keys' section covering exactly
+    max_consecutive_failures (default 3), circuit_breaker_window (20), circuit_breaker_threshold
+    (0.5), circuit_breaker_cooldown (30.0) and session_routes_path (unset/None), each
+    with type, source-exact default and observable effect plus loader.py line citations;
+    the defaults byte-match shim/src/h3_shim/loader.py:198-228 (3, 20, 0.5, 30.0,
+    None); the section explains circuit-breaker window/threshold/cooldown semantics
+    and that tripped breakers move runtime sessions to default_harness; 'git diff
+    origin/main 3326f23 --stat' shows DEPLOY.md is the only changed file and the change
+    is additive; 'make verify-docs' PASS at 3326f23.
+  status: in_progress
+  created_at: '2026-11-21T09:41:07.166174+00:00'
+- id: DOC-30
+  title: integration.md health sample verbatim from live Go harness
+  criteria:
+  - docs/integration.md at commit da3bd89 shows the live Go echo harness GET /v1/health
+    payload including uptime_seconds and active_sessions in the harness's real key
+    order (status, version, transport, protocol_version, uptime_seconds, active_sessions,
+    capabilities), captured live from 'go run .' in /home/kara/get-h3/sdk-go/examples/echo
+    with the satellite checkout left unmodified; a volatility sentence beside the
+    sample states uptime_seconds and active_sessions are per-process/per-session volatile
+    so the numbers are illustrative while the key set is exact; the verbatim-copy
+    promise paragraph above is unchanged; only docs/integration.md changed in da3bd89.
+  status: in_progress
+  created_at: '2026-11-21T09:41:07.660351+00:00'
+- id: DOC-10
+  title: README topology table matches live scheduler (README half)
+  criteria:
+  - README.md at commit 165446b no longer contains any of protocol-foreman, shim-foreman,
+    sdk-go-foreman, sdk-python-foreman or sdk-typescript-foreman (grep -c returns
+    0 for the alternation on README.md) while h3-foreman remains documented (grep
+    -c 'h3-foreman' README.md >= 1); the live scheduler DB confirms the five legacy
+    foremen do not exist (COUNT(*)=0 for the five names in projects); the AGENTS.md
+    half of DOC-10 is intentionally blocked this tick by the unattended protected-agent-instruction-file
+    gate requiring owner approval, and the board row stays open with the README half
+    landed at 165446b awaiting that owner disposition.
+  status: in_progress
+  created_at: '2026-11-21T09:41:08.127805+00:00'

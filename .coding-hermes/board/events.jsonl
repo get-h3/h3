@@ -948,3 +948,4 @@
 {"id": 914, "event_type": "task_updated", "actor": "foreman", "task_id": "DOC-29", "detail": "{\"status\":\"in_progress\"}", "timestamp": "2026-11-21T09:12:51Z", "tick_number": null}
 {"id": 915, "event_type": "task_updated", "actor": "foreman", "task_id": "DOC-30", "detail": "{\"status\":\"in_progress\"}", "timestamp": "2026-11-21T09:12:52Z", "tick_number": null}
 {"id": 916, "event_type": "task_updated", "actor": "foreman", "task_id": "COS-H3-001", "detail": "{\"status\":\"review\"}", "timestamp": "2026-11-21T09:32:16Z", "tick_number": null}
+{"id": 917, "event_type": "tick", "actor": "foreman", "task_id": "", "detail": null, "timestamp": "2026-11-21T09:42:00Z", "tick_number": 571}

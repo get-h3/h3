@@ -1,0 +1,58 @@
+{
+  "wave_id": "h3-foreman-2026-11-21-09-02-15",
+  "scheduler_tick_id": "h3-foreman-2026-11-21-09-02-15",
+  "project": "h3",
+  "created_utc": "2026-11-21T14:20:00Z",
+  "wave_budget": 4,
+  "workers": [
+    {
+      "task_id": "H3-OBS-05",
+      "priority": "P1",
+      "worktree": "/home/kara/worktrees/h3-H3-OBS-05",
+      "branch": "wt/H3-OBS-05",
+      "base_sha": "84967c6",
+      "model": "openai/gpt-6.1-terra",
+      "provider": "xkiro",
+      "scope": "h3 half only: scripts/verify-telemetry.sh + Makefile verify post-step -> h3_verify.prom (9 guard gauges); lore-half (h3_lore.prom) flagged to lore lane, row stays open for it",
+      "files": ["scripts/verify-telemetry.sh", "Makefile"]
+    },
+    {
+      "task_id": "DOC-10",
+      "priority": "P4",
+      "worktree": "/home/kara/worktrees/h3-DOC-10",
+      "branch": "wt/DOC-10",
+      "base_sha": "84967c6",
+      "model": "openai/gpt-6.1-terra",
+      "provider": "xkiro",
+      "scope": "regenerate README/AGENTS foreman topology tables; remove 5 legacy foremen names, keep h3-foreman",
+      "files": ["README.md", "AGENTS.md"]
+    },
+    {
+      "task_id": "DOC-29",
+      "priority": "P4",
+      "worktree": "/home/kara/worktrees/h3-DOC-29",
+      "branch": "wt/DOC-29",
+      "base_sha": "84967c6",
+      "model": "openai/gpt-6.1-terra",
+      "provider": "xkiro",
+      "scope": "DEPLOY.md config reference for 5 loader keys (defaults verified from shim loader.py:198-228)",
+      "files": ["DEPLOY.md"]
+    },
+    {
+      "task_id": "DOC-30",
+      "priority": "P5",
+      "worktree": "/home/kara/worktrees/h3-DOC-30",
+      "branch": "wt/DOC-30",
+      "base_sha": "84967c6",
+      "model": "openai/gpt-6.1-terra",
+      "provider": "xkiro",
+      "scope": "integration.md health sample replaced with live sdk-go echo payload (uptime_seconds + active_sessions) + volatility sentence",
+      "files": ["docs/integration.md"]
+    }
+  ],
+  "excluded": [
+    {"task_id": "DOC-28", "reason": "shares DEPLOY.md with DOC-29 — file seam violation, next tick"}
+  ],
+  "independence_proof": "no depends_on edges between the four rows (boardctl ready flat list); file sets disjoint: Makefile+scripts/ vs README+AGENTS vs DEPLOY.md vs docs/integration.md",
+  "status": "dispatched"
+}

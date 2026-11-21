@@ -1,0 +1,22 @@
+Target health: version=0.1.6 uptime_seconds=21 active_sessions=90
+
+H3 Compliance Test Battery v0.2.0
+Target: http://localhost:9193
+Transport: REST
+
+  Health & Protocol                   7/7  ✅ PASSED
+  Process Basic Flows                 7/8  ❌ FAILED
+  Decision Types                      6/6  ✅ PASSED
+  Result Handling                     7/7  ✅ PASSED
+  Error & Edge Cases                  14/15  ❌ FAILED
+  Stress & Performance                5/5  ✅ PASSED
+  TOTAL                               46/48  FAILED
+  Duration                            0.66s
+  Latency p50/p95                     2.57ms / 29.50ms
+
+Failures:
+  - process_preserves_history [Process Basic Flows]
+    history shrank: 4 -> 0
+  - session_status_completed [Error & Edge Cases]
+    status='active' — expected 'completed' after END
+  Per-test detail: rerun with --json for the machine-readable report.

@@ -1,0 +1,39 @@
+Target health: version=0.1.6 uptime_seconds=11 active_sessions=0
+
+H3 Compliance Test Battery v0.2.0
+Target: http://localhost:9198
+Transport: REST
+
+  Health & Protocol                   7/7  ✅ PASSED
+  Process Basic Flows                 4/8  ❌ FAILED
+  Decision Types                      6/6  ✅ PASSED
+  Result Handling                     0/7  ❌ FAILED
+  Error & Edge Cases                  7/15  ❌ FAILED
+  Stress & Performance                5/5  ✅ PASSED
+  TOTAL                               29/48  FAILED
+  Duration                            0.41s
+  Latency p50/p95                     1.45ms / 17.36ms
+
+Failures:
+  - process_returns_decision [Process Basic Flows]
+    Missing decision fields: ['status', 'decision']
+  - process_decision_has_id [Process Basic Flows]
+    Invalid decision_id: None
+  - process_decision_has_type [Process Basic Flows]
+    Exception: unhashable type: 'dict'
+  - process_preserves_history [Process Basic Flows]
+    history shrank: 4 -> 0
+  - result_tool_success [Result Handling]
+    Exception: 'decision_id'
+  - result_tool_failure [Result Handling]
+    Exception: 'decision_id'
+  - result_llm_response [Result Handling]
+    Exception: 'decision_id'
+  - result_text_sent [Result Handling]
+    Exception: 'decision_id'
+  - result_delegate_result [Result Handling]
+    Exception: 'decision_id'
+  - result_error [Result Handling]
+    Exception: 'decision_id'
+  ... and 9 more failures (use --json for the full report)
+  Per-test detail: rerun with --json for the machine-readable report.
