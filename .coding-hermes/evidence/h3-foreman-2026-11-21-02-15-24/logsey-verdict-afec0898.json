@@ -1,0 +1,69 @@
+{
+  "task_id": "H3-OBS-03",
+  "task_title": "logsey watch serves /metrics on loopback :9162 + staleness alert signals",
+  "task_criteria": [
+    "ACs: a Go /metrics endpoint on 127.0.0.1:9162 served from inside the logsey watch loop using client_golang/promhttp; curl -sf http://127.0.0.1:9162/metrics | grep -c '^logsey_' >= 10 while watch runs; families per h3 docs/observability-spec.md section 5.2: logsey_watch_up, logsey_watch_tick_age_seconds, logsey_watch_tick_total, logsey_ingest_lines_total{source_class}, logsey_ingest_parse_errors_total{source_class}, logsey_ingest_lag_bytes{source}, logsey_source_suspended{source}, logsey_source_failure_runs{source}, logsey_corpus_bytes{format}, logsey_index_stale; tick_age reuses the exact staleness arithmetic from internal/cli/status_cmd.go (no reimplementation); a textfile completion record per tick written atomically (tmp+rename) so logsey_watch_up==0 is still observable after the process is gone; checkpoint last_tick and logsey_watch_tick_age_seconds agree within 5s; existing go build/vet/test/lint gates stay green; the running system daemon is not restarted and root/user-logsey-owned /var/lib/logsey is not touched"
+  ],
+  "passed": true,
+  "worktree": "/home/kara/get-h3/logsey",
+  "branch": "main",
+  "commit": "9eef7a79982ba8f452c12cd8614151e9f51e22da",
+  "pass_class": "tier1-only",
+  "tier2_skipped": true,
+  "working_tree_content_fingerprint": "7e74e6f17e322f89a4159456bd6f6ca14881b1fc82ef6b3c60d257a48303c76e",
+  "working_tree_dirty_path_count": 1,
+  "items": [],
+  "stages": {
+    "tier1": {
+      "id": "tier1",
+      "passed": true,
+      "any_failed": false,
+      "summary": "  \u2713 secrets: secrets: scanners=gitleaks+builtin cross-check\n  \u2713 tests: scanners: nice=nice -n 10",
+      "steps": [
+        {
+          "id": "secrets",
+          "type": "script",
+          "passed": true,
+          "output": "secrets: scanners=gitleaks+builtin cross-check\nsecrets: gitleaks bound=timeout 600s (0=off)\nscanners: nice=nice -n 10\n10:45PM INF scanned ~2636531 bytes (2.64 MB) in 1.43s\n10:45PM INF no leaks found\nsecrets: gitleaks: clean\nsecrets: builtin cross-check: Scanned 295 files \u2014 clean (excluded harness state: .gitreins/**)\nsecrets: builtin cross-check status: clean\n",
+          "error": "",
+          "data": {
+            "exit_code": 0,
+            "secrets_scanners": [
+              "gitleaks",
+              "builtin"
+            ]
+          }
+        },
+        {
+          "id": "tests",
+          "type": "script",
+          "passed": true,
+          "output": "scanners: nice=nice -n 10\n?   \tgithub.com/get-h3/logsey/cmd/logsey\t[no test files]\nok  \tgithub.com/get-h3/logsey/internal/cli\t256.806s\nok  \tgithub.com/get-h3/logsey/internal/logsey/duckidx\t(cached)\nok  \tgithub.com/get-h3/logsey/internal/logsey/ingest\t(cached)\nok  \tgithub.com/get-h3/logsey/internal/logsey/parse\t(cached)\nok  \tgithub.com/get-h3/logsey/internal/logsey/query\t(cached)\nok  \tgithub.com/get-h3/logsey/internal/logsey/store\t(cached)\nok  \tgithub.com/get-h3/logsey/internal/logsey/views\t(cached)\n",
+          "error": "",
+          "data": {
+            "exit_code": 0
+          }
+        }
+      ],
+      "coverage": "secrets+tests"
+    }
+  },
+  "summary": "Stage tier1: PASS\n    \u2713 secrets: secrets: scanners=gitleaks+builtin cross-check\n  \u2713 tests: scanners: nice=nice -n 10\n\nOverall: PASS \u2713",
+  "evaluated_at": "2026-11-21T03:50:18.422403",
+  "supersedes": null,
+  "superseded_by": null,
+  "evidence": {
+    "collected_at": "2026-11-21T03:50:18.476219+00:00",
+    "items": [
+      {
+        "name": "patch",
+        "label": "Landed commit patch",
+        "file": "commit.patch",
+        "bytes": 13792,
+        "truncated": false,
+        "source": "git show 9eef7a79982b"
+      }
+    ],
+    "task_id": "H3-OBS-03"
+  }
+}

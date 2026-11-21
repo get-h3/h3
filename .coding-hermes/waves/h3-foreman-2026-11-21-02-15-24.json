@@ -1,0 +1,23 @@
+{
+  "tick_id": "h3-foreman-2026-11-21-02-15-24",
+  "lane": "h3-foreman",
+  "project": "h3",
+  "wave_budget": 1,
+  "wave_size": 1,
+  "dispatched_at": "2026-11-21T02:40:00-05:00",
+  "rows": [
+    {
+      "id": "H3-OBS-03",
+      "priority": "P0",
+      "repo": "get-h3/logsey",
+      "owner_repo_checkout": "/home/kara/get-h3/logsey",
+      "worktree": "/home/kara/worktrees/logsey-H3-OBS-03",
+      "branch": "wt/H3-OBS-03",
+      "base_sha": "aa596ea",
+      "model": "openai/gpt-6.1-terra",
+      "provider": "xkiro",
+      "status": "dispatched",
+      "premise": "logsey HEAD has no /metrics feature (git grep 9162|tick_age empty; no client_golang in go.mod); running watch daemon (pid 3023) returns HTTP 000 on :9162"
+    }
+  ]
+}
