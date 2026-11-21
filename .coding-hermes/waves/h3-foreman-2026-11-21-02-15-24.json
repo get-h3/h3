@@ -19,5 +19,13 @@
       "status": "dispatched",
       "premise": "logsey HEAD has no /metrics feature (git grep 9162|tick_age empty; no client_golang in go.mod); running watch daemon (pid 3023) returns HTTP 000 on :9162"
     }
-  ]
+  ],
+  "finished_at": "2026-11-21T08:06:20Z",
+  "recovery": {
+    "recovered_by_tick": "h3-foreman-2026-11-21-08-02-40",
+    "row_H3-OBS-03": "complete at h3 06e05c8 (verification-only; logsey 598bb46 pushed)",
+    "worktree": "already removed",
+    "branch": "already deleted",
+    "residual": "none"
+  }
 }
