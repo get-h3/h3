@@ -221,7 +221,7 @@ sessions:
   platform:chat_id:thread_id: my-harness
 ```
 
-Only sessions listed under `sessions` route through H3. All others use native Hermes loop.
+`resolve()` in `shim/src/h3_shim/loader.py` (`loader.py:283`) picks the most specific matching key — `platform:chat_id:thread_id`, then `platform:chat_id`, then `platform` — and a session matching none of them falls through to `default_harness` (`loader.py:334`). The config block above sets `default_harness: my-harness`, so a session with no matching key routes to **`my-harness`**, not to the native loop. For unlisted sessions to stay on the built-in Hermes loop, omit `default_harness` (it defaults to `native`) or set it to `native`; `default_harness: null` makes `resolve()` return `None` for an unlisted session (`loader.py:199`, `loader.py:334`). Runtime pins outrank the static `sessions` map — `resolve()` consults them first on the same candidate keys (see "Loader behavior keys" below, including `session_routes_path`).
 
 ### Loader behavior keys
 
@@ -236,6 +236,8 @@ These top-level config keys control health-based failover and runtime session pi
 | `session_routes_path` | string path or None | `unset/None` | When set, runtime session-to-harness pins are persisted to this JSON file and restored on startup; when unset they remain in memory only. An unwritable file degrades to in-memory routing with a warning. | `loader.py:220-227`, `loader.py:277-279`, `loader.py:393-425` |
 
 The breaker tracks a sliding window of attempted health checks: an OK response is a success, while a non-OK response or exception is a failure; skipped checks during cooldown are not attempts. Once the window is full and its failure ratio reaches the threshold, the breaker opens and runtime sessions pinned to that harness are moved to `default_harness` (immediately for an exception that trips it, or on the next health-check cycle for a non-OK response). During cooldown the loader skips checks and continues rerouting pins away from the open harness; after cooldown it allows one half-open health probe, whose success closes the breaker and whose failure reopens it. Rerouting changes runtime pins, not the static `sessions` configuration, and a recovered harness does not automatically reclaim those pins.
+
+That pins file has exactly two writers, both at runtime: the explicit pin call `route_session()` (`loader.py:336`), which persists on every pin (`loader.py:400-425`), and the health-failure reroute `_reroute_sessions()` (`loader.py:520-531`), which repoints every pin on the failed harness to `default_harness` and persists the result. The file is loaded on startup (`loader.py:279`), which is what keeps a reroute from sending sessions back to a dead harness after a restart. Nothing else writes it — hand-editing is not a supported way to change routing, and a pin deleted by hand reappears the next time either writer persists the live map. Because these pins are consulted first by `resolve()`, they outrank the static `sessions` config; the precedence order and the `default_harness` fallback are stated in Step 4 above (`loader.py:283`, `loader.py:334`).
 
 ## Step 5: Docker Deployment
 
@@ -292,7 +294,7 @@ To swap a session's agent loop to your harness:
 hermes-h3 route
 ```
 
-Only the listed sessions use H3. All others continue with the native Hermes loop. This is gradual cutover — never big-bang swap every session.
+Only the listed sessions use H3. A session matching none of those keys uses `default_harness` — `native` when the key is omitted, but `my-harness` in the Step 4 config above (`loader.py:283`, `loader.py:334`). This is gradual cutover — never big-bang swap every session. To keep the unlisted majority on the built-in loop, omit `default_harness` or set it to `native`; `default_harness: null` makes `resolve()` return `None` instead of a harness name (`loader.py:199`, `loader.py:334`).
 
 ## Step 7: Monitor
 
@@ -325,7 +327,7 @@ GET  /v1/health    200 1ms
 - [ ] Health endpoint returns `{"status": "ok", "version": "...", "capabilities": [...]}`
 - [ ] Harness runs behind a process manager (systemd, Docker restart policy, k8s)
 - [ ] Only specific sessions routed through H3 (not all sessions)
-- [ ] Fallback tested: if harness is unreachable, sessions fall back to native Hermes loop
+- [ ] Failover tested: once health checks fail `max_consecutive_failures` times (`loader.py:496`), sessions pinned to that harness are rerouted to `default_harness` (`loader.py:520-531`) — and if `default_harness` names the harness that failed, there is no native fallback at all. Set `default_harness: native` (or omit it) to get the built-in loop; `default_harness: null` leaves `resolve()` returning `None` (`loader.py:199`, `loader.py:334`)
 - [ ] Harness API keys configured (TLS if over public network) — see "Harness API keys" below
 - [ ] Harness deployed on same network as Hermes (< 5ms latency)
 - [ ] `hermes-h3 verify` responds within 10s
@@ -394,7 +396,7 @@ hermes-h3 verify --harness my-harness
 | `h3-test` returns non-zero | Harness doesn't implement full protocol | Check failed test region for missing handlers |
 | Session not routing through harness | Session not in routing table | Add the session to `sessions` in `~/.hermes/h3/config.yaml` |
 | 422 on /v1/process | Pydantic models too strict | Update to latest sdk-python (lenient defaults) or pass all optional fields |
-| Hermes falls back to native loop | Harness unreachable | Check harness is running: `curl http://localhost:9191/v1/health` |
+| Sessions rerouted off a failed harness | Health checks failed `max_consecutive_failures` times, or the circuit breaker opened | Rerouting targets `default_harness` (`loader.py:520-531`), so confirm `default_harness` does not name the failed harness (`loader.py:334`); check the harness itself: `curl http://localhost:9191/v1/health` |
 
 ## Reference Repos
 
