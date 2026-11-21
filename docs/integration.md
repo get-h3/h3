@@ -180,8 +180,10 @@ described in §2:
 
 ```bash
 curl -s http://localhost:9191/v1/health
-{"status":"ok","version":"1.0.0","transport":"rest","protocol_version":"1.0","capabilities":["text"]}
+{"status":"ok","version":"1.0.0","transport":"rest","protocol_version":"1.0","uptime_seconds":9,"active_sessions":0,"capabilities":["text"]}
 ```
+
+The `uptime_seconds` and `active_sessions` values are volatile (changing with the process and live sessions), so the numbers shown are illustrative while the key set is exact.
 
 First turn (`POST /v1/process`) — carries the user message and returns a
 `Decision` (§3), here a `text` decision:
