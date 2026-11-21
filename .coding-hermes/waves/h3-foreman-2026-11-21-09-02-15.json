@@ -14,7 +14,10 @@
       "model": "openai/gpt-6.1-terra",
       "provider": "xkiro",
       "scope": "h3 half only: scripts/verify-telemetry.sh + Makefile verify post-step -> h3_verify.prom (9 guard gauges); lore-half (h3_lore.prom) flagged to lore lane, row stays open for it",
-      "files": ["scripts/verify-telemetry.sh", "Makefile"]
+      "files": [
+        "scripts/verify-telemetry.sh",
+        "Makefile"
+      ]
     },
     {
       "task_id": "DOC-10",
@@ -25,7 +28,10 @@
       "model": "openai/gpt-6.1-terra",
       "provider": "xkiro",
       "scope": "regenerate README/AGENTS foreman topology tables; remove 5 legacy foremen names, keep h3-foreman",
-      "files": ["README.md", "AGENTS.md"]
+      "files": [
+        "README.md",
+        "AGENTS.md"
+      ]
     },
     {
       "task_id": "DOC-29",
@@ -36,7 +42,9 @@
       "model": "openai/gpt-6.1-terra",
       "provider": "xkiro",
       "scope": "DEPLOY.md config reference for 5 loader keys (defaults verified from shim loader.py:198-228)",
-      "files": ["DEPLOY.md"]
+      "files": [
+        "DEPLOY.md"
+      ]
     },
     {
       "task_id": "DOC-30",
@@ -47,12 +55,24 @@
       "model": "openai/gpt-6.1-terra",
       "provider": "xkiro",
       "scope": "integration.md health sample replaced with live sdk-go echo payload (uptime_seconds + active_sessions) + volatility sentence",
-      "files": ["docs/integration.md"]
+      "files": [
+        "docs/integration.md"
+      ]
     }
   ],
   "excluded": [
-    {"task_id": "DOC-28", "reason": "shares DEPLOY.md with DOC-29 — file seam violation, next tick"}
+    {
+      "task_id": "DOC-28",
+      "reason": "shares DEPLOY.md with DOC-29 \u2014 file seam violation, next tick"
+    }
   ],
   "independence_proof": "no depends_on edges between the four rows (boardctl ready flat list); file sets disjoint: Makefile+scripts/ vs README+AGENTS vs DEPLOY.md vs docs/integration.md",
-  "status": "dispatched"
+  "status": "completed",
+  "finished_at": "2026-11-21T14:59:30Z",
+  "outcome": {
+    "H3-OBS-05": "h3 half merged 64edea3, judged PASS 468278ce; row pending for lore half (PM scope decision)",
+    "DOC-29": "merged 3326f23, judged PASS da75aa6c, row complete (PM stale reopen superseded, disclosed)",
+    "DOC-30": "merged da3bd89, judged PASS 420e89f1, row complete",
+    "DOC-10": "README half merged 165446b; AGENTS.md half blocked by protected-file gate - row pending"
+  }
 }

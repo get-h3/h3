@@ -769,5 +769,6 @@ tasks:
     run prints ''... and 9 more failures (use --json for the full report)''; --json
     exits 1 with per-test results; ''uv run pytest tests/test_cli.py -q'' in /home/kara/get-h3/shim
     passed 175 tests.'
-  status: in_progress
+  status: complete
   created_at: '2026-11-21T09:47:27.278300+00:00'
+  completed_at: '2026-11-21T09:57:32.976087+00:00'
