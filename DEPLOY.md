@@ -223,6 +223,20 @@ sessions:
 
 Only sessions listed under `sessions` route through H3. All others use native Hermes loop.
 
+### Loader behavior keys
+
+These top-level config keys control health-based failover and runtime session pins. Line references are to `shim/src/h3_shim/loader.py`.
+
+| Key | Type | Default | Observable effect | Source |
+|---|---|---|---|---|
+| `max_consecutive_failures` | integer | `3` | After this many consecutive health-check exceptions, move runtime sessions pinned to the failing harness to `default_harness`; a returned health response resets the count. | `loader.py:200`, `loader.py:465-467`, `loader.py:486-504` |
+| `circuit_breaker_window` | integer | `20` | Number of recent health-check outcomes retained per harness; the window must be full before the failure ratio can open the breaker. | `loader.py:203`, `loader.py:80`, `loader.py:151-158` |
+| `circuit_breaker_threshold` | float | `0.5` | Failure fraction at or above which a full window opens the breaker. | `loader.py:205`, `loader.py:151-158` |
+| `circuit_breaker_cooldown` | float (seconds) | `30.0` | Minimum time an open breaker waits before permitting a half-open health probe. | `loader.py:204`, `loader.py:163-169` |
+| `session_routes_path` | string path or None | `unset/None` | When set, runtime session-to-harness pins are persisted to this JSON file and restored on startup; when unset they remain in memory only. An unwritable file degrades to in-memory routing with a warning. | `loader.py:220-227`, `loader.py:277-279`, `loader.py:393-425` |
+
+The breaker tracks a sliding window of attempted health checks: an OK response is a success, while a non-OK response or exception is a failure; skipped checks during cooldown are not attempts. Once the window is full and its failure ratio reaches the threshold, the breaker opens and runtime sessions pinned to that harness are moved to `default_harness` (immediately for an exception that trips it, or on the next health-check cycle for a non-OK response). During cooldown the loader skips checks and continues rerouting pins away from the open harness; after cooldown it allows one half-open health probe, whose success closes the breaker and whose failure reopens it. Rerouting changes runtime pins, not the static `sessions` configuration, and a recovered harness does not automatically reclaim those pins.
+
 ## Step 5: Docker Deployment
 
 For production isolation or running on separate hosts.
