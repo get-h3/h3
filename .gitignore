@@ -39,6 +39,20 @@ dagger.db-wal
 # judged task, is rebuildable from .gitreins/history verdict artifacts, and is
 # host-local runtime state like the history/ and logs/ dirs above — not repo content.
 .gitreins/usage.jsonl
+# gitreins 0.21.1 default runtime entries (GITREINS_GITIGNORE_ENTRIES, cli.py) —
+# the h3 install predates these; review-state.json surfaced untracked after a
+# tier2 judge run (tick h3-foreman-2026-11-21-09-02-15). Runtime artifacts,
+# ignored by default per DF-GITREINS-POC-96/47; versioning is opt-IN.
+# tasks.yaml intentionally stays tracked (repo convention above).
+.gitreins/config.yaml.bak
+.gitreins/qa-ledger.jsonl
+.gitreins/worktrees.json
+.gitreins/disposable.json
+.gitreins/verdicts/
+.gitreins/quality.json
+.gitreins/review-state.json
+.gitreins/review-state.corrupt-*
+.gitreins/review-state.recovery-required
 
 # Cross-harness test artifacts
 .cross-harness-results/
