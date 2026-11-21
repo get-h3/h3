@@ -953,3 +953,4 @@
 {"id": 919, "event_type": "task_completed", "actor": "foreman", "task_id": "DOC-29", "detail": "{\"status\":\"complete\"}", "timestamp": "2026-11-21T09:46:20Z", "tick_number": null}
 {"id": 920, "event_type": "task_completed", "actor": "foreman", "task_id": "DOC-30", "detail": "{\"status\":\"complete\"}", "timestamp": "2026-11-21T09:46:20Z", "tick_number": null}
 {"id": 921, "event_type": "task_completed", "actor": "foreman", "task_id": "DF-H3-54", "detail": "{\"status\":\"complete\"}", "timestamp": "2026-11-21T09:46:20Z", "tick_number": null}
+{"id": 922, "event_type": "task_completed", "actor": "foreman", "task_id": "DOC-29", "detail": "{\"status\":\"complete\"}", "timestamp": "2026-11-21T09:57:22Z", "tick_number": null}
