@@ -519,13 +519,26 @@ const app = new Hono(); app.route("/", createH3Router(echo)); export default app
 
         <div class="card" style="margin-top:16px;">
           <h3>What's happening</h3>
-          <p>Every H3 harness must satisfy five methods:</p>
+          <!-- DOC-21: the method requirements are language-specific, not universal.
+               Verified anchors at this base (re-check these before changing the text):
+                 sdk-typescript/src/harness.ts:41-46 — onProcess/onResult/health required,
+                   onCancel?/onSessionTerminate? OPTIONAL; the router guards both
+                   (`if (harness.onCancel)` :239, `if (harness.onSessionTerminate)` :292)
+                   and still answers the request, so an omitting harness is not failed.
+                 sdk-python/src/h3_harness/harness.py:119-126 — BaseHarness supplies default
+                   on_cancel (returns True) and on_session_terminate (documented no-op).
+                 sdk-go/harness/harness.go:29-33 — the Harness interface (:20) declares
+                   OnCancel(req *protocol.CancelRequest) error and
+                   OnSessionTerminate(sessionID string) error as REQUIRED methods; the shim
+                   calls them unconditionally (:687, :747). Go is the exception.
+                 docs/sdk.html:770-772 — same optional/required split in the API table. -->
+          <p>Every H3 harness must implement three methods, and two more are optional in some languages:</p>
           <ul>
-            <li><strong>Health()</strong> — reports status, version, and supported decision types to the shim</li>
-            <li><strong>OnProcess()</strong> — receives the user's message and returns a decision (text, tool call, wait, etc.)</li>
-            <li><strong>OnResult()</strong> — receives Hermes' execution result so you can decide the next step</li>
-            <li><strong>OnCancel()</strong> — called when the user or system cancels the session</li>
-            <li><strong>OnSessionTerminate()</strong> — called when Hermes ends the session</li>
+            <li><strong>Health()</strong> — reports status, version, and supported decision types to the shim; required in all three SDKs</li>
+            <li><strong>OnProcess()</strong> — receives the user's message and returns a decision (text, tool call, wait, etc.); required in all three SDKs</li>
+            <li><strong>OnResult()</strong> — receives Hermes' execution result so you can decide the next step; required in all three SDKs</li>
+            <li><strong>OnCancel()</strong> — called when the user or system cancels the session. <em>Optional in TypeScript and Python</em> (<code>onCancel?</code> in the interface, and <code>BaseHarness.on_cancel</code> returns <code>True</code> by default): the shim answers the cancel request without invoking the hook, so a harness that omits it is never failed for the omission. <em>Required in Go</em>, where <code>OnCancel(req *protocol.CancelRequest) error</code> is a method of the <code>Harness</code> interface (<code>sdk-go/harness/harness.go:29-30</code>).</li>
+            <li><strong>OnSessionTerminate()</strong> — called when Hermes ends the session. <em>Optional in TypeScript and Python</em> (<code>onSessionTerminate?</code> in the interface, and the base <code>on_session_terminate</code> is a documented no-op): the session is removed either way and the omission is not an error. <em>Required in Go</em>, where <code>OnSessionTerminate(sessionID string) error</code> is part of the same interface (<code>sdk-go/harness/harness.go:32-33</code>).</li>
           </ul>
           <p>The echo harness above returns a <strong>text</strong> decision on every process call and an <strong>end</strong> decision on the first result. That's enough to complete a full H3 conversation loop.</p>
         </div>
