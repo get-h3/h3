@@ -1,0 +1,43 @@
+  TS                             Caller                 Method                             Agent      Outcome        Summary
+  ────────────────────────────── ────────────────────── ────────────────────────────────── ────────── ────────────── ───────
+  2026-11-23T13:42:34.858059266Z master                 ExecAgent                          h3-df49-20261123b ok             ExecAgent agent_id=h3-df49-20261123b
+  2026-11-23T13:43:01.317637794Z master                 command                            h3-df49-20261123b exit_255       script bytes=662 sha256=dffe2fac5d10c4556dc7cca9567d0b8d64af8fe097ee7b451df9d4c2c4939d4c
+  2026-11-23T13:43:01.317826954Z master                 ExecAgent                          h3-df49-20261123b ok             ExecAgent agent_id=h3-df49-20261123b
+  2026-11-23T13:43:12.627276186Z master                 AgentMetrics                       h3-df49-20261123b ok             AgentMetrics agent_id=h3-df49-20261123b
+  2026-11-23T13:43:13.037247546Z master                 AgentMetrics                       h3-df49-20261123b ok             AgentMetrics agent_id=h3-df49-20261123b
+  2026-11-23T13:43:35.686530714Z master                 DestroyAgent                       h3-df49-20261123b ok             DestroyAgent agent_id=h3-df49-20261123b
+  2026-11-23T13:43:36.130792343Z master                 GetAgent                           h3-df49-20261123b not_found      GetAgent agent_id=h3-df49-20261123b
+  2026-11-23T13:43:36.57256587Z  master                 ListAgents                                    ok             ListAgents
+  2026-11-23T13:45:00.471368585Z master                 ListAgents                                    ok             ListAgents
+  2026-11-23T13:45:35.835279191Z master                 ListAgents                                    ok             ListAgents
+  2026-11-23T13:47:33.415266284Z master                 ListAgents                                    ok             ListAgents
+  2026-11-23T13:48:19.507419096Z master                 GetAgent                           h3-df49-20261123b not_found      GetAgent agent_id=h3-df49-20261123b
+  2026-11-23T13:48:26.217047081Z master                 QueryAudit                                    ok             QueryAudit
+  2026-11-23T13:48:32.626462131Z master                 QueryAudit                                    ok             QueryAudit
+  2026-11-23T13:49:33.988612931Z master                 QueryAudit                                    ok             QueryAudit
+  2026-11-23T13:50:24.878490348Z master                 QueryAudit                                    ok             QueryAudit
+  2026-11-23T13:50:25.41215594Z  master                 QueryAudit                                    ok             QueryAudit
+  2026-11-23T13:51:30.599483936Z master                 ListAgents                                    ok             ListAgents
+  2026-11-23T13:54:46.974156911Z master                 SpawnAgent                                    internal       SpawnAgent
+  2026-11-23T13:55:55.858408282Z master                 ListAgents                                    ok             ListAgents
+  2026-11-23T13:57:45.437063586Z master                 ListAgents                                    ok             ListAgents
+  2026-11-23T14:00:25.604747715Z master                 ListAgents                                    ok             ListAgents
+  2026-11-23T14:01:24.771496998Z master                 SpawnAgent                                    ok             SpawnAgent
+  2026-11-23T14:01:24.922471052Z master                 GetAgentKey                                   ok             GetAgentKey
+  2026-11-23T14:01:32.160942382Z master                 command                            h3-df49-20261123d ok             true
+  2026-11-23T14:01:32.161409204Z master                 ExecAgent                          h3-df49-20261123d ok             ExecAgent agent_id=h3-df49-20261123d
+  2026-11-23T14:02:01.276907118Z master                 command                            h3-df49-20261123d ok             script bytes=532 sha256=bd119ddce152a3caa6cb6d092feb492c6254ca494c9554aaf8453a5e7b107559
+  2026-11-23T14:02:01.277085844Z master                 ExecAgent                          h3-df49-20261123d ok             ExecAgent agent_id=h3-df49-20261123d
+  2026-11-23T14:02:13.95509845Z  master                 command                            h3-df49-20261123d ok             script bytes=739 sha256=2007652a53e48aff556be71542d21be4d5075c6edb0be198e6d815d8ce9439a9
+  2026-11-23T14:02:13.955364628Z master                 ExecAgent                          h3-df49-20261123d ok             ExecAgent agent_id=h3-df49-20261123d
+  2026-11-23T14:02:15.668012514Z master                 command                            h3-df49-20261123d exit_255       script bytes=281 sha256=116cbaabd8a7d96c6735a05dc5a5df87dc46a5212d4ebedba7b1339455ede73c
+  2026-11-23T14:02:15.668215336Z master                 ExecAgent                          h3-df49-20261123d ok             ExecAgent agent_id=h3-df49-20261123d
+  2026-11-23T14:02:32.647236817Z master                 command                            h3-df49-20261123d ok             ps -eo pid,comm
+  2026-11-23T14:02:32.647438513Z master                 ExecAgent                          h3-df49-20261123d ok             ExecAgent agent_id=h3-df49-20261123d
+  2026-11-23T14:02:33.108642998Z master                 AgentMetrics                       h3-df49-20261123d ok             AgentMetrics agent_id=h3-df49-20261123d
+  2026-11-23T14:02:33.504942121Z master                 AgentMetrics                       h3-df49-20261123d ok             AgentMetrics agent_id=h3-df49-20261123d
+  2026-11-23T14:02:55.437347456Z master                 DestroyAgent                       h3-df49-20261123d ok             DestroyAgent agent_id=h3-df49-20261123d
+  2026-11-23T14:02:55.895608036Z master                 GetAgent                           h3-df49-20261123d not_found      GetAgent agent_id=h3-df49-20261123d
+  2026-11-23T14:02:56.359635833Z master                 ListAgents                                    ok             ListAgents
+  2026-11-23T14:03:09.358483976Z master                 QueryAudit                                    ok             QueryAudit
+Total: 40 records

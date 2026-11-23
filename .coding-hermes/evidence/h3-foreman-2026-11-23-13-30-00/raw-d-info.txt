@@ -1,0 +1,2 @@
+bunker: reading server "bunker-las-03"
+bunker: get agent: not_found: agent "h3-df49-20261123d" not found

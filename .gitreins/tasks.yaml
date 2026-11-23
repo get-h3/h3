@@ -803,3 +803,13 @@ tasks:
   status: complete
   created_at: '2026-11-21T11:52:54.171067+00:00'
   completed_at: '2026-11-21T12:20:11.204536+00:00'
+- id: DF-H3-49
+  title: 'Ephemeral install leg on bunker-las-03: fresh clone + make install + health
+    smoke + destroy'
+  criteria:
+  - ssh gate rc=0; bunker exec true rc=0; fresh clone of github.com/get-h3/sdk-python
+    and make install rc=0; curl http://127.0.0.1:9191/v1/health returns HTTP 200;
+    agent destroyed and verified absent
+  status: complete
+  created_at: '2026-11-23T13:41:37.360085+00:00'
+  completed_at: '2026-11-23T13:46:44.850757+00:00'

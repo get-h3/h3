@@ -1,0 +1,12 @@
+SERVER_PID=1848731
+== echo.log head ==
+INFO:     Started server process [1848731]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:9191 (Press CTRL+C to quit)
+== health body ==
+{"status":"ok","version":"0.1.6","active_sessions":0,"capabilities":["tool_call","llm_call","text","wait","delegate","end"],"degraded_reason":null,"error":null,"protocol_version":"1.0","transport":"rest","uptime_seconds":4}
+HTTP_CODE=200
+== installed version ==
+0.1.6
+SMOKE2_COMPLETE

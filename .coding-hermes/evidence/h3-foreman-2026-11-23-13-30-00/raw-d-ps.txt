@@ -1,0 +1,253 @@
+    PID COMMAND
+      1 systemd
+      2 kthreadd
+      3 pool_workqueue_release
+      4 kworker/R-kvfree_rcu_reclaim
+      5 kworker/R-rcu_gp
+      6 kworker/R-sync_wq
+      7 kworker/R-slub_flushwq
+      8 kworker/R-netns
+     10 kworker/0:0H-events_highpri
+     13 kworker/R-mm_percpu_wq
+     14 rcu_tasks_kthread
+     15 rcu_tasks_rude_kthread
+     16 rcu_tasks_trace_kthread
+     17 ksoftirqd/0
+     18 rcu_preempt
+     19 rcu_exp_par_gp_kthread_worker/0
+     20 rcu_exp_gp_kthread_worker
+     21 migration/0
+     22 idle_inject/0
+     23 cpuhp/0
+     24 cpuhp/1
+     25 idle_inject/1
+     26 migration/1
+     27 ksoftirqd/1
+     29 kworker/1:0H-events_highpri
+     30 cpuhp/2
+     31 idle_inject/2
+     32 migration/2
+     33 ksoftirqd/2
+     35 kworker/2:0H-events_highpri
+     36 cpuhp/3
+     37 idle_inject/3
+     38 migration/3
+     39 ksoftirqd/3
+     41 kworker/3:0H-events_highpri
+     42 cpuhp/4
+     43 idle_inject/4
+     44 migration/4
+     45 ksoftirqd/4
+     47 kworker/4:0H-events_highpri
+     48 cpuhp/5
+     49 idle_inject/5
+     50 migration/5
+     51 ksoftirqd/5
+     53 kworker/5:0H-events_highpri
+     60 kdevtmpfs
+     61 kworker/R-inet_frag_wq
+     62 kauditd
+     63 khungtaskd
+     64 oom_reaper
+     65 kworker/R-writeback
+     66 kcompactd0
+     67 ksmd
+     68 khugepaged
+     69 kworker/R-kintegrityd
+     70 kworker/R-kblockd
+     71 kworker/R-blkcg_punt_bio
+     72 irq/9-acpi
+     74 kworker/R-tpm_dev_wq
+     75 kworker/R-edac-poller
+     76 kworker/R-devfreq_wq
+     77 kworker/R-quota_events_unbound
+     78 kworker/0:1H-kblockd
+     79 kswapd0
+     88 kworker/R-kthrotld
+     92 irq/122-aerdrv
+     93 irq/122-pcie-dpc
+     94 kworker/R-acpi_thermal_pm
+     95 hwrng
+     96 kworker/R-mld
+     97 kworker/R-ipv6_addrconf
+     98 kworker/1:1H-kblockd
+    103 kworker/R-kstrp
+    161 kworker/4:1H-kblockd
+    199 kworker/2:1H-kblockd
+    227 kworker/5:1H-kblockd
+    228 kworker/3:1H-kblockd
+    236 kworker/R-nvme-wq
+    237 kworker/R-nvme-reset-wq
+    238 kworker/R-nvme-delete-wq
+    239 kworker/R-nvme-auth-wq
+    240 watchdogd
+    241 kworker/R-ata_sff
+    245 scsi_eh_0
+    246 kworker/R-scsi_tmf_0
+    247 scsi_eh_1
+    248 kworker/R-scsi_tmf_1
+    249 kworker/R-USBC000:00-con1
+    252 kworker/R-ttm
+    253 card0-crtc0
+    254 card0-crtc1
+    255 card0-crtc2
+    262 plymouthd
+    297 jbd2/nvme0n1p2-8
+    298 kworker/R-ext4-rsv-conversion
+    366 systemd-timesyn
+    373 systemd-udevd
+    401 psimon
+    465 irq/140-mei_me
+    471 kworker/R-cfg80211
+    472 kworker/R-cryptd
+    553 kworker/R-rtw88_usb: tx wq
+    554 kworker/R-rtw88_usb: rx wq
+   1782 accounts-daemon
+   1786 avahi-daemon
+   1788 cron
+   1790 dbus-daemon
+   1797 low-memory-moni
+   1798 polkitd
+   1799 switcheroo-cont
+   1802 systemd-logind
+   1804 udisksd
+   1811 avahi-daemon
+   1858 NetworkManager
+   1859 psimon
+   1862 wpa_supplicant
+   1906 ModemManager
+   1930 fail2ban-server
+   1934 tailscaled
+   1936 unattended-upgr
+   1946 plymouth
+   1947 systemd
+   1950 containerd
+   1952 sshd
+   1956 colord
+   1967 (sd-pam)
+   1975 gdm3
+   1994 gdm-session-wor
+   2006 systemd
+   2016 (sd-pam)
+   2043 dbus-daemon
+   2045 pipewire
+   2047 pipewire
+   2050 wireplumber
+   2051 pipewire-pulse
+   2064 mpris-proxy
+   2071 rtkit-daemon
+   2147 dbus-daemon
+   2148 pipewire
+   2149 pipewire
+   2150 wireplumber
+   2151 pipewire-pulse
+   2153 gdm-wayland-ses
+   2164 dbus-run-sessio
+   2167 dbus-daemon
+   2174 gnome-session-b
+   2268 gnome-shell
+   2495 at-spi-bus-laun
+   2504 dbus-daemon
+   2508 Xwayland
+   2513 at-spi2-registr
+   2602 xdg-permission-
+   2612 gjs
+   2613 upowerd
+   2614 gsd-sharing
+   2615 gsd-wacom
+   2622 gsd-color
+   2632 gsd-keyboard
+   2634 gsd-print-notif
+   2644 gsd-rfkill
+   2645 gsd-smartcard
+   2649 gsd-datetime
+   2652 gsd-media-keys
+   2660 gsd-screensaver
+   2673 gsd-sound
+   2679 gsd-a11y-settin
+   2689 gsd-housekeepin
+   2697 gsd-power
+   2826 mutter-x11-fram
+   2831 ibus-daemon
+   2843 ibus-memconf
+   2844 ibus-extension-
+   2846 ibus-x11
+   2850 ibus-portal
+   2876 ibus-engine-sim
+   2884 gjs
+   2908 xdg-desktop-por
+   2914 xdg-document-po
+   2920 fusermount3
+   2925 xdg-desktop-por
+   2946 xdg-desktop-por
+   2956 gnome-keyring-d
+   2967 gsd-printer
+   3010 dockerd
+   3280 containerd-shim
+   3281 containerd-shim
+   3283 containerd-shim
+   3356 docker-proxy
+   3363 docker-proxy
+   3376 docker-init
+   3377 alloy
+   3383 dumb-init
+   3416 containerd-shim
+   3452 next-server (v1
+   3472 buildkitd
+   3495 gitlab-runner
+   5533 dconf-service
+  22558 bunkerd
+1431383 systemd-journal
+1830098 fwupd
+1842445 cupsd
+1842447 cups-browsed
+1842454 dbus
+1842455 dbus
+1843326 kworker/u24:1-rtw88_usb: tx wq
+1843413 kworker/2:0-events
+1843414 kworker/5:0-events
+1843862 kworker/u24:3-kvfree_rcu_reclaim
+1843863 kworker/2:2-events
+1843867 kworker/u25:2-rtw_tx_wq
+1843882 kworker/0:1-events
+1845020 kworker/4:0-events
+1845111 kworker/1:2-events
+1845240 kworker/3:3-events
+1845688 kworker/u24:4-rtw88_usb: tx wq
+1846102 kworker/5:3-events
+1846496 kworker/u24:2-rtw88_usb: rx wq
+1846499 kworker/0:3-cgroup_release
+1846503 kworker/u25:1-rtw_tx_wq
+1846506 kworker/u24:0-rtw88_usb: rx wq
+1846623 kworker/1:3-events
+1847050 kworker/4:1-events
+1847506 kworker/3:1-events
+1847557 kworker/5:1-cgroup_free
+1847567 kworker/u25:0
+1847569 kworker/5:2-events
+1847606 systemd
+1847611 kworker/1:0-i915-unordered
+1847612 (sd-pam)
+1847632 dbus-daemon
+1847634 pipewire
+1847635 pipewire
+1847636 wireplumber
+1847637 pipewire-pulse
+1847639 mpris-proxy
+1847678 kworker/4:2-cgroup_free
+1847687 kworker/0:0-cgroup_free
+1847707 kworker/1:1-events
+1848119 rootlesskit
+1848122 (sd-pam)
+1848132 exe
+1848151 slirp4netns
+1848160 dockerd
+1848184 containerd
+1848510 psimon
+1848761 kworker/0:2
+1848764 ssh
+1848765 sshd-session
+1848775 sshd-session
+1848776 sh
+1848777 sh
+1848778 ps
