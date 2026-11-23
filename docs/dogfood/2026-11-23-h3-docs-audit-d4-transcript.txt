@@ -1,0 +1,130 @@
+==============================================================================
+h3-docs audit — delivery 4 of tick h3-docs-2026-11-23-18-36-23
+Captured: 2026-11-23T15:05:00-05:00 (approx; fourth delivery of the same tick)
+Probe root: /home/kara/get-h3/h3 @ c1c342b (== origin/main at measurement time)
+==============================================================================
+
+== 0. re-fire detection ==
+$ git log -3 --format='%h %ci %s' origin/main
+c1c342b 2026-11-23 14:35:41 -0500 board: file DOC-40 + DOC-41 — h3-docs audit delivery 3 ...
+93f6f4c 2026-11-23 14:24:33 -0500 board: repair 8 undispatchable doc rows (DOC-32..DOC-39) ...
+6056ee8 2026-11-23 14:15:33 -0500 board: file DOC-32..DOC-39 + dogfood field report — h3-docs audit delivery 2 ...
+$ git rev-list --left-right --count origin/main...HEAD
+0	0
+$ git merge-base --is-ancestor c1c342b origin/main && echo PUBLISHED
+PUBLISHED
+All three prior deliveries of this exact tick (e9703e1 d1, 6056ee8 d2, c1c342b d3)
+are ancestors of origin/main. This pass is delivery 4.
+Board dirty check: git status --porcelain -> empty (clean, at published tip).
+
+== 1. premise re-checks of delivery 3's open rows ==
+-- DOC-40 (doctrine page absent) --
+$ git ls-files | grep -i traceability-doctrine
+(no output)
+$ ls docs/traceability-doctrine.md
+ls: cannot access 'docs/traceability-doctrine.md': No such file or directory
+PREMISE HOLDS: file still absent at c1c342b.
+
+-- DOC-41 (trace-marker residue in reader-facing files) --
+$ grep -n -F 'ch[REDACTED]trace' README.md docs/releases.md Makefile
+README.md:21:<!-- ch[REDACTED]trace row=DOC-16 spec=specs/01-Overview-Architecture.md#1 ...
+docs/releases.md:104:<!-- ch[REDACTED]trace row=DOC-15 spec=specs/08-Cross-Repo-Release-Pipeline.md#4 ...
+Makefile:362:# ch[REDACTED]trace row=PERF-2 spec=Makefile:235-291 ...
+PREMISE HOLDS: all three residue sites unchanged (token form redacted here so this
+artifact reads zero literal tokens in a corpus census; field-pattern form preserved).
+
+-- marker readback from origin/main (exactly one marker-form per row) --
+$ git show origin/main:.coding-hermes/board/tasks.jsonl | <string-field census>
+DOC-40 status=pending marker-form count=1
+DOC-41 status=pending marker-form count=1
+
+== 2. re-triage census (open P1-P3 rows filed pre-2026-09-30) ==
+Parsed board: 741 rows. Open rows: 32. Open P1-P3: 16
+(SHIM-DEPS-01, SHIM-DF3-H3-SHIM-7, LORE-AUDIT-PERP, QA-H3-26,
+H3-REVIEW-20261014-02, QA-H3-28, QA-H3-PERF-1, RELEASE-H3-013, QA-H3-PERF-2,
+QA-H3-29, DF-H3-52, QA-H3-30, QA-H3-031, COS-H3-002, DF-H3-057, +1)
+NONE are DOC-family documentation rows — all are QA/functional/releng/dependency
+rows. Nothing to re-triage per the 2026-09-30 doc-severity ruling.
+
+== 3. standing census delivery 3 left UNTRUSTED: inbound/reachability ==
+Delivery 3's transcript section 10 reports this census UNTRUSTED (control arm
+printed no hits). Re-run with explicit corpus + control pages:
+
+$ python3 .../coding-hermes-docs/scripts/doc_inbound_census.py \
+    --root /home/kara/get-h3/h3 \
+    --include README.md DEPLOY.md CHANGELOG.md SECURITY.md CONTRIBUTING.md \
+            GOVERNANCE.md SUPPORT.md AGENTS.md journey-narrative.md \
+            docs/integration.md docs/observability-spec.md \
+            docs/qa-target-contract.md docs/releases.md docs/sdk.html \
+            docs/guide.html docs/protocol.html docs/migration.html \
+            skills/h3-usage/SKILL.md \
+    --control README.md docs/integration.md docs/releases.md DEPLOY.md
+
+corpus files: 18   internal edges: 19
+
+--- ZERO inbound internal refs ---
+  AGENTS.md
+  CHANGELOG.md
+  DEPLOY.md
+  GOVERNANCE.md
+  README.md
+  SECURITY.md
+  SUPPORT.md
+  docs/observability-spec.md
+orphan count: 8
+
+--- CONTROL pages (must show inbound refs) ---
+  README.md: 0 inbound []
+  docs/integration.md: 1 inbound ['README.md']
+  docs/releases.md: 2 inbound ['CHANGELOG.md', 'README.md']
+  DEPLOY.md: 0 inbound []
+
+Checker proven live: integration.md and releases.md show inbound hits.
+
+Classification of the 8 zeros (each read before filing):
+- README.md            -> root page; zero inbound is EXPECTED. Not a defect.
+- AGENTS.md, GOVERNANCE.md, SECURITY.md, SUPPORT.md
+                       -> named in README.md:222 root-docs table (backtick form)
+                          and carry convention homes (tooling / GitHub community
+                          UI). Not defects.
+- CHANGELOG.md, DEPLOY.md
+                       -> named in README.md:222 root-docs table (backtick form,
+                          not a Markdown link — that is why the link census reads
+                          them as zero). Named-from-root; not defects.
+- docs/observability-spec.md
+                       -> NOT named in ANY reader-facing file. Only occurrences
+                          tracked-wide are internal trees:
+                          $ git grep -l 'observability-spec' -- '*.md' '*.html'
+                          .coding-hermes/dogfood-log.md
+                          docs/dogfood/2026-11-23-h3-docs-integration.md
+                          Also absent from the docs-site nav:
+                          $ grep -o 'href="[^"]*"' docs/index.html | sort -u
+                          shows guide.html, integration.md, migration.html only.
+                          Page history: added by the H3-OBS wave
+                          (e752d24 "board: land staged observability-audit output
+                          (H3-OBS-01..06 + docs/observability-spec.md)") and never
+                          linked since.
+FINDING: docs/observability-spec.md is unreachable by navigation from every
+reader-facing page (operator/integrator audience). One pointer line from
+README.md#repository-layout's docs table and/or the docs/index.html nav is the
+fix. P5 (missing cross-reference, polish severity per 2026-09-30 ruling).
+
+Board-owner search for prior ownership:
+$ board_row_search.py tasks.jsonl 'orphan|unlinked|inbound|reachab|nothing links|dead page'
+  -> only unrelated complete rows (code-orphan and gate meanings).
+$ board_row_search.py tasks.jsonl 'observability'
+  -> DOC-25 (complete, content rot) and DOC-25-R2 (pending, content rot of the
+     SAME page's §1) own the page's CONTENT, not its reachability. Different
+     mechanism, different fix — not a duplicate.
+DF-H3-056 (pending) owns h3_verify.prom telemetry documentation — unrelated.
+
+== 4. censuses re-run clean (no drift since delivery 3) ==
+- markdown link census, path-ref census, anchor census: not re-run; docs trees
+  are byte-identical at c1c342b vs 93f6f4c (d3's tip) — c1c342b and 93f6f4c touch
+  only .coding-hermes/board/*, verified:
+  $ git diff --name-only 93f6f4c c1c342b
+  .coding-hermes/board/events.jsonl / tasks.jsonl / board.jsonl (board only)
+- residue grep (section 1) unchanged.
+- marker census totals unchanged except the two new board rows d3 filed.
+
+== end of transcript ==
