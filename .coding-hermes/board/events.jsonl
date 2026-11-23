@@ -967,3 +967,5 @@
 {"id": 933, "event_type": "task_created", "actor": "foreman", "task_id": "DF-H3-056", "timestamp": "2026-11-23T14:56:03+00:00", "tick_number": null, "detail": "{\"id\":\"DF-H3-056\",\"status\":\"pending\"}", "tick_id": null}
 {"id": 934, "event_type": "task_created", "actor": "foreman", "task_id": "DF-H3-057", "timestamp": "2026-11-23T14:56:03+00:00", "tick_number": null, "detail": "{\"id\":\"DF-H3-057\",\"status\":\"pending\"}", "tick_id": null}
 {"id": 935, "event_type": "task_created", "actor": "foreman", "task_id": "DF-H3-058", "timestamp": "2026-11-23T14:56:03+00:00", "tick_number": null, "detail": "{\"id\":\"DF-H3-058\",\"status\":\"pending\"}", "tick_id": null}
+{"id": 936, "event_type": "task_created", "actor": "foreman", "task_id": "DOC-31", "timestamp": "2026-11-23T18:51:44+00:00", "tick_number": null, "detail": "{\"id\":\"DOC-31\",\"status\":\"pending\"}", "tick_id": null}
+{"id": 937, "event_type": "task_created", "actor": "foreman", "task_id": "DOC-25-R2", "timestamp": "2026-11-23T18:51:44+00:00", "tick_number": null, "detail": "{\"id\":\"DOC-25-R2\",\"status\":\"pending\"}", "tick_id": null}
