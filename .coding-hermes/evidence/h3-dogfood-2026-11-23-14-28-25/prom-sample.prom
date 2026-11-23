@@ -1,0 +1,22 @@
+# TYPE h3_verify_runs_total counter
+h3_verify_runs_total{target="verify"} 4
+# TYPE h3_verify_guard_result gauge
+h3_verify_guard_result{guard="verify-docs"} 1
+h3_verify_guard_result{guard="verify-specs"} 1
+h3_verify_guard_result{guard="verify-count"} 1
+h3_verify_guard_result{guard="verify-tags"} 1
+h3_verify_guard_result{guard="verify-json-fences"} 1
+h3_verify_guard_result{guard="verify-qa-target"} 1
+h3_verify_guard_result{guard="verify-tick-chain"} 1
+h3_verify_guard_result{guard="verify-board-header"} 1
+h3_verify_guard_result{guard="verify-commit-msg"} 1
+# TYPE h3_verify_duration_seconds gauge
+h3_verify_duration_seconds{guard="verify-docs"} 0
+h3_verify_duration_seconds{guard="verify-specs"} 0
+h3_verify_duration_seconds{guard="verify-count"} 0
+h3_verify_duration_seconds{guard="verify-tags"} 1
+h3_verify_duration_seconds{guard="verify-json-fences"} 0
+h3_verify_duration_seconds{guard="verify-qa-target"} 0
+h3_verify_duration_seconds{guard="verify-tick-chain"} 1
+h3_verify_duration_seconds{guard="verify-board-header"} 0
+h3_verify_duration_seconds{guard="verify-commit-msg"} 0

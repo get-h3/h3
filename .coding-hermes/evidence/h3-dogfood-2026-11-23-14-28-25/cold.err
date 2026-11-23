@@ -1,0 +1,2 @@
+verify-telemetry: WARN — missing or corrupt prior counter; starting at 1
+WALL_COLD=1.31 EXIT_COLD=0
