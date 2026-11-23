@@ -1,0 +1,231 @@
+==============================================================================
+h3-docs audit — delivery 3 of tick h3-docs-2026-11-23-18-36-23
+Captured: 2026-11-23T14:31:33-05:00
+==============================================================================
+$ git rev-parse HEAD && git rev-list --left-right --count origin/main...HEAD
+93f6f4cd2290811875a3472e2a44b847cc09f3e4
+0	0
+
+== 1. doctrine presence ==
+$ git ls-files | grep -i traceability-doctrine
+NO-DOCTRINE-FILE-TRACKED (git ls-files rc=1)
+$ ls docs/traceability-doctrine.md
+ls: cannot access 'docs/traceability-doctrine.md': No such file or directory
+
+== 2. residue grep over reader-facing corpus (token form redacted: ch[REDACTED]trace) ==
+$ grep -n -F "ch[REDACTED]trace" <corpus> | sed redaction
+README.md:21:<!-- ch[REDACTED]trace row=DOC-16 spec=specs/01-Overview-Architecture.md#1 wave=h3-foreman-2026-10-20-20-46-25#DOC-16 test=none:documentation-only doc=README.md prompt=none:worker-brief evidence=none:pre-judge-doc-change witness=none:no-end-user-live-session verdict=none:pre-judge commit=none:worker-commit memory=none:not-written -->
+docs/releases.md:104:<!-- ch[REDACTED]trace row=DOC-15 spec=specs/08-Cross-Repo-Release-Pipeline.md#4 wave=h3-foreman-2026-10-20-20-46-25#DOC-15 test=none:documentation-only doc=docs/releases.md prompt=none:worker-brief evidence=none:pre-judge-doc-change witness=none:no-live-release-cut verdict=none:pre-judge commit=none:worker-commit memory=none:not-written -->
+total hits (unredacted count only):
+2
+second-field forms: STATUS:/TIER:/RESIDUAL: counts:
+0
+Makefile marker (same mechanism, build config, excluded from reader corpus):
+362:# ch[REDACTED]trace row=PERF-2 spec=Makefile:235-291 wave=none:serial-tick test=hyperfine-benchmark doc=none:perf-evidence prompt=none:perf-work evidence=/tmp/perf-2-baseline.json,/tmp/perf-2-serial.json,/tmp/perf-2-sweep.json,/tmp/perf-2-parts.json witness=commit verdict=none:pending commit=none:pending memory=none:perf-tuning
+
+== 3. marker census over ALL tracked files (counts only) ==
+$ git grep -c "ch[REDACTED]trace" | sort
+.coding-hermes/board/events.jsonl:39
+.coding-hermes/board/tasks.jsonl:68
+.coding-hermes/waves/h3-foreman-2026-11-02-13-20-49.json:1
+.coding-hermes/waves/h3-foreman-2026-11-02-13-59-20.json:1
+.coding-hermes/waves/h3-foreman-2026-11-02-15-08-46.json:1
+.gitreins/tasks.yaml:3
+Makefile:1
+README.md:1
+docs/dogfood/2026-10-29-integration.md:1
+docs/dogfood/2026-11-16-integration.md:1
+docs/releases.md:1
+verification/h3-foreman-2026-11-02-13-20-49-event.json:1
+verification/h3-foreman-2026-11-02-13-20-49.json:1
+verification/h3-foreman-2026-11-02-15-08-46.json:1
+
+== 4. markdown link census (full output) ==
+root: /home/kara/get-h3/h3
+markdown files scanned: 84 (excluded: .git, .gitreins, node_modules, .venv, venv, dist, build, target, .coding-hermes/board/evidence)
+dead relative links: 1
+distinct dead targets: 1
+  resolve by suffix swap [('.md', '.spec.md')]: 0   <- mechanical generator class
+  resolve neither way: 1   <- pages never captured; needs a manifest, not a rewrite
+by top-level path:
+        1  specs
+SAMPLE specs/25-Conformance-Certification.md -> ...  [no renamed sibling (never captured)]
+
+== 5. path-ref census (full output) ==
+corpus files scanned: 55 (excluded: .coding-hermes, docs/acceptance, docs/decisions, docs/dogfood, docs/envelopes, docs/evidence, docs/registry-runs, docs/releases, docs/research, docs/reviews, docs/usage)
+path tokens resolved: 137
+
+DEAD repo-path references (28 distinct) — candidates, read each line before filing:
+  examples/decisions/llm-call.json               cited at specs/07-OpenAPI-JSON-Schema.md:120
+  examples/decisions/tool-call.json              cited at specs/07-OpenAPI-JSON-Schema.md:119
+  examples/process-request.json                  cited at specs/07-OpenAPI-JSON-Schema.md:118
+  internal/cli/status_cmd.go                     cited at docs/observability-spec.md:127, docs/observability-spec.md:217
+  internal/cli/watch_cmd.go                      cited at docs/observability-spec.md:217
+  internal/daemon/budget.go                      cited at docs/observability-spec.md:112, docs/observability-spec.md:197
+  internal/daemon/daemon.go                      cited at docs/observability-spec.md:114
+  internal/daemon/heartbeat_retention.go         cited at docs/observability-spec.md:125
+  internal/daemon/watchdog.go                    cited at docs/observability-spec.md:122
+  internal/logsey/duckidx/update.go              cited at docs/observability-spec.md:218
+  internal/logsey/ingest/checkpoints.go          cited at docs/observability-spec.md:129, docs/observability-spec.md:130, docs/observability-spec.md:218
+  schemas/v1/auth-revert-rotation-response.json  cited at specs/13-Token-Rotation-Revocation.md:644
+  schemas/v1/auth-revoke-key-response.json       cited at specs/13-Token-Rotation-Revocation.md:656
+  schemas/v1/auth-rotate-identity-request.json   cited at specs/13-Token-Rotation-Revocation.md:667
+  schemas/v1/auth-rotate-identity-response.json  cited at specs/13-Token-Rotation-Revocation.md:673
+  schemas/v1/auth-rotate-key-request.json        cited at specs/13-Token-Rotation-Revocation.md:621
+  schemas/v1/auth-rotate-key-response.json       cited at specs/13-Token-Rotation-Revocation.md:628
+  schemas/v1/decision.json                       cited at docs/integration.md:297, specs/07-OpenAPI-JSON-Schema.md:115, specs/07-OpenAPI-JSON-Schema.md:119, specs/07-OpenAPI-JSON-Schema.md:120
+  schemas/v1/process-request.json                cited at specs/07-OpenAPI-JSON-Schema.md:118
+  schemas/v1/result-request.json                 cited at docs/integration.md:254, docs/integration.md:296
+  scripts/build-compat.sh                        cited at specs/24-Compatibility-Matrix.md:66, specs/24-Compatibility-Matrix.md:375
+  scripts/check-compat.sh                        cited at specs/24-Compatibility-Matrix.md:68, specs/24-Compatibility-Matrix.md:376
+  src/examples/echo.ts                           cited at README.md:102, skills/h3-usage/SKILL.md:101
+  src/h3_harness/examples/echo.py                cited at skills/h3-usage/SKILL.md:97
+  src/h3_shim/cli.py                             cited at docs/integration.md:430, skills/h3-usage/SKILL.md:335
+  src/h3_shim/test_battery.py                    cited at AGENTS.md:24, docs/integration.md:428, specs/05-Test-Battery.md:22, specs/05-Test-Battery.md:161, specs/05-Test-Battery.md:241
+  src/h3_shim/upgrade_check.py                   cited at skills/h3-usage/SKILL.md:318
+  tests/test_cli.py                              cited at docs/verification/df-h3-13-config-path.md:17
+
+gitignored/runtime targets (0 distinct, NOT defects):
+
+== 6. anchor census ==
+md files scanned: 53
+dead internal anchors: 0
+
+== 7. cross-repo existence classification for path-ref candidates ==
+-- shim repo (origin/main) --
+SHIM-HAS src/h3_shim/cli.py
+SHIM-HAS src/h3_shim/test_battery.py
+SHIM-HAS src/h3_shim/upgrade_check.py
+SHIM-MISS src/examples/echo.ts
+SHIM-MISS schemas/v1/decision.json
+SHIM-MISS examples/decisions/llm-call.json
+SHIM-HAS tests/test_cli.py
+-- protocol repo --
+PROTOCOL-HAS examples/cancel-request.json
+PROTOCOL-HAS examples/cancel-response.json
+PROTOCOL-HAS examples/decisions/delegate.json
+PROTOCOL-HAS examples/decisions/end.json
+PROTOCOL-HAS examples/decisions/llm-call.json
+PROTOCOL-HAS examples/decisions/text.json
+PROTOCOL-HAS examples/decisions/tool-call.json
+PROTOCOL-HAS examples/decisions/wait.json
+PROTOCOL-HAS examples/error-response.json
+PROTOCOL-HAS examples/health-response.json
+PROTOCOL-HAS examples/minimal-harness.py
+PROTOCOL-HAS examples/process-request.json
+PROTOCOL-HAS examples/result-request.json
+PROTOCOL-HAS examples/session-response.json
+PROTOCOL-HAS examples/session-terminate-response.json
+PROTOCOL-HAS examples/test-report-not-h3.json
+PROTOCOL-HAS examples/test-report.json
+PROTOCOL-HAS schemas/v1/cancel-request.json
+PROTOCOL-HAS schemas/v1/cancel-response.json
+PROTOCOL-HAS schemas/v1/common.json
+PROTOCOL-HAS schemas/v1/decision.json
+PROTOCOL-HAS schemas/v1/delegate.json
+PROTOCOL-HAS schemas/v1/end.json
+PROTOCOL-HAS schemas/v1/error-response.json
+PROTOCOL-HAS schemas/v1/health-response.json
+PROTOCOL-HAS schemas/v1/llm-call.json
+PROTOCOL-HAS schemas/v1/process-request.json
+PROTOCOL-HAS schemas/v1/result-request.json
+PROTOCOL-HAS schemas/v1/session-response.json
+PROTOCOL-HAS schemas/v1/session-terminate-response.json
+PROTOCOL-HAS schemas/v1/test-report.json
+PROTOCOL-HAS schemas/v1/text-response.json
+PROTOCOL-HAS schemas/v1/tool-call.json
+PROTOCOL-HAS schemas/v1/wait.json
+-- pulse repo --
+PULSE-HAS internal/daemon/budget.go
+PULSE-HAS internal/daemon/daemon.go
+PULSE-HAS internal/daemon/watchdog.go
+PULSE-HAS internal/daemon/heartbeat_retention.go
+-- logsey repo --
+LOGSEY-HAS internal/cli/status_cmd.go
+LOGSEY-HAS internal/logsey/ingest/checkpoints.go
+LOGSEY-HAS internal/logsey/duckidx/update.go
+-- sdk-typescript repo --
+SDKTS-HAS src/examples/echo.ts
+
+== 8. citing-line context reads (classification evidence) ==
+-- specs/07-OpenAPI-JSON-Schema.md:11 (repo named) --
+The `get-h3/protocol` repo is the single source of truth. Every SDK and the Hermes shim generate types FROM this repo. The spec lives as an OpenAPI 3.1 document + standalone JSON Schema files.
+-- specs/07-OpenAPI-JSON-Schema.md:95-99 ($id names protocol repo) --
+
+```json
+{
+  "$id": "https://github.com/get-h3/protocol/schemas/v1/decision.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+-- docs/integration.md:253-255 (repo named) --
+There is **no `context` and no `history`** here: the schema
+(`get-h3/protocol` → `schemas/v1/result-request.json`) requires exactly those
+three fields and defines nothing else, and the SDK type matches it —
+-- specs/24-Compatibility-Matrix.md:66-68 (dated correction record) --
+| `scripts/build-compat.sh` | §7.1 | ❌ Not implemented — no such path in any of the six repos |
+| Compatibility badge | §7.2 | ❌ Not implemented — no compatibility badge and no badge endpoint (the repo ships only the static conformance SVGs in `docs/badge/`) |
+| `scripts/check-compat.sh --block-on-failure` gate | §7.3 | ❌ Not implemented — `protocol/.github/workflows/release.yml` has no compatibility step |
+-- specs/24-Compatibility-Matrix.md:373-376 (dated correction record) --
+
+> ⚠️ **Nothing in this section is implemented.** No repository under the `get-h3`
+> organisation has a compatibility workflow, a `scripts/build-compat.sh`, a
+> `scripts/check-compat.sh`, a compatibility badge, or a release step that consults a
+-- specs/13-Token-Rotation-Revocation.md:5-9 (Status: Spec framing) --
+**Depends on:** S12 (Security & Authentication)  
+**Last Updated:** 2026-07-21
+
+---
+
+-- specs/13-Token-Rotation-Revocation.md:17-21 (implementation targets) --
+- `shim/` — CLI commands (`rotate-key`, `revoke-key`, `rotate-identity`) + `H3Client` rotation methods
+- `sdk-go/`, `sdk-python/`, `sdk-typescript/` — auth middleware rotation/revocation handlers
+- `protocol/` — new JSON schemas for auth management endpoints
+
+---
+-- specs/25-Conformance-Certification.md:133-139 (code-fence example, PLANNED banner) --
+broken until Phase 3 of §12 ships — do not paste it into a README yet:
+
+```markdown
+<!-- PLANNED — /badges/v1/<hash>.svg and /verify/<hash> do not exist on get-h3.github.io/h3 -->
+[![H3 Compliant](https://get-h3.github.io/h3/badges/v1/ {badge-hash} .svg)](https://get-h3.github.io/h3/verify/ {badge-hash})
+```
+
+-- README.md:98-102 (echo.ts cites sdk-typescript) --
+> second harness a different port, use the override that harness actually
+> implements: `PORT=9291 go run .` for the Go echo example
+> (`sdk-go/examples/echo`), `python echo.py 9291` for the Python echo example
+> (`sdk-python/src/h3_harness/examples`) — the port is an argument there and the
+> process never reads `PORT` — and `PORT=9291 npx tsx src/examples/echo.ts` for
+-- skills/h3-usage/SKILL.md:100-101 --
+# TypeScript:
+cd sdk-typescript && npx tsx src/examples/echo.ts &
+-- docs/observability-spec.md:111-112,119 (pulse named) --
+
+1. **`pulse` sampler cost and throttling** — `internal/daemon/budget.go:113-190` computes
+   `load_samples/load_errors`, `rss_*`, `conns_*`, `disk_*`, `events_*`
+   (observed: `load_errors: 2797`, `disk_errors: 280`, `events_errors: 93` on the last line).
+-- AGENTS.md:23-24 (topology tree names shim/) --
+    ├──► shim/          (Python plugin — generated types from OpenAPI)
+    │       └── src/h3_shim/test_battery.py (48 compliance tests — E2E region-style)
+
+== 9. premise re-checks of open rows (tip unchanged since delivery 2) ==
+-- DOC-31: identity block still undocumented across the four pages --
+$ grep -c "identity:" DEPLOY.md README.md docs/integration.md skills/h3-usage/SKILL.md
+DEPLOY.md:0
+README.md:0
+docs/integration.md:0
+skills/h3-usage/SKILL.md:0
+-- DOC-32: stale :8000 pitfall still present --
+$ grep -n ":8000" skills/h3-usage/SKILL.md | head -3
+193:  on the port. The Python echo example hardcodes `:8000`; if it fails to
+
+== 10. inbound/reachability census (control arm printed no hits — census UNTRUSTED) ==
+orphan count: 21
+
+--- CONTROL pages (must show inbound refs) ---
+
+--- decision rule ---
+A zero is a finding only when (a) the corpus excluded non-reader trees, (b) the control
+shows hits, and (c) no excluded corpus is the page's intended home. State the exclusion
+list in the row so the worker can re-run the same census.
+
+== end of transcript ==
