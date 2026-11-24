@@ -2,7 +2,7 @@
 
 All notable changes to the H3 protocol and umbrella project.
 
-## [Unreleased] — 2026-10-29
+## [v0.3.1] — 2026-11-24
 
 Patch-candidate sweep since v0.3.0: docs/audit fixes from the 2026-10-25..10-28
 review-lane and stand-in PM cycles. No protocol, SDK, or CLI behavior changes.
