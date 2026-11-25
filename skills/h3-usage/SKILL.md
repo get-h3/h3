@@ -181,7 +181,10 @@ curl -sS https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
 ### Pitfall: Go example and Go scaffold honor PORT (DF-H3-9 fixed)
 The Go echo example and generated Go scaffold read `PORT`, defaulting to `:9191`
 when it is absent. Use `PORT=9291 go run .` (or another free port) when running
-two harnesses at once; the Python and TypeScript examples also honor `PORT`.
+two harnesses at once. The TypeScript example also honors `PORT`
+(`PORT=9292 npx tsx src/examples/echo.ts`); the Python example does NOT —
+it ignores `PORT` entirely and takes an optional port as its first argv
+element (see the port-collision bullet below).
 
 - **Round-trip with curl (verified live 2026-09-08):** the working process
   shape needs the full envelope — `session_id`, `message{role,content,timestamp}`,
