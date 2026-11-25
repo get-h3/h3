@@ -825,3 +825,49 @@ tasks:
   status: complete
   created_at: '2026-11-25T08:08:53.782251+00:00'
   completed_at: '2026-11-25T08:18:59.348893+00:00'
+- id: DF-H3-058
+  title: verify-telemetry first-run vs corrupt-state distinction
+  criteria:
+  - Fresh textfile dir produces an informational first-run line with NO 'corrupt'
+    on stderr during make verify; a truncated h3_verify.prom still emits the corrupt
+    WARN and restarts the counter at 1; scripts/verify-telemetry.sh --selftest exits
+    0 with both branches covered.
+  status: complete
+  created_at: '2026-11-25T08:37:32.412103+00:00'
+  completed_at: '2026-11-25T08:48:53.127373+00:00'
+- id: DOC-31
+  title: DEPLOY.md Harness API keys documents config identity block
+  criteria:
+  - 'DEPLOY.md Harness API keys section names the config identity: block with hermes_token/hermes_identity,
+    states config-outranks-env precedence, documents protocol_version default 1.0,
+    points to shim docs/integration.md; make verify-docs exits 0.'
+  status: complete
+  created_at: '2026-11-25T08:37:33.062151+00:00'
+  completed_at: '2026-11-25T08:56:36.410947+00:00'
+- id: DOC-32
+  title: h3-usage port pitfall matches current echo.py contract
+  criteria:
+  - The h3-usage port-collision pitfall states echo.py defaults to :9191 with an optional
+    argv port, drops the hardcoded :8000 claim and the retired 9/44 count, keeps the
+    health-check-first lesson; make verify-docs exits 0.
+  status: complete
+  created_at: '2026-11-25T08:37:33.780347+00:00'
+  completed_at: '2026-11-25T09:07:24.680594+00:00'
+- id: DOC-35
+  title: README The Loop lists all six decision types
+  criteria:
+  - README The Loop enumerates all six decision types (tool_call, llm_call, text,
+    wait, delegate, end) or points at specs/02-Protocol-Specification.md as authoritative;
+    lines 188-206 never show a four-item enumeration; make verify-docs exits 0.
+  status: complete
+  created_at: '2026-11-25T08:37:39.988656+00:00'
+  completed_at: '2026-11-25T09:17:36.818056+00:00'
+- id: DOC-36
+  title: integration.md 5.2 states the complete --version refusal set
+  criteria:
+  - docs/integration.md 5.2 group-level row names the complete nine-subcommand --version
+    refusal set (install, list, pre-update-check, route, scaffold, test, uninstall,
+    use, verify); make verify-docs exits 0.
+  status: complete
+  created_at: '2026-11-25T08:37:40.649417+00:00'
+  completed_at: '2026-11-25T09:22:29.922818+00:00'
