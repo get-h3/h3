@@ -24,7 +24,17 @@ record() {
     previous=$DEST/h3_verify.prom
     count=$(awk '/^h3_verify_runs_total\{target="verify"\} [0-9]+$/ { n++; v=$2 } END { if (n == 1) print v }' "$previous" 2>/dev/null || :)
     case "$count" in
-        ''|*[!0-9]*) echo 'verify-telemetry: WARN — missing or corrupt prior counter; starting at 1' >&2; count=0 ;;
+        ''|*[!0-9]*)
+            # A missing (or empty) counter file is a healthy first run — say so
+            # informationally; only a present, non-empty file without a readable
+            # counter is corrupt state and deserves the WARN.
+            if [ ! -e "$previous" ] || [ ! -s "$previous" ]; then
+                echo 'verify-telemetry: first run — starting counter at 1' >&2
+            else
+                echo 'verify-telemetry: WARN — corrupt prior counter; starting at 1' >&2
+            fi
+            count=0
+            ;;
     esac
     # A bounded integer avoids shell arithmetic overflow on corrupt state.
     if [ ${#count} -gt 12 ]; then
@@ -148,10 +158,24 @@ selftest() {
         grep -q "^h3_verify_guard_result{guard=\"$guard\"} 0$" "$DEST/h3_verify.prom" || exit 1
     done
     grep -q '^h3_verify_runs_total{target="verify"} 2$' "$DEST/h3_verify.prom" || exit 1
+    # Fresh directory: the first run prints an informational line, NOT the
+    # corrupt WARN (DF-H3-058), and the counter starts at 1.
+    DEST=$work/fresh; mkdir "$DEST"
+    record "$capture" 2> "$work/fresh.err"
+    grep -q 'first run' "$work/fresh.err" || exit 1
+    grep -qi 'corrupt' "$work/fresh.err" && exit 1
+    grep -q '^h3_verify_runs_total{target="verify"} 1$' "$DEST/h3_verify.prom" || exit 1
+    # Present-but-truncated counter file: the corrupt WARN must fire and the
+    # counter must restart at 1.
+    DEST=$work/corrupt; mkdir "$DEST"
+    printf '# TYPE h3_ver' > "$DEST/h3_verify.prom"
+    record "$capture" 2> "$work/corrupt.err"
+    grep -q 'WARN.*corrupt prior counter' "$work/corrupt.err" || exit 1
+    grep -q '^h3_verify_runs_total{target="verify"} 1$' "$DEST/h3_verify.prom" || exit 1
     DEST=$work/missing
     record "$capture" 2> "$work/warn"
     grep -q 'WARN.*unwritable' "$work/warn" || exit 1
-    echo 'verify-telemetry: PASS — nine guards and durations incl. sub-second float, FAIL, SKIP/degrade, counter, unwritable directory'
+    echo 'verify-telemetry: PASS — nine guards and durations incl. sub-second float, FAIL, SKIP/degrade, counter, first-run vs corrupt counter, unwritable directory'
 }
 
 case ${1:---run} in
