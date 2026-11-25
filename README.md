@@ -191,8 +191,8 @@ All SDKs generate their types from the same OpenAPI spec. A change to the protoc
 
 ### The Loop
 
-1. Hermes sends a **ProcessRequest** (text, tool_call, or tool_result)
-2. The harness returns a **Decision** (text, tool_call, end, or wait)
+1. Hermes sends a **ProcessRequest** (the user message, with session context and tool inventory) or a **ResultRequest** (the execution result)
+2. The harness returns a **Decision** (`tool_call`, `llm_call`, `text`, `wait`, `delegate`, or `end` — the full schema is defined in [specs/02-Protocol-Specification.md](specs/02-Protocol-Specification.md), §4)
 3. Hermes executes the decision and sends back a **ResultRequest**
 4. The harness returns another Decision
 5. Loop until the harness returns `Decision.end`
