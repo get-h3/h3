@@ -37,10 +37,10 @@ Error shape: `{"error": {"code", "message", "details"}}` (codes in specs/02 §9)
 
 ## Setup (IMPORTANT — read first)
 
-- The Python SDK **`h3-harness-sdk` IS on PyPI** (0.1.2, published
-  2026-08-08): `pip install h3-harness-sdk` works.
-- The shim package **`hermes-h3-shim` IS on PyPI** (0.1.0, published
-  2026-09-22): `pip install hermes-h3-shim` works — inside a venv (a bare
+- The Python SDK **`h3-harness-sdk` IS on PyPI** (0.1.6, published
+  2026-10-08): `pip install h3-harness-sdk` works.
+- The shim package **`hermes-h3-shim` IS on PyPI** (0.2.0, published
+  2026-10-08): `pip install hermes-h3-shim` works — inside a venv (a bare
   system install is refused on PEP 668 distros). Installing from source is
   the fallback, for a commit that is not in a release yet:
   ```bash
@@ -220,8 +220,10 @@ element (see the port-collision bullet below).
   back to the real `~/.hermes/h3/config.yaml`, so pin `--config` there.
 - **Health path is `/v1/health`**, not `/health` (a plain `curl /health`
   gives 404 — that's fine).
-- **Verify command:** `hermes-h3 verify --harness <name>` (it takes
-  `--harness`, not a positional).
+- **Verify command:** `hermes-h3 verify --harness <name>` or
+  `hermes-h3 verify <name>` — it accepts both `--harness` and a positional
+  NAME (`Usage: hermes-h3 verify [OPTIONS] [NAME]`; the positional wins
+  when given, per the 0.2.0 `--help`).
 - **The board** is JSONL-canonical (`.coding-hermes/board/`): `tasks.jsonl`
   holds the live task matrix, `events.jsonl` the tick log, `fixtures.jsonl`
   the fixture windows. `tasks.md` remains only as a legacy tick-log mirror
@@ -412,7 +414,7 @@ and *is it cuttable* (no).
 The published site (https://get-h3.github.io/h3/, Pages artifact = `docs/`)
 is the lane's own product. How it works: push to `main` touching `docs/**`,
 `scripts/**`, or top-level `*.md` (spelled `*.md` on purpose — `**.md` would
-match `specs/*.md`) → count-guard job (single-sources 46 via
+match `specs/*.md`) → count-guard job (single-sources the test count via
 `scripts/test-count.txt`, sibling parity vs the shim battery) → deploy-pages.
 Specs are deliberately NOT published (`/h3/specs/...` 404s) — recorded in
 pages.yml as H3-PM-007.
