@@ -13,5 +13,13 @@
     {"row": "DF-H3-52", "action": "premise verified stale: fix landed in sdk-python main 09b6596 post-v0.1.6; record finding, defer OWNER-GATED (release cut)"}
   ],
   "note": "Budget 4, dispatched 3: the natural 4th (INT-CI-38) converted to inline verification (single failed run in last 15 = transient race, rerun is the fix); DF-H3-52 already fixed in source, residual owner-gated. COS ruling RUN IT: /tmp/cos-ruling-h3-2026-11-25-15-43-56.txt",
-  "merge_mode": "auto-merge serial, gates per merge, judges serial"
+  "merge_mode": "auto-merge serial, gates per merge, judges serial",
+  "status": "recovered",
+  "finished_at": "2026-11-25T22:40:00Z",
+  "recovery": {
+    "recovered_by": "h3-foreman-2026-11-25-22-30-00",
+    "rows": "DOC-43/DOC-33/DOC-40 complete at graded tip 065199d (judges f563d3e2/364397a4/e3b48f8e PASS; task-complete re-grades 647f6cc4/83e8d87e/4edeed3b PASS); INT-CI-38 verified transient (green rerun 45652908008); DF-H3-52 deferred owner-gated (sdk-python 09b6596)",
+    "merges": "wt/DOC-43 b48ea4c, wt/DOC-33 e7c107b, wt/DOC-40 ec9d9fa — all merged, worktrees removed, branches deleted",
+    "closeout_commit": "9ba3f11 (pushed, origin/main in sync)"
+  }
 }
