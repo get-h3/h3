@@ -822,5 +822,6 @@ tasks:
     duration values (regex with optional .NNN part) and emits them unchanged under
     gauge h3_verify_duration_seconds; the --selftest covers a fractional duration
     case and exits 0; make verify exits 0 at the graded HEAD.'
-  status: in_progress
+  status: complete
   created_at: '2026-11-25T08:08:53.782251+00:00'
+  completed_at: '2026-11-25T08:18:59.348893+00:00'
