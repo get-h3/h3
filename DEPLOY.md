@@ -154,20 +154,38 @@ uvicorn main:app --port 9191
 
 ```typescript
 import { Hono } from 'hono';
-import { Harness, Decision, DecisionType, createH3Router } from '@get-h3/h3-harness-sdk';
+import { createH3Router } from '@get-h3/h3-harness-sdk';
+import type {
+  Decision,
+  Harness,
+  HealthResponse,
+  ProcessRequest,
+  ResultRequest,
+} from '@get-h3/h3-harness-sdk';
 
 class MyHarness implements Harness {
-  async onProcess(req) {
-    return { decision: DecisionType.TEXT, decision_id: crypto.randomUUID(),
-             text: { content: 'Hello from TypeScript!', finished: true } };
+  async onProcess(_req: ProcessRequest): Promise<Decision> {
+    return {
+      decision: 'text',
+      decision_id: crypto.randomUUID(),
+      text: { content: 'Hello from TypeScript!', finished: true },
+    };
   }
-  async onResult(req) {
-    return { decision: DecisionType.END, decision_id: crypto.randomUUID(),
-             end: { reason: 'task_complete' } };
+  async onResult(_req: ResultRequest): Promise<Decision> {
+    return {
+      decision: 'end',
+      decision_id: crypto.randomUUID(),
+      end: { reason: 'task_complete' },
+    };
   }
-  health() {
-    return { status: 'ok', version: '1.0.0', transport: 'rest',
-             protocol_version: '1.0', capabilities: ['text', 'end'] };
+  health(): HealthResponse {
+    return {
+      status: 'ok',
+      version: '1.0.0',
+      transport: 'rest',
+      protocol_version: '1.0',
+      capabilities: ['text', 'end'],
+    };
   }
 }
 
