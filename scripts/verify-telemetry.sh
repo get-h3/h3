@@ -58,7 +58,7 @@ record() {
       END {
         for (i=1;i<=9;i++) { g=names[i]; result=(ended[g] && rc[g]==0 && pass[g] && !degraded[g]) ? 1 : 0; print "h3_verify_guard_result{guard=\"" g "\"} " result }
         print "# TYPE h3_verify_duration_seconds gauge"
-        for (i=1;i<=9;i++) { g=names[i]; d=duration[g]; if (d !~ /^[0-9]+$/) d=0; print "h3_verify_duration_seconds{guard=\"" g "\"} " d }
+        for (i=1;i<=9;i++) { g=names[i]; d=duration[g]; if (d !~ /^[0-9]+(\.[0-9]+)?$/) d=0; print "h3_verify_duration_seconds{guard=\"" g "\"} " d }
       }' "$capture" > "$tmp" || ! mv -f "$tmp" "$previous"; then
         echo 'verify-telemetry: WARN — unable to publish metrics' >&2
         rm -f "$tmp"
@@ -70,12 +70,15 @@ record() {
 run_guard() {
     guard=$1
     file=$2
-    start=$(date +%s)
+    start=$(date +%s%N)
     printf '__H3_BEGIN__ %s\n' "$guard" > "$file"
     ${MAKE:-make} --no-print-directory "$guard" >> "$file" 2>&1
     rc=$?
-    end=$(date +%s)
-    printf '__H3_END__ %s %s %s\n' "$guard" "$rc" "$((end - start))" >> "$file"
+    end=$(date +%s%N)
+    # Nanosecond timestamps -> float seconds with 3 decimals; the arithmetic
+    # lives in awk because 19-digit integers overflow POSIX shell arithmetic.
+    duration=$(awk -v s="$start" -v e="$end" 'BEGIN { printf "%.3f", (e - s) / 1000000000 }')
+    printf '__H3_END__ %s %s %s\n' "$guard" "$rc" "$duration" >> "$file"
     return "$rc"
 }
 
@@ -130,11 +133,15 @@ selftest() {
           verify-board-header) line='check-board-header-consistency: PASS' ;;
           verify-commit-msg) line='check-ci-skip-tokens: PASS' ;;
         esac
-        printf '__H3_BEGIN__ %s\n%s\n__H3_END__ %s 0 2\n' "$guard" "$line" "$guard" >> "$capture"
+        duration=2
+        case "$guard" in verify-docs) duration=0.412 ;; esac
+        printf '__H3_BEGIN__ %s\n%s\n__H3_END__ %s 0 %s\n' "$guard" "$line" "$guard" "$duration" >> "$capture"
     done
     record "$capture" 2>/dev/null
     [ "$(grep -c '^h3_verify_guard_result.* 1$' "$DEST/h3_verify.prom")" -eq 9 ] || exit 1
-    [ "$(grep -c '^h3_verify_duration_seconds.* 2$' "$DEST/h3_verify.prom")" -eq 9 ] || exit 1
+    [ "$(grep -c '^h3_verify_duration_seconds' "$DEST/h3_verify.prom")" -eq 9 ] || exit 1
+    grep -q '^h3_verify_duration_seconds{guard="verify-docs"} 0\.412$' "$DEST/h3_verify.prom" || exit 1
+    [ "$(grep -c '^h3_verify_duration_seconds.* 2$' "$DEST/h3_verify.prom")" -eq 8 ] || exit 1
     sed 's/check-test-count: PASS/check-test-count: FAIL/; s/check-tags-table: PASS/check-tags-table: PASS (local degrade)/; s/duckbrain-census-gate: PASS/duckbrain-census-gate: SKIP/' "$capture" > "$work/bad"
     record "$work/bad"
     for guard in verify-count verify-tags verify-tick-chain; do
@@ -144,7 +151,7 @@ selftest() {
     DEST=$work/missing
     record "$capture" 2> "$work/warn"
     grep -q 'WARN.*unwritable' "$work/warn" || exit 1
-    echo 'verify-telemetry: PASS — nine guards and durations, FAIL, SKIP/degrade, counter, unwritable directory'
+    echo 'verify-telemetry: PASS — nine guards and durations incl. sub-second float, FAIL, SKIP/degrade, counter, unwritable directory'
 }
 
 case ${1:---run} in
