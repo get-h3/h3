@@ -905,3 +905,36 @@ tasks:
   status: complete
   created_at: '2026-11-25T16:43:57.433918+00:00'
   completed_at: '2026-11-25T16:59:27.363258+00:00'
+- id: DOC-44
+  title: README quick-start runs battery after foreground server without second terminal
+  criteria:
+  - README Quick Start blocks give an explicit safe two-terminal or background/readiness/cleanup
+    workflow; h3-test runs against a live server from a fresh shell; make verify-docs
+    exits 0
+  status: complete
+  created_at: '2026-11-25T22:34:22.535376+00:00'
+  completed_at: '2026-11-25T22:56:22.072728+00:00'
+- id: DOC-37
+  title: skills h3-usage Setup pins stale PyPI versions
+  criteria:
+  - Setup bullets carry current published versions (h3-harness-sdk 0.1.6, hermes-h3-shim
+    0.2.0) or none; no 0.1.2/0.1.0 pinned as live; make verify-docs exits 0
+  status: complete
+  created_at: '2026-11-25T22:34:22.843092+00:00'
+  completed_at: '2026-11-25T22:57:48.452172+00:00'
+- id: DOC-38
+  title: skills h3-usage quotes stale count 46 for pages.yml count guard
+  criteria:
+  - Sentence hardcodes no number or quotes 48 matching scripts/test-count.txt at HEAD;
+    no stale 46 left in the count-guard description; make verify-docs exits 0
+  status: complete
+  created_at: '2026-11-25T22:34:27.084560+00:00'
+  completed_at: '2026-11-25T22:58:30.025526+00:00'
+- id: DOC-39
+  title: skills h3-usage says verify takes only --harness not a positional
+  criteria:
+  - Bullet states verify accepts both --harness and positional NAME matching 0.2.0
+    --help; grep 'not a positional' returns zero hits; make verify-docs exits 0
+  status: complete
+  created_at: '2026-11-25T22:34:27.404428+00:00'
+  completed_at: '2026-11-25T22:59:18.341760+00:00'

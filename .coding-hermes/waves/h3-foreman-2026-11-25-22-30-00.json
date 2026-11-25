@@ -1,0 +1,20 @@
+{
+  "tick_id": "h3-foreman-2026-11-25-22-30-00",
+  "composed_at": "2026-11-25T22:37Z",
+  "status": "dispatched",
+  "wave_budget": 2,
+  "workers": [
+    {"rows": ["DOC-44"], "worktree": "pending-create", "branch": "wt/DOC-44", "model": "glm-5.3-flash", "provider": "opencode-go-2", "note": "README quick-start: foreground server + h3-test ordering fix (docs h3-ops audit finding, evidence transcript sha256 74da67015)"},
+    {"rows": ["DOC-37", "DOC-38", "DOC-39"], "worktree": "pending-create", "branch": "wt/DOC-37", "model": "glm-5.3-flash", "provider": "opencode-go-2", "note": "bundle: three P5 rot fixes in ONE file skills/h3-usage/SKILL.md (shared file set = deliberately one worker, not three)"}
+  ],
+  "cos_plane": "No active initiative card ids on file for P4/P5 doc-rot rows; justification surfaced rather than skipped: DOC-44 is this week's docs h3-ops audit finding (21:48Z), DOC-37/38/39 are owner-severity P5 skill-rot rows with verified stale facts — direct reader-facing doc defects, same class as the closed DOC-43 wave. RELEASE-H3-014/QA-H3-PERF-2 are owner/host-gated, RELEASE-H3-013 blocked, DF-H3-52 deferred owner-gated.",
+  "note": "Budget 2, dispatched 2. Wave floor respected; CI green at 17:01Z.",
+  "merge_mode": "auto-merge serial, gates per merge, gitreins per row",
+  "status": "merged",
+  "finished_at": "2026-11-25T23:12:00Z",
+  "results": {
+    "merges": "wt/DOC-44 via 7ca836a; wt/DOC-37 via 56893ac — gates per merge green; worktrees reaped, branches deleted",
+    "follow_up": "e63107a DOC-37 date fix (judge a5a5c6bd finding)",
+    "judges": "DOC-44 b7f9bc37 PASS (first run 9e3ab024 failed z.ai 429 — deepseek failover lane), DOC-37 86a0fcfa PASS, DOC-38 f3fcad7c PASS, DOC-39 97d97a4d PASS; task-complete re-grades c7c45c58/0c0ffe6f/aecac4b1/d8a96066 PASS at tip e63107a"
+  }
+}
