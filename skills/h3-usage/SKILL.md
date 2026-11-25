@@ -190,10 +190,13 @@ two harnesses at once; the Python and TypeScript examples also honor `PORT`.
   The error messages walk you in one field at a time; the full working
   curl pair is in `docs/dogfood/2026-09-08-integration.md`.
 - **Port collisions are silent killers.** `h3-test` tests whatever listens
-  on the port. The Python echo example hardcodes `:8000`; if it fails to
-  bind (exit 3), the battery tests the WRONG server (looks like a baffling
-  9/44 with `{"detail":"Not Found"}` health). Always `curl
-  <endpoint>/v1/health` first, and use `ss -tlnp` to confirm ownership.
+  on the port. The Python echo example doesn't read `PORT` — it defaults
+  to the battery port `:9191` and takes an optional port as its first
+  argv element (`python echo.py 8000` to override). If the example loses
+  the bind or an earlier server kept the port, the battery tests the
+  WRONG server (health answering `{"detail":"Not Found"}` is the tell).
+  Always `curl <endpoint>/v1/health` first, and use `ss -tlnp` to confirm
+  ownership.
 - **`go run .` fails with `unknown revision v0.0.0`** → stale local go.mod;
   sdk-go v0.1.0+ is published, so `go mod tidy` fetches it — add a
   `replace` directive only for local SDK dev.
