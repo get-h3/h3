@@ -341,13 +341,29 @@ GET  /v1/health    200 1ms
 > checklist item below to get the *client* path ready; do not treat the key as a security
 > boundary yet. Keep the harness behind a trusted network (and TLS if it is exposed).
 
-The shim client reads the key from the `H3_API_KEY` environment variable — an explicit
-`hermes_token` argument to the client takes priority over the env var. When a token is
-configured, the client sends it on every request in the `Authorization` header:
+The token reaches the client by two supply paths. The config `identity:` block — read by
+the shim loader and passed to every `H3Client` it builds (`shim/src/h3_shim/loader.py:250-253`)
+— sets `hermes_token` and `hermes_identity`; the client also reads the `H3_API_KEY` environment
+variable as a fallback (`shim/src/h3_shim/client.py:75-79`). Explicit config wins: `H3_API_KEY`
+is only consulted when `hermes_token` is unset (`client.py:77`), so when both are set the
+`identity:` block outranks the env var. When a token is configured, the client sends it on
+every request in the `Authorization` header:
+
+```yaml
+# Top-level config key (sibling of harnesses:/sessions:) — wins over $H3_API_KEY.
+identity:
+  hermes_token: <token>          # sent as: Authorization: Bearer <token>
+  hermes_identity: <identity>    # sent as: H3-Hermes-Identity: <identity>
+  protocol_version: "1.0"        # default "1.0" (loader.py:253); sent as H3-Protocol-Version
+```
 
 ```
 Authorization: Bearer <key>
 ```
+
+The shim repo shows this block in its full annotated config example —
+[get-h3/shim](https://github.com/get-h3/shim), `docs/integration.md:160-165` (not vendored
+here).
 
 The intended key format (specs/12:24-58) is either a per-harness API key (`h3_<base64url>`)
 or a Hermes identity token (`h3_hx_<token>`). The wire contract it targets is the protocol's
