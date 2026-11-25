@@ -42,13 +42,25 @@ pip install hermes-h3-shim
 # source checkout instead, into the same venv:
 #   git clone https://github.com/get-h3/shim && cd shim && pip install -e .
 
-# Start a Go echo harness — the echo example lives in the sdk-go repo, not in the shim
+# Start a Go echo harness — the echo example lives in the sdk-go repo, not in the shim.
 # Requires the Go toolchain (1.22+): https://go.dev/dl/
+# The server runs in the FOREGROUND, so `go run .` would block this block before the
+# battery ever runs — background a built binary instead (killing `go run` leaves its
+# compiled child alive and still holding :9191):
 git clone https://github.com/get-h3/sdk-go
-cd sdk-go/examples/echo && go run .
+cd sdk-go/examples/echo
+go build -o echo .
+./echo &                 # separate lines: $! must be the SERVER, not a build subshell
+SERVER_PID=$!
 
-# Run the compliance tests
+# Readiness-wait, run the compliance tests against the RUNNING server, then stop it
+until curl -sf http://localhost:9191/v1/health > /dev/null; do sleep 1; done
 h3-test --endpoint http://localhost:9191
+kill $SERVER_PID && wait $SERVER_PID 2>/dev/null || true
+
+# Prefer two terminals? Run `go run .` in terminal 1 (Ctrl-C to stop) and
+# `h3-test --endpoint http://localhost:9191` in terminal 2 — a fresh shell needs
+# the venv's CLI back on PATH; see the three equivalent options below.
 ```
 
 > **`python3 -m venv` fails with `ensurepip is not available`?** That host has no
@@ -86,9 +98,16 @@ h3-test --endpoint http://localhost:9191
 Or scaffold a new harness in 30 seconds:
 
 ```bash
+# New shell since the install above? Put the venv's CLI back on PATH first —
+# the three equivalent options above.
 hermes-h3 scaffold --lang go
-cd h3-harness-go && go mod tidy && go run .
+cd h3-harness-go && go mod tidy
+go build -o harness .
+./harness &              # separate lines: $! must be the SERVER, not a build subshell
+SERVER_PID=$!
+until curl -sf http://localhost:9191/v1/health > /dev/null; do sleep 1; done
 h3-test --endpoint http://localhost:9191
+kill $SERVER_PID && wait $SERVER_PID 2>/dev/null || true
 ```
 
 > **Run one harness at a time — both quick-start paths bind `:9191`.** The Go
