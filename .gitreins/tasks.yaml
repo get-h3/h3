@@ -813,3 +813,14 @@ tasks:
   status: complete
   created_at: '2026-11-25T07:10:42.158271+00:00'
   completed_at: '2026-11-25T07:46:33.626171+00:00'
+- id: DF-H3-057
+  title: 'verify-telemetry: record sub-second guard durations as float seconds'
+  criteria:
+  - 'scripts/verify-telemetry.sh records per-guard wall time as float seconds: run_guard
+    computes the duration field via nanosecond timestamps (date +%s%N) divided to
+    seconds with 3-decimal printf in awk; the record() emitter accepts fractional
+    duration values (regex with optional .NNN part) and emits them unchanged under
+    gauge h3_verify_duration_seconds; the --selftest covers a fractional duration
+    case and exits 0; make verify exits 0 at the graded HEAD.'
+  status: in_progress
+  created_at: '2026-11-25T08:08:53.782251+00:00'
