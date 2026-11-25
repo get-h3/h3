@@ -871,3 +871,37 @@ tasks:
   status: complete
   created_at: '2026-11-25T08:37:40.649417+00:00'
   completed_at: '2026-11-25T09:22:29.922818+00:00'
+- id: DOC-43
+  title: Fix h3-usage PORT claim for Python echo example
+  criteria:
+  - skills/h3-usage/SKILL.md no longer claims the Python echo example honors PORT;
+    statement consistent with the DOC-32 bullet; prose-only diff
+  status: complete
+  created_at: '2026-11-25T16:10:46.381882+00:00'
+  completed_at: '2026-11-25T16:50:08.292765+00:00'
+- id: DOC-33
+  title: Fix DEPLOY.md TypeScript example to real SDK API
+  criteria:
+  - DEPLOY.md TypeScript example uses only names the TS SDK actually exports with
+    correct value/type semantics; rest of file unchanged
+  status: complete
+  created_at: '2026-11-25T16:10:48.331527+00:00'
+  completed_at: '2026-11-25T16:53:03.009702+00:00'
+- id: DOC-40
+  title: Create docs/traceability-doctrine.md public trace contract
+  criteria:
+  - docs/traceability-doctrine.md exists; documents real trace artifact paths with
+    reproducible commands; worked example traces a real row end to end; public-surface
+    safe
+  status: complete
+  created_at: '2026-11-25T16:10:50.284869+00:00'
+  completed_at: '2026-11-25T16:56:45.564286+00:00'
+- id: INT-CI-38
+  title: GitHub Pages deploy transient artifact race - fresh green run exists
+  criteria:
+  - A full green 'Deploy to GitHub Pages' run exists after the 2026-11-25T09:00Z failing
+    run (3 failed attempts of run 45581396930), and the live site serves main's docs
+    byte-fresh
+  status: complete
+  created_at: '2026-11-25T16:43:57.433918+00:00'
+  completed_at: '2026-11-25T16:59:27.363258+00:00'

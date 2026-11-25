@@ -1014,3 +1014,7 @@
 {"id":980,"timestamp":"2026-11-25 16:10:30.013396","event_type":"task_updated","task_id":"DOC-33","actor":"foreman","detail":"{\"status\":\"in_progress\"}","tick_number":null}
 {"id":981,"timestamp":"2026-11-25 16:10:30.6664","event_type":"task_updated","task_id":"DOC-40","actor":"foreman","detail":"{\"status\":\"in_progress\"}","tick_number":null}
 {"id":982,"timestamp":"2026-11-25 16:20:33.407674","event_type":"task_updated","task_id":"DF-H3-52","actor":"foreman","detail":"{\"status\":\"pending\"}","tick_number":null}
+{"id":983,"timestamp":"2026-11-25 16:32:59.746102","event_type":"task_completed","task_id":"DOC-43","actor":"foreman","detail":"{\"status\":\"complete\"}","tick_number":null}
+{"id":984,"timestamp":"2026-11-25 16:38:25.180026","event_type":"task_completed","task_id":"DOC-33","actor":"foreman","detail":"{\"status\":\"complete\"}","tick_number":null}
+{"id":985,"timestamp":"2026-11-25 16:42:45.355443","event_type":"task_completed","task_id":"DOC-40","actor":"foreman","detail":"{\"status\":\"complete\"}","tick_number":null}
+{"id":986,"timestamp":"2026-11-25 16:49:36.574017","event_type":"task_completed","task_id":"INT-CI-38","actor":"foreman","detail":"{\"status\":\"complete\"}","tick_number":null}
