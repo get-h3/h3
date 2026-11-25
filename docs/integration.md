@@ -557,7 +557,7 @@ every subcommand — overrides `$HERMES_H3_CONFIG`, default `~/.hermes/h3/config
 
 | Command | Flags | Meaning |
 |---------|-------|---------|
-| Group-level | `--version` | Show version and package install path, then exit. Group-level only — `hermes-h3 list`, `route`, `use`, `scaffold`, `verify` all refuse `--version` with "Error: No such option '--version'". |
+| Group-level | `--version` | Show version and package install path, then exit. Group-level only — each of the nine subcommands (`install`, `list`, `pre-update-check`, `route`, `scaffold`, `test`, `uninstall`, `use`, `verify`) refuses `--version` with "Error: No such option '--version'". |
 | `list` | `--config FILE` | List harnesses known to the config. |
 | `install [NAME]` | `--name TEXT` | Harness name (alias for the positional `NAME`). |
 | | `--endpoint URL` | Required. Harness endpoint URL. |
