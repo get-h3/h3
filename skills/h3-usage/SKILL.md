@@ -38,7 +38,7 @@ Error shape: `{"error": {"code", "message", "details"}}` (codes in specs/02 §9)
 ## Setup (IMPORTANT — read first)
 
 - The Python SDK **`h3-harness-sdk` IS on PyPI** (0.1.6, published
-  2026-10-08): `pip install h3-harness-sdk` works.
+  2026-09-21): `pip install h3-harness-sdk` works.
 - The shim package **`hermes-h3-shim` IS on PyPI** (0.2.0, published
   2026-10-08): `pip install hermes-h3-shim` works — inside a venv (a bare
   system install is refused on PEP 668 distros). Installing from source is
