@@ -498,13 +498,15 @@ tasks:
   created_at: '2026-10-28T21:47:39.179000+00:00'
   completed_at: '2026-10-28T21:55:15.624816+00:00'
 - id: RELEASE-H3-013
-  title: Verify v0.3.1 release readiness
+  title: 'Release v0.3.1 readiness: changelog + verified gates + CI dispatch evidence'
   criteria:
-  - make verify passes; release dry-run passes; exact-head pages and roundtrip CI
-    succeed; owner-gated execute remains pending
-  status: complete
-  created_at: '2026-10-29T08:57:32.358780+00:00'
-  completed_at: '2026-10-29T08:57:54.744060+00:00'
+  - 'CHANGELOG.md carries a v0.3.1 section (grep -c ''0\.3\.1'' >= 1) naming the changes
+    since v0.3.0; evidence exists that make verify printed ALL PASS on a fresh detached
+    worktree of the release tip, scripts/release.sh --dry-run exited 0 proposing v0.3.1
+    with 0 mutations, and make verify-roundtrip ran the code suite with Failed: 0;
+    no release.sh --execute run and no tag/release object created (owner-gated arm)'
+  status: in_progress
+  created_at: '2026-11-24T23:46:18.702492+00:00'
 - id: QA-H3-FOREMAN-4
   title: Verify missing-config behavior
   criteria:

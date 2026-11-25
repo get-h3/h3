@@ -1,0 +1,21 @@
+{
+  "tick_id": "h3-foreman-2026-11-24-23-43-34",
+  "tick_number": 572,
+  "tested_commit": "2cedd8148d15612e989164660421610d2fd69bbe",
+  "selected_row": "RELEASE-H3-013",
+  "class": "verification-only-owner-gated",
+  "gates": {
+    "make_verify": "PASS rc=0 'make verify: ALL PASS — umbrella repo is self-consistent' in a FRESH DETACHED WORKTREE at 2cedd81 (arm re-run by foreman after a header re-pin: the changelog commit 7c7b8ca had left the committed header 2-behind, the documented first-non-board-commit-after-board-commit shape; re-pin commit 2cedd81 repaired guard A)",
+    "release_dry_run": "rc=0 at 2cedd81 BUT proposes v0.4.0, NOT v0.3.1: v0.3.0..HEAD carries 1 feat commit (64edea3233e183dabdf44333265e3de5a17d159d, 2026-11-21, 'feat: record verify guard telemetry — expose per-run outcomes. Addresses H3-OBS-05', Makefile +1/-1 + scripts/verify-telemetry.sh +154) and 0 breaking commits, so the driver computes BUMP=MINOR. The row's 'proposes v0.3.1' gate is unsatisfiable without an owner ruling (see owner_action_required). NOTE: the 2026-10-26 releng sweep and the 2026-11-21 PM re-measure both predate the feat commit, which is why earlier sweeps read PATCH.",
+    "make_verify_roundtrip": "PASS rc=0 at 2cedd81: 'QV-PROTO-04: Cross-language protocol round-trip verification PASSED', RESULTS Passed: 6 Failed: 0; tree clean after the run (roundtrip workspace staged outside the repo at /mnt/ssd/tmp/h3-roundtrip-siblings-WMald3)",
+    "ci": "dispatched both workflows on 2cedd81 via workflow_dispatch: Deploy to GitHub Pages run 45515340558 = success; H3 Cross-Language Round-Trip Verification run 45515346030 = success (check-runs on 2cedd81: deploy success; Python ↔ Go Round-Trip success; Fresh clone (h3 only, pinned siblings fetched) success; Compliance-test count guard success). Additionally the push-triggered pages run 45513395664 on 7c7b8ca = success (CHANGELOG.md is a top-level *.md, path filter matched)."
+  },
+  "worker_commit": "7c7b8ca56e16af60c6a83c9620636ed75f3a5d69 — 'docs: stamp v0.3.1 changelog section (RELEASE-H3-013)': '## [Unreleased] — 2026-10-29' renamed to '## [v0.3.1] — 2026-11-24', body unchanged; grep -c '0\\.3\\.1' CHANGELOG.md = 1; pushed, rev-list origin/main..HEAD = 0; Co-authored-by: Alexis Okuwa trailer verified in git log -1",
+  "blockers_recheck": {
+    "H3-OBS-05": "complete on the board (verified via jq read-only)",
+    "QA-H3-PERF-2": "pending, owned by the h3-qa lane (defer_review_by 2026-12-06); bunker-mvp disk objection in the row is stale at 83% used; gates no docs-only patch cut: the v0.3.1 candidate range carries no protocol/SDK/CLI behavior change"
+  },
+  "owner_action_required": "Ruling on RELEASE-H3-014: cut v0.4.0 (driver-correct semver; re-stamp the changelog section v0.3.1 -> v0.4.0) OR accept the documented override path --tag v0.3.1 --no-changelog --execute (dry-run prints an explicit override NOTE). After the ruling, scripts/release.sh --execute + tag push remain owner-gated exactly as before.",
+  "infra_note": "The DuckBrain HTTP substrate (:3000) wedged mid-tick (Recv-Q 26 on the listener, node in D state; host load average 612 on 16 cores, a fleet-wide D-state I/O storm) and was recovered by the sanctioned user unit restart (systemctl --user restart duckbrain-http.service, health probe 401 = reachable+auth). Arm B first measured UNVERIFIED census through the wedge, then ALL PASS (rc=0) on the clean substrate after recovery — the ALL PASS line pasted above postdates the recovery.",
+  "row_status": "RELEASE-H3-013 remains pending per its own contract (the 'proposes v0.3.1' arm is unmet at the deterministic tool level); commit_hash re-pinned to the verified candidate tip 2cedd81"
+}
