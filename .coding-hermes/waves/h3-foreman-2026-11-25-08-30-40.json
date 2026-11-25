@@ -3,7 +3,7 @@
   "scheduler_tick_id": "h3-foreman-2026-11-25-08-30-40",
   "tick_number": 575,
   "created_utc": "2026-11-25T09:05:00Z",
-  "status": "dispatched",
+  "status": "merged",
   "model": "glm-5.3-flash",
   "provider": "zai-glm",
   "base_sha": "8804744",
@@ -12,31 +12,31 @@
       "id": "DF-H3-058",
       "worktree": "/home/kara/worktrees/h3-DF-H3-058",
       "branch": "wt/DF-H3-058",
-      "status": "dispatched"
+      "status": "closed"
     },
     {
       "id": "DOC-31",
       "worktree": "/home/kara/worktrees/h3-DOC-31",
       "branch": "wt/DOC-31",
-      "status": "dispatched"
+      "status": "closed"
     },
     {
       "id": "DOC-32",
       "worktree": "/home/kara/worktrees/h3-DOC-32",
       "branch": "wt/DOC-32",
-      "status": "dispatched"
+      "status": "closed"
     },
     {
       "id": "DOC-35",
       "worktree": "/home/kara/worktrees/h3-DOC-35",
       "branch": "wt/DOC-35",
-      "status": "dispatched"
+      "status": "closed"
     },
     {
       "id": "DOC-36",
       "worktree": "/home/kara/worktrees/h3-DOC-36",
       "branch": "wt/DOC-36",
-      "status": "dispatched"
+      "status": "closed"
     }
   ],
   "routed_away": [
@@ -48,5 +48,29 @@
     "SHIM-DF3-H3-SHIM-7 (shim lane)"
   ],
   "cos_ruling": "RUN IT (fresh COS Hermes, 2026-11-25; constraints adopted: serial judges, handoff must land, close order judge->boardctl->gitreins complete)",
-  "cos_ruling_file": "/tmp/cos-ruling-h3-575.txt"
+  "cos_ruling_file": "/tmp/cos-ruling-h3-575.txt",
+  "merge_tip": "a1bcb71af39bce2421c73bba1985a2d2bbdb056e",
+  "pushed_tip": "35f07c2",
+  "judges": {
+    "DF-H3-058": [
+      "62a7e56d",
+      "80602140"
+    ],
+    "DOC-31": [
+      "c19cb2bf",
+      "a9bb41b6"
+    ],
+    "DOC-32": [
+      "d71bb869",
+      "48e56e7e"
+    ],
+    "DOC-35": [
+      "fe09d30d",
+      "21142ddb"
+    ],
+    "DOC-36": [
+      "89348e5f",
+      "8b0b4138"
+    ]
+  }
 }
