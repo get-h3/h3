@@ -804,3 +804,11 @@ tasks:
   status: complete
   created_at: '2026-11-23T13:41:37.360085+00:00'
   completed_at: '2026-11-23T14:04:14.870043+00:00'
+- id: QA-H3-031
+  title: 'QA harness: failing test recipe output discarded, clean-box rc=2 unattributable'
+  criteria:
+  - Reproduce forced-fail BOOM-MARKER discard in bunker-qa.sh tests cell; fix so failing
+    command output reaches collected evidence; green-before/after parity; bash -n
+    clean; selftest case if harness exists
+  status: in_progress
+  created_at: '2026-11-25T07:10:42.158271+00:00'
