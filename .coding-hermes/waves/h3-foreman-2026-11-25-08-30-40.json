@@ -1,0 +1,52 @@
+{
+  "wave_id": "h3-foreman-2026-11-25-08-30-40",
+  "scheduler_tick_id": "h3-foreman-2026-11-25-08-30-40",
+  "tick_number": 575,
+  "created_utc": "2026-11-25T09:05:00Z",
+  "status": "dispatched",
+  "model": "glm-5.3-flash",
+  "provider": "zai-glm",
+  "base_sha": "8804744",
+  "rows": [
+    {
+      "id": "DF-H3-058",
+      "worktree": "/home/kara/worktrees/h3-DF-H3-058",
+      "branch": "wt/DF-H3-058",
+      "status": "dispatched"
+    },
+    {
+      "id": "DOC-31",
+      "worktree": "/home/kara/worktrees/h3-DOC-31",
+      "branch": "wt/DOC-31",
+      "status": "dispatched"
+    },
+    {
+      "id": "DOC-32",
+      "worktree": "/home/kara/worktrees/h3-DOC-32",
+      "branch": "wt/DOC-32",
+      "status": "dispatched"
+    },
+    {
+      "id": "DOC-35",
+      "worktree": "/home/kara/worktrees/h3-DOC-35",
+      "branch": "wt/DOC-35",
+      "status": "dispatched"
+    },
+    {
+      "id": "DOC-36",
+      "worktree": "/home/kara/worktrees/h3-DOC-36",
+      "branch": "wt/DOC-36",
+      "status": "dispatched"
+    }
+  ],
+  "routed_away": [
+    "QA-H3-29 (qa lane: bunker-qa.sh is a fleet script outside any repo)",
+    "QA-H3-26 (qa lane)",
+    "DF-H3-52 (sdk-python + owner release)",
+    "RELEASE-H3-013/014 (owner-gated)",
+    "SHIM-DEPS-01 (shim lane)",
+    "SHIM-DF3-H3-SHIM-7 (shim lane)"
+  ],
+  "cos_ruling": "RUN IT (fresh COS Hermes, 2026-11-25; constraints adopted: serial judges, handoff must land, close order judge->boardctl->gitreins complete)",
+  "cos_ruling_file": "/tmp/cos-ruling-h3-575.txt"
+}
