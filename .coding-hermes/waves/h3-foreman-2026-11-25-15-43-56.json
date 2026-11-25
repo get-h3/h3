@@ -1,0 +1,17 @@
+{
+  "tick_id": "h3-foreman-2026-11-25-15-43-56",
+  "composed_at": "2026-11-25T15:55Z",
+  "status": "dispatched",
+  "wave_budget": 4,
+  "workers": [
+    {"row": "DOC-43", "worktree": "/home/kara/worktrees/h3-DOC-43", "branch": "wt/DOC-43", "base_sha": "de4af57", "model": "glm-5.3-flash", "provider": "opencode-go-2"},
+    {"row": "DOC-33", "worktree": "/home/kara/worktrees/h3-DOC-33", "branch": "wt/DOC-33", "base_sha": "de4af57", "model": "glm-5.3-flash", "provider": "opencode-go-2"},
+    {"row": "DOC-40", "worktree": "/home/kara/worktrees/h3-DOC-40", "branch": "wt/DOC-40", "base_sha": "de4af57", "model": "glm-5.3-flash", "provider": "opencode-go-2"}
+  ],
+  "inline": [
+    {"row": "INT-CI-38", "action": "verify: workflow_dispatch fresh Pages deploy; close transient if green, else file hardening row"},
+    {"row": "DF-H3-52", "action": "premise verified stale: fix landed in sdk-python main 09b6596 post-v0.1.6; record finding, defer OWNER-GATED (release cut)"}
+  ],
+  "note": "Budget 4, dispatched 3: the natural 4th (INT-CI-38) converted to inline verification (single failed run in last 15 = transient race, rerun is the fix); DF-H3-52 already fixed in source, residual owner-gated. COS ruling RUN IT: /tmp/cos-ruling-h3-2026-11-25-15-43-56.txt",
+  "merge_mode": "auto-merge serial, gates per merge, judges serial"
+}
