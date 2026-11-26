@@ -12,8 +12,10 @@
       "worker_model": "glm-5.3-flash",
       "worker_provider": "opencode-go-2",
       "worktree": null,
-      "note": "harness-only fix in ~/.hermes/scripts/bunker-qa.sh (not a git repo; no product worktree). gitreins task QA-H3-29 created+started."
+      "note": "harness-only fix in ~/.hermes/scripts/bunker-qa.sh (not a git repo; no product worktree). gitreins task QA-H3-29 created+started.",
+      "result": "complete at 9659668; judge 6f135fae PASS; task-complete bb62d417 PASS"
     }
   ],
-  "dispatched_at": "2026-11-26T02:2x:00+00:00"
+  "dispatched_at": "2026-11-26T02:2x:00+00:00",
+  "finished_at": "2026-11-26T03:15:00+00:00"
 }

@@ -988,5 +988,6 @@ tasks:
     < tests cell line; controlled local proof: PATH-scrubbed ordering check; control:
     with node on PATH make verify-roundtrip passes 6/6). No change to the h3 repo
     product code.'
-  status: in_progress
+  status: complete
   created_at: '2026-11-26T02:16:58.556941+00:00'
+  completed_at: '2026-11-26T03:05:56.742549+00:00'
