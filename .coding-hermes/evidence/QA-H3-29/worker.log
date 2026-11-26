@@ -1,0 +1,223 @@
+│ /tmp/qa-h3-29-proof/run-proof.sh
+│ @@ -0,0 +1,87 @@
+│ +#!/usr/bin/env bash
+│ +# QA-H3-29 controlled ordering proof — proves ORDERING, not a full battery.
+│ +#
+│ +# What this does (and only this):
+│ +#  * Takes the FIX 3 node+npm bootstrap block VERBATIM from the live
+│ +#    /home/kara/.hermes/scripts/bunker-qa.sh (lines 3426-3440, post-move) into
+│ +#    fix3-verbatim.sh, then unescapes `\$` -> `$` — byte-for-byte the same
+│ +#    transformation the harness's own UNQUOTED heredoc (bunker-qa.sh line 1971,
+│ +#    `cat <<EOF`) performs when it ships the block into the agent's qa-run.sh.
+│ +#    fix3-adapted.sh is therefore exactly what the agent executes.
+│ +#  * Harness adaptations ONLY, outside the block: `cell()` is stubbed to echo
+│ +#    (it is the grading sink, not the mechanism under test) and LOGD is set to
+│ +#    a scratch dir; `curl` is stubbed on PATH to serve a pre-built fake node
+│ +#    tarball so the proof is controlled (no real download, deterministic).
+│ +#  * PATH is scrubbed of node: PATH="$STUB:/usr/bin:/bin" with a FRESH HOME per
+│ +#    run so ~/tools cannot pre-exist. The "tests cell" stand-in is `command -v
+│ +#    npm` — exactly the precondition h3's `make verify-roundtrip` needs when it
+│ +#    shells out to npm.
+│ +#  * OLD order: tests cell runs BEFORE the bootstrap  -> npm missing -> rc=2.
+│ +#    NEW order: bootstrap runs BEFORE the tests cell  -> npm found   -> rc=0.
+│ +set -u
+│ +P=/tmp/qa-h3-29-proof
+│ +STUB="$P/stub"
+│ +LOGD="$P/logs"
+│ +export LOGD
+│ +
+│ +# -- fixture: fake node+npm tree, real shell-script npm so `command -v npm` works
+│ +FIXTREE="$P/fake-node/node-v22.15.0-linux-x64"
+│ +mkdir -p "$FIXTREE/bin"
+│ +printf 'ELF-fake\n' > "$FIXTREE/bin/node"            # ELF magic check only (head -c 4)
+│ +printf '#!/bin/sh\necho v22.15.0-fake\n' > "$FIXTREE/bin/npm"
+│ +chmod +x "$FIXTREE/bin/npm"
+│ +tar -cJf "$P/fake-node.tar.xz" -C "$P/fake-node" node-v22.15.0-linux-x64
+│ +
+│ +# -- stub curl: "download" = copy the fixture (controlled, no network)
+│ +cat > "$STUB/curl" <<'EOS'
+│ +#!/bin/sh
+│ +out=""
+│ +while [ $# -gt 0 ]; do case "$1" in -o) out="$2"; shift 2;; *) shift;; esac; done
+│ +cp /tmp/qa-h3-29-proof/fake-node.tar.xz "$out"
+│ +EOS
+│ +chmod +x "$STUB/curl"
+│ +
+│ +# -- grading-sink stub (NOT part of the block)
+│ +cell() { echo "  [cell] toolchain-bootstrap $1: $2"; }
+│ +
+│ +run_tests_cell() {  # native-suite tests cell stand-in
+│ +  if command -v npm >/dev/null 2>&1; then echo "  tests-cell: npm FOUND (rc=0)"; return 0
+│ +  else echo "  tests-cell: npm: command not found (rc=2)"; return 2; fi
+│ +}
+│ +
+│ +echo "=== OLD ordering (bootstrap AFTER tests cell — the QA-H3-29 bug) ==="
+│ +old_rc=0
+│ +run_old() || old_rc=$?
+│ +run_old() (
+│ +  set -u
+│ +  export HOME="$1" PATH="$STUB:/usr/bin:/bin"
+│ +  hash -r
+│ +  run_tests_cell; tests_rc=$?
+│ +  source "$P/fix3-adapted.sh"
+│ +  echo "  tests_rc=$tests_rc   (bootstrap ran AFTER the tests cell)"
+│ +  [ "$tests_rc" -eq 0 ]
+│ +) "$P/home-old" || true
+│ +
+│ +echo
+│ +echo "=== NEW ordering (bootstrap BEFORE tests cell — the QA-H3-29 fix) ==="
+│ +run_new() (
+│ +  set -u
+│ +  export HOME="$1" PATH="$STUB:/usr/bin:/bin"
+│ +  hash -r
+│ +  source "$P/fix3-adapted.sh"
+│ +  run_tests_cell; tests_rc=$?
+│ +  echo "  tests_rc=$tests_rc   node=$(command -v node 2>/dev/null || echo ABSENT)"
+│ +  [ "$tests_rc" -eq 0 ]
+│ +) "$P/home-new" && new_rc=0 || new_rc=$?
+│ +
+│ +echo
+│ +echo "=== ASSERTIONS ==="
+│ … omitted 9 diff line(s) across 1 additional file(s)/section(s)
+│ /tmp/qa-h3-29-proof/run-proof.sh
+│ @@ -50,8 +50,6 @@
+│  }
+│
+│  echo "=== OLD ordering (bootstrap AFTER tests cell — the QA-H3-29 bug) ==="
+│ -old_rc=0
+│ -run_old() || old_rc=$?
+│  run_old() (
+│    set -u
+│    export HOME="$1" PATH="$STUB:/usr/bin:/bin"
+│ /tmp/qa-h3-29-proof/run-proof.sh
+│ @@ -50,7 +50,7 @@
+│  }
+│
+│  echo "=== OLD ordering (bootstrap AFTER tests cell — the QA-H3-29 bug) ==="
+│ -run_old() (
+│ +run_old() { (
+│    set -u
+│    export HOME="$1" PATH="$STUB:/usr/bin:/bin"
+│    hash -r
+│ @@ -58,7 +58,8 @@
+│    source "$P/fix3-adapted.sh"
+│    echo "  tests_rc=$tests_rc   (bootstrap ran AFTER the tests cell)"
+│    [ "$tests_rc" -eq 0 ]
+│ -) "$P/home-old" || true
+│ +); }
+│ +run_old "$P/home-old" && old_rc=0 || old_rc=$?
+│
+│  echo
+│  echo "=== NEW ordering (bootstrap BEFORE tests cell — the QA-H3-29 fix) ==="
+│ /tmp/qa-h3-29-proof/run-proof.sh
+│ @@ -63,7 +63,7 @@
+│
+│  echo
+│  echo "=== NEW ordering (bootstrap BEFORE tests cell — the QA-H3-29 fix) ==="
+│ -run_new() (
+│ +run_new() { (
+│    set -u
+│    export HOME="$1" PATH="$STUB:/usr/bin:/bin"
+│    hash -r
+│ @@ -71,7 +71,8 @@
+│    run_tests_cell; tests_rc=$?
+│    echo "  tests_rc=$tests_rc   node=$(command -v node 2>/dev/null || echo ABSENT)"
+│    [ "$tests_rc" -eq 0 ]
+│ -) "$P/home-new" && new_rc=0 || new_rc=$?
+│ +); }
+│ +run_new "$P/home-new" && new_rc=0 || new_rc=$?
+│
+│  echo
+│  echo "=== ASSERTIONS ==="
+│ /tmp/qa-h3-29-proof/run-proof.sh
+│ @@ -40,6 +40,22 @@
+│  cp /tmp/qa-h3-29-proof/fake-node.tar.xz "$out"
+│  EOS
+│  chmod +x "$STUB/curl"
+│ +
+│ +# -- scrubbed PATH: this HOST ships /usr/bin/node, so a node-free PATH must
+│ +#    exclude that dir. Build a dedicated bin dir mirroring /usr/bin + /bin
+│ +#    EXCEPT node/npm/npx/nodejs, with the stub curl first.
+│ +SCRUB="$P/scrubbin"
+│ +mkdir -p "$SCRUB"
+│ +for f in /usr/bin/* /bin/*; do
+│ +  b=$(basename "$f")
+│ +  case "$b" in node|npm|npx|nodejs) continue;; esac
+│ +  [ -e "$SCRUB/$b" ] || ln -s "$f" "$SCRUB/$b" 2>/dev/null || true
+│ +done
+│ +ln -sf "$STUB/curl" "$SCRUB/curl"
+│ +if command -v node >/dev/null 2>&1 || [ -e "$SCRUB/node" ] || [ -e "$SCRUB/npm" ]; then
+│ +  echo "FATAL: scrubbed PATH still exposes node/npm" >&2; exit 3
+│ +fi
+│ +export SCRUBBED_PATH="$SCRUB:$STUB"
+│
+│  # -- grading-sink stub (NOT part of the block)
+│  cell() { echo "  [cell] toolchain-bootstrap $1: $2"; }
+│ /tmp/qa-h3-29-proof/run-proof.sh
+│ @@ -52,9 +52,13 @@
+│    [ -e "$SCRUB/$b" ] || ln -s "$f" "$SCRUB/$b" 2>/dev/null || true
+│  done
+│  ln -sf "$STUB/curl" "$SCRUB/curl"
+│ -if command -v node >/dev/null 2>&1 || [ -e "$SCRUB/node" ] || [ -e "$SCRUB/npm" ]; then
+│ -  echo "FATAL: scrubbed PATH still exposes node/npm" >&2; exit 3
+│ -fi
+│ +# verify the scrubbed PATH is truly node-free but keeps the tools the block needs
+│ +( export PATH="$SCRUBBED_PATH"; hash -r
+│ +  if command -v node >/dev/null 2>&1 || command -v npm >/dev/null 2>&1; then exit 1; fi
+│ +  command -v curl >/dev/null 2>&1 || exit 2
+│ +  command -v tar  >/dev/null 2>&1 || exit 2 ) || {
+│ +  echo "FATAL: scrubbed PATH invalid (node present or curl/tar missing)" >&2; exit 3
+│ +}
+│  export SCRUBBED_PATH="$SCRUB:$STUB"
+│
+│  # -- grading-sink stub (NOT part of the block)
+│ /tmp/qa-h3-29-proof/run-proof.sh
+│ @@ -52,6 +52,7 @@
+│    [ -e "$SCRUB/$b" ] || ln -s "$f" "$SCRUB/$b" 2>/dev/null || true
+│  done
+│  ln -sf "$STUB/curl" "$SCRUB/curl"
+│ +export SCRUBBED_PATH="$SCRUB:$STUB"
+│  # verify the scrubbed PATH is truly node-free but keeps the tools the block needs
+│  ( export PATH="$SCRUBBED_PATH"; hash -r
+│    if command -v node >/dev/null 2>&1 || command -v npm >/dev/null 2>&1; then exit 1; fi
+│ @@ -59,7 +60,6 @@
+│    command -v tar  >/dev/null 2>&1 || exit 2 ) || {
+│    echo "FATAL: scrubbed PATH invalid (node present or curl/tar missing)" >&2; exit 3
+│  }
+│ -export SCRUBBED_PATH="$SCRUB:$STUB"
+│
+│  # -- grading-sink stub (NOT part of the block)
+│  cell() { echo "  [cell] toolchain-bootstrap $1: $2"; }
+QA-H3-29 complete. All four acceptance criteria satisfied.
+
+**(a) bash -n clean:** `bash -n /home/kara/.hermes/scripts/bunker-qa.sh` → clean (verified twice: after the move and again as the final step).
+
+**(b) Static ordering proof (the line numbers the foreman binds to the row):**
+- FIX 3 node+npm bootstrap block (comment start): **line 3426**
+- tests cell `QA_TESTS_CMD="$native_cmd"`: **line 3458**
+- 3426 < 3458 ✓ — the block now executes before the native-suite tests cell. The block moved byte-identically (15 lines, comment through closing `fi`); the unified diff shows only a pure relocation, zero content edits. Placement is after all early toolchain bootstraps (jq/rust sysdeps/go/venv) and immediately above the tests-cell block, inside the same agent-script heredoc so `\$LOGD` deferred-expansion semantics are unchanged. The lint cell's `npm run lint` arm and the chaos cells (ci-pass/native, chaos-disconnect, chaos-resource) all sit after 3426 too, so they're covered by the moved bootstrap as well. `native_runner_missing*` untouched.
+
+**(c) Control run** (`/home/kara/get-h3/h3`, HEAD 85d5495, output in /tmp/qa-h3-29-control.log, rc=0):
+```
+  RESULTS
+Passed: 6  Failed: 0
+QV-PROTO-04: Cross-language protocol round-trip verification PASSED
+```
+
+**Controlled ordering proof** (scratch harness at /tmp/qa-h3-29-proof/run-proof.sh): takes the block verbatim from the live script, applies the same `\$`→`$` unescape the harness's unquoted `cat <<EOF` heredoc performs, stubs only `cell()`/`LOGD`/`curl` (fake node tarball fixture), runs both orderings under a genuinely node-free PATH (the host ships /usr/bin/node, so the scrub is a dedicated bin dir mirroring /usr/bin+/bin minus node/npm/npx — verified node-free up front) with a fresh HOME per run:
+- OLD order (cell first): `tests-cell: npm: command not found (rc=2)` — reproduces the exact false-FAIL arm
+- NEW order (bootstrap first): node resolves to `$HOME/tools/node/bin/node`, `tests-cell: npm FOUND (rc=0)`
+- OVERALL: ORDERING PROVEN (old fails / new passes, identical fixture)
+
+**(d) Backup:** `/home/kara/.hermes/scripts/bunker-qa.sh.bak-QA-H3-29-20261125T211950` (414858 bytes, exists, verified)
+
+**(e) Diff:** `/tmp/qa-h3-29-fix.diff` (47 lines: +16 block insert above tests cell, −15 block removal, +1 blank separator)
+
+**(f) h3 repo untouched:** control run did not modify the repo (git status byte-identical before/after; suite wrote only to its own staging workspace /mnt/ssd/tmp/h3-roundtrip-siblings-B1AaXD):
+```
+ M .gitreins/tasks.yaml
+?? .coding-hermes/waves/h3-foreman-2026-11-26-02-07-14.json
+```
+Note: both entries are PRE-EXISTING (present before my control run — the modified tasks.yaml and the untracked wave file are the foreman/scheduler's, not mine; I made zero changes under /home/kara/get-h3/h3).
+
+session_id: local-01b36e38d5823d7533747885bb6a2fa7a20ebf218053ea9ce599f24cd445eaf8

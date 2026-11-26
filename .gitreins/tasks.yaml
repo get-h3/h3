@@ -979,3 +979,14 @@ tasks:
   status: complete
   created_at: '2026-11-26T00:05:50.291091+00:00'
   completed_at: '2026-11-26T00:24:24.544083+00:00'
+- id: QA-H3-29
+  title: 'harness: move node/npm bootstrap above native-suite cell in bunker-qa.sh'
+  criteria:
+  - 'On a runner with no pre-installed node/npm the h3 native-suite (make verify-roundtrip)
+    cell must not FAIL on ''npm: command not found'': the FIX 3 node+npm bootstrap
+    block must execute before the tests cell (static ordering proof: bootstrap line
+    < tests cell line; controlled local proof: PATH-scrubbed ordering check; control:
+    with node on PATH make verify-roundtrip passes 6/6). No change to the h3 repo
+    product code.'
+  status: in_progress
+  created_at: '2026-11-26T02:16:58.556941+00:00'

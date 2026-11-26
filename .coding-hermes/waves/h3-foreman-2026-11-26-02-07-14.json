@@ -1,0 +1,19 @@
+{
+  "wave_id": "h3-foreman-2026-11-26-02-07-14",
+  "scheduler_tick": "h3-foreman-2026-11-26-02-07-14",
+  "wave_budget": 1,
+  "wave_size": 1,
+  "mode": "serial",
+  "rows": [
+    {
+      "id": "QA-H3-29",
+      "priority": "P2",
+      "brief": "/tmp/brief-qa-h3-29.txt",
+      "worker_model": "glm-5.3-flash",
+      "worker_provider": "opencode-go-2",
+      "worktree": null,
+      "note": "harness-only fix in ~/.hermes/scripts/bunker-qa.sh (not a git repo; no product worktree). gitreins task QA-H3-29 created+started."
+    }
+  ],
+  "dispatched_at": "2026-11-26T02:2x:00+00:00"
+}
