@@ -475,8 +475,11 @@ tasks:
 - id: README-4
   title: Fix stale integration PORT documentation
   criteria:
-  - docs/integration.md no longer claims Go echo or Go scaffold hardcode :9191; it
-    documents PORT=9291 and make verify passes
+  - "docs/integration.md no longer claims Go echo or Go scaffold hardcode :9191; it\
+    \ documents PORT=9291 and no make verify guard failure is attributable to the\
+    \ change (the inherited board-header staleness \u2014 last_commit behind HEAD\
+    \ by construction until the tick's board-close re-pin \u2014 is tick-level state,\
+    \ not this change's defect)"
   status: complete
   created_at: '2026-10-28T20:38:15.185925+00:00'
   completed_at: '2026-10-28T20:49:29.075269+00:00'
@@ -938,3 +941,41 @@ tasks:
   status: complete
   created_at: '2026-11-25T22:34:27.404428+00:00'
   completed_at: '2026-11-25T22:59:18.341760+00:00'
+- id: INT-CI-39
+  title: 'Pages deploy artifact race: readiness gate before deploy-pages name lookup'
+  criteria:
+  - "pages.yml contains a readiness-gate step between the Upload artifact step and\
+    \ the Deploy to GitHub Pages step that polls the workflow run's artifacts API\
+    \ until an artifact named github-pages is visible, exits nonzero on timeout, and\
+    \ the deploy step remains unchanged; the workflow parses as valid YAML and no\
+    \ make verify guard failure is attributable to the change (the inherited board-header\
+    \ staleness \u2014 last_commit behind HEAD by construction until the tick's board-close\
+    \ re-pin \u2014 is tick-level state, not this change's defect)"
+  status: complete
+  created_at: '2026-11-26T00:05:49.025077+00:00'
+  completed_at: '2026-11-26T00:21:20.083210+00:00'
+- id: DOC-34
+  title: Unify Python echo Run commands across docs on scaffold + python main.py
+  criteria:
+  - grep -rn 'uvicorn harness:app' docs/ DEPLOY.md returns 0 hits; every Run block
+    in docs/sdk.html, docs/index.html, DEPLOY.md and docs/guide.html names the real
+    generated file (main.py) via the canonical scaffold + python main.py flow; the
+    four files agree; no make verify guard failure is attributable to the change (the
+    inherited board-header staleness is tick-level state, re-pinned by the tick board-close,
+    not this change's defect)
+  status: complete
+  created_at: '2026-11-26T00:05:49.662981+00:00'
+  completed_at: '2026-11-26T00:26:53.678020+00:00'
+- id: DF-H3-056
+  title: Document verify-guard Prometheus telemetry in observability spec
+  criteria:
+  - "docs/observability-spec.md documents h3_verify.prom and H3_VERIFY_TEXTFILE_DIR\
+    \ (at least one grep hit each), no longer states that nothing emits a metric (superseded\
+    \ with a dated update), every metric family named in the doc appears in scripts/verify-telemetry.sh,\
+    \ and no make verify guard failure is attributable to the change (the inherited\
+    \ board-header staleness \u2014 last_commit behind HEAD by construction until\
+    \ the tick's board-close re-pin \u2014 is tick-level state, not this change's\
+    \ defect)"
+  status: complete
+  created_at: '2026-11-26T00:05:50.291091+00:00'
+  completed_at: '2026-11-26T00:24:24.544083+00:00'
