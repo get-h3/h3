@@ -147,7 +147,7 @@ app.include_router(create_router(MyHarness()))
 
 ```bash
 pip install h3-harness-sdk          # source fallback: pip install git+https://github.com/get-h3/sdk-python
-hermes-h3 scaffold --lang py && cd h3-harness-py && python main.py   # listens on :9191
+hermes-h3 scaffold --lang py && cd h3-harness-py && python3 -m venv .venv && source .venv/bin/activate && pip install -e . && python main.py   # listens on :9191
 ```
 
 **TypeScript** — `github.com/get-h3/sdk-typescript` (not yet on npm — install from source; imports use the package name `@get-h3/h3-harness-sdk`)
@@ -266,9 +266,9 @@ For production isolation or running on separate hosts.
 ```dockerfile
 FROM python:3.11-slim
 RUN pip install h3-harness-sdk
-COPY harness.py .
+COPY main.py .
 EXPOSE 9191
-CMD ["python", "harness.py"]
+CMD ["python", "main.py"]
 ```
 
 ```bash

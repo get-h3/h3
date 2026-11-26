@@ -731,7 +731,7 @@ class Echo(BaseHarness):
 app = FastAPI()
 app.include_router(create_router(Echo()))</textarea>
               </div>
-              <div class="run-row"><span>Run:</span><code>hermes-h3 scaffold --lang py &amp;&amp; cd h3-harness-py &amp;&amp; python main.py  # listens on :9191</code></div>
+              <div class="run-row"><span>Run:</span><code>hermes-h3 scaffold --lang py &amp;&amp; cd h3-harness-py &amp;&amp; python3 -m venv .venv &amp;&amp; source .venv/bin/activate &amp;&amp; pip install -e . &amp;&amp; python main.py  # listens on :9191</code></div>
             </div>
 
             <div class="pkg-grid">
