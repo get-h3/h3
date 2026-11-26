@@ -93,56 +93,83 @@ families are emitted at lines 48-49, 50+69, and 70-71).
 | `sdk-typescript` | Harness SDK (not on npm) | library | (example only) | none | `h3/README.md:167` |
 | `protocol` | OpenAPI 3.1 + JSON Schema | no | no | YAML/JSON | `h3/README.md:163` |
 | **`logsey`** | Log-corpus indexer: `watch` tails sources into `corpus.jsonl`, `index` builds DuckDB | **Yes — `logsey watch`, every 30 s** (systemd unit shipped) | none | `corpus.jsonl`, `checkpoints.json`, `index.duckdb` | `logsey/systemd/logsey.service:1-8,47`, `logsey/internal/logsey/ingest/checkpoints.go:55-58` |
-| **`pulse`** | Metric-log sampler daemon | **Yes — running now, PID since Nov 17** | pprof only, env-gated | `~/.pulse-data/pulse-YYYY-MM-DD.jsonl` + `heartbeat.jsonl` | `pulse/cmd/pulse/pprof.go:6-28`, process `kara 3002 pulse daemon --dir /home/kara/.pulse-data` |
+| **`pulse`** | Metric-log sampler daemon | **Yes — continuous daemon; re-measured running 2026-11-26** | pprof only, env-gated | `~/.pulse-data/pulse-YYYY-MM-DD.jsonl` + `heartbeat.jsonl` | `pulse/cmd/pulse/pprof.go:6-28`; live check: `systemctl --user status pulse.service` (PID and start time are volatile — read them from the live unit, not from this page) |
 | **`lore`** | Runbook compiler/validator CLI | No — invoked per command | none | `.lore/validate-history.jsonl` (append-only), stdout JSON | `lore/__main__.py:386-421`, `.lore/validate-history.jsonl` (7 871 lines, 2026-11-18; append-only — a bare number rots) |
 | **`digest`** | Daily fleet digest builder; systemd timer **08:00** installed (`../digest/packaging/digest.timer:5` still ships `07:17` — the installed unit is what fires, running `h3-family-digest.sh`) | No — `Type=oneshot` | none | installed unit: `~/.local/share/digest/h3-family-YYYY-MM-DD.md`; packaged script: `../digest/digests/latest.html`, `digest-YYYY-MM-DD.{md,json}` | `../digest/packaging/digest.timer:1-8`, `../digest/packaging/digest.service:36`, installed `h3-digest.timer` |
 
-**What is actually live on this host right now** — re-measured 2026-11-18 with read-only probes
-(`systemctl --user list-units`, `ps`, `ss`, `curl`, `wc -l`). Each bullet names the command to
-re-run, the observed value, and the date:
+**What is actually live on this host (a dated snapshot)** — re-measured
+2026-11-26T03:33Z (= 2026-11-25 22:33 -05) with read-only probes (`systemctl --user
+list-units`, `ps`, `ss`, `curl`, `wc -l`). This page is a snapshot, not a live dashboard:
+volatile values (PIDs, start times, line counts, ephemeral listeners) rot between
+re-measures — the figures below already replaced a stale 2026-11-17 set, and they will rot
+again. Every volatile figure below carries its measurement date inline; when you need a
+current value, re-run the named command instead of trusting the page. Prefer the
+restart-surviving facts (what each component is and how to check it live) over the
+numbers.
 
-- `pulse` — running. `ps -eo pid,lstart,args | grep 'pulse daemon'` →
-  `3002 Tue Nov 17 19:52:00 2026 /home/kara/.local/bin/pulse daemon --dir /home/kara/.pulse-data`.
-  `wc -l ~/.pulse-data/heartbeat.jsonl` → `577,372` lines at `2026-11-18T03:07Z` — a **dated
-  snapshot**, not a current figure: the file is append-only and grows every second, so re-run
-  the command instead of trusting the count. What does not rot is the last line's `ts`
-  (`2026-11-18T02:52:37Z` at that reading, mtime `2026-11-17 21:52:37 -05`) — the heartbeat is
-  written now, not frozen since Oct 20.
-- `logsey watch` — **running**, not absent. `systemctl --user list-units | grep logsey` →
+- `pulse` — running as a systemd user service: `pulse.service` active since
+  Mon 2026-11-23 08:22:40 -05, main PID 1774955 (volatile — re-run
+  `systemctl --user status pulse.service` for the current PID/start time). Heartbeat
+  file: `wc -l ~/.pulse-data/heartbeat.jsonl` → `466,613` lines at
+  `2026-11-25 22:33 -05` — a dated snapshot, not a current figure: the file is
+  append-only but the retention trimmer (§3.4) drops old history, so it both grows
+  and shrinks (it held `577,372` lines at the 2026-11-18 reading). What does not rot
+  is the last line's `ts` (`2026-11-26T03:33:52Z` at that reading): if that
+  timestamp is within ~2× the fastest sampling interval of your clock, the daemon
+  is alive right now — that check is the durable liveness signal.
+- `logsey watch` — running, not absent. `systemctl --user list-units | grep logsey` →
   `logsey-watch.service loaded active running` (ExecStart `/home/kara/.local/bin/logsey watch`,
-  `ActiveEnterTimestamp Tue 2026-11-17 19:52:01 -05`, PID 2992);
-  `logsey-index.timer loaded active waiting` (`OnCalendar=*:0/30` — every 30 minutes);
-  `logsey-index.service loaded inactive dead`. Corpus:
-  `wc -l ~/.local/share/logsey/corpus.jsonl` → `7,700,573` lines at `2026-11-18T03:07Z` (dated
-  snapshot — append-only, grows by ~1k lines/minute while `watch` tails; re-run the command).
-- `digest` — **installed, scheduled, and producing fresh artifacts**. `systemctl --user list-units
-  | grep digest` → `h3-digest.timer loaded active waiting` (`OnCalendar=*-*-* 08:00:00` — daily
-  08:00; last `Tue 2026-11-17 08:00:00 -05`, next `Wed 2026-11-18 08:00:00 -05`);
-  `h3-digest.service loaded inactive dead` (the oneshot between runs). The **installed** unit runs
+  `ActiveEnterTimestamp Mon 2026-11-23 08:22:40 -05`, PID 1774939 — PID/start time
+  volatile, re-run the status command). `logsey-index.timer loaded active running`
+  (`OnCalendar=*:0/30` — every 30 minutes); `logsey-index.service` was mid-rebuild
+  (`activating`) at the 2026-11-26T03:33Z reading, which is normal for that timer.
+  `~/.local/share/logsey/checkpoints.json` is being written continuously (18,967
+  bytes, mtime `2026-11-25 22:34:41 -05`), so the loop's checkpoints are real.
+  Corpus: `wc -l ~/.local/share/logsey/corpus.jsonl` → `10,298,773` lines at
+  `2026-11-25 22:33 -05` (dated snapshot — append-only, grows by ~1k lines/minute
+  while `watch` tails; re-run the command).
+- `digest` — the h3-family chain is installed, scheduled, and producing fresh
+  artifacts. `systemctl --user list-timers | grep digest` → `h3-digest.timer`
+  active waiting (daily 08:00; last fired Wed 2026-11-25 08:00:00 -05, next Thu
+  2026-11-26 08:00:00 -05) and `h3-digest.service loaded inactive dead` since
+  Wed 2026-11-25 08:00:11 -05 (the normal oneshot state between runs). A second
+  timer `h3-digest-liveness.timer` (daily 09:00) exists. The **installed** unit runs
   `ExecStart=/home/kara/.local/bin/h3-family-digest.sh`, whose output dir is
-  `/home/kara/.local/share/digest`: `ls -1t ~/.local/share/digest/` → `h3-family-2026-11-17.md`
-  (mtime `2026-11-17 08:00:04 -05`), `h3-family-2026-11-16.md`, `h3-family-2026-11-15.md` — a
-  fresh artifact every morning, so timer → artifact works. Do **not** judge the timer by the
-  repo-local `digests/` dir of the sibling `get-h3/digest` checkout (`../digest/digests/`, newest
-  `digest-2026-10-24.md`): that is a manually-run output of a different script, not this unit's.
-- `lore` — **scheduled weekly**, not "no cadence". `systemctl --user list-units | grep lore` →
-  `lore-validate.timer loaded active waiting` (`OnCalendar=Mon *-*-* 07:30:00` — every Monday
-  07:30; last `Mon 2026-11-16 07:30:00 -05`), `lore-validate.service loaded inactive dead`.
-  `h3`'s `make verify` control plane has no unit and runs only on CI/foreman ticks.
-- A harness **is** listening on `:9191` — the earlier "no harness listening" claim is obsolete.
-  `curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:9191/v1/health` → `200`; body
-  `{"status":"ok","version":"1.0.0","transport":"rest","protocol_version":"1.0",…}`.
-  `ss -ltnp | grep 9191` → `0.0.0.0:9191` pid `1040050` — a `shim`-venv Python harness
-  (`/home/kara/.hermes/stand-in/docs/h3/qs/my-harnesses/h3-harness-py/main.py`).
+  `/home/kara/.local/share/digest`: `ls -1t ~/.local/share/digest/` →
+  `h3-family-2026-11-25.md` (mtime `2026-11-25 08:00 -05`),
+  `h3-family-2026-11-24.md`, `h3-family-2026-11-23.md` — a fresh artifact every
+  morning, so timer → artifact works. **Honest failure at the same reading:** the
+  sibling generic unit `digest.service` (daily 07:17) is `loaded failed` —
+  `Result: exit-code`, status 127, since Wed 2026-11-25 07:17:00 -05 — so check
+  both units, not just the h3 one, before calling digest healthy. Do **not** judge
+  the timers by the repo-local `digests/` dir of the sibling `get-h3/digest`
+  checkout (`../digest/digests/`, newest `digest-2026-10-24.md`): that is a
+  manually-run output of a different script, not these units'.
+- `lore` — scheduled weekly, not "no cadence". `systemctl --user list-timers | grep
+  lore` → `lore-validate.timer loaded active waiting` (`OnCalendar=Mon *-*-* 07:30:00`
+  — every Monday 07:30; last fired Mon 2026-11-23 07:56:59 -05, next Mon 2026-11-30),
+  `lore-validate.service loaded inactive dead` (the oneshot between runs). A second
+  timer `lore-dep-drift.timer` (Mon 07:45) exists. `h3`'s `make verify` control
+  plane has no unit and runs only on CI/foreman ticks.
+- A harness on `:9191` — **nothing is listening** at `2026-11-26T03:33Z`:
+  `ss -ltn | grep 9191` → empty, and `curl --max-time 3 http://localhost:9191/health`
+  → no response. The 2026-11-18 reading found a `shim`-venv harness (pid 1040050,
+  `~/.hermes/stand-in/docs/h3/qs/my-harnesses/h3-harness-py/main.py`) answering 200 —
+  that was a manually started example, not a service, and it has since exited. The
+  sdk-go echo example binds `:9191` **only while someone runs it**; treat any
+  `:9191` answer as a manual session and verify with the two commands above rather
+  than trusting this page either way.
 
-The earlier conclusion — "three of five runnable surfaces silent and unmonitored" — is obsolete.
-Re-measured 2026-11-18: `pulse` and `logsey watch` are both running as systemd user services,
-`digest` and `lore` both have installed timers firing on schedule, and a harness answers on
-`:9191`. Only `h3`'s `make verify` control plane runs on invocation (CI/foreman ticks) — by
-design. What survives is the monitoring gap, and that is the real finding: none of these
-surfaces exports a scrapeable `/metrics`, and `pulse`'s heartbeat — hundreds of thousands of
-append-only lines (577,372 at `2026-11-18T03:07Z`, still growing) — is still never read.
-Running is not the same as monitored.
+The earlier conclusion — "three of five runnable surfaces silent and unmonitored" —
+is obsolete. Re-measured 2026-11-26T03:33Z: `pulse` and `logsey watch` are both
+running as systemd user services (both up since Mon 2026-11-23 08:22 -05),
+`h3-digest` and `lore` have installed timers firing on schedule (with the generic
+`digest.service` unit failing — dated above), and nothing listens on `:9191`. Only
+`h3`'s `make verify` control plane runs on invocation (CI/foreman ticks) — by
+design. What survives is the monitoring gap, and that is the real finding: none of
+these surfaces exports a scrapeable `/metrics`, and `pulse`'s heartbeat — hundreds
+of thousands of append-only lines (466,613 at `2026-11-25 22:33 -05`, trimmed and
+still growing) — is still never read. Running is not the same as monitored.
 
 ---
 
@@ -241,7 +268,7 @@ the org works on a host whose only path is PUSH. Exact labels: `host="kara"`, `p
 | `pulse_sampler_samples_total` | counter | samples | `class` (`load`,`rss`,`conns`,`disk`,`events`) | How much work is the sampler actually doing? |
 | `pulse_sampler_errors_total` | counter | errors | `class` | How often does a sample fail, and for which class? |
 | `pulse_sampler_throttle_total` | counter | events | `reason` (`cpu`,`rss`,`disk`) | Is the sampler throttling itself, and why? |
-| `pulse_budget_ratio` | gauge | ratio (0-1+) | `budget` (`cpu`,`rss`,`disk`) | Are we inside the ≤1 % / ≤100 MB budget right now (sustained EMA)? |
+| `pulse_budget_ratio` | gauge | ratio (0-1+) | `budget` (`cpu`,`rss`,`disk`) | Are we inside the ≤1 % / ≤100 MB budget at scrape time (sustained EMA)? |
 | `pulse_budget_over` | gauge | bool | `budget` | Is a budget breached (drives alerting, mirrors `OverNames`)? |
 | `pulse_cpu_percent` | gauge | percent of one core | — | What does the daemon cost? |
 | `pulse_rss_bytes` | gauge | bytes | — | Is it leaking? |
@@ -410,9 +437,12 @@ Run these in order; a reviewer who gets all of them green may close the rows.
 ## 9. Open questions / unverified
 
 - `logsey`'s `watch` loop is the only *intended* daemon in this org besides `pulse`; **it is
-  installed and running here** (`logsey-watch.service`, PID 2992, active since 2026-11-17
-  19:52 -05), and its live `~/.local/share/logsey/checkpoints.json` exists (14,105 bytes,
-  mtime `2026-11-17 22:01 -05`), so the loop's checkpoints are real, not hypothetical. What
+  installed and running here** (`logsey-watch.service`, active since Mon 2026-11-23
+  08:22:40 -05 as re-measured 2026-11-26T03:33Z; the PID is volatile —
+  `systemctl --user status logsey-watch.service` shows the current one), and its live
+  `~/.local/share/logsey/checkpoints.json` exists (18,967 bytes, mtime
+  `2026-11-25 22:34:41 -05`, continuously rewritten), so the loop's checkpoints are real,
+  not hypothetical. What
   remains unverified is narrower: its metric names above are derived from code, not observed
   traffic — nobody has scraped the emitted counters.
 - Whether fleet-monitor already has a pushgateway endpoint reachable from this host was not
