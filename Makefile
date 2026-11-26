@@ -359,7 +359,6 @@
 # guard verifies — a guard-semantics decision, not a scheduling one. Measured
 # and left alone, deliberately.
 #
-# ch:trace row=PERF-2 spec=Makefile:235-291 wave=none:serial-tick test=hyperfine-benchmark doc=none:perf-evidence prompt=none:perf-work evidence=/tmp/perf-2-baseline.json,/tmp/perf-2-serial.json,/tmp/perf-2-sweep.json,/tmp/perf-2-parts.json witness=commit verdict=none:pending commit=none:pending memory=none:perf-tuning
 VERIFY_JOBS ?= 8
 
 verify:

@@ -18,7 +18,6 @@ H3 (Hermes Harness Hooks) is an open protocol that lets external agent systems �
 
 ## End-User Overview
 
-<!-- ch:trace row=DOC-16 spec=specs/01-Overview-Architecture.md#1 wave=h3-foreman-2026-10-20-20-46-25#DOC-16 test=none:documentation-only doc=README.md prompt=none:worker-brief evidence=none:pre-judge-doc-change witness=none:no-end-user-live-session verdict=none:pre-judge commit=none:worker-commit memory=none:not-written -->
 
 H3 connects an external agent harness to Hermes over one small contract: Hermes stays the body — gateways, tools, credentials, scheduling — and a harness you choose becomes the brain that decides what happens next. The user-visible deal is simple: keep the Hermes platform, swap the thinking.
 

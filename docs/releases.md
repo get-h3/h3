@@ -101,7 +101,6 @@ Self-tests (`verify-qa-target-selftest`, `verify-tick-chain-selftest`,
 `verify-board-header-selftest`, `verify-board-sync-selftest`) are negative
 proofs for their guards, not part of `make verify`.
 
-<!-- ch:trace row=DOC-15 spec=specs/08-Cross-Repo-Release-Pipeline.md#4 wave=h3-foreman-2026-10-20-20-46-25#DOC-15 test=none:documentation-only doc=docs/releases.md prompt=none:worker-brief evidence=none:pre-judge-doc-change witness=none:no-live-release-cut verdict=none:pre-judge commit=none:worker-commit memory=none:not-written -->
 
 One consequence of the split worth naming: a green `make verify` on a bare
 clone is **not** proof the SDKs work — it proves the repo is self-consistent
