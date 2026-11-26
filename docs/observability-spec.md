@@ -12,6 +12,14 @@ repos under `/home/kara/get-h3/` (`shim`, `sdk-go`, `sdk-python`, `sdk-typescrip
 
 ## 0. Verdict in one paragraph
 
+**Update 2026-11-25 (DF-H3-056):** the verdict paragraph below was true when audited on
+2026-11-03 and is now **partially stale**: the `h3` hub's `make verify` control plane *does*
+emit a scrapeable metric surface. `scripts/verify-telemetry.sh` — wired into the `verify`
+target at `Makefile:365-366` — writes `h3_verify.prom` into `H3_VERIFY_TEXTFILE_DIR`
+(default `/var/lib/node_exporter/textfile`) with the three `h3_verify_*` families catalogued
+in §5.4. §0.1 is the user-facing how-to. The `pulse`/`logsey`/`digest`/`lore` blind spots
+described below are unchanged.
+
 **Nothing in the get-h3 org emits a scrapeable metric today.** Zero files under any of the
 9 candidate repos import a Prometheus client (`client_golang`, `prometheus_client`,
 `prom-client`), register a collector, or serve `/metrics`. The only HTTP listener in the whole
@@ -25,6 +33,52 @@ unexported signal in the org, and it is being thrown away 553,374 lines at a tim
 The right mechanism for this org is therefore **textfile-collector completion records** for the
 CLI/batch lanes and **a small `/metrics` endpoint** for the two HTTP/Long-running surfaces
 (`pulse` daemon, `logsey watch`), *not* a scrape of everything on one port. §4 says exactly which.
+
+### 0.1 `make verify` telemetry — how to collect it (live since DF-H3-056)
+
+`make verify` records its own guard results as Prometheus textfile metrics. The writer is
+`scripts/verify-telemetry.sh`, invoked by the `verify` target (`Makefile:365-366`); a real
+sample of its output is committed at
+`.coding-hermes/evidence/h3-dogfood-2026-11-23-14-28-25/prom-sample.prom`.
+
+**Enable it:** the script writes to `H3_VERIFY_TEXTFILE_DIR`
+(default `/var/lib/node_exporter/textfile`) and silently skips — a WARN on stderr, verify
+still passes — when the directory is absent or unwritable. To collect, point it at a
+node_exporter textfile directory:
+
+```sh
+sudo mkdir -p /var/lib/node_exporter/textfile
+sudo chown node_exporter:node_exporter /var/lib/node_exporter/textfile
+export H3_VERIFY_TEXTFILE_DIR=/var/lib/node_exporter/textfile   # default; set only to override
+```
+
+**What lands there:** `h3_verify.prom`, rewritten atomically (tmp file + lock directory) on
+every `make verify` run. Three metric families:
+
+| Family | Type | Meaning |
+|---|---|---|
+| `h3_verify_runs_total{target="verify"}` | counter | how many times `make verify` has run |
+| `h3_verify_guard_result{guard="..."}` | gauge, 0/1 | 1 = that guard passed clean; 0 = failed, skipped, or degraded. One series per guard: `verify-docs`, `verify-specs`, `verify-count`, `verify-tags`, `verify-json-fences`, `verify-qa-target`, `verify-tick-chain`, `verify-board-header`, `verify-commit-msg` |
+| `h3_verify_duration_seconds{guard="..."}` | gauge | wall-clock seconds of that guard's last run |
+
+**Scrape it:** node_exporter's textfile collector (enabled by default) picks the file up
+automatically — a normal node_exporter scrape is all that is needed on the host running
+`make verify`:
+
+```yaml
+# prometheus.yml — on the host that runs make verify
+scrape_configs:
+  - job_name: node-exporter-h3
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["kara:9100"]
+        labels: {product: h3, service: h3-hub, host: kara}
+```
+
+Alert on `h3_verify_guard_result == 0` (a red or forever-skipping guard) and on staleness of
+`h3_verify_runs_total` (verify stopped running altogether). Guard names and metric families
+above are grep-verified against `scripts/verify-telemetry.sh` (the guard list is line 4; the
+families are emitted at lines 48-49, 50+69, and 70-71).
 
 ---
 
@@ -146,6 +200,9 @@ Each line names the place where the state *exists* and is never exported.
 10. **`h3` control-plane gates** — `make verify` fans out 9 guards + a verdict census
     (`h3/Makefile:377`); each prints PASS/FAIL/SKIP to stdout and no result summary exists
     outside the CI check. A guard that starts SKIPping forever is invisible.
+    **Update 2026-11-25 (DF-H3-056):** partially closed — `scripts/verify-telemetry.sh` now
+    records per-guard verdicts and durations to the textfile (§0.1), so a forever-skipping
+    guard is visible as `h3_verify_guard_result{guard="..."} 0`.
 11. **All four repos ship `gitreins` usage records** (`.gitreins/usage.jsonl`) — per-command
     artefacts that no exporter reads.
 
@@ -238,7 +295,7 @@ Source: `digest/digest/__main__.py:208-253`, `digest/render.py:36`, `digest/send
 | `lore_validate_checks_total` | counter | checks | `outcome` | Are runbook commands still live? |
 | `lore_validate_drift_total` | counter | drifted orders | `class_id` (registry-bounded, ~20) | Which runbooks have rotted? |
 | `lore_run_duration_seconds` | histogram | seconds | `command` (`gate`,`validate`,`compile`) | Cost of a lookup |
-| `h3_verify_runs_total` | counter | runs | `target` (`verify`,`verify-roundtrip`,`verify-all`) | Is the hub's control plane exercised, and how often? |
+| `h3_verify_runs_total` | counter | runs | `target` (`verify` — the only value emitted today) | Is the hub's control plane exercised, and how often? |
 | `h3_verify_guard_result` | gauge | 0/1 | `guard` (9 fixed names) | Which guard is red (or SKIPping forever)? |
 | `h3_verify_duration_seconds` | gauge | seconds | `guard` | Did a guard start hanging? |
 | `h3_harness_requests_total` | counter | requests | `endpoint`,`decision`,`lang` | *(SDK contract, emitted by scaffolded harnesses)* is the loop doing work? |
@@ -252,6 +309,10 @@ mark implementation targets on `shim` (`h3/metrics.py`) and all three SDKs. **No
 `shim/src/h3_shim/` has no `metrics.py` and no SDK repo has a `metrics.*` file. This spec
 catalogs them, but they are **P2 — after the operational blind spots**, because no harness is
 deployed here; the ops lanes are what actually break.
+
+Implemented (DF-H3-056, 2026-11-25): the three `h3_verify_*` families above are **live** —
+`scripts/verify-telemetry.sh` writes them on every `make verify` run; see §0.1 for collection.
+The `h3_harness_*` SDK rows remain unimplemented (P2).
 
 ---
 
@@ -359,3 +420,6 @@ Run these in order; a reviewer who gets all of them green may close the rows.
   fallback, but the exact URL and token are the monitoring owner's to supply.
 - The `h3` repo's owner has not said whether the `verify` textfile writer is in scope for the
   hub repo (it is a `scripts/` addition); board row §10-5 is filed as a proposal with that caveat.
+  **Resolved 2026-11-25 (DF-H3-056):** the writer exists in the hub repo
+  (`scripts/verify-telemetry.sh`) and is wired into the `verify` target (`Makefile:365-366`) —
+  see §0.1.
