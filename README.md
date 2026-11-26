@@ -243,6 +243,7 @@ hand-maintained or checked by `make verify`.
 | [journey-narrative.md](journey-narrative.md) | How a Hermes agent bootstrapped its own coding fleet — the narrative behind the foreman workflow below |
 | [specs/](specs/) | The specification set; [specs/_index.md](specs/_index.md) is its manifest, and `make verify` keeps index and files in agreement |
 | [docs/](docs/) | The published site (`index.html`, `guide.html`, `protocol.html`, `sdk.html`, `migration.html`) plus the guides [docs/integration.md](docs/integration.md), [docs/releases.md](docs/releases.md) and [docs/qa-target-contract.md](docs/qa-target-contract.md) |
+| [docs/observability-spec.md](docs/observability-spec.md) | Observability / verify-guard telemetry spec — what `make verify` records as Prometheus textfile metrics, how to collect them, and the observability blind spots across the get-h3 org |
 | `docs/badge/`, `docs/board/`, `docs/dogfood/` | Generated compliance badges, board decision records, and dated dogfood field reports |
 | [integration/roundtrip/](integration/roundtrip/) | The cross-language round-trip code suite and its generated fixtures |
 | [scripts/](scripts/) | The zero-dependency guards behind `make verify`; `scripts/test-count.txt` is the single home of the compliance-test count |
