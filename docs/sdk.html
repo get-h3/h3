@@ -731,13 +731,13 @@ class Echo(BaseHarness):
 app = FastAPI()
 app.include_router(create_router(Echo()))</textarea>
               </div>
-              <div class="run-row"><span>Run:</span><code>pip install h3-harness-sdk fastapi uvicorn &amp;&amp; uvicorn harness:app --host 0.0.0.0 --port 9191</code></div>
+              <div class="run-row"><span>Run:</span><code>hermes-h3 scaffold --lang py &amp;&amp; cd h3-harness-py &amp;&amp; python main.py  # listens on :9191</code></div>
             </div>
 
             <div class="pkg-grid">
-              <div class="pkg-item"><strong>examples/echo.py</strong><span>Echo harness that mirrors user messages.</span></div>
-              <div class="pkg-item"><strong>examples/minimal.py</strong><span>Minimal harness with health endpoint + uvicorn runner.</span></div>
-              <div class="pkg-item"><strong>examples/langchain_agent.py</strong><span>LangChain integration: LLM call with text response.</span></div>
+              <div class="pkg-item"><strong>h3_harness/examples/echo.py</strong><span>Echo harness that mirrors user messages.</span></div>
+              <div class="pkg-item"><strong>h3_harness/examples/minimal.py</strong><span>Minimal harness with health endpoint + uvicorn runner.</span></div>
+              <div class="pkg-item"><strong>h3_harness/examples/langchain_agent.py</strong><span>LangChain integration: LLM call with text response.</span></div>
             </div>
           </div>
         </div>

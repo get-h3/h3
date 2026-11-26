@@ -147,7 +147,7 @@ app.include_router(create_router(MyHarness()))
 
 ```bash
 pip install h3-harness-sdk          # source fallback: pip install git+https://github.com/get-h3/sdk-python
-uvicorn main:app --port 9191
+hermes-h3 scaffold --lang py && cd h3-harness-py && python main.py   # listens on :9191
 ```
 
 **TypeScript** — `github.com/get-h3/sdk-typescript` (not yet on npm — install from source; imports use the package name `@get-h3/h3-harness-sdk`)

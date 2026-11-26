@@ -614,7 +614,7 @@ class Echo(BaseHarness):
 app = FastAPI()
 app.include_router(create_router(Echo()))</textarea>
             </div>
-            <div class="run-row"><span>Run:</span><code>uvicorn harness:app --host 0.0.0.0 --port 9191</code></div>
+            <div class="run-row"><span>Run:</span><code>hermes-h3 scaffold --lang py &amp;&amp; cd h3-harness-py &amp;&amp; python main.py  # listens on :9191</code></div>
           </div>
 
           <div class="tab-panel" id="panel-typescript" role="tabpanel" aria-labelledby="tab-typescript" data-panel="typescript" hidden>
