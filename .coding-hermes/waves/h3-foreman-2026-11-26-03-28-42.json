@@ -12,7 +12,8 @@
       "worker_model": "glm-5.3-flash",
       "worker_provider": "opencode-go-2",
       "worktree": null,
-      "note": "Cross-repo dep task: works in /home/kara/get-h3/shim on branch wt/SHIM-DEPS-01 (no h3-repo worktree by row design). CoS mapping: dependency-hygiene lineage (17/18 done, tick #77 precedent)."
+      "note": "Cross-repo dep task: works in /home/kara/get-h3/shim on branch wt/SHIM-DEPS-01 (no h3-repo worktree by row design). CoS mapping: dependency-hygiene lineage (17/18 done, tick #77 precedent).",
+      "result": "complete — shim uv.lock bumped in place (pydantic-core 2.50.5, 175 tests pass), no commit by repo convention; judge e05656d4 PASS + task-complete 1d81830f"
     },
     {
       "id": "DOC-25-R2",
@@ -23,7 +24,8 @@
       "worktree": "/home/kara/worktrees/h3-DOC-25-R2",
       "branch": "wt/DOC-25-R2",
       "base_sha": "c0df87a",
-      "note": "Observability-spec section-1 rot re-measure; owns docs/observability-spec.md content only. CoS mapping: h3 docs-audit initiative (filed by h3-docs lane delivery, CoS-routed)."
+      "note": "Observability-spec section-1 rot re-measure; owns docs/observability-spec.md content only. CoS mapping: h3 docs-audit initiative (filed by h3-docs lane delivery, CoS-routed).",
+      "result": "complete — merged 36e9c1e, judge 2f017246 PASS, task-complete a45423f3"
     },
     {
       "id": "DOC-41",
@@ -34,7 +36,8 @@
       "worktree": "/home/kara/worktrees/h3-DOC-41",
       "branch": "wt/DOC-41",
       "base_sha": "c0df87a",
-      "note": "Trace-marker residue removal (README.md:21, docs/releases.md:104, Makefile:362). CoS mapping: h3 docs-audit initiative. README overlap with DOC-42 is disjoint hunks (line 21 vs ~222)."
+      "note": "Trace-marker residue removal (README.md:21, docs/releases.md:104, Makefile:362). CoS mapping: h3 docs-audit initiative. README overlap with DOC-42 is disjoint hunks (line 21 vs ~222).",
+      "result": "complete — merged e3f524e, judge 6ea313f9 PASS, task-complete b2c16c39"
     },
     {
       "id": "DOC-42",
@@ -45,12 +48,15 @@
       "worktree": "/home/kara/worktrees/h3-DOC-42",
       "branch": "wt/DOC-42",
       "base_sha": "c0df87a",
-      "note": "Inbound links to docs/observability-spec.md from README root-docs table + docs/index.html nav; does NOT edit observability-spec.md itself (DOC-25-R2 owns content). CoS mapping: h3 docs-audit initiative."
+      "note": "Inbound links to docs/observability-spec.md from README root-docs table + docs/index.html nav; does NOT edit observability-spec.md itself (DOC-25-R2 owns content). CoS mapping: h3 docs-audit initiative.",
+      "result": "complete — merged 392f748, judge c8afbde6 PASS, task-complete 751c685a"
     }
   ],
   "foreman_direct": {
     "id": "COS-H3-002",
-    "note": "Picked this tick: provenance arm proven by the wave's own closes (next 3+ closes carry non-null commit_hash + evidence_run_id); closed last with tail-3 evidence."
+    "note": "Picked this tick: provenance arm proven by the wave's own closes (next 3+ closes carry non-null commit_hash + evidence_run_id); closed last with tail-3 evidence.",
+    "result": "complete — judge 1bc5c154 PASS, task-complete 3554c57b"
   },
-  "dispatched_at": "2026-11-26T03:35:00+00:00"
+  "dispatched_at": "2026-11-26T03:35:00+00:00",
+  "finished_at": "2026-11-26T04:40:00+00:00"
 }

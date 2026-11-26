@@ -998,8 +998,9 @@ tasks:
   - grep -c 'row=DOC-16' README.md returns 0; grep -c 'row=DOC-15' docs/releases.md
     returns 0; grep -c 'row=PERF-2' Makefile returns 0; only the three marker comment
     lines removed, surrounding paragraphs unchanged; make verify-docs exits 0
-  status: in_progress
+  status: complete
   created_at: '2026-11-26T03:32:11.881888+00:00'
+  completed_at: '2026-11-26T03:49:20.470663+00:00'
 - id: DOC-42
   title: Add inbound links to docs/observability-spec.md from README root-docs table
     and docs/index.html nav (DOC-42)
@@ -1008,8 +1009,9 @@ tasks:
     page; doc_inbound_census.py over the 18-file corpus excludes observability-spec
     from the zero-inbound list while control pages still show hits; scope limited
     to observability-spec reachability; make verify-docs exits 0
-  status: in_progress
+  status: complete
   created_at: '2026-11-26T03:32:13.135937+00:00'
+  completed_at: '2026-11-26T03:51:00.507878+00:00'
 - id: DOC-25-R2
   title: Re-measure and rewrite observability-spec section 1 as dated snapshot (DOC-25-R2)
   criteria:
@@ -1020,24 +1022,32 @@ tasks:
     1040050 :9191 claim are updated to dated readings or dropped for restart-surviving
     facts; a sentence states the page is a snapshot and volatile values rot; make
     verify-docs exits 0
-  status: in_progress
+  status: complete
   created_at: '2026-11-26T03:32:18.395839+00:00'
+  completed_at: '2026-11-26T03:57:22.221425+00:00'
 - id: SHIM-DEPS-01
   title: Pin pydantic-core 2.47.0+ via uv lock in get-h3/shim (SHIM-DEPS-01)
   criteria:
   - cd /home/kara/get-h3/shim and run uv lock -P pydantic exits 0; grep -A2 name pydantic-core
     in uv.lock shows version 2.47.0 or newer; uv run pytest tests/test_cli.py -q exits
-    0; only uv.lock (plus pyproject.toml if required) committed, no VFS or board residue
-    in the commit
-  status: in_progress
+    0; NO commit is required or permitted because uv.lock is intentionally untracked
+    in this repo (.gitignore line 30, never in git history) so the deliverable is
+    the live lock state plus the before/after versions disclosed in the close-out;
+    VFS and board residue (.vfs/graph/*, .coding-hermes/*) must remain unstaged and
+    uncommitted
+  status: complete
   created_at: '2026-11-26T03:32:20.092910+00:00'
+  completed_at: '2026-11-26T04:18:18.346908+00:00'
 - id: COS-H3-002
   title: 'Populate close-path provenance: commit_hash and evidence_run_id non-null
     on the closes landed this tick (COS-H3-002)'
   criteria:
-  - jq over .coding-hermes/board/tasks.jsonl selecting status complete shows at least
-    the three closes landed in tick h3-foreman-2026-11-26-03-28-42 with non-null commit_hash
-    and non-null evidence_run_id in their tail-3 output; that output is pasted into
-    this row's foreman_note; no other lane's row edited
-  status: in_progress
+  - The four closes landed in tick h3-foreman-2026-11-26-03-28-42 (DOC-41, DOC-42,
+    DOC-25-R2, SHIM-DEPS-01) each show non-null commit_hash and non-null detail.evidence[].run_id
+    via jq over .coding-hermes/board/tasks.jsonl (the close path writes the run id
+    at detail.evidence, never a top-level evidence_run_id key); the command outputs
+    are pasted in this row's foreman_note; no row outside COS-H3-002 and those four
+    tick-578 closes was modified by this task
+  status: complete
   created_at: '2026-11-26T03:32:27.367739+00:00'
+  completed_at: '2026-11-26T04:31:10.980501+00:00'

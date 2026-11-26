@@ -1042,3 +1042,8 @@
 {"id":1008,"timestamp":"2026-11-26 03:32:06.766397","event_type":"task_updated","task_id":"DOC-25-R2","actor":"foreman","detail":"{\"status\":\"in_progress\"}","tick_number":null}
 {"id":1009,"timestamp":"2026-11-26 03:32:07.020233","event_type":"task_updated","task_id":"SHIM-DEPS-01","actor":"foreman","detail":"{\"status\":\"in_progress\"}","tick_number":null}
 {"id":1010,"timestamp":"2026-11-26 03:32:07.367655","event_type":"task_updated","task_id":"COS-H3-002","actor":"foreman","detail":"{\"status\":\"in_progress\"}","tick_number":null}
+{"id":1011,"timestamp":"2026-11-26 03:49:08.61669","event_type":"task_completed","task_id":"DOC-41","actor":"foreman","detail":"{\"status\":\"complete\"}","tick_number":null}
+{"id":1012,"timestamp":"2026-11-26 03:50:37.887172","event_type":"task_completed","task_id":"DOC-42","actor":"foreman","detail":"{\"status\":\"complete\"}","tick_number":null}
+{"id":1013,"timestamp":"2026-11-26 03:57:06.694342","event_type":"task_completed","task_id":"DOC-25-R2","actor":"foreman","detail":"{\"status\":\"complete\"}","tick_number":null}
+{"id":1014,"timestamp":"2026-11-26 04:18:15.404923","event_type":"task_completed","task_id":"SHIM-DEPS-01","actor":"foreman","detail":"{\"status\":\"complete\"}","tick_number":null}
+{"id":1015,"timestamp":"2026-11-26 04:31:06.878709","event_type":"task_completed","task_id":"COS-H3-002","actor":"foreman","detail":"{\"status\":\"complete\"}","tick_number":null}
