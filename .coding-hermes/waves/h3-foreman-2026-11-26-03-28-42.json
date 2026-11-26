@@ -1,0 +1,56 @@
+{
+  "wave_id": "h3-foreman-2026-11-26-03-28-42",
+  "scheduler_tick": "h3-foreman-2026-11-26-03-28-42",
+  "wave_budget": 5,
+  "wave_size": 4,
+  "mode": "wave",
+  "rows": [
+    {
+      "id": "SHIM-DEPS-01",
+      "priority": "P3",
+      "brief": "/tmp/brief-shim-deps-01-t578.txt",
+      "worker_model": "glm-5.3-flash",
+      "worker_provider": "opencode-go-2",
+      "worktree": null,
+      "note": "Cross-repo dep task: works in /home/kara/get-h3/shim on branch wt/SHIM-DEPS-01 (no h3-repo worktree by row design). CoS mapping: dependency-hygiene lineage (17/18 done, tick #77 precedent)."
+    },
+    {
+      "id": "DOC-25-R2",
+      "priority": "P4",
+      "brief": "/tmp/brief-doc-25-r2-t578.txt",
+      "worker_model": "glm-5.3-flash",
+      "worker_provider": "opencode-go-2",
+      "worktree": "/home/kara/worktrees/h3-DOC-25-R2",
+      "branch": "wt/DOC-25-R2",
+      "base_sha": "c0df87a",
+      "note": "Observability-spec section-1 rot re-measure; owns docs/observability-spec.md content only. CoS mapping: h3 docs-audit initiative (filed by h3-docs lane delivery, CoS-routed)."
+    },
+    {
+      "id": "DOC-41",
+      "priority": "P5",
+      "brief": "/tmp/brief-doc-41-t578.txt",
+      "worker_model": "glm-5.3-flash",
+      "worker_provider": "opencode-go-2",
+      "worktree": "/home/kara/worktrees/h3-DOC-41",
+      "branch": "wt/DOC-41",
+      "base_sha": "c0df87a",
+      "note": "Trace-marker residue removal (README.md:21, docs/releases.md:104, Makefile:362). CoS mapping: h3 docs-audit initiative. README overlap with DOC-42 is disjoint hunks (line 21 vs ~222)."
+    },
+    {
+      "id": "DOC-42",
+      "priority": "P5",
+      "brief": "/tmp/brief-doc-42-t578.txt",
+      "worker_model": "glm-5.3-flash",
+      "worker_provider": "opencode-go-2",
+      "worktree": "/home/kara/worktrees/h3-DOC-42",
+      "branch": "wt/DOC-42",
+      "base_sha": "c0df87a",
+      "note": "Inbound links to docs/observability-spec.md from README root-docs table + docs/index.html nav; does NOT edit observability-spec.md itself (DOC-25-R2 owns content). CoS mapping: h3 docs-audit initiative."
+    }
+  ],
+  "foreman_direct": {
+    "id": "COS-H3-002",
+    "note": "Picked this tick: provenance arm proven by the wave's own closes (next 3+ closes carry non-null commit_hash + evidence_run_id); closed last with tail-3 evidence."
+  },
+  "dispatched_at": "2026-11-26T03:35:00+00:00"
+}

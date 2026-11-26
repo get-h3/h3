@@ -1037,3 +1037,8 @@
 {"id":1003,"timestamp":"2026-11-26 00:30:13.447364","event_type":"task_completed","task_id":"DOC-34","actor":"foreman","detail":"re-closed at dec9f75 after judge fixup (venv+pip one-liner; Docker main.py); task-complete PASS b184314b","tick_number":null}
 {"id":1004,"timestamp":"2026-11-26 02:30:38.796113","event_type":"task_created","task_id":"QA-H3-31","actor":"foreman","detail":"{\"id\":\"QA-H3-31\",\"status\":\"pending\"}","tick_number":null}
 {"id":1005,"timestamp":"2026-11-26 03:05:43.799662","event_type":"task_completed","task_id":"QA-H3-29","actor":"foreman","detail":"{\"status\":\"complete\"}","tick_number":null}
+{"id":1006,"timestamp":"2026-11-26 03:32:06.102237","event_type":"task_updated","task_id":"DOC-41","actor":"foreman","detail":"{\"status\":\"in_progress\"}","tick_number":null}
+{"id":1007,"timestamp":"2026-11-26 03:32:06.466203","event_type":"task_updated","task_id":"DOC-42","actor":"foreman","detail":"{\"status\":\"in_progress\"}","tick_number":null}
+{"id":1008,"timestamp":"2026-11-26 03:32:06.766397","event_type":"task_updated","task_id":"DOC-25-R2","actor":"foreman","detail":"{\"status\":\"in_progress\"}","tick_number":null}
+{"id":1009,"timestamp":"2026-11-26 03:32:07.020233","event_type":"task_updated","task_id":"SHIM-DEPS-01","actor":"foreman","detail":"{\"status\":\"in_progress\"}","tick_number":null}
+{"id":1010,"timestamp":"2026-11-26 03:32:07.367655","event_type":"task_updated","task_id":"COS-H3-002","actor":"foreman","detail":"{\"status\":\"in_progress\"}","tick_number":null}
