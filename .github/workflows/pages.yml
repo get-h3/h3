@@ -83,6 +83,24 @@ jobs:
         with:
           path: docs/
 
+      # deploy-pages looks up the artifact BY NAME, and that name index can lag the
+      # upload: on 2026-11-25 both runs 45715766737 and 45581396930 failed with
+      # "Found 0 artifact(s)" ~0.45s after "Artifact github-pages has been
+      # successfully uploaded". Poll the artifacts API until the name is visible
+      # before deploying (observed race window was sub-second; 60s is generous).
+      - name: Wait for artifact visibility
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for i in $(seq 1 12); do
+            count=$(curl -sf -H "Authorization: Bearer $GH_TOKEN" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts?name=github-pages" \
+              | jq -r '.total_count // 0')
+            [ "$count" -ge 1 ] && echo "artifact visible after $i poll(s)" && exit 0
+            sleep 5
+          done
+          echo "github-pages artifact not visible after 60s"; exit 1
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
