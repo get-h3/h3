@@ -61,16 +61,26 @@ that exact form).
   `decision: 'text'`), e.g. docs/guide.html, docs/index.html, docs/sdk.html TS
   panels.
 
-### DOC-34 (P4, wrong-reference) — Python snippet filename unstated; three docs disagree
+### DOC-34 (P4, wrong-reference) — Python snippet filename unstated; three docs disagree — RESOLVED 2026-11-25
 
-- docs/sdk.html:734 and docs/index.html:617: Run `uvicorn harness:app ...`;
-  neither page names the file to save the snippet as (grep for `harness.py` /
+- RESOLVED: all four files (docs/sdk.html, docs/index.html, DEPLOY.md,
+  docs/guide.html) now give one canonical Python Run flow —
+  `hermes-h3 scaffold --lang py && cd h3-harness-py && python main.py`
+  (the scaffold names the file; `python main.py` runs uvicorn internally
+  on :9191). sdk.html:734/index.html:617 previously ran an unusable
+  `uvicorn <module>:app` form for a module file that never existed;
+  DEPLOY.md:150 ran `uvicorn <module>:app --port 9191` with the filename
+  unstated; guide.html:575/577 disagreed with both. sdk.html's example
+  list now names the real shipped paths (`h3_harness/examples/*.py`).
+- Original finding (2026-11-23): docs/sdk.html:734 and docs/index.html:617
+  gave a Run line naming no module file (grep for `harness.py` /
   `main.py` / "save" in both: no hits in the Python panels).
-- DEPLOY.md:150: `uvicorn main:app --port 9191` — filename also unstated there;
-  DEPLOY.md:251 (same guide, Docker section) names `harness.py`.
+- DEPLOY.md:150: filename also unstated there;
+  DEPLOY.md:269 (same guide, Docker section) names `harness.py` as a
+  user-supplied COPY input.
 - docs/guide.html:463 names `main.py` in a snippet comment — the only page that
   states a filename. uvicorn resolves `<module>:<attr>`, so the unnamed-file
-  Run lines fail for any name the reader picks unaided.
+  Run lines failed for any name the reader picks unaided.
 
 ### DOC-35 (P5, polish) — README Loop lists four of six decision types
 

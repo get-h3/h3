@@ -572,9 +572,9 @@ const app = new Hono(); app.route("/", createH3Router(echo)); export default app
           </div>
           <div class="tab-panel" data-panel="run-python" hidden>
             <div class="code-shell">
-              <pre><code>uvicorn main:app --host 0.0.0.0 --port 9191</code></pre>
+              <pre><code>python main.py  # listens on :9191</code></pre>
               <button class="copy-button" type="button" data-copy="run-python-cmd">copy</button>
-              <textarea id="run-python-cmd" hidden>uvicorn main:app --host 0.0.0.0 --port 9191</textarea>
+              <textarea id="run-python-cmd" hidden>python main.py  # listens on :9191</textarea>
             </div>
             <p style="margin-top:8px;">Should print: <code>Uvicorn running on http://0.0.0.0:9191</code></p>
           </div>
