@@ -1,0 +1,30 @@
+{
+  "wave_id": "h3-foreman-2026-11-25-23-49-34",
+  "scheduler_tick": "h3-foreman-2026-11-25-23-49-34",
+  "created_utc": "2026-11-26T04:00:00Z",
+  "budget": 4,
+  "workers": [
+    {
+      "row": "INT-CI-39",
+      "worktree": "/home/kara/worktrees/h3-INT-CI-39",
+      "branch": "wt/INT-CI-39",
+      "base_sha": "aa79008",
+      "status": "merged"
+    },
+    {
+      "row": "DOC-34",
+      "worktree": "/home/kara/worktrees/h3-DOC-34",
+      "branch": "wt/DOC-34",
+      "base_sha": "aa79008",
+      "status": "merged"
+    },
+    {
+      "row": "DF-H3-056",
+      "worktree": "/home/kara/worktrees/h3-DF-H3-056",
+      "branch": "wt/DF-H3-056",
+      "base_sha": "aa79008",
+      "status": "merged"
+    }
+  ],
+  "finished_at": "2026-11-26T00:31:00Z"
+}

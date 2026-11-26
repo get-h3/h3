@@ -1028,3 +1028,10 @@
 {"id":994,"timestamp":"2026-11-25 22:55:52.397976","event_type":"task_completed","task_id":"DOC-38","actor":"foreman","detail":"{\"status\":\"complete\"}","tick_number":null}
 {"id":995,"timestamp":"2026-11-25 22:55:53.004816","event_type":"task_completed","task_id":"DOC-39","actor":"foreman","detail":"{\"status\":\"complete\"}","tick_number":null}
 {"id":996,"timestamp":"2026-11-25 23:09:36.960376","event_type":"task_created","task_id":"INT-CI-39","actor":"foreman","detail":"{\"id\":\"INT-CI-39\",\"status\":\"pending\"}","tick_number":null}
+{"id":997,"timestamp":"2026-11-26 00:20:50.427734","event_type":"task_completed","task_id":"INT-CI-39","actor":"foreman","detail":"{\"status\":\"complete\"}","tick_number":null}
+{"id":998,"timestamp":"2026-11-26 00:20:50.649148","event_type":"task_completed","task_id":"DOC-34","actor":"foreman","detail":"{\"status\":\"complete\"}","tick_number":null}
+{"id":999,"timestamp":"2026-11-26 00:20:50.856331","event_type":"task_completed","task_id":"DF-H3-056","actor":"foreman","detail":"{\"status\":\"complete\"}","tick_number":null}
+{"id":1000,"timestamp":"2026-11-26 00:20:54.985555","event_type":"task_completed","task_id":"INT-CI-39","actor":"foreman","detail":"closed at graded tip d1f3ea6 (judge 2a3c7830 PASS; merged de761cd)","tick_number":null}
+{"id":1001,"timestamp":"2026-11-26 00:20:55.071783","event_type":"task_completed","task_id":"DOC-34","actor":"foreman","detail":"closed at graded tip 4144946 (judge 047b2259 PASS; merged 3a7c9cb)","tick_number":null}
+{"id":1002,"timestamp":"2026-11-26 00:20:55.134369","event_type":"task_completed","task_id":"DF-H3-056","actor":"foreman","detail":"closed at graded tip a98208a (judge 10ab8a18 PASS; merged e3828ec)","tick_number":null}
+{"id":1003,"timestamp":"2026-11-26 00:30:13.447364","event_type":"task_completed","task_id":"DOC-34","actor":"foreman","detail":"re-closed at dec9f75 after judge fixup (venv+pip one-liner; Docker main.py); task-complete PASS b184314b","tick_number":null}
