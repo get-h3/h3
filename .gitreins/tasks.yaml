@@ -991,3 +991,53 @@ tasks:
   status: complete
   created_at: '2026-11-26T02:16:58.556941+00:00'
   completed_at: '2026-11-26T03:05:56.742549+00:00'
+- id: DOC-41
+  title: Remove embedded foreman trace-marker comments from README.md, docs/releases.md,
+    Makefile (DOC-41)
+  criteria:
+  - grep -c 'row=DOC-16' README.md returns 0; grep -c 'row=DOC-15' docs/releases.md
+    returns 0; grep -c 'row=PERF-2' Makefile returns 0; only the three marker comment
+    lines removed, surrounding paragraphs unchanged; make verify-docs exits 0
+  status: in_progress
+  created_at: '2026-11-26T03:32:11.881888+00:00'
+- id: DOC-42
+  title: Add inbound links to docs/observability-spec.md from README root-docs table
+    and docs/index.html nav (DOC-42)
+  criteria:
+  - docs/observability-spec.md has at least one inbound Markdown link from a reader-facing
+    page; doc_inbound_census.py over the 18-file corpus excludes observability-spec
+    from the zero-inbound list while control pages still show hits; scope limited
+    to observability-spec reachability; make verify-docs exits 0
+  status: in_progress
+  created_at: '2026-11-26T03:32:13.135937+00:00'
+- id: DOC-25-R2
+  title: Re-measure and rewrite observability-spec section 1 as dated snapshot (DOC-25-R2)
+  criteria:
+  - every surviving 'right now' hit in docs/observability-spec.md carries a measurement
+    date in the same sentence or the phrase is gone; no live-state bullet in section
+    1 asserts a PID, start time, uptime line count or ephemeral :9191 listener as
+    current without an inline date; the stale Nov 17 PIDs 3002 and 2992 and the pid
+    1040050 :9191 claim are updated to dated readings or dropped for restart-surviving
+    facts; a sentence states the page is a snapshot and volatile values rot; make
+    verify-docs exits 0
+  status: in_progress
+  created_at: '2026-11-26T03:32:18.395839+00:00'
+- id: SHIM-DEPS-01
+  title: Pin pydantic-core 2.47.0+ via uv lock in get-h3/shim (SHIM-DEPS-01)
+  criteria:
+  - cd /home/kara/get-h3/shim and run uv lock -P pydantic exits 0; grep -A2 name pydantic-core
+    in uv.lock shows version 2.47.0 or newer; uv run pytest tests/test_cli.py -q exits
+    0; only uv.lock (plus pyproject.toml if required) committed, no VFS or board residue
+    in the commit
+  status: in_progress
+  created_at: '2026-11-26T03:32:20.092910+00:00'
+- id: COS-H3-002
+  title: 'Populate close-path provenance: commit_hash and evidence_run_id non-null
+    on the closes landed this tick (COS-H3-002)'
+  criteria:
+  - jq over .coding-hermes/board/tasks.jsonl selecting status complete shows at least
+    the three closes landed in tick h3-foreman-2026-11-26-03-28-42 with non-null commit_hash
+    and non-null evidence_run_id in their tail-3 output; that output is pasted into
+    this row's foreman_note; no other lane's row edited
+  status: in_progress
+  created_at: '2026-11-26T03:32:27.367739+00:00'
